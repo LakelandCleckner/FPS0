@@ -214,4 +214,14 @@ public class PlayerMovement : MonoBehaviour
             sprintGraceCounter = sprintTakeoffGraceTime;
         }
     }
+
+    public float CurrentSpeed
+    {
+        get
+        {
+            return new Vector3(currentMovement.x, 0f, currentMovement.z).magnitude;
+        }
+    }
+
+    public bool IsGrounded => characterController.isGrounded;
 }
