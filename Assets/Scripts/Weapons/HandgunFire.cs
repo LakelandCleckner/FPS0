@@ -4,12 +4,15 @@ using UnityEngine.InputSystem;
 
 public class HandgunFire : MonoBehaviour
 {
-
     [SerializeField] AudioSource gunFire;
     [SerializeField] GameObject handgun;
     [SerializeField] GameObject crosshair;
     [SerializeField] bool canFire = true;
     [SerializeField] AudioSource emptyGunSound;
+
+    [Header("Fire Settings")]
+    [SerializeField] float roundsPerMinute = 300f;
+
     void Update()
     {
         if (Mouse.current.leftButton.wasPressedThisFrame)
@@ -26,20 +29,43 @@ public class HandgunFire : MonoBehaviour
                     canFire = false;
                     StartCoroutine(FiringGun());
                 }
-                
             }
         }
     }
 
+
+    void RaycastShoot()
+    {
+        Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        RaycastHit hit;
+
+        float range = 100f;
+
+        //Debug raycast Line
+        Debug.DrawRay(ray.origin, ray.direction * range, Color.red, 1f);
+
+        if (Physics.Raycast(ray, out hit, range))
+        {
+            Debug.Log("Hit: " + hit.collider.name);
+        }
+    }
     IEnumerator FiringGun()
     {
         gunFire.Play();
         GlobalAmmo.handgunAmmoCount -= 1;
+
+        RaycastShoot();
+
         handgun.GetComponent<Animator>().Play("HandgunFire");
         crosshair.GetComponent<Animator>().Play("HandgunFireCrosshair");
-        yield return new WaitForSeconds(0.42857f);
+
+        //RPM conversion
+        float delay = 60f / roundsPerMinute;
+        yield return new WaitForSeconds(delay);
+
         handgun.GetComponent<Animator>().Play("New State");
         crosshair.GetComponent<Animator>().Play("New State");
+
         canFire = true;
     }
 
