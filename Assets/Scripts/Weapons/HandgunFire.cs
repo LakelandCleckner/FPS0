@@ -13,11 +13,15 @@ public class HandgunFire : MonoBehaviour
     [Header("Fire Settings")]
     [SerializeField] float roundsPerMinute = 300f;
 
+    [Header("Weapon Stats")]
+    [SerializeField] float baseDamage = 20f;
+    [SerializeField] float range = 100f;
+
     void Update()
     {
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
-            if (canFire == true)
+            if (canFire)
             {
                 if (GlobalAmmo.handgunAmmoCount == 0)
                 {
@@ -33,22 +37,31 @@ public class HandgunFire : MonoBehaviour
         }
     }
 
-
     void RaycastShoot()
     {
         Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
         RaycastHit hit;
 
-        float range = 100f;
-
-        //Debug raycast Line
         Debug.DrawRay(ray.origin, ray.direction * range, Color.red, 1f);
 
         if (Physics.Raycast(ray, out hit, range))
         {
-            Debug.Log("Hit: " + hit.collider.name);
+            Debug.Log("Hit object: " + hit.collider.name);
+
+            EnemyHitbox hitbox = hit.collider.GetComponentInParent<EnemyHitbox>();
+
+            if (hitbox != null)
+            {
+                Debug.Log("Hit body part: " + hitbox.bodyPart);
+                hitbox.ApplyDamage(baseDamage);
+            }
+            else
+            {
+                Debug.Log("No EnemyHitbox found.");
+            }
         }
     }
+
     IEnumerator FiringGun()
     {
         gunFire.Play();
@@ -59,7 +72,6 @@ public class HandgunFire : MonoBehaviour
         handgun.GetComponent<Animator>().Play("HandgunFire");
         crosshair.GetComponent<Animator>().Play("HandgunFireCrosshair");
 
-        //RPM conversion
         float delay = 60f / roundsPerMinute;
         yield return new WaitForSeconds(delay);
 
