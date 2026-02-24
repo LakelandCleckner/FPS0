@@ -12,27 +12,27 @@ public class EnemyHealth : MonoBehaviour
 
     public void TakeDamage(float damage, BodyPart partHit)
     {
-        currentHealth -= damage;
+        currentHealth = Mathf.Clamp(currentHealth - damage, 0f, maxHealth);
 
         Debug.Log("Hit " + partHit + " for " + damage);
         Debug.Log("Remaining Health: " + currentHealth);
 
+
+        //Use later for effects (leg shot slow, etc)
         switch (partHit)
         {
             case BodyPart.Head:
-                //crit logic
                 break;
 
             case BodyPart.Leg:
-                //slow logic
                 break;
 
             case BodyPart.Arm:
-                // accuracy/fire rate logic
                 break;
         }
 
-        if (currentHealth <= 0)
+        //call Die() if health reaches 0
+        if (currentHealth == 0f)
         {
             Die();
         }

@@ -1,40 +1,66 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class HandgunFire : MonoBehaviour
 {
-    [SerializeField] AudioSource gunFire;
-    [SerializeField] GameObject handgun;
-    [SerializeField] GameObject crosshair;
-    [SerializeField] bool canFire = true;
-    [SerializeField] AudioSource emptyGunSound;
+    [Header("Audio Clips")]
+    [SerializeField] AudioClip gunFireClip;
+    [SerializeField] AudioClip emptyGunClip;
 
     [Header("Fire Settings")]
     [SerializeField] float roundsPerMinute = 300f;
+    private float fireDelay;
+    private float nextFireTime = 0f;
 
     [Header("Weapon Stats")]
     [SerializeField] float baseDamage = 20f;
     [SerializeField] float range = 100f;
 
+    [Header("References")]
+    [SerializeField] GameObject handgun;
+    [SerializeField] GameObject crosshair;
+
+
+    void Start()
+    {
+        fireDelay = 60f / roundsPerMinute; // calculate delay between shots
+    }
+
     void Update()
     {
-        if (Mouse.current.leftButton.wasPressedThisFrame)
+        if (Mouse.current.leftButton.isPressed)
         {
-            if (canFire)
+            if (Time.time >= nextFireTime)
             {
-                if (GlobalAmmo.handgunAmmoCount == 0)
-                {
-                    canFire = false;
-                    StartCoroutine(EmptyGun());
-                }
-                else
-                {
-                    canFire = false;
-                    StartCoroutine(FiringGun());
-                }
+                Shoot();
+                nextFireTime = Time.time + fireDelay; // schedule next shot
             }
         }
+    }
+
+    void Shoot()
+    {
+        if (GlobalAmmo.handgunAmmoCount <= 0)
+        {
+            AudioSource.PlayClipAtPoint(emptyGunClip, transform.position);
+            return;
+        }
+
+        GlobalAmmo.handgunAmmoCount -= 1;
+        AudioSource.PlayClipAtPoint(gunFireClip, transform.position);
+        RaycastShoot();
+
+        handgun.GetComponent<Animator>().Play("HandgunFire");
+        crosshair.GetComponent<Animator>().Play("HandgunFireCrosshair");
+
+        // reset to idle state after a short delay
+        Invoke("ResetAnimations", 0.1f);
+    }
+
+    void ResetAnimations()
+    {
+        handgun.GetComponent<Animator>().Play("New State");
+        crosshair.GetComponent<Animator>().Play("New State");
     }
 
     void RaycastShoot()
@@ -46,45 +72,12 @@ public class HandgunFire : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, range))
         {
-            Debug.Log("Hit object: " + hit.collider.name);
-
             EnemyHitbox hitbox = hit.collider.GetComponentInParent<EnemyHitbox>();
-
             if (hitbox != null)
             {
-                Debug.Log("Hit body part: " + hitbox.bodyPart);
-                hitbox.ApplyDamage(baseDamage);
-            }
-            else
-            {
-                Debug.Log("No EnemyHitbox found.");
+                float damage = baseDamage * hitbox.damageMultiplier;
+                hitbox.enemyHealth.TakeDamage(damage, hitbox.bodyPart);
             }
         }
-    }
-
-    IEnumerator FiringGun()
-    {
-        gunFire.Play();
-        GlobalAmmo.handgunAmmoCount -= 1;
-
-        RaycastShoot();
-
-        handgun.GetComponent<Animator>().Play("HandgunFire");
-        crosshair.GetComponent<Animator>().Play("HandgunFireCrosshair");
-
-        float delay = 60f / roundsPerMinute;
-        yield return new WaitForSeconds(delay);
-
-        handgun.GetComponent<Animator>().Play("New State");
-        crosshair.GetComponent<Animator>().Play("New State");
-
-        canFire = true;
-    }
-
-    IEnumerator EmptyGun()
-    {
-        emptyGunSound.Play();
-        yield return new WaitForSeconds(0.6f);
-        canFire = true;
     }
 }

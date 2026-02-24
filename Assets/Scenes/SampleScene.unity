@@ -1463,14 +1463,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd6e9db9213c2994d99af64abe92c1be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gunFire: {fileID: 800810562}
-  handgun: {fileID: 1567209315}
-  crosshair: {fileID: 1533581869}
-  canFire: 1
-  emptyGunSound: {fileID: 137226331}
+  gunFireClip: {fileID: 8300000, guid: a02ac01715490c646a720c0bcc70ec7a, type: 3}
+  emptyGunClip: {fileID: 8300000, guid: 08eb29cab0988c349bc1c4de52aaf72c, type: 3}
   roundsPerMinute: 300
   baseDamage: 20
   range: 100
+  handgun: {fileID: 1567209315}
+  crosshair: {fileID: 1533581869}
 --- !u!4 &897938769
 Transform:
   m_ObjectHideFlags: 0
@@ -1480,7 +1479,7 @@ Transform:
   m_GameObject: {fileID: 897938767}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 42.342514, y: -38.738636, z: -64.36538}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2345,6 +2344,25 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1567209323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1567209315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd6e9db9213c2994d99af64abe92c1be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gunFireClip: {fileID: 8300000, guid: a02ac01715490c646a720c0bcc70ec7a, type: 3}
+  emptyGunClip: {fileID: 8300000, guid: 08eb29cab0988c349bc1c4de52aaf72c, type: 3}
+  roundsPerMinute: 300
+  baseDamage: 20
+  range: 100
+  handgun: {fileID: 1567209315}
+  crosshair: {fileID: 1533581869}
 --- !u!1 &1591129865
 GameObject:
   m_ObjectHideFlags: 0
@@ -3075,6 +3093,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3210834218394489848, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1567209319}
+    - targetCorrespondingSourceObject: {fileID: 3210834218394489848, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1567209323}
   m_SourcePrefab: {fileID: 100100000, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
 --- !u!1001 &5394500555133155879
 PrefabInstance:
