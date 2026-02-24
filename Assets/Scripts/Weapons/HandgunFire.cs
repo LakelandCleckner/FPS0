@@ -3,9 +3,10 @@ using UnityEngine.InputSystem;
 
 public class HandgunFire : MonoBehaviour
 {
-    [Header("Audio Clips")]
+    [Header("Audio")]
     [SerializeField] AudioClip gunFireClip;
     [SerializeField] AudioClip emptyGunClip;
+    private PlayerAudio playerAudio;
 
     [Header("Fire Settings")]
     [SerializeField] float roundsPerMinute = 300f;
@@ -24,6 +25,7 @@ public class HandgunFire : MonoBehaviour
     void Start()
     {
         fireDelay = 60f / roundsPerMinute; // calculate delay between shots
+        playerAudio = GetComponentInParent<PlayerAudio>();
     }
 
     void Update()
@@ -42,14 +44,13 @@ public class HandgunFire : MonoBehaviour
     {
         if (GlobalAmmo.handgunAmmoCount <= 0)
         {
-            AudioSource.PlayClipAtPoint(emptyGunClip, transform.position);
+            playerAudio.Play3D(emptyGunClip);
             return;
         }
 
         GlobalAmmo.handgunAmmoCount -= 1;
-        AudioSource.PlayClipAtPoint(gunFireClip, transform.position);
+        playerAudio.Play3D(gunFireClip);
         RaycastShoot();
-
         handgun.GetComponent<Animator>().Play("HandgunFire");
         crosshair.GetComponent<Animator>().Play("HandgunFireCrosshair");
 

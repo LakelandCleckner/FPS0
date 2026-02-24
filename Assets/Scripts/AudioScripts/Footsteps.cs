@@ -5,7 +5,7 @@ public class Footsteps : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private PlayerMovement playerMovement;
-    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private PlayerAudio playerAudio;
 
     [Header("Footstep Settings")]
     [SerializeField] private AudioClip[] footstepClips;
@@ -16,7 +16,7 @@ public class Footsteps : MonoBehaviour
 
     void Update()
     {
-        if (playerMovement == null) return;
+        if (playerMovement == null || playerAudio == null) return;
 
         float speed = playerMovement.CurrentSpeed;
 
@@ -37,10 +37,10 @@ public class Footsteps : MonoBehaviour
         AudioClip clip = footstepClips[Random.Range(0, footstepClips.Length)];
 
         // Slight pitch variation
-        audioSource.pitch = Random.Range(0.95f, 1.05f);
+        float pitch = Random.Range(0.95f, 1.05f);
 
-        // Play clip
-        audioSource.PlayOneShot(clip);
+        // Play clip from PlayerAudio 3D
+        playerAudio.Play3D(clip, 1f, pitch);
 
         // Faster movement = shorter delay
         float delay = baseStepDelay / Mathf.Max(speed, 1f);
