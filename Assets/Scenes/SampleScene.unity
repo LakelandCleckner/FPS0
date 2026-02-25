@@ -1481,6 +1481,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1533581870}
+  - {fileID: 1169347219}
   - {fileID: 1626212454}
   - {fileID: 632418749}
   m_Father: {fileID: 0}
@@ -1603,6 +1604,118 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 46516e717e40ee943ba58c75c862219e, type: 3}
   m_PrefabInstance: {fileID: 1644886435}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1169347218
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1169347219}
+  - component: {fileID: 1169347223}
+  - component: {fileID: 1169347222}
+  - component: {fileID: 1169347221}
+  - component: {fileID: 1169347220}
+  m_Layer: 5
+  m_Name: Hitmarker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1169347219
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1169347218}
+  m_LocalRotation: {x: 0, y: 0, z: 0.38268343, w: 0.92387956}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1111732126}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 45}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 25, y: 25}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1169347220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1169347218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e37316a05dd69c64e98d605b77f16d21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitmarkerImage: {fileID: 1169347222}
+  displayTime: 0.1
+  scalePopAmount: 1.5
+  scaleDuration: 0.1
+--- !u!95 &1169347221
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1169347218}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 91391ba054977df49a22799f05940080, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1169347222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1169347218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Texture: {fileID: 2800000, guid: 9ee137293631b9e46b1a401b72b130a4, type: 3}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+--- !u!222 &1169347223
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1169347218}
+  m_CullTransparentMesh: 1
 --- !u!1 &1232219900
 GameObject:
   m_ObjectHideFlags: 0
@@ -1843,11 +1956,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gunFireClip: {fileID: 8300000, guid: a02ac01715490c646a720c0bcc70ec7a, type: 3}
   emptyGunClip: {fileID: 8300000, guid: 08eb29cab0988c349bc1c4de52aaf72c, type: 3}
+  hitmarkerClip: {fileID: 8300000, guid: 7d6f9e6454d5e774f8f596acb90c6d1e, type: 3}
+  killClip: {fileID: 8300000, guid: 4107abbdf23642e418bf3611e95c789b, type: 3}
   roundsPerMinute: 300
   baseDamage: 20
   range: 100
   handgun: {fileID: 1567209315}
   crosshair: {fileID: 1533581869}
+  hitmarkerUI: {fileID: 1169347220}
 --- !u!1 &1591129865
 GameObject:
   m_ObjectHideFlags: 0

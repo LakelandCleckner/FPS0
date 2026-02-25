@@ -16,10 +16,14 @@ public class PlayerAudio : MonoBehaviour
     }
 
     // Play 2D sound
-    public void Play2D(AudioClip clip, float volume = 1f)
+    public void Play2D(AudioClip clip, float volume = 1f, float pitch = 1f)
     {
         if (clip == null || audio2D == null) return;
 
+        float originalPitch = audio2D.pitch;
+        audio2D.pitch = pitch;
+
         audio2D.PlayOneShot(clip, volume);
+        audio2D.pitch = originalPitch;
     }
 }

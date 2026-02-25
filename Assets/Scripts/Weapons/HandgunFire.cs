@@ -6,7 +6,11 @@ public class HandgunFire : MonoBehaviour
     [Header("Audio")]
     [SerializeField] AudioClip gunFireClip;
     [SerializeField] AudioClip emptyGunClip;
+    [SerializeField] AudioClip hitmarkerClip;
     private PlayerAudio playerAudio;
+
+    [Header("Kill Feedback")]
+    [SerializeField] private AudioClip killClip;
 
     [Header("Fire Settings")]
     [SerializeField] float roundsPerMinute = 300f;
@@ -20,6 +24,7 @@ public class HandgunFire : MonoBehaviour
     [Header("References")]
     [SerializeField] GameObject handgun;
     [SerializeField] GameObject crosshair;
+    [SerializeField] private HitmarkerUI hitmarkerUI;
 
 
     void Start()
@@ -74,10 +79,38 @@ public class HandgunFire : MonoBehaviour
         if (Physics.Raycast(ray, out hit, range))
         {
             EnemyHitbox hitbox = hit.collider.GetComponentInParent<EnemyHitbox>();
+           
             if (hitbox != null)
             {
                 float damage = baseDamage * hitbox.damageMultiplier;
                 hitbox.enemyHealth.TakeDamage(damage, hitbox.bodyPart);
+
+                bool isHeadshot = hitbox.bodyPart == BodyPart.Head;
+                bool isKill = hitbox.enemyHealth.CurrentHealth <= 0f;
+
+                //Hitmarker Sound
+                if (playerAudio != null && hitmarkerClip != null)
+                {
+                    float pitch = isHeadshot ? 1.25f : 1f;  // higher pitch for crits
+                    float volume = isHeadshot ? 1f : 0.5f;  // quieter normal hit
+                    playerAudio.Play2D(hitmarkerClip, volume, pitch);
+                }
+
+
+                //Hitmarker Visual
+                if (hitmarkerUI != null)
+                {
+                    Color color = isHeadshot ? Color.red : Color.white;
+                    if (isKill)
+                        color = Color.green;
+                    hitmarkerUI.ShowHitmarker(color);
+                }
+
+                //Kill Audio
+                if (isKill && killClip != null)
+                {
+                    playerAudio.Play2D(killClip);
+                }
             }
         }
     }
