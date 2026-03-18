@@ -1,5 +1,13 @@
 {
   "dependencies": {
+    "com.crashkonijn.goap": {
+      "version": "file:com.crashkonijn.goap",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.collections": "1.2.4"
+      }
+    },
     "com.kylewbanks.scenerefattribute": {
       "version": "https://github.com/KyleBanks/scene-ref-attribute.git",
       "depth": 0,

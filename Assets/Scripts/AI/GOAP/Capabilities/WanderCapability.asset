@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 875fbfa2d1734285b353878b31467c98, type: 3}
+  m_Name: WanderCapability
+  m_EditorClassIdentifier: 
+  goals:
+  - goal:
+      <Name>k__BackingField: WanderGoal
+      <Id>k__BackingField: 79aae223-acda-44d2-a71e-5d97be79fb35
+    baseCost: 1
+    conditions:
+    - worldKey:
+        <Name>k__BackingField: IsWandering
+        <Id>k__BackingField: a4f257e0-0693-4c0f-8d50-449e74f22682
+      comparison: 3
+      amount: 1
+  actions:
+  - action:
+      <Name>k__BackingField: WanderAction
+      <Id>k__BackingField: 2b98bd06-6921-455f-aaae-01cb5d1a5f5c
+    target:
+      <Name>k__BackingField: WanderTarget
+      <Id>k__BackingField: 264045ce-59a1-4c67-99d5-7911e8d19e6d
+    properties:
+      rid: 865908669352509512
+    baseCost: 1
+    stoppingDistance: 0.1
+    validateTarget: 0
+    requiresTarget: 1
+    validateConditions: 1
+    moveMode: 1
+    conditions: []
+    effects:
+    - worldKey:
+        <Name>k__BackingField: IsWandering
+        <Id>k__BackingField: a4f257e0-0693-4c0f-8d50-449e74f22682
+      effect: 1
+  worldSensors:
+  - sensor:
+      <Name>k__BackingField: IsWanderingSensor
+      <Id>k__BackingField: a18100f0-94b7-4b7d-82b9-39a9599f015a
+    worldKey:
+      <Name>k__BackingField: IsWandering
+      <Id>k__BackingField: a4f257e0-0693-4c0f-8d50-449e74f22682
+  targetSensors:
+  - sensor:
+      <Name>k__BackingField: WanderTargetSensor
+      <Id>k__BackingField: 31e31669-cdfc-4c67-a721-9d935f55ad27
+    targetKey:
+      <Name>k__BackingField: WanderTarget
+      <Id>k__BackingField: 264045ce-59a1-4c67-99d5-7911e8d19e6d
+  multiSensors: []
+  generatorScriptable: {fileID: 11400000, guid: b5c0206815684504d9710e7d96d27ce4, type: 2}
+  references:
+    version: 2
+    RefIds:
+    - rid: 865908669352509512
+      type: {class: EmptyActionProperties, ns: CrashKonijn.Agent.Runtime, asm: CrashKonijn.Agent.Runtime}
+      data: 
