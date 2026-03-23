@@ -15,22 +15,57 @@ MonoBehaviour:
   nameSpace: GOAPGettingStarted
   scripts:
     goals:
+    - <Name>k__BackingField: ChaseGoal
+      fullName: GOAPGettingStarted.Goals.ChaseGoal, Assembly-CSharp, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      <Path>k__BackingField: Assets/Scripts/AI/GOAP/Goals/ChaseGoal.cs
+      <Id>k__BackingField: e5f6a7b8-c9d0-1234-efab-345678901234
+    - <Name>k__BackingField: InvestigateGoal
+      fullName: GOAPGettingStarted.Goals.InvestigateGoal, Assembly-CSharp, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      <Path>k__BackingField: Assets/Scripts/AI/GOAP/Goals/InvestigateGoal.cs
+      <Id>k__BackingField: a1b2c3d4-e5f6-7890-abcd-ef0123456789
     - <Name>k__BackingField: WanderGoal
       fullName: GOAPGettingStarted.Goals.WanderGoal, Assembly-CSharp, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       <Path>k__BackingField: Assets/Scripts/AI/GOAP/Goals/WanderGoal.cs
       <Id>k__BackingField: 79aae223-acda-44d2-a71e-5d97be79fb35
     actions:
+    - <Name>k__BackingField: ChaseAction
+      fullName: GOAPGettingStarted.Actions.ChaseAction, Assembly-CSharp, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      <Path>k__BackingField: Assets/Scripts/AI/GOAP/Actions/ChaseAction.cs
+      <Id>k__BackingField: f6a7b8c9-d0e1-2345-fabc-456789012345
+    - <Name>k__BackingField: InvestigateAction
+      fullName: GOAPGettingStarted.Actions.InvestigateAction, Assembly-CSharp, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      <Path>k__BackingField: Assets/Scripts/AI/GOAP/Actions/InvestigateAction.cs
+      <Id>k__BackingField: d4e5f6a7-b8c9-0123-defa-012345678901
     - <Name>k__BackingField: WanderAction
       fullName: GOAPGettingStarted.Actions.WanderAction, Assembly-CSharp, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       <Path>k__BackingField: Assets/Scripts/AI/GOAP/Actions/WanderAction.cs
       <Id>k__BackingField: 2b98bd06-6921-455f-aaae-01cb5d1a5f5c
     worldSensors:
+    - <Name>k__BackingField: LocationInvestigatedSensor
+      fullName: GOAPGettingStarted.Sensors.LocationInvestigatedSensor, Assembly-CSharp,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      <Path>k__BackingField: Assets/Scripts/AI/GOAP/Sensors/LocationInvestigatedSensor.cs
+      <Id>k__BackingField: e6f7a8b9-c0d1-2345-fabc-789012345678
+    - <Name>k__BackingField: PlayerEngagedSensor
+      fullName: GOAPGettingStarted.Sensors.PlayerEngagedSensor, Assembly-CSharp,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      <Path>k__BackingField: Assets/Scripts/AI/GOAP/Sensors/PlayerEngagedSensor.cs
+      <Id>k__BackingField: e8f9a0b1-c2d3-4567-bcde-678901234567
+    - <Name>k__BackingField: PlayerVisibleSensor
+      fullName: GOAPGettingStarted.Sensors.PlayerVisibleSensor, Assembly-CSharp,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      <Path>k__BackingField: Assets/Scripts/AI/GOAP/Sensors/PlayerVisibleSensor.cs
+      <Id>k__BackingField: c3d4e5f6-a7b8-9012-cdef-123456789012
     - <Name>k__BackingField: IsWanderingSensor
       fullName: GOAPGettingStarted.Sensors.IsWanderingSensor, Assembly-CSharp, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
-      <Path>k__BackingField: Assets/Scripts/AI/GOAP/Sensors/IsWanderingSensor.cs
+      <Path>k__BackingField: Assets/Scripts/AI/GOAP/Sensors/Wandering/IsWanderingSensor.cs
       <Id>k__BackingField: a18100f0-94b7-4b7d-82b9-39a9599f015a
     worldKeys:
     - <Name>k__BackingField: IsWandering
@@ -38,13 +73,48 @@ MonoBehaviour:
         Culture=neutral, PublicKeyToken=null
       <Path>k__BackingField: Assets/Scripts/AI/GOAP/WorldKeys/IsWandering.cs
       <Id>k__BackingField: a4f257e0-0693-4c0f-8d50-449e74f22682
+    - <Name>k__BackingField: LocationInvestigated
+      fullName: GOAPGettingStarted.WorldKeys.LocationInvestigated, Assembly-CSharp,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      <Path>k__BackingField: Assets/Scripts/AI/GOAP/WorldKeys/LocationInvestigated.cs
+      <Id>k__BackingField: d5e6f7a8-b9c0-1234-efab-678901234567
+    - <Name>k__BackingField: PlayerEngaged
+      fullName: GOAPGettingStarted.WorldKeys.PlayerEngaged, Assembly-CSharp, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      <Path>k__BackingField: Assets/Scripts/AI/GOAP/WorldKeys/PlayerEngaged.cs
+      <Id>k__BackingField: f7a8b9c0-d1e2-3456-abcd-567890123456
+    - <Name>k__BackingField: PlayerVisible
+      fullName: GOAPGettingStarted.WorldKeys.PlayerVisible, Assembly-CSharp, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      <Path>k__BackingField: Assets/Scripts/AI/GOAP/WorldKeys/PlayerVisible.cs
+      <Id>k__BackingField: b1c2d3e4-f5a6-7890-abcd-ef1234567890
     targetSensors:
+    - <Name>k__BackingField: InvestigateTargetSensor
+      fullName: GOAPGettingStarted.Sensors.InvestigateTargetSensor, Assembly-CSharp,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      <Path>k__BackingField: Assets/Scripts/AI/GOAP/Sensors/InvestigateTargetSensor.cs
+      <Id>k__BackingField: c3d4e5f6-a7b8-9012-cdef-012345678901
+    - <Name>k__BackingField: PlayerTargetSensor
+      fullName: GOAPGettingStarted.Sensors.PlayerTargetSensor, Assembly-CSharp, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      <Path>k__BackingField: Assets/Scripts/AI/GOAP/Sensors/PlayerTargetSensor.cs
+      <Id>k__BackingField: d4e5f6a7-b8c9-0123-defa-234567890123
     - <Name>k__BackingField: WanderTargetSensor
       fullName: GOAPGettingStarted.Sensors.WanderTargetSensor, Assembly-CSharp, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
-      <Path>k__BackingField: Assets/Scripts/AI/GOAP/Sensors/WanderTargetSensor.cs
+      <Path>k__BackingField: Assets/Scripts/AI/GOAP/Sensors/Wandering/WanderTargetSensor.cs
       <Id>k__BackingField: 31e31669-cdfc-4c67-a721-9d935f55ad27
     targetKeys:
+    - <Name>k__BackingField: InvestigateTarget
+      fullName: GOAPGettingStarted.TargetKeys.InvestigateTarget, Assembly-CSharp,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      <Path>k__BackingField: Assets/Scripts/AI/GOAP/TargetKeys/InvestigateTarget.cs
+      <Id>k__BackingField: b2c3d4e5-f6a7-8901-bcde-f01234567890
+    - <Name>k__BackingField: PlayerTarget
+      fullName: GOAPGettingStarted.TargetKeys.PlayerTarget, Assembly-CSharp, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      <Path>k__BackingField: Assets/Scripts/AI/GOAP/TargetKeys/PlayerTarget.cs
+      <Id>k__BackingField: a2b3c4d5-e6f7-8901-bcde-f12345678901
     - <Name>k__BackingField: WanderTarget
       fullName: GOAPGettingStarted.WorldKeys.WanderTarget, Assembly-CSharp, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null

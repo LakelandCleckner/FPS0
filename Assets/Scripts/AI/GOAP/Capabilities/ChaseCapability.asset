@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 875fbfa2d1734285b353878b31467c98, type: 3}
+  m_Name: ChaseCapability
+  m_EditorClassIdentifier: 
+  goals:
+  - goal:
+      <Name>k__BackingField: ChaseGoal
+      <Id>k__BackingField: e5f6a7b8-c9d0-1234-efab-345678901234
+    baseCost: 1
+    conditions:
+    - worldKey:
+        <Name>k__BackingField: PlayerEngaged
+        <Id>k__BackingField: f7a8b9c0-d1e2-3456-abcd-567890123456
+      comparison: 3
+      amount: 1
+  actions:
+  - action:
+      <Name>k__BackingField: ChaseAction
+      <Id>k__BackingField: f6a7b8c9-d0e1-2345-fabc-456789012345
+    target:
+      <Name>k__BackingField: PlayerTarget
+      <Id>k__BackingField: a2b3c4d5-e6f7-8901-bcde-f12345678901
+    properties:
+      rid: 865908715123900516
+    baseCost: 1
+    stoppingDistance: 0.1
+    validateTarget: 0
+    requiresTarget: 1
+    validateConditions: 1
+    moveMode: 1
+    conditions:
+    - worldKey:
+        <Name>k__BackingField: PlayerVisible
+        <Id>k__BackingField: b1c2d3e4-f5a6-7890-abcd-ef1234567890
+      comparison: 3
+      amount: 1
+    effects:
+    - worldKey:
+        <Name>k__BackingField: PlayerEngaged
+        <Id>k__BackingField: f7a8b9c0-d1e2-3456-abcd-567890123456
+      effect: 1
+  worldSensors:
+  - sensor:
+      <Name>k__BackingField: PlayerVisibleSensor
+      <Id>k__BackingField: c3d4e5f6-a7b8-9012-cdef-123456789012
+    worldKey:
+      <Name>k__BackingField: PlayerVisible
+      <Id>k__BackingField: b1c2d3e4-f5a6-7890-abcd-ef1234567890
+  - sensor:
+      <Name>k__BackingField: PlayerEngagedSensor
+      <Id>k__BackingField: e8f9a0b1-c2d3-4567-bcde-678901234567
+    worldKey:
+      <Name>k__BackingField: PlayerEngaged
+      <Id>k__BackingField: f7a8b9c0-d1e2-3456-abcd-567890123456
+  targetSensors:
+  - sensor:
+      <Name>k__BackingField: PlayerTargetSensor
+      <Id>k__BackingField: d4e5f6a7-b8c9-0123-defa-234567890123
+    targetKey:
+      <Name>k__BackingField: PlayerTarget
+      <Id>k__BackingField: a2b3c4d5-e6f7-8901-bcde-f12345678901
+  multiSensors: []
+  generatorScriptable: {fileID: 11400000, guid: b5c0206815684504d9710e7d96d27ce4, type: 2}
+  references:
+    version: 2
+    RefIds:
+    - rid: 865908715123900516
+      type: {class: EmptyActionProperties, ns: CrashKonijn.Agent.Runtime, asm: CrashKonijn.Agent.Runtime}
+      data: 

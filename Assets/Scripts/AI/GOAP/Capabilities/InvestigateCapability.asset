@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 875fbfa2d1734285b353878b31467c98, type: 3}
+  m_Name: InvestigateCapability
+  m_EditorClassIdentifier: 
+  goals:
+  - goal:
+      <Name>k__BackingField: InvestigateGoal
+      <Id>k__BackingField: a1b2c3d4-e5f6-7890-abcd-ef0123456789
+    baseCost: 1
+    conditions:
+    - worldKey:
+        <Name>k__BackingField: LocationInvestigated
+        <Id>k__BackingField: d5e6f7a8-b9c0-1234-efab-678901234567
+      comparison: 3
+      amount: 1
+  actions:
+  - action:
+      <Name>k__BackingField: InvestigateAction
+      <Id>k__BackingField: d4e5f6a7-b8c9-0123-defa-012345678901
+    target:
+      <Name>k__BackingField: InvestigateTarget
+      <Id>k__BackingField: b2c3d4e5-f6a7-8901-bcde-f01234567890
+    properties:
+      rid: 865908826597490788
+    baseCost: 1
+    stoppingDistance: 0.1
+    validateTarget: 0
+    requiresTarget: 1
+    validateConditions: 1
+    moveMode: 1
+    conditions: []
+    effects:
+    - worldKey:
+        <Name>k__BackingField: LocationInvestigated
+        <Id>k__BackingField: d5e6f7a8-b9c0-1234-efab-678901234567
+      effect: 1
+  worldSensors:
+  - sensor:
+      <Name>k__BackingField: LocationInvestigatedSensor
+      <Id>k__BackingField: e6f7a8b9-c0d1-2345-fabc-789012345678
+    worldKey:
+      <Name>k__BackingField: LocationInvestigated
+      <Id>k__BackingField: d5e6f7a8-b9c0-1234-efab-678901234567
+  targetSensors:
+  - sensor:
+      <Name>k__BackingField: InvestigateTargetSensor
+      <Id>k__BackingField: c3d4e5f6-a7b8-9012-cdef-012345678901
+    targetKey:
+      <Name>k__BackingField: InvestigateTarget
+      <Id>k__BackingField: b2c3d4e5-f6a7-8901-bcde-f01234567890
+  multiSensors: []
+  generatorScriptable: {fileID: 11400000, guid: b5c0206815684504d9710e7d96d27ce4, type: 2}
+  references:
+    version: 2
+    RefIds:
+    - rid: 865908826597490788
+      type: {class: EmptyActionProperties, ns: CrashKonijn.Agent.Runtime, asm: CrashKonijn.Agent.Runtime}
+      data: 

@@ -1,5 +1,6 @@
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Agent.Runtime;
+using CrashKonijn.Goap.Runtime;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -30,8 +31,13 @@ namespace GOAPGettingStarted.Behaviours
         {
             agent.Events.OnTargetInRange += _ =>
             {
+                //Don't stop moving for TransformTargets - player will move 
+                if (currentTarget is TransformTarget)
+                    return;
+
                 shouldMove = false;
-                nav.ResetPath();
+                if (nav.isActiveAndEnabled && nav.isOnNavMesh)
+                    nav.ResetPath();
             };
 
             agent.Events.OnTargetChanged += (t, inRange) =>
@@ -45,7 +51,7 @@ namespace GOAPGettingStarted.Behaviours
             agent.Events.OnTargetNotInRange += _ =>
             {
                 shouldMove = true;
-                if (currentTarget != null)
+                if (currentTarget != null && nav.isActiveAndEnabled && nav.isOnNavMesh)
                     nav.SetDestination(currentTarget.Position);
             };
 
@@ -53,7 +59,8 @@ namespace GOAPGettingStarted.Behaviours
             {
                 currentTarget = null;
                 shouldMove = false;
-                nav.ResetPath();
+                if (nav.isActiveAndEnabled && nav.isOnNavMesh)
+                    nav.ResetPath();
             };
         }
 
@@ -62,6 +69,14 @@ namespace GOAPGettingStarted.Behaviours
             if (agent.IsPaused)
             {
                 nav.isStopped = true;
+                return;
+            }
+
+            // Continuously update destination for live targets like the player
+            if (shouldMove && currentTarget is TransformTarget && nav.isActiveAndEnabled && nav.isOnNavMesh)
+            {
+                nav.SetDestination(currentTarget.Position);
+                nav.isStopped = false;
                 return;
             }
 

@@ -34,7 +34,7 @@ namespace GOAPGettingStarted.Sensors
         {
             for (int i = 0; i < 5; i++)
             {
-                var randomCircle = Random.insideUnitCircle * 8f;
+                var randomCircle = Random.insideUnitCircle * 20f;
                 var candidate = origin + new Vector3(randomCircle.x, 0f, randomCircle.y);
 
                 if (NavMesh.SamplePosition(candidate, out var hit, 3f, NavMesh.AllAreas))

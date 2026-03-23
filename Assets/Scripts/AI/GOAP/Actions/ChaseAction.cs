@@ -5,34 +5,38 @@ using UnityEngine.AI;
 
 namespace GOAPGettingStarted.Actions
 {
-    [GoapId("2b98bd06-6921-455f-aaae-01cb5d1a5f5c")]
-    public class WanderAction : GoapActionBase<WanderAction.Data>
+    [GoapId("f6a7b8c9-d0e1-2345-fabc-456789012345")]
+    public class ChaseAction : GoapActionBase<ChaseAction.Data>
     {
-        public float MinDuration = 3f;
-        public float MaxDuration = 10f;
+        public float ChaseSpeed = 5f;
 
         public override void Start(IMonoAgent agent, Data data)
         {
-            data.Timer = Random.Range(MinDuration, MaxDuration);
+            var nav = agent.Transform.GetComponent<NavMeshAgent>();
+            if (nav != null)
+                nav.speed = ChaseSpeed;
         }
 
         public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
         {
-            data.Timer -= context.DeltaTime;
-            return data.Timer <= 0f ? ActionRunState.Completed : ActionRunState.ContinueOrResolve;
+            // ContinueOrResolve lets GOAP re-evaluate every frame so it
+            // immediately switches back to wander when player leaves FOV
+            return ActionRunState.ContinueOrResolve;
         }
 
         public override void Stop(IMonoAgent agent, Data data)
         {
             var nav = agent.Transform.GetComponent<NavMeshAgent>();
-            if (nav != null && nav.isActiveAndEnabled && nav.isOnNavMesh) 
+            if (nav != null && nav.isActiveAndEnabled && nav.isOnNavMesh)
+            {
+                nav.speed = 3.5f;
                 nav.ResetPath();
+            }
         }
 
         public class Data : IActionData
         {
             public ITarget Target { get; set; }
-            public float Timer { get; set; }
         }
     }
 }
