@@ -9,13 +9,13 @@ namespace GOAPGettingStarted.Behaviours
     [RequireComponent(typeof(NavMeshAgent))]
     public class AgentMoveBehaviour : MonoBehaviour
     {
-        public float MoveSpeed = 3.5f;
 
         // Must match the In Range value set on WanderAction in the capability asset
         public float StoppingDistance = 1.5f;
 
         private AgentBehaviour agent;
         private NavMeshAgent nav;
+        private AgentBrain brain;
         private ITarget currentTarget;
         private bool shouldMove;
 
@@ -23,7 +23,9 @@ namespace GOAPGettingStarted.Behaviours
         {
             agent = GetComponent<AgentBehaviour>();
             nav = GetComponent<NavMeshAgent>();
-            nav.speed = MoveSpeed;
+            brain = GetComponent<AgentBrain>();
+
+            nav.speed = brain.BaseMoveSpeed;
             nav.stoppingDistance = StoppingDistance;
         }
 

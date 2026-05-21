@@ -2,6 +2,7 @@ using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Goap.Runtime;
 using GOAPGettingStarted.Goals;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace GOAPGettingStarted.Behaviours
 {
@@ -10,10 +11,19 @@ namespace GOAPGettingStarted.Behaviours
     [RequireComponent(typeof(EnemyMemory))]
     public class AgentBrain : MonoBehaviour
     {
+        [Header("Detection")]
+        public float DetectionRange = 25f;
+        public float FieldOfViewAngle = 120f;
+
         [Header("Awareness")]
         public float BaseAwarenessDuration = 3f;
         public float ProximityAwarenessBonus = 4f;
         public float ProximityThreshold = 6f;
+
+        [Header("Movement")]
+        public float BaseMoveSpeed = 3.5f;
+        public float ChaseSpeedMultiplier = 1.6f;
+        public float InvestigateSpeedMultiplier = 1.3f;
 
         private AgentBehaviour agentBehaviour;
         private GoapActionProvider actionProvider;
@@ -22,9 +32,10 @@ namespace GOAPGettingStarted.Behaviours
         private enum AIState { Normal, Aware, Investigate }
         private AIState state = AIState.Normal;
 
-        private float awarenessTimer = 0f;
+        private float awarenessTimer;
         private Transform player;
-        private bool wasChasing = false;
+
+        private bool wasVisible;
 
         private void Awake()
         {
@@ -35,97 +46,158 @@ namespace GOAPGettingStarted.Behaviours
 
         private void Start()
         {
-            if (actionProvider.AgentType == null)
-            {
-                Debug.LogError("[AgentBrain] AgentType is null — check AgentTypeBehaviour Config and Runner are assigned.");
-                return;
-            }
-            if (actionProvider.Receiver == null)
-            {
-                Debug.LogError("[AgentBrain] Receiver is null — check AgentBehaviour has its Action Provider Base assigned.");
-                return;
-            }
-
             var playerObj = GameObject.FindWithTag("Player");
-            if (playerObj != null) player = playerObj.transform;
+            if (playerObj != null)
+                player = playerObj.transform;
 
-            // Let GOAP handle chase vs wander naturally via conditions
-            actionProvider.RequestGoal<ChaseGoal, WanderGoal>();
+            actionProvider.RequestGoal<WanderGoal>();
         }
 
         private void Update()
         {
+            if (actionProvider.AgentType == null || player == null)
+                return;
 
-            var goalName = actionProvider.CurrentPlan?.Goal?.GetType().Name ?? "None";
-            var actionName = agentBehaviour.CurrentAction?.GetType().Name ?? "None";
-            Debug.Log($"[AgentBrain] State={state} | Goal={goalName} | Action={actionName}");
+            bool visible = IsPlayerVisible();
 
-            if (actionProvider.AgentType == null) return;
-
-            var isChasing = actionProvider.CurrentPlan?.Goal is ChaseGoal;
+            bool justSeen = visible && !wasVisible;
+            bool justLost = !visible && wasVisible;
 
             switch (state)
             {
+                // NORMAL (wandering until player is seen)
                 case AIState.Normal:
-                    if (wasChasing && !isChasing)
+
+                    if (visible)
                     {
-                        // Just lost the chase — store last known position and enter aware
-                        if (player != null)
-                        {
-                            memory.LastKnownPlayerPosition = player.position;
-                            memory.HasLastKnownPosition = true;
-                        }
+                        actionProvider.RequestGoal<ChaseGoal>();
+                    }
+
+                    if (justLost)
+                    {
                         EnterAware();
                     }
+
                     break;
 
+                // AWARE (searching / suspicion timer)
                 case AIState.Aware:
-                    if (isChasing)
+
+                    if (visible)
                     {
-                        // Re-acquired player — back to normal
-                        state = AIState.Normal;
+                        EnterNormal();
+                        actionProvider.RequestGoal<ChaseGoal>();
                         break;
                     }
 
-                    float proximityBonus = 0f;
-                    if (player != null && Vector3.Distance(transform.position, player.position) <= ProximityThreshold)
-                        proximityBonus = ProximityAwarenessBonus;
+                    float bonus = 0f;
+
+                    if (Vector3.Distance(transform.position, player.position) <= ProximityThreshold)
+                        bonus = ProximityAwarenessBonus;
 
                     awarenessTimer -= Time.deltaTime;
-                    if (awarenessTimer - proximityBonus <= 0f)
+
+                    if (awarenessTimer - bonus <= 0f)
                         EnterInvestigate();
+
                     break;
 
+                // INVESTIGATE (go to last known position)
                 case AIState.Investigate:
-                    if (isChasing)
+
+                    if (visible)
                     {
-                        state = AIState.Normal;
-                        actionProvider.RequestGoal<ChaseGoal, WanderGoal>();
+                        EnterNormal();
+                        actionProvider.RequestGoal<ChaseGoal>();
                         break;
                     }
+
                     if (!memory.HasLastKnownPosition)
                     {
-                        state = AIState.Normal;
-                        actionProvider.RequestGoal<ChaseGoal, WanderGoal>();
+                        EnterNormal();
+                        actionProvider.RequestGoal<WanderGoal>();
                     }
+
                     break;
             }
 
-            wasChasing = isChasing;
+            wasVisible = visible;
+        }
+
+        // STATE TRANSITIONS
+        private void EnterNormal()
+        {
+            state = AIState.Normal;
+            awarenessTimer = 0f;
         }
 
         private void EnterAware()
         {
             state = AIState.Aware;
             awarenessTimer = BaseAwarenessDuration;
-            // Stay on current goals — GOAP will naturally pick WanderGoal since
-            // player is no longer visible, intercept before it settles
+
+            if (player != null)
+            {
+                var pos = player.position;
+
+                // Sample nearest NavMesh point within 5 units vertically
+                // This handles multi-floor levels correctly
+                if (NavMesh.SamplePosition(pos, out var hit, 5f, NavMesh.AllAreas))
+                {
+                    pos = hit.position;
+                }
+
+                else
+                {
+                    pos.y = transform.position.y; // fallback if no NavMesh found
+                }
+                    
+
+                memory.LastKnownPlayerPosition = pos;
+                memory.HasLastKnownPosition = true;
+            }
+            else
+            {
+                Debug.Log("[AgentBrain] EnterAware — player ref is null!");
+            }
+            
+            // Immediately start moving to last known position
+            actionProvider.RequestGoal<InvestigateGoal>();
         }
 
         private void EnterInvestigate()
         {
             state = AIState.Investigate;
+            Debug.Log($"[AgentBrain] EnterInvestigate — hasPos={memory.HasLastKnownPosition} pos={memory.LastKnownPlayerPosition}");
             actionProvider.RequestGoal<InvestigateGoal>();
+        }
+
+        // VISIBILITY CHECK
+        private bool IsPlayerVisible()
+        {
+            if (player == null) return false;
+
+            Vector3 origin = transform.position + Vector3.up * 1.5f;
+            Vector3 toPlayer = player.position - origin;
+
+            float distance = toPlayer.magnitude;
+
+            if (distance > DetectionRange)
+                return false;
+
+            if (Vector3.Angle(transform.forward, toPlayer) > FieldOfViewAngle * 0.5f)
+            {
+                //Debug.Log($"[FOV] angle={Vector3.Angle(transform.forward, toPlayer):F1} limit={FieldOfViewAngle * 0.5f}");
+                return false;
+            }
+
+            int mask = LayerMask.GetMask("Default", "Player");
+
+            if (Physics.Raycast(origin, toPlayer.normalized, out RaycastHit hit, distance, mask))
+                if (!hit.transform.CompareTag("Player"))
+                    return false;
+
+            return true;
         }
     }
 }

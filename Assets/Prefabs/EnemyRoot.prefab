@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 8464061932734186438}
   - component: {fileID: 149718689330863646}
   - component: {fileID: 8478488495213342464}
+  - component: {fileID: 2870863443277306071}
   m_Layer: 7
   m_Name: EnemyRoot
   m_TagString: Untagged
@@ -190,6 +191,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 007da879f49018c4893903ed130f8ab5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BaseAwarenessDuration: 3
+  ProximityAwarenessBonus: 4
+  ProximityThreshold: 6
 --- !u!114 &8478488495213342464
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -202,6 +206,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e42a8964c20105f4b84d94d828aaf7e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2870863443277306071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2780478270126569151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4af2c47e2bc8954eb785c3ea495e9fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DetectionRange: 25
+  FieldOfViewAngle: 120
+  RayCount: 30
+  IdleColor: {r: 1, g: 1, b: 0, a: 0.15}
+  AlertColor: {r: 1, g: 0, b: 0, a: 0.25}
 --- !u!1001 &2726232234564731754
 PrefabInstance:
   m_ObjectHideFlags: 0
