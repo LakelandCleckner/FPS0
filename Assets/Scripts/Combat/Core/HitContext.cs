@@ -1,0 +1,47 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace Combat.Core
+{
+    // WORKING SLICE version. Same carrier idea, plus the concrete hooks the slice
+    // needs to talk to your existing EnemyHealth/EnemyHitbox. Chain fields exist
+    // but are inert at depth 0.
+    public class HitContext
+    {
+        // who/what
+        public ITargetInfo Target;
+        public Vector3 HitPoint;
+        public int SourceFaction;
+        public DamageType DamageType = DamageType.Physical;
+
+        // per-hit info from the hitbox that was struck
+        public float HitboxMultiplier = 1f;     // headshot/crit multiplier
+        public BodyPart BodyPartHit = BodyPart.Torso;
+
+        // how to actually deal damage to the concrete target (set by delivery)
+        public System.Action<float> ApplyDamageToTarget;
+
+        // source snapshot (immutable)
+        public StatBlock Stats;
+
+        // effects
+        public List<IHitEffect> Effects;
+
+        // chain state (inert at depth 0 for the slice)
+        public int ChainDepth = 0;
+        public int MaxChainDepth = 0;
+        public float ChainFalloff = 1f;
+        public float ChainGrowth = 1f;
+        public HashSet<ITargetInfo> AlreadyHit = new HashSet<ITargetInfo>();
+        public HitDedupMode DedupMode = HitDedupMode.PerShot;
+
+        // mutable results (effects write, feedback reads)
+        public float DamageDealt;
+        public bool WasKill;
+        public bool WasHeadshot;
+
+        public bool CanPropagate => ChainDepth < MaxChainDepth;
+        public float ChainMultiplier =>
+            Mathf.Pow(ChainFalloff, ChainDepth) * Mathf.Pow(ChainGrowth, ChainDepth);
+    }
+}

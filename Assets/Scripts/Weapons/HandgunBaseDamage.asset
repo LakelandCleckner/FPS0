@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 510a4154b806be740829a23b7f537a75, type: 3}
+  m_Name: HandgunBaseDamage
+  m_EditorClassIdentifier: 
+  derivation: 1
+  coefficient: 1.1
+  damageType: 0
+  timing: 0
+  overrideChainFalloff: 0
+  affectedByChainFalloff: 1

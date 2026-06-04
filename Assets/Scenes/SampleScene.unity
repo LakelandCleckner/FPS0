@@ -2569,14 +2569,65 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gunFireClip: {fileID: 8300000, guid: a02ac01715490c646a720c0bcc70ec7a, type: 3}
   emptyGunClip: {fileID: 8300000, guid: 08eb29cab0988c349bc1c4de52aaf72c, type: 3}
-  hitmarkerClip: {fileID: 8300000, guid: 7d6f9e6454d5e774f8f596acb90c6d1e, type: 3}
-  killClip: {fileID: 8300000, guid: 4107abbdf23642e418bf3611e95c789b, type: 3}
   roundsPerMinute: 300
-  baseDamage: 20
-  range: 100
   handgun: {fileID: 1567209315}
   crosshair: {fileID: 1533581869}
+  fireStrategy: {fileID: 1567209330}
+  damageSource: {fileID: 1567209329}
+--- !u!114 &1567209326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1567209315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27c46d4a207d4a742ab354ef299d0b34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   hitmarkerUI: {fileID: 1169347220}
+  playerAudio: {fileID: 2020484245}
+  hitmarkerClip: {fileID: 8300000, guid: 7d6f9e6454d5e774f8f596acb90c6d1e, type: 3}
+  killClip: {fileID: 8300000, guid: 4107abbdf23642e418bf3611e95c789b, type: 3}
+--- !u!114 &1567209329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1567209315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ee1545b12ca72643be34c2f7732a298, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponDamage: 100
+  critDamage: 40
+  critChance: 0.1
+  globalDamageMultiplier: 1
+  effectDefinitions:
+  - {fileID: 11400000, guid: 8e60395d00a822342a4325cfe01f301d, type: 2}
+  faction: 0
+  baseDamageType: 0
+  maxChainDepth: 0
+  chainFalloff: 1
+  chainGrowth: 1
+  dedupMode: 0
+--- !u!114 &1567209330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1567209315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 034a959fece63184d9d5a02ab27a6731, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resolver: {fileID: 1567209326}
+  range: 100
 --- !u!1 &1591129865
 GameObject:
   m_ObjectHideFlags: 0
@@ -3285,6 +3336,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3210834218394489848, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1567209323}
+    - targetCorrespondingSourceObject: {fileID: 3210834218394489848, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1567209326}
+    - targetCorrespondingSourceObject: {fileID: 3210834218394489848, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1567209329}
+    - targetCorrespondingSourceObject: {fileID: 3210834218394489848, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1567209330}
   m_SourcePrefab: {fileID: 100100000, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
 --- !u!1001 &8718396258175804275
 PrefabInstance:

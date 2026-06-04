@@ -177,7 +177,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 908d8b3bf2c908442ab0aa443fdd51ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveSpeed: 3.5
   StoppingDistance: 1.5
 --- !u!114 &149718689330863646
 MonoBehaviour:
@@ -191,9 +190,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 007da879f49018c4893903ed130f8ab5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DetectionRange: 25
+  FieldOfViewAngle: 120
   BaseAwarenessDuration: 3
   ProximityAwarenessBonus: 4
   ProximityThreshold: 6
+  BaseMoveSpeed: 3.5
+  ChaseSpeedMultiplier: 1.6
+  InvestigateSpeedMultiplier: 1.3
 --- !u!114 &8478488495213342464
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -218,8 +222,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4af2c47e2bc8954eb785c3ea495e9fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DetectionRange: 25
-  FieldOfViewAngle: 120
   RayCount: 30
   IdleColor: {r: 1, g: 1, b: 0, a: 0.15}
   AlertColor: {r: 1, g: 0, b: 0, a: 0.25}
@@ -337,4 +339,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyHealth: {fileID: 7503194494376760278}
   bodyPart: 0
-  damageMultiplier: 1.3
+  damageMultiplier: 2

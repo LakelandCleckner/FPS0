@@ -60,7 +60,7 @@ namespace GOAPGettingStarted.Behaviours
 
             bool visible = IsPlayerVisible();
 
-            bool justSeen = visible && !wasVisible;
+            //bool justSeen = visible && !wasVisible;
             bool justLost = !visible && wasVisible;
 
             switch (state)

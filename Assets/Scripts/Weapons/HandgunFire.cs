@@ -1,47 +1,40 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Combat.Delivery;
+using Combat.Sources;
 
 public class HandgunFire : MonoBehaviour
 {
     [Header("Audio")]
     [SerializeField] AudioClip gunFireClip;
     [SerializeField] AudioClip emptyGunClip;
-    [SerializeField] AudioClip hitmarkerClip;
     private PlayerAudio playerAudio;
-
-    [Header("Kill Feedback")]
-    [SerializeField] private AudioClip killClip;
 
     [Header("Fire Settings")]
     [SerializeField] float roundsPerMinute = 300f;
     private float fireDelay;
     private float nextFireTime = 0f;
 
-    [Header("Weapon Stats")]
-    [SerializeField] float baseDamage = 20f;
-    [SerializeField] float range = 100f;
-
     [Header("References")]
     [SerializeField] GameObject handgun;
     [SerializeField] GameObject crosshair;
-    [SerializeField] private HitmarkerUI hitmarkerUI;
 
+    [Header("Combat System")]
+    [SerializeField] private HitscanStrategy fireStrategy;
+    [SerializeField] private WeaponDamageSource damageSource;
 
     void Start()
     {
-        fireDelay = 60f / roundsPerMinute; // calculate delay between shots
+        fireDelay = 60f / roundsPerMinute;
         playerAudio = GetComponentInParent<PlayerAudio>();
     }
 
     void Update()
     {
-        if (Mouse.current.leftButton.isPressed)
+        if (Mouse.current.leftButton.isPressed && Time.time >= nextFireTime)
         {
-            if (Time.time >= nextFireTime)
-            {
-                Shoot();
-                nextFireTime = Time.time + fireDelay; // schedule next shot
-            }
+            Shoot();
+            nextFireTime = Time.time + fireDelay;
         }
     }
 
@@ -55,11 +48,13 @@ public class HandgunFire : MonoBehaviour
 
         GlobalAmmo.handgunAmmoCount -= 1;
         playerAudio.Play3D(gunFireClip);
-        RaycastShoot();
+
+        // Delivery + source: strategy reads the source, resolver handles the rest
+        Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        fireStrategy.Fire(ray.origin, ray.direction, damageSource);
+
         handgun.GetComponent<Animator>().Play("HandgunFire");
         crosshair.GetComponent<Animator>().Play("HandgunFireCrosshair");
-
-        // reset to idle state after a short delay
         Invoke("ResetAnimations", 0.1f);
     }
 
@@ -67,51 +62,5 @@ public class HandgunFire : MonoBehaviour
     {
         handgun.GetComponent<Animator>().Play("New State");
         crosshair.GetComponent<Animator>().Play("New State");
-    }
-
-    void RaycastShoot()
-    {
-        Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
-        RaycastHit hit;
-
-        Debug.DrawRay(ray.origin, ray.direction * range, Color.red, 1f);
-
-        if (Physics.Raycast(ray, out hit, range))
-        {
-            EnemyHitbox hitbox = hit.collider.GetComponentInParent<EnemyHitbox>();
-           
-            if (hitbox != null)
-            {
-                float damage = baseDamage * hitbox.damageMultiplier;
-                hitbox.enemyHealth.TakeDamage(damage, hitbox.bodyPart);
-
-                bool isHeadshot = hitbox.bodyPart == BodyPart.Head;
-                bool isKill = hitbox.enemyHealth.CurrentHealth <= 0f;
-
-                //Hitmarker Sound
-                if (playerAudio != null && hitmarkerClip != null)
-                {
-                    float pitch = isHeadshot ? 1.25f : 1f;  // higher pitch for crits
-                    float volume = isHeadshot ? 1f : 0.5f;  // quieter normal hit
-                    playerAudio.Play2D(hitmarkerClip, volume, pitch);
-                }
-
-
-                //Hitmarker Visual
-                if (hitmarkerUI != null)
-                {
-                    Color color = isHeadshot ? Color.red : Color.white;
-                    if (isKill)
-                        color = Color.green;
-                    hitmarkerUI.ShowHitmarker(color);
-                }
-
-                //Kill Audio
-                if (isKill && killClip != null)
-                {
-                    playerAudio.Play2D(killClip);
-                }
-            }
-        }
     }
 }
