@@ -1,10 +1,8 @@
+using System.Linq;
 using UnityEngine;
-using Combat.Core;
 
 namespace Combat.Core
 {
-    // WORKING SLICE: guards + single damage effect + feedback.
-    // No chain/propagation yet — that's layered on once this vertical is proven.
     public class WeaponHitResolver : MonoBehaviour, IHitResolver
     {
         [SerializeField] private HitmarkerUI hitmarkerUI;
@@ -14,24 +12,23 @@ namespace Combat.Core
 
         public void ResolveHit(HitContext ctx)
         {
-            // ---- GUARDS ----
             if (ctx.Target == null) return;
             if (ctx.Target.IsDying) return;
 
-            // ---- EFFECTS ----
-            // For the slice the effect list runs in insertion order; phases come
-            // later. Each effect writes results into ctx.
-            foreach (var effect in ctx.Effects)
+            // PHASE SORTING: Modifier -> Application -> Reaction, regardless of
+            // the order effects sit in the source's list. Stable so same-phase
+            // effects keep their authored order.
+            var ordered = ctx.Effects.OrderBy(e => (int)e.Phase);
+
+            foreach (var effect in ordered)
                 effect.Apply(ctx, this);
 
-            // ---- FEEDBACK (always, reads results) ----
             if (ctx.DamageDealt > 0f)
                 ShowFeedback(ctx);
         }
 
         private void ShowFeedback(HitContext ctx)
         {
-            // Hitmarker color: white normal, red headshot, green kill
             if (hitmarkerUI != null)
             {
                 Color color = ctx.WasHeadshot ? Color.red : Color.white;
@@ -39,7 +36,6 @@ namespace Combat.Core
                 hitmarkerUI.ShowHitmarker(color, ctx.WasKill);
             }
 
-            // Hit audio
             if (playerAudio != null && hitmarkerClip != null)
             {
                 float pitch = ctx.WasHeadshot ? 1.25f : 1f;
@@ -47,7 +43,6 @@ namespace Combat.Core
                 playerAudio.Play2D(hitmarkerClip, volume, pitch);
             }
 
-            // Kill audio
             if (ctx.WasKill && playerAudio != null && killClip != null)
                 playerAudio.Play2D(killClip);
         }

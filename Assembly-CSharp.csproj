@@ -85,6 +85,8 @@
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\Wandering\IsWanderingSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\DamageEffectSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Sources\WeaponDamageSource.cs" />
+    <Compile Include="Assets\Scripts\Combat\Effects\DebugLogEffectSO.cs" />
+    <Compile Include="Assets\Scripts\Combat\Sources\IProjectileSource.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\PlayerVisibleSensor.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\Utilities\MobileDisableAutoSwitchControls.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Actions\ChaseAction.cs" />
@@ -92,10 +94,13 @@
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\Wandering\WanderTargetSensor.cs" />
     <Compile Include="Assets\StarterAssets\FirstPersonController\Scripts\FirstPersonController.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\LocationInvestigated.cs" />
+    <Compile Include="Assets\Scripts\Combat\Delivery\ProjectileStrategy.cs" />
+    <Compile Include="Assets\Scripts\Combat\Delivery\Projectile.cs" />
     <Compile Include="Assets\Scripts\Weapons\HandgunFire.cs" />
     <Compile Include="Assets\Scripts\Enemies\DamageAndHealth\EnemyHitbox.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualButton.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
+    <Compile Include="Assets\Scripts\Combat\Delivery\ProjectileConfig.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\PlayerEngagedSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Sources\IDamageSource.cs" />
     <Compile Include="Assets\StarterAssets\FirstPersonController\Scripts\BasicRigidBodyPush.cs" />
@@ -104,6 +109,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\PlayerEngaged.cs" />
     <Compile Include="Assets\Scripts\AudioScripts\Footsteps.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\CanvasInputs\UICanvasControllerInput.cs" />
+    <Compile Include="Assets\Scripts\Combat\Effects\DebugLogHitEffect.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\HitscanStrategy.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\DamageSpec.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Actions\WanderAction.cs" />

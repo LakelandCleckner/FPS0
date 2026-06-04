@@ -20,13 +20,20 @@ public class HandgunFire : MonoBehaviour
     [SerializeField] GameObject crosshair;
 
     [Header("Combat System")]
-    [SerializeField] private HitscanStrategy fireStrategy;
+    [Tooltip("Drag a component that implements IFireStrategy (HitscanStrategy or ProjectileStrategy).")]
+    [SerializeField] private MonoBehaviour fireStrategyBehaviour;
     [SerializeField] private WeaponDamageSource damageSource;
+
+    private IFireStrategy fireStrategy;
 
     void Start()
     {
         fireDelay = 60f / roundsPerMinute;
         playerAudio = GetComponentInParent<PlayerAudio>();
+
+        fireStrategy = fireStrategyBehaviour as IFireStrategy;
+        if (fireStrategy == null)
+            Debug.LogError("[HandgunFire] Assigned Fire Strategy doesn't implement IFireStrategy.");
     }
 
     void Update()
@@ -49,7 +56,6 @@ public class HandgunFire : MonoBehaviour
         GlobalAmmo.handgunAmmoCount -= 1;
         playerAudio.Play3D(gunFireClip);
 
-        // Delivery + source: strategy reads the source, resolver handles the rest
         Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
         fireStrategy.Fire(ray.origin, ray.direction, damageSource);
 
