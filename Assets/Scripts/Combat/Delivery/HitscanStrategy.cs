@@ -30,7 +30,9 @@ namespace Combat.Delivery
 
                 HitboxMultiplier = hitbox.damageMultiplier,
                 BodyPartHit = hitbox.bodyPart,
+
                 ApplyDamageToTarget = (dmg) => hitbox.enemyHealth.TakeDamage(dmg, hitbox.bodyPart),
+                ApplyStatusTickDamage = (dmg, type) => hitbox.enemyHealth.TakeDamage(dmg, hitbox.bodyPart, type),
 
                 Stats = source.GetStats(),
                 Effects = source.GetEffects(),

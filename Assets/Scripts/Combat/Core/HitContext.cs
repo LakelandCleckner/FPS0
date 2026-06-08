@@ -21,6 +21,10 @@ namespace Combat.Core
         // how to actually deal damage to the concrete target (set by delivery)
         public System.Action<float> ApplyDamageToTarget;
 
+        //version used by status ticks so resistance/type is respected:
+        public System.Action<float, DamageType> ApplyStatusTickDamage;
+
+
         // source snapshot (immutable)
         public StatBlock Stats;
 
