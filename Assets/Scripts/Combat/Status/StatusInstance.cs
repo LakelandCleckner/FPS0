@@ -4,29 +4,29 @@ using Combat.Core;
 
 namespace Combat.Status
 {
-    // Runtime state of one active status on one target. Plain C# object (no
-    // MonoBehaviour) for performance; structured so it can be pooled later
-    // without rearchitecting (Reset re-initializes all fields).
-    //
-    // Ticks on an interval measured in scaled time. Tick damage routes through
-    // the resolver so feedback fires and chains can trigger. Tick-on-apply is
-    // the default (fires one tick immediately when applied).
+    // Runtime state of one active status. Now routes each tick THROUGH the
+    // resolver (builds a HitContext with Source = StatusTick) so ticks get
+    // feedback and can trigger chains — instead of the old direct-damage
+    // callback. Per-tick context allocation accepted for now (option 1);
+    // isolated to BuildTickContext so it can be pooled/reused later if profiling
+    // ever flags it.
     public class StatusInstance
     {
         public ITargetInfo Target;
         public IHitResolver Resolver;
 
-        // snapshot taken at application time — ticks always use this, never live source
         public StatBlock Stats;
         public DamageSpec TickSpec;
-        public List<IHitEffect> CarriedEffects; // for future chain propagation
+        public List<IHitEffect> CarriedEffects;
         public int SourceFaction;
+        public DamageTypeSO TickType;
+
+        // how a tick deals damage to the concrete target (set by applier) —
+        // mirrors the direct-hit ApplyDamageToTarget so resistance/bodypart work
+        public System.Action<float> ApplyTickDamage;
 
         public float RemainingDuration;
         public float TickInterval;
-
-        // how this instance applies damage to its concrete target (set by applier)
-        public System.Action<float, DamageTypeSO> ApplyDamage;
 
         private float tickAccumulator;
         public bool Expired { get; private set; }
@@ -38,9 +38,10 @@ namespace Combat.Status
             DamageSpec tickSpec,
             List<IHitEffect> carriedEffects,
             int sourceFaction,
+            DamageTypeSO tickType,
             float duration,
             float tickInterval,
-            System.Action<float, DamageTypeSO> applyDamage)
+            System.Action<float> applyTickDamage)
         {
             Target = target;
             Resolver = resolver;
@@ -48,19 +49,17 @@ namespace Combat.Status
             TickSpec = tickSpec;
             CarriedEffects = carriedEffects;
             SourceFaction = sourceFaction;
+            TickType = tickType;
+            ApplyTickDamage = applyTickDamage;
             RemainingDuration = duration;
-            TickInterval = Mathf.Max(0.01f, tickInterval); // clamp (#8)
-            ApplyDamage = applyDamage;
+            TickInterval = Mathf.Max(0.01f, tickInterval);
 
             tickAccumulator = 0f;
             Expired = false;
 
-            // tick-on-apply default
-            DoTick();
+            DoTick(); // tick-on-apply
         }
 
-        // Called by the manager each frame with scaled delta. Returns true while
-        // still alive, false when expired (manager then removes it).
         public void Tick(float scaledDelta)
         {
             if (Expired) return;
@@ -68,8 +67,6 @@ namespace Combat.Status
             RemainingDuration -= scaledDelta;
             tickAccumulator += scaledDelta;
 
-            // fire as many interval ticks as accumulated this frame (handles
-            // low frame rates without losing ticks)
             while (tickAccumulator >= TickInterval && !Expired)
             {
                 tickAccumulator -= TickInterval;
@@ -78,27 +75,48 @@ namespace Combat.Status
 
             if (RemainingDuration <= 0f)
                 Expired = true;
-            // NOTE: no partial tick on expiry by design (#5)
         }
 
         private void DoTick()
         {
             if (Target == null || Target.IsDying) { Expired = true; return; }
 
-            float raw = TickSpec.ComputeRaw(Stats, Target);
-            // status ticks don't apply chain falloff here (depth 0 origin);
-            // resistance is applied at the target's damage chokepoint.
-            ApplyDamage?.Invoke(raw, TickSpec.Type);
+            // Route through the resolver so the tick gets feedback + can chain.
+            var ctx = BuildTickContext();
+            Resolver.ResolveHit(ctx);
         }
 
-        // For pooling later: wipe references so a reused instance holds no stale state.
+        // Isolated allocation point (option 1). Swap to a reused/pooled context
+        // here later if profiling shows GC pressure — nothing else changes.
+        private HitContext BuildTickContext()
+        {
+            return new HitContext
+            {
+                Target = Target,
+                Source = HitSource.StatusTick,
+                SourceFaction = SourceFaction,
+                DamageType = TickType,
+
+                // ticks have no body part / positional crit for now (inert hooks
+                // exist on the context for a later hitbox-inheritance feature)
+                HitboxMultiplier = 1f,
+
+                Stats = Stats,
+                // a tick's "effect" is just its own damage application; carried
+                // effects are for chain propagation later
+                Effects = new List<IHitEffect> { new StatusTickDamageEffect(TickSpec, ApplyTickDamage) },
+
+                MaxChainDepth = 0,
+                ChainFalloff = 1f,
+                ChainGrowth = 1f,
+                DedupMode = HitDedupMode.None
+            };
+        }
+
         public void Reset()
         {
-            Target = null;
-            Resolver = null;
-            CarriedEffects = null;
-            ApplyDamage = null;
-            Expired = true;
+            Target = null; Resolver = null; CarriedEffects = null;
+            ApplyTickDamage = null; TickType = null; Expired = true;
         }
     }
 }

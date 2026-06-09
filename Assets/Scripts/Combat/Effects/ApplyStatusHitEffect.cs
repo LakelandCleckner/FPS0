@@ -25,6 +25,13 @@ namespace Combat.Effects
             var receiver = (ctx.Target as MonoBehaviour)?.GetComponent<StatusReceiver>();
             if (receiver == null) return;
 
+            // The tick damage callback. We reuse the hit's ApplyStatusTickDamage
+            // path so the tick's type (statusDef.damageType) reaches TakeDamage
+            // and resistance applies. Captured here from the applying context.
+            var tickType = statusDef.damageType;
+            var applyTick = BuildTickCallback(ctx, tickType);
+
+
             var instance = new StatusInstance();
             instance.Init(
                 target:        ctx.Target,
@@ -33,13 +40,22 @@ namespace Combat.Effects
                 tickSpec:      statusDef.BuildTickSpec(),
                 carriedEffects: ctx.Effects,
                 sourceFaction: ctx.SourceFaction,
+                tickType:      tickType,
                 duration:      statusDef.duration,
                 tickInterval:  statusDef.tickInterval,
-                applyDamage:   ctx.ApplyDamageToTarget != null
-                    ? (dmg, type) => ctx.ApplyStatusTickDamage(dmg, type)
-                    : (System.Action<float, DamageTypeSO>)null);
+                applyTickDamage: applyTick);
 
             receiver.Apply(instance);
         }
+
+        // Builds a callback that applies typed damage to the same target the hit
+        // landed on. Uses the context's typed tick-damage hook if present.
+        private System.Action<float> BuildTickCallback(HitContext ctx, DamageTypeSO tickType)
+        {
+            if (ctx.ApplyStatusTickDamage != null)
+                return (dmg) => ctx.ApplyStatusTickDamage(dmg, tickType);
+            return null;
+        }
+
     }
 }

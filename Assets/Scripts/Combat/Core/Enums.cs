@@ -37,4 +37,10 @@ namespace Combat.Core
 
     // How same-frame multi-hits on one target collapse.
     public enum HitDedupMode { PerShot, PerProjectile, None }
+
+    // What kind of resolution produced this hit — lets feedback distinguish
+    // direct shots from passive status ticks and (later) chain links, and
+    // render/toggle each independently.
+    public enum HitSource { Direct, StatusTick, Chain }
+
 }

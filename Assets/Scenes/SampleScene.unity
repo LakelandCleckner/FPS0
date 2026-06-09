@@ -783,23 +783,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 46516e717e40ee943ba58c75c862219e, type: 3}
---- !u!1 &431702876 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2780478270126569151, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-  m_PrefabInstance: {fileID: 8718396258175804275}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &431702889
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 431702876}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 47bde1d4ca7078944a2f99b9d403ebb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &536751131
 GameObject:
   m_ObjectHideFlags: 0
@@ -2819,9 +2802,17 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2037568098402112136, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
-      propertyPath: 'effectDefinitions.Array.data[2]'
+      propertyPath: 'effectDefinitions.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 8e60395d00a822342a4325cfe01f301d, type: 2}
+    - target: {fileID: 2037568098402112136, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
+      propertyPath: 'effectDefinitions.Array.data[1]'
       value: 
       objectReference: {fileID: 11400000, guid: 3b922d529e0a65644b8e87b012100768, type: 2}
+    - target: {fileID: 2037568098402112136, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
+      propertyPath: 'effectDefinitions.Array.data[2]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 7876f6e7b2073c64eaa30f9c0cb49185, type: 2}
     - target: {fileID: 2037568098402112136, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
       propertyPath: projectileConfig.maxPierceCount
       value: 1
@@ -2895,21 +2886,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 149718689330863646, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: InvestigateSpeedMultiplier
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 2780478270126569151, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: m_Name
       value: EnemyRoot
-      objectReference: {fileID: 0}
-    - target: {fileID: 6153080590672177399, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: damageType
-      value: 
-      objectReference: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
-    - target: {fileID: 6153080590672177399, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: damageMultiplier
-      value: 1.1
       objectReference: {fileID: 0}
     - target: {fileID: 6554507270622062351, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: runner
@@ -2955,37 +2934,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7503194494376760278, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: resistances.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7503194494376760278, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: resistances.Array.data[0].type
-      value: 
-      objectReference: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
-    - target: {fileID: 7503194494376760278, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: resistances.Array.data[1].type
-      value: 
-      objectReference: {fileID: 11400000, guid: bb5cd7710169fec488edfdb57f9d8ade, type: 2}
-    - target: {fileID: 7503194494376760278, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: resistances.Array.data[0].multiplier
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7503194494376760278, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: resistances.Array.data[1].multiplier
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7654303295665472057, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: damageType
-      value: 
-      objectReference: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2780478270126569151, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 431702889}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

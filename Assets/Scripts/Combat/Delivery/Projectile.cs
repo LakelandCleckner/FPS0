@@ -113,6 +113,7 @@ namespace Combat.Delivery
             {
                 Target = target,
                 HitPoint = hit.point,
+                Source = HitSource.Direct,
                 SourceFaction = sourceFaction,
                 DamageType = damageType,
                 HitboxMultiplier = hitbox.damageMultiplier,

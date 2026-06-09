@@ -126,6 +126,7 @@
     <Compile Include="Assets\Scripts\Combat\Core\StatBlock.cs" />
     <Compile Include="Assets\Scripts\Weapons\PistolAmmoCollect.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\PlayerTargetSensor.cs" />
+    <Compile Include="Assets\Scripts\Combat\Status\StatusTickDamageEffect.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\InvestigateGoal.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\TargetKeys\PlayerTarget.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\ChaseGoal.cs" />

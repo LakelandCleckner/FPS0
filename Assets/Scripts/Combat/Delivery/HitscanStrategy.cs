@@ -25,6 +25,7 @@ namespace Combat.Delivery
             {
                 Target = target,
                 HitPoint = hit.point,
+                Source = HitSource.Direct,
                 SourceFaction = source.Faction,
                 DamageType = source.BaseDamageType,
 

@@ -43,7 +43,7 @@ public class EnemyHealth : MonoBehaviour, ITargetInfo
         currentHealth = Mathf.Clamp(currentHealth - resisted, 0f, maxHealth);
 
         string typeName = type != null ? type.displayName : "Untyped";
-        Debug.Log($"{gameObject.name} took {resisted:F1} {type} to {partHit} | HP: {currentHealth:F1}/{maxHealth:F1}");
+        Debug.Log($"{gameObject.name} took {resisted:F1} {typeName} damage to {partHit} | HP: {currentHealth:F1}/{maxHealth:F1}");
 
         if (currentHealth == 0f)
         {

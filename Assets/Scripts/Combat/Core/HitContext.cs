@@ -14,6 +14,11 @@ namespace Combat.Core
         public int SourceFaction;
         public DamageTypeSO DamageType;
 
+        // What kind of resolution this is. Set by whoever builds the context:
+        // delivery -> Direct, status tick -> StatusTick, chain -> Chain.
+        public HitSource Source = HitSource.Direct;
+
+
         // per-hit info from the hitbox that was struck
         public float HitboxMultiplier = 1f;     // headshot/crit multiplier
         public BodyPart BodyPartHit = BodyPart.Torso;
@@ -43,6 +48,7 @@ namespace Combat.Core
         public float DamageDealt;
         public bool WasKill;
         public bool WasHeadshot;
+        public bool WasCrit;   // inert for now; ready for crit-tick / crit feature later
 
         public bool CanPropagate => ChainDepth < MaxChainDepth;
         public float ChainMultiplier =>
