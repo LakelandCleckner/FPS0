@@ -14,7 +14,7 @@ namespace Combat.Delivery
         private StatBlock stats;
         private List<IHitEffect> effects;
         private int sourceFaction;
-        private DamageType damageType;
+        private DamageTypeSO damageType;
         private int maxChainDepth;
         private float chainFalloff;
         private float chainGrowth;
@@ -37,7 +37,7 @@ namespace Combat.Delivery
             StatBlock stats,
             List<IHitEffect> effects,
             int sourceFaction,
-            DamageType damageType,
+            DamageTypeSO damageType,
             int maxChainDepth,
             float chainFalloff,
             float chainGrowth,
@@ -118,7 +118,7 @@ namespace Combat.Delivery
                 HitboxMultiplier = hitbox.damageMultiplier,
                 BodyPartHit = hitbox.bodyPart,
 
-                ApplyDamageToTarget = (dmg) => hitbox.enemyHealth.TakeDamage(dmg, hitbox.bodyPart),
+                ApplyDamageToTarget = (dmg) => hitbox.enemyHealth.TakeDamage(dmg, hitbox.bodyPart, damageType),
                 ApplyStatusTickDamage = (dmg, type) => hitbox.enemyHealth.TakeDamage(dmg, hitbox.bodyPart, type),
 
                 Stats = stats,

@@ -26,7 +26,7 @@ namespace Combat.Effects
                 final *= ctx.ChainMultiplier;
 
             // deal it through your existing EnemyHealth.TakeDamage
-            ctx.ApplyDamageToTarget(final);
+            ctx.ApplyStatusTickDamage?.Invoke(final, spec.Type);
 
             // write results for feedback
             ctx.DamageDealt += final;

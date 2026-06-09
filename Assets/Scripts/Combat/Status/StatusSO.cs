@@ -11,7 +11,7 @@ namespace Combat.Status
         [Header("Tick Damage")]
         public DamageDerivation derivation = DamageDerivation.PercentOfWeapon;
         public float coefficient = 0.2f;
-        public DamageType damageType = DamageType.Fire;
+        public DamageTypeSO damageType;
 
         [Header("Timing")]
         public float duration = 3f;

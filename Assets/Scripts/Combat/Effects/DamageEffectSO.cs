@@ -11,7 +11,7 @@ namespace Combat.Effects
         [Header("Damage Derivation")]
         public DamageDerivation derivation = DamageDerivation.PercentOfWeapon;
         public float coefficient = 1f;
-        public DamageType damageType = DamageType.Physical;
+        public DamageTypeSO damageType;
         public DerivationTiming timing = DerivationTiming.SnapshotAtApply;
 
         [Header("Chain")]

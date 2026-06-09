@@ -73,12 +73,14 @@
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\EnemyMemory.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\ApplyStatusEffectSO.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualJoystick.cs" />
+    <Compile Include="Assets\Scripts\Combat\Core\DamageTypeRegistry.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\DamageHitEffect.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\Enums.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\WanderGoal.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\InvestigateTargetSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\IFireStrategy.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\AgentBrain.cs" />
+    <Compile Include="Assets\Scripts\Combat\Core\DamageTypeSO.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\TargetKeys\WanderTarget.cs" />
     <Compile Include="Assets\Scripts\Enemies\DamageAndHealth\BodyPart.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Actions\InvestigateAction.cs" />
@@ -103,6 +105,7 @@
     <Compile Include="Assets\Scripts\Combat\Delivery\Projectile.cs" />
     <Compile Include="Assets\Scripts\Weapons\HandgunFire.cs" />
     <Compile Include="Assets\Scripts\Enemies\DamageAndHealth\EnemyHitbox.cs" />
+    <Compile Include="Assets\Scripts\Combat\Core\EnemyHealth.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualButton.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\ProjectileConfig.cs" />
@@ -134,7 +137,6 @@
     <Compile Include="Assets\Scripts\AI\HelperScripts\Enemyfovvisualizer.cs" />
     <Compile Include="Assets\StarterAssets\InputSystem\StarterAssetsInputs.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\AgentMoveBehaviour.cs" />
-    <Compile Include="Assets\Scripts\Enemies\DamageAndHealth\EnemyHealth.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

@@ -11,9 +11,7 @@ namespace Combat.Core
         PercentOfTargetMissingHp  // % of target missing health   (target-anchored)
     }
 
-    // What kind of damage this is. Resistances and type-triggered upgrades
-    // (cold -> slow, fire -> burn) read this.
-    public enum DamageType { Physical, Fire, Cold, Shock, Poison }
+    
 
     // When a derived value is computed.
     public enum DerivationTiming

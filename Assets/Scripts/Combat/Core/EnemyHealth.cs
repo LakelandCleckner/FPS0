@@ -19,12 +19,12 @@ public class EnemyHealth : MonoBehaviour, ITargetInfo
     // return 0 for Fire; an armored unit <1 for Physical; etc. This is the
     // single chokepoint every damage path passes through.
     [System.Serializable]
-    public struct Resistance { public DamageType type; public float multiplier; }
+    public struct Resistance { public DamageTypeSO type; public float multiplier; }
     [SerializeField] private Resistance[] resistances;
 
-    public float GetResistanceMultiplier(DamageType type)
+    public float GetResistanceMultiplier(DamageTypeSO type)
     {
-        if (resistances != null)
+        if ( type!= null && resistances != null)
             foreach (var r in resistances)
                 if (r.type == type) return r.multiplier;
         return 1f;
@@ -34,13 +34,15 @@ public class EnemyHealth : MonoBehaviour, ITargetInfo
 
     // Damage entry with type, so resistance applies. The old (damage, BodyPart)
     // path forwards to this with the source's type.
-    public void TakeDamage(float damage, BodyPart partHit, DamageType type = DamageType.Physical)
+    public void TakeDamage(float damage, BodyPart partHit, DamageTypeSO type)
     {
         if (IsDying) return;
 
-        float resisted = damage * GetResistanceMultiplier(type);
+        float mult = type != null ? GetResistanceMultiplier(type) : 1f;
+        float resisted = damage * mult;
         currentHealth = Mathf.Clamp(currentHealth - resisted, 0f, maxHealth);
 
+        string typeName = type != null ? type.displayName : "Untyped";
         Debug.Log($"{gameObject.name} took {resisted:F1} {type} to {partHit} | HP: {currentHealth:F1}/{maxHealth:F1}");
 
         if (currentHealth == 0f)

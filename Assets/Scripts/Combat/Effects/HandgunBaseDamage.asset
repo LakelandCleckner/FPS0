@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   derivation: 1
   coefficient: 1.1
-  damageType: 0
+  damageType: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
   timing: 0
   overrideChainFalloff: 0
   affectedByChainFalloff: 1

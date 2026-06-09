@@ -12,7 +12,7 @@ namespace Combat.Core
         public ITargetInfo Target;
         public Vector3 HitPoint;
         public int SourceFaction;
-        public DamageType DamageType = DamageType.Physical;
+        public DamageTypeSO DamageType;
 
         // per-hit info from the hitbox that was struck
         public float HitboxMultiplier = 1f;     // headshot/crit multiplier
@@ -22,7 +22,7 @@ namespace Combat.Core
         public System.Action<float> ApplyDamageToTarget;
 
         //version used by status ticks so resistance/type is respected:
-        public System.Action<float, DamageType> ApplyStatusTickDamage;
+        public System.Action<float, DamageTypeSO> ApplyStatusTickDamage;
 
 
         // source snapshot (immutable)

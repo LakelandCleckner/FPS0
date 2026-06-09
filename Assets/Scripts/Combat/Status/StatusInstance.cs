@@ -26,7 +26,7 @@ namespace Combat.Status
         public float TickInterval;
 
         // how this instance applies damage to its concrete target (set by applier)
-        public System.Action<float, DamageType> ApplyDamage;
+        public System.Action<float, DamageTypeSO> ApplyDamage;
 
         private float tickAccumulator;
         public bool Expired { get; private set; }
@@ -40,7 +40,7 @@ namespace Combat.Status
             int sourceFaction,
             float duration,
             float tickInterval,
-            System.Action<float, DamageType> applyDamage)
+            System.Action<float, DamageTypeSO> applyDamage)
         {
             Target = target;
             Resolver = resolver;

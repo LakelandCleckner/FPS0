@@ -13,7 +13,7 @@ namespace Combat.Core
         // Resistance/weakness by damage type. 1.0 = neutral, <1 = resistant,
         // >1 = weak, 0 = immune. Applied at the damage chokepoint so EVERY
         // damage path (hits, ticks, chains) respects it automatically.
-        float GetResistanceMultiplier(DamageType type);
+        float GetResistanceMultiplier(DamageTypeSO type);
 
     }
 }

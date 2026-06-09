@@ -6,12 +6,12 @@ namespace Combat.Core
     {
         public readonly DamageDerivation Derivation;
         public readonly float Coefficient;   // 0.5 = 50% of whatever the derivation points at
-        public readonly DamageType Type;
+        public readonly DamageTypeSO Type;
         public readonly DerivationTiming Timing;
         public readonly bool AffectedByChainFalloffOverride;
         public readonly bool HasOverride;
 
-        public DamageSpec(DamageDerivation derivation, float coefficient, DamageType type,
+        public DamageSpec(DamageDerivation derivation, float coefficient, DamageTypeSO type,
                           DerivationTiming timing = DerivationTiming.SnapshotAtApply,
                           bool? affectedByChainFalloff = null)
         {

@@ -2803,6 +2803,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1567209331}
     - target: {fileID: 2037568098402112136, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
+      propertyPath: baseDamageType
+      value: 
+      objectReference: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
+    - target: {fileID: 2037568098402112136, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
       propertyPath: projectileConfig.speed
       value: 200
       objectReference: {fileID: 0}
@@ -2900,6 +2904,10 @@ PrefabInstance:
       value: EnemyRoot
       objectReference: {fileID: 0}
     - target: {fileID: 6153080590672177399, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: damageType
+      value: 
+      objectReference: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
+    - target: {fileID: 6153080590672177399, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: damageMultiplier
       value: 1.1
       objectReference: {fileID: 0}
@@ -2949,16 +2957,28 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7503194494376760278, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: resistances.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7503194494376760278, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: resistances.Array.data[0].type
-      value: 1
-      objectReference: {fileID: 0}
+      value: 
+      objectReference: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
+    - target: {fileID: 7503194494376760278, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: resistances.Array.data[1].type
+      value: 
+      objectReference: {fileID: 11400000, guid: bb5cd7710169fec488edfdb57f9d8ade, type: 2}
     - target: {fileID: 7503194494376760278, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: resistances.Array.data[0].multiplier
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 7503194494376760278, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: resistances.Array.data[1].multiplier
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7654303295665472057, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: damageType
+      value: 
+      objectReference: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

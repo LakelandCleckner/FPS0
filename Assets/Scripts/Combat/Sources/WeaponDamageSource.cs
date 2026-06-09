@@ -23,7 +23,7 @@ namespace Combat.Sources
 
         [Header("Identity")]
         [SerializeField] private int faction = 0;
-        [SerializeField] private DamageType baseDamageType = DamageType.Physical;
+        [SerializeField] private DamageTypeSO baseDamageType;
 
         [Header("Chain Config")]
         [SerializeField] private int maxChainDepth = 0;
@@ -51,7 +51,7 @@ namespace Combat.Sources
             new StatBlock(weaponDamage, critDamage, critChance, globalDamageMultiplier);
         public List<IHitEffect> GetEffects() => cachedEffects;
         public int Faction => faction;
-        public DamageType BaseDamageType => baseDamageType;
+        public DamageTypeSO BaseDamageType => baseDamageType;
         public int MaxChainDepth => maxChainDepth;
         public float ChainFalloff => chainFalloff;
         public float ChainGrowth => chainGrowth;

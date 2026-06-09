@@ -10,7 +10,7 @@ namespace Combat.Sources
         StatBlock GetStats();
         List<IHitEffect> GetEffects();
         int Faction { get; }
-        DamageType BaseDamageType { get; }
+        DamageTypeSO BaseDamageType { get; }
         int MaxChainDepth { get; }
         float ChainFalloff { get; }
         float ChainGrowth { get; }

@@ -37,7 +37,7 @@ namespace Combat.Effects
                 tickInterval:  statusDef.tickInterval,
                 applyDamage:   ctx.ApplyDamageToTarget != null
                     ? (dmg, type) => ctx.ApplyStatusTickDamage(dmg, type)
-                    : (System.Action<float, DamageType>)null);
+                    : (System.Action<float, DamageTypeSO>)null);
 
             receiver.Apply(instance);
         }
