@@ -1,3 +1,4 @@
+using Combat.Feedback;
 using System.Linq;
 using UnityEngine;
 
@@ -63,6 +64,20 @@ namespace Combat.Core
             // Kill feedback — now fires for DOT kills too, since ticks route here.
             if (ctx.WasKill && playerAudio != null && killClip != null)
                 playerAudio.Play2D(killClip);
+
+            // floating damage number
+            if (ctx.ShowFloatingNumber && DamageNumberPool.Instance != null && ctx.DamageDealt > 0f)
+            {
+                Vector3 pos = (ctx.Target as MonoBehaviour) != null
+                ? ((MonoBehaviour)ctx.Target).transform.position + Vector3.up * 2f
+                : ctx.HitPoint; 
+
+                Color color = ctx.DamageType != null ? ctx.DamageType.color : Color.white;
+                bool isCrit = ctx.WasHeadshot; // crit font driven by headshot for now
+
+                DamageNumberPool.Instance.Spawn(pos, ctx.DamageDealt, color, isCrit);
+            }
+
         }
 
     }

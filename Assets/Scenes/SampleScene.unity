@@ -1725,6 +1725,78 @@ MonoBehaviour:
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: c257b1d95b20be549a88754097a4e254, type: 2}
   m_BuildHeightMesh: 0
+--- !u!1 &1011692389
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1011692391}
+  - component: {fileID: 1011692390}
+  - component: {fileID: 1011692392}
+  m_Layer: 0
+  m_Name: DamageNumberPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1011692390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1011692389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 359e4057851ea344586c56e1d7775a01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numberPrefab: {fileID: 2466264021000554336, guid: 6438e50567a28854ab76315135ce477a, type: 3}
+  initialSize: 40
+  minLogDistance: -2
+  maxLogDistance: 2
+  minSize: 2.5
+  maxSize: 5
+  minLifetime: 0.6
+  maxLifetime: 2.5
+  baseRiseSpeed: 1.5
+  riseSlowdown: 0.6
+  horizontalDrift: 5
+  normalFont: {fileID: 11400000, guid: 50aa2ce3f6554a649a8b0f1191dda614, type: 2}
+  critFont: {fileID: 11400000, guid: 0a971acf164b6f6499f828c7d5e64f42, type: 2}
+--- !u!4 &1011692391
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1011692389}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 7.9097066, y: 14.068863, z: 43.64081}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1011692392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1011692389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29513c9256f4e98498b0bf9ba012e0a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  adaptSpeed: 5
+  initialReferenceDamage: 20
 --- !u!1 &1111732122
 GameObject:
   m_ObjectHideFlags: 0
@@ -2786,6 +2858,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1567209331}
     - target: {fileID: 2037568098402112136, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
+      propertyPath: weaponDamage
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2037568098402112136, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
       propertyPath: baseDamageType
       value: 
       objectReference: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
@@ -2890,6 +2966,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnemyRoot
       objectReference: {fileID: 0}
+    - target: {fileID: 3998239378526427580, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6554507270622062351, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: runner
       value: 
@@ -2934,6 +3014,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7503194494376760278, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: maxHealth
+      value: 1000
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2958,3 +3042,4 @@ SceneRoots:
   - {fileID: 1955905403}
   - {fileID: 1972222624}
   - {fileID: 1564625773}
+  - {fileID: 1011692391}

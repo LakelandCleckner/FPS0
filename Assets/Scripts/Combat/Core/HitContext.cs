@@ -53,5 +53,10 @@ namespace Combat.Core
         public bool CanPropagate => ChainDepth < MaxChainDepth;
         public float ChainMultiplier =>
             Mathf.Pow(ChainFalloff, ChainDepth) * Mathf.Pow(ChainGrowth, ChainDepth);
+
+        // presentation policy — does this resolution show a floating number?
+        // direct hits default true; statuses will author this in step 2.
+        public bool ShowFloatingNumber = true;
+
     }
 }
