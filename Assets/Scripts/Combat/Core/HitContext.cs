@@ -48,7 +48,9 @@ namespace Combat.Core
         public float DamageDealt;
         public bool WasKill;
         public bool WasHeadshot;
-        public bool WasCrit;   // inert for now; ready for crit-tick / crit feature later
+        public bool WasCrit;     // inert for now; ready for crit-tick / crit feature later
+        public bool WasDebuffed;// settable test variable for now; real "debuffed" trigger defined later
+
 
         public bool CanPropagate => ChainDepth < MaxChainDepth;
         public float ChainMultiplier =>

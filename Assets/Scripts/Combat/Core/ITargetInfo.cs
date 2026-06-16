@@ -10,10 +10,14 @@ namespace Combat.Core
         bool IsDying { get; }  // already-dead / despawning guard
         int Faction { get; }   // for can-damage checks
 
-        // Resistance/weakness by damage type. 1.0 = neutral, <1 = resistant,
-        // >1 = weak, 0 = immune. Applied at the damage chokepoint so EVERY
-        // damage path (hits, ticks, chains) respects it automatically.
-        float GetResistanceMultiplier(DamageTypeSO type);
+        // Single composed DEFENSIVE multiplier for an incoming hit.The target
+        // folds ALL of its own damage-reduction/amplification systems into one
+        // number here — type resistance now, body-part resistance and any future
+        // defensive layers later — so callers apply one multiplier and never need
+        // to know which defensive systems exist. 1 = neutral, <1 resist, >1 weak,
+        // 0 immune.
+        float GetDamageMultiplier(DamageTypeSO type, BodyPart bodyPart);
+
 
     }
 }

@@ -9,11 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b9e46ea5383849d418754e91729a8cdd, type: 3}
-  m_Name: BurnStatusTest
+  m_Script: {fileID: 11500000, guid: adacb0883fafabf4fbf3737f1bac74cd, type: 3}
+  m_Name: ApplyFireBurnStatus
   m_EditorClassIdentifier: 
-  derivation: 1
-  coefficient: 0.2
-  damageType: {fileID: 11400000, guid: bb5cd7710169fec488edfdb57f9d8ade, type: 2}
-  duration: 3
-  tickInterval: 0.5
+  status: {fileID: 11400000, guid: 2c3506ec21153694b9dc51e7df2a289d, type: 2}

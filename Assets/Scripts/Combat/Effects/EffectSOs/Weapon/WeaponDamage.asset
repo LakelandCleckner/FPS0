@@ -9,7 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: adacb0883fafabf4fbf3737f1bac74cd, type: 3}
-  m_Name: ApplyBurnStatusTest
+  m_Script: {fileID: 11500000, guid: 510a4154b806be740829a23b7f537a75, type: 3}
+  m_Name: WeaponDamage
   m_EditorClassIdentifier: 
-  status: {fileID: 11400000, guid: 2c3506ec21153694b9dc51e7df2a289d, type: 2}
+  derivation: 1
+  coefficient: 1
+  damageType: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
+  timing: 0
+  overrideChainFalloff: 0
+  affectedByChainFalloff: 1

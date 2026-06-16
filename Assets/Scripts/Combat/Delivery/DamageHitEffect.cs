@@ -3,7 +3,10 @@ using Combat.Core;
 namespace Combat.Effects
 {
     // WORKING SLICE: flat damage that respects the hitbox multiplier (crit/headshot)
-    // carried on the context. Writes results back for feedback to read.
+    // carried on the context, the target's composed defensive multiplier (type +
+    // body-part resistance + future layers), and chain scaling. Writes the FINAL
+    // post-everything value back so feedback (damage numbers) always matches what
+    // actually lands
     public class DamageHitEffect : IHitEffect
     {
         public EffectPhase Phase => EffectPhase.Application;
@@ -25,13 +28,17 @@ namespace Combat.Effects
             if (spec.AffectedByChainFalloff)
                 final *= ctx.ChainMultiplier;
 
-            // deal it through your existing EnemyHealth.TakeDamage
+            // DEFENSE: target composes all its resistance layers into one multiplier
+            final *= ctx.Target.GetDamageMultiplier(spec.Type, ctx.BodyPartHit);
+
+            // deal the final value; TakeDamage now just subtracts it
             ctx.ApplyStatusTickDamage?.Invoke(final, spec.Type);
 
-            // write results for feedback
+            // write results for feedback — DamageDealt == what actually landed
             ctx.DamageDealt += final;
             ctx.WasHeadshot = ctx.BodyPartHit == BodyPart.Head;
             ctx.WasKill = ctx.Target.CurrentHealth <= 0f;
+
         }
     }
 }

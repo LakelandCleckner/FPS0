@@ -5,8 +5,9 @@ namespace Combat.Feedback
 {
     // One floating damage number. Size, lifetime, and rise speed are all set at
     // spawn (locked, never resizes) so bigger hits are larger, linger longer,
-    // and hang near the enemy by rising slower. Pure presentation — holds no
-    // combat state.
+    // and hang near the enemy by rising slower. Font, style (bold/italic), and
+    // color gradient come from the damage type's 2x2 (crit x debuff) state.
+    // Pure presentation — holds no combat state.
     [RequireComponent(typeof(TextMeshPro))]
     public class DamageNumber : MonoBehaviour
     {
@@ -15,7 +16,7 @@ namespace Combat.Feedback
         private float lifetime;
         private float age;
         private Vector3 velocity;
-        private Color baseColor;
+        private float baseAlpha = 1f;
         private Camera cam;
 
         private void Awake()
@@ -28,24 +29,29 @@ namespace Combat.Feedback
             DamageNumberPool pool,
             Vector3 worldPos,
             string content,
-            Color color,
+            VertexGradient gradient,
+            TMP_FontAsset font,
+            FontStyles style,
             float lifetime,
             float riseSpeed,
             float horizontalDrift,
-            TMP_FontAsset font,
             float fontSize)
         {
             this.pool = pool;
             this.lifetime = Mathf.Max(0.05f, lifetime);
-            this.baseColor = color;
 
             age = 0f;
             transform.position = worldPos;
 
             text.text = content;
-            text.color = color;
             text.fontSize = fontSize;
             if (font != null) text.font = font;
+            text.fontStyle = style;
+
+            // color comes from the type's gradient for this crit/debuff state
+            text.enableVertexGradient = true;
+            text.colorGradient = gradient;
+            baseAlpha = 1f;
 
             // up + a random left/right drift so rapid numbers fan out
             float drift = Random.Range(-horizontalDrift, horizontalDrift);
@@ -67,11 +73,10 @@ namespace Combat.Feedback
             // move
             transform.position += velocity * Time.deltaTime;
 
-            // fade out over the back half of life
+            // fade out over the back half of life (overall alpha; gradient kept)
             float t = age / lifetime;
             float alpha = t < 0.5f ? 1f : Mathf.InverseLerp(1f, 0.5f, t);
-            var c = baseColor; c.a = alpha;
-            text.color = c;
+            text.alpha = alpha * baseAlpha;
 
             // billboard
             if (cam != null)

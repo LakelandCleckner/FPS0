@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: adacb0883fafabf4fbf3737f1bac74cd, type: 3}
-  m_Name: ApplyPoisonDOTTest
+  m_Name: ApplyPoisonBurnStatus
   m_EditorClassIdentifier: 
   status: {fileID: 11400000, guid: d796eba52a3c6c54d87d12cc358c04cb, type: 2}

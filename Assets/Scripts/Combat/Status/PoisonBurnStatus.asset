@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b9e46ea5383849d418754e91729a8cdd, type: 3}
-  m_Name: PoisonBurnStatusTest
+  m_Name: PoisonBurnStatus
   m_EditorClassIdentifier: 
   derivation: 1
   coefficient: 0.1

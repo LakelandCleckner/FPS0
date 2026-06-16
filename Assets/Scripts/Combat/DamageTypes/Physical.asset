@@ -14,5 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: physical
   displayName: Physical
-  color: {r: 1, g: 1, b: 1, a: 1}
   hitSound: {fileID: 0}
+  font: {fileID: 11400000, guid: 50aa2ce3f6554a649a8b0f1191dda614, type: 2}
+  normalGradient:
+    topLeft: {r: 1, g: 0.34528297, b: 0.34528297, a: 1}
+    topRight: {r: 1, g: 0.34528297, b: 0.34528297, a: 1}
+    bottomLeft: {r: 1, g: 0.34528297, b: 0.34528297, a: 1}
+    bottomRight: {r: 1, g: 0.34528297, b: 0.34528297, a: 1}
+  critGradient:
+    topLeft: {r: 1, g: 0, b: 0, a: 1}
+    topRight: {r: 1, g: 0, b: 0, a: 1}
+    bottomLeft: {r: 1, g: 0, b: 0, a: 1}
+    bottomRight: {r: 1, g: 0, b: 0, a: 1}
+  debuffedGradient:
+    topLeft: {r: 0.94716984, g: 0.7450985, b: 0, a: 1}
+    topRight: {r: 0.94716984, g: 0.7450985, b: 0, a: 1}
+    bottomLeft: {r: 0.94716984, g: 0.7450985, b: 0, a: 1}
+    bottomRight: {r: 0.94716984, g: 0.7450985, b: 0, a: 1}
+  critDebuffedGradient:
+    topLeft: {r: 1, g: 0, b: 0, a: 1}
+    topRight: {r: 1, g: 0, b: 0, a: 1}
+    bottomLeft: {r: 0.94716984, g: 0.7450985, b: 0, a: 1}
+    bottomRight: {r: 0.94716984, g: 0.7450985, b: 0, a: 1}

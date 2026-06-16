@@ -45,11 +45,11 @@ namespace Combat.Core
 
             if (showMarker && hitmarkerUI != null)
             {
-                // Color priority: kill > type color. (Headshot/crit can layer
-                // in later via WasHeadshot/WasCrit.)
-                Color color = ctx.DamageType != null ? ctx.DamageType.color : Color.white;
+                // Color priority: kill > type color (from the type's normal gradient).
+                Color color = ctx.DamageType != null
+                    ? ctx.DamageType.normalGradient.topLeft
+                    : Color.white;
                 if (ctx.WasKill) color = Color.green;
-
                 hitmarkerUI.ShowHitmarker(color, ctx.WasKill);
             }
 
@@ -72,10 +72,13 @@ namespace Combat.Core
                 ? ((MonoBehaviour)ctx.Target).transform.position + Vector3.up * 2f
                 : ctx.HitPoint; 
 
-                Color color = ctx.DamageType != null ? ctx.DamageType.color : Color.white;
-                bool isCrit = ctx.WasHeadshot; // crit font driven by headshot for now
 
-                DamageNumberPool.Instance.Spawn(pos, ctx.DamageDealt, color, isCrit);
+                DamageNumberPool.Instance.Spawn(
+                    pos,
+                    ctx.DamageDealt,
+                    ctx.DamageType,      // the DamageTypeSO itself
+                    ctx.WasHeadshot,     // isCrit (headshot for now)
+                    ctx.WasDebuffed);    // isDebuffed test flag
             }
 
         }

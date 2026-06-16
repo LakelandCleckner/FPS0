@@ -1766,8 +1766,7 @@ MonoBehaviour:
   baseRiseSpeed: 1.5
   riseSlowdown: 0.6
   horizontalDrift: 5
-  normalFont: {fileID: 11400000, guid: 50aa2ce3f6554a649a8b0f1191dda614, type: 2}
-  critFont: {fileID: 11400000, guid: 0a971acf164b6f6499f828c7d5e64f42, type: 2}
+  fallbackFont: {fileID: 11400000, guid: 50aa2ce3f6554a649a8b0f1191dda614, type: 2}
 --- !u!4 &1011692391
 Transform:
   m_ObjectHideFlags: 0
@@ -2875,7 +2874,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2037568098402112136, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
       propertyPath: effectDefinitions.Array.size
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2037568098402112136, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
       propertyPath: 'effectDefinitions.Array.data[0]'
@@ -3017,6 +3016,14 @@ PrefabInstance:
     - target: {fileID: 7503194494376760278, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: maxHealth
       value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 7503194494376760278, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: resistances.Array.data[0].multiplier
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7503194494376760278, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: resistances.Array.data[1].multiplier
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
