@@ -17,6 +17,13 @@ namespace Combat.Status
         public float duration = 3f;
         public float tickInterval = 0.5f;
 
+        [Header("Damage Number Presentation")]
+        [Tooltip("Spawn an individual floating number each tick.")]
+        public bool showFloatingNumber = true;
+        [Tooltip("Feed this effect's damage into a rolling accumulator number.")]
+        public bool feedsAccumulator = true;
+
+
         public DamageSpec BuildTickSpec()
         {
             return new DamageSpec(derivation, coefficient, damageType,

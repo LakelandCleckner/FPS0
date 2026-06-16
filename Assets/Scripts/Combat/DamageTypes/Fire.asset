@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: fire
   displayName: Fire
-  hitSound: {fileID: 0}
+  hitSound: {fileID: 8300000, guid: e4b9d600cf3cbb84dabb236890713850, type: 3}
   font: {fileID: 11400000, guid: 0a971acf164b6f6499f828c7d5e64f42, type: 2}
   normalGradient:
     topLeft: {r: 0.9882353, g: 0.5882353, b: 0.23137255, a: 1}

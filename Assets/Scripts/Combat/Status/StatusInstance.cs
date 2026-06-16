@@ -14,23 +14,21 @@ namespace Combat.Status
     {
         public ITargetInfo Target;
         public IHitResolver Resolver;
-
         public StatBlock Stats;
         public DamageSpec TickSpec;
         public List<IHitEffect> CarriedEffects;
         public int SourceFaction;
         public DamageTypeSO TickType;
-
+        // the status definition that produced this instance — used to key the
+        // damage accumulator and (later) the per-status tick sound
+        public StatusSO SourceStatusDef;
         // how a tick deals damage to the concrete target (set by applier) —
         // mirrors the direct-hit ApplyDamageToTarget so resistance/bodypart work
         public System.Action<float> ApplyTickDamage;
-
         public float RemainingDuration;
         public float TickInterval;
-
         private float tickAccumulator;
         public bool Expired { get; private set; }
-
         public void Init(
             ITargetInfo target,
             IHitResolver resolver,
@@ -39,6 +37,7 @@ namespace Combat.Status
             List<IHitEffect> carriedEffects,
             int sourceFaction,
             DamageTypeSO tickType,
+            StatusSO sourceStatusDef,
             float duration,
             float tickInterval,
             System.Action<float> applyTickDamage)
@@ -50,42 +49,34 @@ namespace Combat.Status
             CarriedEffects = carriedEffects;
             SourceFaction = sourceFaction;
             TickType = tickType;
+            SourceStatusDef = sourceStatusDef;
             ApplyTickDamage = applyTickDamage;
             RemainingDuration = duration;
             TickInterval = Mathf.Max(0.01f, tickInterval);
-
             tickAccumulator = 0f;
             Expired = false;
-
             DoTick(); // tick-on-apply
         }
-
         public void Tick(float scaledDelta)
         {
             if (Expired) return;
-
             RemainingDuration -= scaledDelta;
             tickAccumulator += scaledDelta;
-
             while (tickAccumulator >= TickInterval && !Expired)
             {
                 tickAccumulator -= TickInterval;
                 DoTick();
             }
-
             if (RemainingDuration <= 0f)
                 Expired = true;
         }
-
         private void DoTick()
         {
             if (Target == null || Target.IsDying) { Expired = true; return; }
-
             // Route through the resolver so the tick gets feedback + can chain.
             var ctx = BuildTickContext();
             Resolver.ResolveHit(ctx);
         }
-
         // Isolated allocation point (option 1). Swap to a reused/pooled context
         // here later if profiling shows GC pressure — nothing else changes.
         private HitContext BuildTickContext()
@@ -96,27 +87,28 @@ namespace Combat.Status
                 Source = HitSource.StatusTick,
                 SourceFaction = SourceFaction,
                 DamageType = TickType,
-
                 // ticks have no body part / positional crit for now (inert hooks
                 // exist on the context for a later hitbox-inheritance feature)
                 HitboxMultiplier = 1f,
-
+                // status identity + presentation flags for the damage-number
+                // system (floater vs rolling accumulator), carried from the def
+                SourceStatus = SourceStatusDef,
+                ShowFloatingNumber = SourceStatusDef != null ? SourceStatusDef.showFloatingNumber : true,
+                FeedsAccumulator = SourceStatusDef != null ? SourceStatusDef.feedsAccumulator : false,
                 Stats = Stats,
                 // a tick's "effect" is just its own damage application; carried
                 // effects are for chain propagation later
                 Effects = new List<IHitEffect> { new StatusTickDamageEffect(TickSpec, ApplyTickDamage) },
-
                 MaxChainDepth = 0,
                 ChainFalloff = 1f,
                 ChainGrowth = 1f,
                 DedupMode = HitDedupMode.None
             };
         }
-
         public void Reset()
         {
             Target = null; Resolver = null; CarriedEffects = null;
-            ApplyTickDamage = null; TickType = null; Expired = true;
+            ApplyTickDamage = null; TickType = null; SourceStatusDef = null; Expired = true;
         }
     }
 }

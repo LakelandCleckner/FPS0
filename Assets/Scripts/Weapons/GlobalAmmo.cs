@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class GlobalAmmo : MonoBehaviour
 {
-    public static int handgunAmmoCount = 10;
+    public static int handgunAmmoCount = 9999;
     [SerializeField] GameObject ammoDisplay;
 
 

@@ -2743,6 +2743,60 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 46516e717e40ee943ba58c75c862219e, type: 3}
+--- !u!1 &1911722830
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1911722832}
+  - component: {fileID: 1911722831}
+  m_Layer: 0
+  m_Name: DamageAccumulatorRegistry
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1911722831
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1911722830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c820b205b5b199459bc11c887fdd309, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 7065464729431281798, guid: bc89033c7328ccb49a0df6e12cfb5456, type: 3}
+  initialSize: 40
+  releaseWindow: 0.7
+  releaseFadeTime: 0.3
+  columnGap: 0.01
+  slideSpeed: 10
+  minLogDistance: -2
+  maxLogDistance: 2
+  minSize: 2
+  maxSize: 4
+--- !u!4 &1911722832
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1911722830}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 11.8727455, y: 14.178298, z: 45.519547}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1955905401
 GameObject:
   m_ObjectHideFlags: 0
@@ -3050,3 +3104,4 @@ SceneRoots:
   - {fileID: 1972222624}
   - {fileID: 1564625773}
   - {fileID: 1011692391}
+  - {fileID: 1911722832}

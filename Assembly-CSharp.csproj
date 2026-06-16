@@ -72,6 +72,7 @@
     <Compile Include="Assets\Objects\Enemies\Kevin Iglesias\Human Animations\Scripts\SpineProxy.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\PlayerVisible.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\EnemyMemory.cs" />
+    <Compile Include="Assets\Scripts\DamageNumbers\Accumulator\DamageAccumulatorRegistry.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\ApplyStatusEffectSO.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualJoystick.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\DamageTypeRegistry.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\ChaseGoal.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\HitContext.cs" />
+    <Compile Include="Assets\Scripts\DamageNumbers\Accumulator\AccumulatorNumber.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\GoapControllerMono.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\LocationInvestigatedSensor.cs" />
     <Compile Include="Assets\Scripts\Weapons\HitmarkerUI.cs" />

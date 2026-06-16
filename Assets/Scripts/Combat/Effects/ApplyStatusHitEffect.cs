@@ -41,6 +41,7 @@ namespace Combat.Effects
                 carriedEffects: ctx.Effects,
                 sourceFaction: ctx.SourceFaction,
                 tickType:      tickType,
+                sourceStatusDef: statusDef,
                 duration:      statusDef.duration,
                 tickInterval:  statusDef.tickInterval,
                 applyTickDamage: applyTick);

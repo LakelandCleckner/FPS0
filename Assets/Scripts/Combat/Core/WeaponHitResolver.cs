@@ -53,13 +53,22 @@ namespace Combat.Core
                 hitmarkerUI.ShowHitmarker(color, ctx.WasKill);
             }
 
-            if (playAudio && playerAudio != null && hitmarkerClip != null)
+            if (playAudio && playerAudio != null)
             {
-                // tick markers are subtler — quieter, no headshot pitch bump
-                float pitch = (!isTick && ctx.WasHeadshot) ? 1.25f : 1f;
-                float volume = isTick ? 0.25f : (ctx.WasHeadshot ? 1f : 0.5f);
-                playerAudio.Play2D(hitmarkerClip, volume, pitch);
+                // prefer the damage type's own hit sound; fall back to default clip
+                AudioClip clip = (ctx.DamageType != null && ctx.DamageType.hitSound != null)
+                    ? ctx.DamageType.hitSound
+                    : hitmarkerClip;
+
+                if (clip != null)
+                {
+                    // tick markers are subtler — quieter, no headshot pitch bump
+                    float pitch = (!isTick && ctx.WasHeadshot) ? 1.25f : 1f;
+                    float volume = isTick ? 0.25f : (ctx.WasHeadshot ? 1f : 0.5f);
+                    playerAudio.Play2D(clip, volume, pitch);
+                }
             }
+
 
             // Kill feedback — now fires for DOT kills too, since ticks route here.
             if (ctx.WasKill && playerAudio != null && killClip != null)
@@ -79,6 +88,21 @@ namespace Combat.Core
                     ctx.DamageType,      // the DamageTypeSO itself
                     ctx.WasHeadshot,     // isCrit (headshot for now)
                     ctx.WasDebuffed);    // isDebuffed test flag
+            }
+
+            // rolling accumulator (opt-in per effect)
+            if (ctx.FeedsAccumulator && ctx.SourceStatus != null
+                && DamageAccumulatorRegistry.Instance != null && ctx.DamageDealt > 0f)
+            {
+                Transform follow = (ctx.Target as MonoBehaviour)?.transform;
+                DamageAccumulatorRegistry.Instance.Report(
+                    ctx.Target,
+                    ctx.SourceStatus,
+                    follow,
+                    ctx.DamageDealt,
+                    ctx.DamageType,
+                    ctx.WasHeadshot,
+                    ctx.WasDebuffed);
             }
 
         }

@@ -33,6 +33,8 @@ namespace Combat.Core
         // source snapshot (immutable)
         public StatBlock Stats;
 
+
+
         // effects
         public List<IHitEffect> Effects;
 
@@ -56,9 +58,13 @@ namespace Combat.Core
         public float ChainMultiplier =>
             Mathf.Pow(ChainFalloff, ChainDepth) * Mathf.Pow(ChainGrowth, ChainDepth);
 
-        // presentation policy — does this resolution show a floating number?
-        // direct hits default true; statuses will author this in step 2.
-        public bool ShowFloatingNumber = true;
+        // which status produced this tick (null for direct hits). Used to key the
+        // accumulator, and later the per-status tick sound.
+        public Combat.Status.StatusSO SourceStatus;
+        // presentation flags carried from the status (defaults suit direct hits)
+        public bool ShowFloatingNumber = true;   // you may already have this
+        public bool FeedsAccumulator = false;    // direct hits don't accumulate
+
 
     }
 }

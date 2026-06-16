@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: poison
   displayName: Poison
-  hitSound: {fileID: 0}
+  hitSound: {fileID: 8300000, guid: 875bd7073367e0e479fe52992c1712ce, type: 3}
   font: {fileID: 11400000, guid: f748d9418595b544899bd0376a99a7eb, type: 2}
   normalGradient:
     topLeft: {r: 0.33866137, g: 0.5698112, b: 0.37408254, a: 1}

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: physical
   displayName: Physical
-  hitSound: {fileID: 0}
+  hitSound: {fileID: 8300000, guid: 6df85a6523bd5834283b398ed01f3cb1, type: 3}
   font: {fileID: 11400000, guid: 50aa2ce3f6554a649a8b0f1191dda614, type: 2}
   normalGradient:
     topLeft: {r: 1, g: 0.34528297, b: 0.34528297, a: 1}
