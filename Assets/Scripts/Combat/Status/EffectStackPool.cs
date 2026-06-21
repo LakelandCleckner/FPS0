@@ -10,9 +10,12 @@ namespace Combat.Status
     // entries' weights for its magnitude (so more applications = bigger tick on
     // the SAME cadence, not more frequent ticks — step 1 uses one shared timer).
     //
-    // STEP 1 SCOPE: applications add entries; tick sums entries; per-entry
-    // independent duration expiry; pool empties when no entries remain.
-    // (Cap/eviction = step 3, intensity/timer axes = steps 4-5, layered on later.)
+    // STEP 2 adds the DURATION AXIS (Status.durationMode):
+    //  - PerEntryIndependent: each entry expires on its own timer (default)
+    //  - RefreshAll: any new application resets ALL entries' timers
+    //  - ExtendShared: one shared pool timer applications extend (capped); the
+    //    whole pool expires at once
+    // (Cap/eviction = step 3, intensity/timer axes = steps 4-5.)
     public class EffectStackPool
     {
         public ITargetInfo Target { get; private set; }
@@ -29,8 +32,18 @@ namespace Combat.Status
         private float tickInterval;
         private float tickAccumulator;
 
+        // ExtendShared mode only: the single shared remaining timer
+        private float sharedTimer;
+
         public bool Empty => entries.Count == 0;
         public bool Expired { get; private set; }
+
+        // debug accessors (for an optional overlay)
+        public int EntryCount => entries.Count;
+        public float SummedWeight
+        {
+            get { float s = 0f; for (int i = 0; i < entries.Count; i++) s += entries[i].Weight; return s; }
+        }
 
         public void Init(
             ITargetInfo target,
@@ -49,6 +62,7 @@ namespace Combat.Status
 
             tickInterval = Mathf.Max(0.01f, status.tickInterval);
             tickAccumulator = 0f;
+            sharedTimer = 0f;
             Expired = false;
         }
 
@@ -64,12 +78,35 @@ namespace Combat.Status
             e.Set(weight, type, sourceFaction, chainDepth, Status.duration);
             entries.Add(e);
 
+            // DURATION AXIS — adjust timers based on the status's mode
+            switch (Status.durationMode)
+            {
+                case StatusDurationMode.PerEntryIndependent:
+                    // entry already carries its own Status.duration; nothing else
+                    break;
+
+                case StatusDurationMode.RefreshAll:
+                    // any new application resets ALL entries' timers (entries stay
+                    // individual so age-based eviction later still works)
+                    for (int i = 0; i < entries.Count; i++)
+                        entries[i].RemainingDuration = Status.duration;
+                    break;
+
+                case StatusDurationMode.ExtendShared:
+                    // one shared timer; applications extend it (by original
+                    // duration or a configured amount), clamped to the cap
+                    float add = Status.extendByOriginalDuration ? Status.duration : Status.extendAmount;
+                    sharedTimer += add;
+                    if (Status.extensionCap > 0f)
+                        sharedTimer = Mathf.Min(sharedTimer, Status.extensionCap);
+                    break;
+            }
+
             if (wasEmpty)
                 DoTick(); // tick-on-first-apply only
         }
 
         // Compute one application's tick weight from the snapshot spec + stats.
-        // (Exposed so the applier can snapshot at apply-time.)
         public float ComputeWeight()
         {
             return Status.BuildTickSpec().ComputeRaw(stats, Target);
@@ -79,15 +116,24 @@ namespace Combat.Status
         {
             if (Expired) return;
 
-            // age entries; drop expired ones (per-entry independent duration)
-            for (int i = entries.Count - 1; i >= 0; i--)
+            // DURATION AXIS — expiry handling differs by mode
+            if (Status.durationMode == StatusDurationMode.ExtendShared)
             {
-                entries[i].RemainingDuration -= scaledDelta;
-                if (entries[i].RemainingDuration <= 0f)
-                    entries.RemoveAt(i);
+                // single shared timer; whole pool expires at once
+                sharedTimer -= scaledDelta;
+                if (sharedTimer <= 0f) { Expired = true; return; }
             }
-
-            if (entries.Count == 0) { Expired = true; return; }
+            else
+            {
+                // PerEntryIndependent / RefreshAll: age each entry, drop expired
+                for (int i = entries.Count - 1; i >= 0; i--)
+                {
+                    entries[i].RemainingDuration -= scaledDelta;
+                    if (entries[i].RemainingDuration <= 0f)
+                        entries.RemoveAt(i);
+                }
+                if (entries.Count == 0) { Expired = true; return; }
+            }
 
             // shared-timer tick: fire on interval, dealing the SUMMED weight
             tickAccumulator += scaledDelta;
@@ -109,8 +155,7 @@ namespace Combat.Status
 
             if (summed <= 0f) return;
 
-            Debug.Log($"[StackPool] {Status.name} on {(Target as MonoBehaviour)?.name} | " +
-             $"entries: {entries.Count} | summed tick: {summed:F1}");
+            Debug.Log($"[StackPool] {Status.name} | entries: {entries.Count} | summed tick: {summed:F1} | mode: {Status.durationMode}");
 
             var ctx = BuildTickContext(summed);
             Resolver.ResolveHit(ctx);

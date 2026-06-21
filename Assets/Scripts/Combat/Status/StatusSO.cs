@@ -23,6 +23,23 @@ namespace Combat.Status
         [Tooltip("Feed this effect's damage into a rolling accumulator number.")]
         public bool feedsAccumulator = true;
 
+        
+
+        [Header("Duration Behaviour")]
+        [Tooltip("PerEntryIndependent: each application expires on its own timer.\n" +
+                 "RefreshAll: any new application resets ALL entries' timers.\n" +
+                 "ExtendShared: one shared pool timer that applications extend.")]
+        public StatusDurationMode durationMode = StatusDurationMode.PerEntryIndependent;
+
+        [Header("ExtendShared settings (only used in ExtendShared mode)")]
+        [Tooltip("If true, each application extends by the status's own 'duration'. " +
+                 "If false, extends by 'extendAmount'.")]
+        public bool extendByOriginalDuration = true;
+        [Tooltip("Extension per application when extendByOriginalDuration is false.")]
+        public float extendAmount = 1f;
+        [Tooltip("Max total remaining time the shared timer can hold (0 = uncapped).")]
+        public float extensionCap = 0f;
+
 
         public DamageSpec BuildTickSpec()
         {
@@ -30,4 +47,5 @@ namespace Combat.Status
                                   DerivationTiming.SnapshotAtApply);
         }
     }
+    public enum StatusDurationMode { PerEntryIndependent, RefreshAll, ExtendShared }
 }

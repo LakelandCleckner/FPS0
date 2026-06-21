@@ -17,3 +17,9 @@ MonoBehaviour:
   damageType: {fileID: 11400000, guid: bb5cd7710169fec488edfdb57f9d8ade, type: 2}
   duration: 3
   tickInterval: 0.5
+  showFloatingNumber: 1
+  feedsAccumulator: 1
+  durationMode: 2
+  extendByOriginalDuration: 1
+  extendAmount: 1
+  extensionCap: 6
