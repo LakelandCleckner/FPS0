@@ -9,7 +9,9 @@ namespace Combat.Status
     // Applies new entries (with dying-guard), registers pools with the manager,
     // and cleans up on death/disable.
     //
-    // STAGE 2: replaces the old flat List<StatusInstance> with pools.
+    // STAGE 2: pools instead of a flat instance list. Per-application WEIGHT is
+    // snapshotted here from the stats passed in at apply-time, so a mid-stack
+    // damage change is captured per entry.
     [RequireComponent(typeof(EnemyHealth))]
     public class StatusReceiver : MonoBehaviour
     {
@@ -24,8 +26,8 @@ namespace Combat.Status
             target = GetComponent<EnemyHealth>();
         }
 
-        // Apply one application of a status. Finds or creates the pool, adds an
-        // entry snapshotting the tick weight at this moment.
+        // Apply one application of a status. Finds or creates the pool, snapshots
+        // this application's weight from the CURRENT stats, adds the entry.
         public void Apply(
             StatusSO status,
             IHitResolver resolver,
@@ -45,8 +47,8 @@ namespace Combat.Status
                 StatusManager.Instance.Register(pool);
             }
 
-            // snapshot this application's weight from the pool's stats + spec
-            float weight = pool.ComputeWeight();
+            // snapshot THIS application's weight from the stats it arrived with
+            float weight = pool.ComputeWeight(stats);
             pool.AddEntry(weight, tickType, sourceFaction, chainDepth);
         }
 

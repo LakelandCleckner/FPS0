@@ -10,19 +10,19 @@ namespace Combat.Status
     // entries' weights for its magnitude (so more applications = bigger tick on
     // the SAME cadence, not more frequent ticks — step 1 uses one shared timer).
     //
-    // STEP 2 adds the DURATION AXIS (Status.durationMode):
-    //  - PerEntryIndependent: each entry expires on its own timer (default)
-    //  - RefreshAll: any new application resets ALL entries' timers
-    //  - ExtendShared: one shared pool timer applications extend (capped); the
-    //    whole pool expires at once
-    // (Cap/eviction = step 3, intensity/timer axes = steps 4-5.)
+    // STEP 2 added the DURATION AXIS (Status.durationMode).
+    // STEP 3 adds CAP + EVICTION (Status.maxEntries / evictionStrategy) and
+    // per-application WEIGHT SNAPSHOT (each entry captures the damage at the
+    // moment it was applied, so a mid-stack damage change is preserved per entry
+    // and lowest-weight eviction has real differences to act on).
+    //
+    // NOTE: contains [StackPool] Debug.Log lines for testing — strip for release.
     public class EffectStackPool
     {
         public ITargetInfo Target { get; private set; }
         public StatusSO Status { get; private set; }
         public IHitResolver Resolver { get; private set; }
 
-        // snapshot stats from the first application (ticks derive from this)
         private StatBlock stats;
         private System.Action<float> applyTickDamage;
         private DamageTypeSO tickType;
@@ -66,10 +66,11 @@ namespace Combat.Status
             Expired = false;
         }
 
-        // Add one application's entry. Step 1: snapshot the tick weight now from
-        // the status spec + stats, give it the status's duration. First entry into
-        // an empty pool ticks on apply; later entries just raise magnitude for the
-        // next scheduled tick (the conditional tick-on-apply rule).
+        // Add one application's entry. The WEIGHT is computed by the caller at
+        // apply-time (per-application snapshot) and passed in, so a mid-stack
+        // damage change is captured per entry. First entry into an empty pool
+        // ticks on apply; later entries just raise magnitude for the next
+        // scheduled tick (conditional tick-on-apply).
         public void AddEntry(float weight, DamageTypeSO type, int sourceFaction, int chainDepth)
         {
             bool wasEmpty = entries.Count == 0;
@@ -82,19 +83,14 @@ namespace Combat.Status
             switch (Status.durationMode)
             {
                 case StatusDurationMode.PerEntryIndependent:
-                    // entry already carries its own Status.duration; nothing else
                     break;
 
                 case StatusDurationMode.RefreshAll:
-                    // any new application resets ALL entries' timers (entries stay
-                    // individual so age-based eviction later still works)
                     for (int i = 0; i < entries.Count; i++)
                         entries[i].RemainingDuration = Status.duration;
                     break;
 
                 case StatusDurationMode.ExtendShared:
-                    // one shared timer; applications extend it (by original
-                    // duration or a configured amount), clamped to the cap
                     float add = Status.extendByOriginalDuration ? Status.duration : Status.extendAmount;
                     sharedTimer += add;
                     if (Status.extensionCap > 0f)
@@ -102,30 +98,62 @@ namespace Combat.Status
                     break;
             }
 
+            // CAP + EVICTION — if over the cap, evict one entry by the strategy.
+            // New entry added first, so it's a candidate to KEEP (but could be the
+            // one evicted if it's itself the weakest/shortest).
+            if (Status.maxEntries > 0 && entries.Count > Status.maxEntries)
+                EvictOne();
+
+            Debug.Log($"[StackPool] +entry {Status.name} | weight {weight:F1} | now {entries.Count}/{(Status.maxEntries > 0 ? Status.maxEntries.ToString() : "inf")}" + (wasEmpty ? " (first)" : ""));
+
             if (wasEmpty)
-                DoTick(); // tick-on-first-apply only
+                DoTick();
         }
 
-        // Compute one application's tick weight from the snapshot spec + stats.
-        public float ComputeWeight()
+        // Remove one entry per the configured strategy.
+        private void EvictOne()
         {
-            return Status.BuildTickSpec().ComputeRaw(stats, Target);
+            if (entries.Count == 0) return;
+
+            int idx = 0;
+            switch (Status.evictionStrategy)
+            {
+                case StatusEvictionStrategy.LowestWeight:
+                    for (int i = 1; i < entries.Count; i++)
+                        if (entries[i].Weight < entries[idx].Weight) idx = i;
+                    break;
+
+                case StatusEvictionStrategy.ShortestRemaining:
+                    // ExtendShared entries share one timer -> use insertion order
+                    if (Status.durationMode == StatusDurationMode.ExtendShared)
+                        idx = 0;
+                    else
+                        for (int i = 1; i < entries.Count; i++)
+                            if (entries[i].RemainingDuration < entries[idx].RemainingDuration) idx = i;
+                    break;
+            }
+
+            Debug.Log($"[StackPool] EVICT {Status.name} | strategy {Status.evictionStrategy} | removed weight {entries[idx].Weight:F1} (rem {entries[idx].RemainingDuration:F1})");
+            entries.RemoveAt(idx);
+        }
+
+        // Compute one application's tick weight from CURRENT stats + the spec.
+        public float ComputeWeight(StatBlock atApplyStats)
+        {
+            return Status.BuildTickSpec().ComputeRaw(atApplyStats, Target);
         }
 
         public void Tick(float scaledDelta)
         {
             if (Expired) return;
 
-            // DURATION AXIS — expiry handling differs by mode
             if (Status.durationMode == StatusDurationMode.ExtendShared)
             {
-                // single shared timer; whole pool expires at once
                 sharedTimer -= scaledDelta;
                 if (sharedTimer <= 0f) { Expired = true; return; }
             }
             else
             {
-                // PerEntryIndependent / RefreshAll: age each entry, drop expired
                 for (int i = entries.Count - 1; i >= 0; i--)
                 {
                     entries[i].RemainingDuration -= scaledDelta;
@@ -135,7 +163,6 @@ namespace Combat.Status
                 if (entries.Count == 0) { Expired = true; return; }
             }
 
-            // shared-timer tick: fire on interval, dealing the SUMMED weight
             tickAccumulator += scaledDelta;
             while (tickAccumulator >= tickInterval && !Expired)
             {
@@ -155,13 +182,12 @@ namespace Combat.Status
 
             if (summed <= 0f) return;
 
-            Debug.Log($"[StackPool] {Status.name} | entries: {entries.Count} | summed tick: {summed:F1} | mode: {Status.durationMode}");
+            Debug.Log($"[StackPool] TICK {Status.name} | entries: {entries.Count} | summed: {summed:F1} | mode: {Status.durationMode}");
 
             var ctx = BuildTickContext(summed);
             Resolver.ResolveHit(ctx);
         }
 
-        // Isolated allocation point (option 1) — poolable later if profiling flags it.
         private HitContext BuildTickContext(float summedWeight)
         {
             return new HitContext
@@ -174,8 +200,6 @@ namespace Combat.Status
                 ShowFloatingNumber = Status.showFloatingNumber,
                 FeedsAccumulator = Status.feedsAccumulator,
                 Stats = stats,
-                // the tick's damage is the pre-summed weight; a tiny effect applies
-                // exactly that (resistance still applied at the chokepoint inside)
                 Effects = new List<IHitEffect> { new StatusSummedTickEffect(summedWeight, tickType, applyTickDamage) },
                 MaxChainDepth = 0,
                 ChainFalloff = 1f,
