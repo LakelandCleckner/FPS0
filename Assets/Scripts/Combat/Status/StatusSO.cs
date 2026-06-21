@@ -10,6 +10,7 @@ namespace Combat.Status
     public enum StatusDurationMode { PerEntryIndependent, RefreshAll, ExtendShared }
     public enum StatusEvictionStrategy { LowestWeight, ShortestRemaining }
     public enum StatusIntensityMode { Magnitude, Rate, Both }
+    public enum StatusTickTimerMode { SharedPoolTimer, PerEntryTimer }
     public abstract class StatusSO : ScriptableObject
     {
         [Header("Tick Damage")]
@@ -51,6 +52,13 @@ namespace Combat.Status
             public float intervalReductionPerStack = 0f;
             [Tooltip("Rate/Both: tick interval can't go below this.")]
             public float minInterval = 0.1f;
+
+        [Header("Tick Timer")]
+            [Tooltip("SharedPoolTimer: one timer, entries scale magnitude/rate.\n" +
+             "PerEntryTimer: each entry ticks independently at the base interval " +
+             "(intensity axis ignored).")]
+            public StatusTickTimerMode tickTimerMode = StatusTickTimerMode.SharedPoolTimer;
+
 
         [Header("Damage Number Presentation")]
             [Tooltip("Spawn an individual floating number each tick.")]
