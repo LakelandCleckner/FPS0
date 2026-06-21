@@ -9,6 +9,7 @@ namespace Combat.Status
 
     public enum StatusDurationMode { PerEntryIndependent, RefreshAll, ExtendShared }
     public enum StatusEvictionStrategy { LowestWeight, ShortestRemaining }
+    public enum StatusIntensityMode { Magnitude, Rate, Both }
     public abstract class StatusSO : ScriptableObject
     {
         [Header("Tick Damage")]
@@ -29,8 +30,6 @@ namespace Combat.Status
                      "DOT isn't lost to cap pressure.")]
             public StatusEvictionStrategy evictionStrategy = StatusEvictionStrategy.LowestWeight;
 
-
-
         [Header("Duration Behaviour")]
             [Tooltip("PerEntryIndependent: each application expires on its own timer.\n" +
                      "RefreshAll: any new application resets ALL entries' timers.\n" +
@@ -45,7 +44,14 @@ namespace Combat.Status
             public float extendAmount = 1f;
             [Tooltip("Max total remaining time the shared timer can hold (0 = uncapped).")]
             public float extensionCap = 0f;
-        
+
+         [Header("Intensity (how stacks scale the DOT)")]
+            public StatusIntensityMode intensityMode = StatusIntensityMode.Magnitude;
+            [Tooltip("Rate/Both: seconds shaved off the tick interval per extra stack.")]
+            public float intervalReductionPerStack = 0f;
+            [Tooltip("Rate/Both: tick interval can't go below this.")]
+            public float minInterval = 0.1f;
+
         [Header("Damage Number Presentation")]
             [Tooltip("Spawn an individual floating number each tick.")]
             public bool showFloatingNumber = true;

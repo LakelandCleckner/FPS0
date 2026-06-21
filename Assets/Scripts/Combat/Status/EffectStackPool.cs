@@ -6,15 +6,16 @@ namespace Combat.Status
 {
     // The stack of one status on one target — the unit that ticks. Replaces
     // StatusInstance: owns the tick timer, the entry collection, the snapshot
-    // stats, and routes ticks through the resolver. A tick sums the current
-    // entries' weights for its magnitude (so more applications = bigger tick on
-    // the SAME cadence, not more frequent ticks — step 1 uses one shared timer).
+    // stats, and routes ticks through the resolver.
     //
-    // STEP 2 added the DURATION AXIS (Status.durationMode).
-    // STEP 3 adds CAP + EVICTION (Status.maxEntries / evictionStrategy) and
-    // per-application WEIGHT SNAPSHOT (each entry captures the damage at the
-    // moment it was applied, so a mid-stack damage change is preserved per entry
-    // and lowest-weight eviction has real differences to act on).
+    // STEP 2: duration axis (Status.durationMode).
+    // STEP 3: cap + eviction (maxEntries / evictionStrategy) + per-application
+    //         weight snapshot.
+    // STEP 4: intensity axis (Status.intensityMode):
+    //   Magnitude (default) -> tick sums entries, interval fixed
+    //   Rate                -> tick deals BASE weight, interval shrinks per stack
+    //   Both                -> sums entries AND interval shrinks per stack
+    // The effective tick interval is now COMPUTED from the entry count.
     //
     // NOTE: contains [StackPool] Debug.Log lines for testing — strip for release.
     public class EffectStackPool
@@ -29,7 +30,7 @@ namespace Combat.Status
 
         private readonly List<StackEntry> entries = new List<StackEntry>();
 
-        private float tickInterval;
+        private float baseTickInterval;
         private float tickAccumulator;
 
         // ExtendShared mode only: the single shared remaining timer
@@ -38,7 +39,6 @@ namespace Combat.Status
         public bool Empty => entries.Count == 0;
         public bool Expired { get; private set; }
 
-        // debug accessors (for an optional overlay)
         public int EntryCount => entries.Count;
         public float SummedWeight
         {
@@ -60,17 +60,12 @@ namespace Combat.Status
             this.tickType = tickType;
             this.applyTickDamage = applyTickDamage;
 
-            tickInterval = Mathf.Max(0.01f, status.tickInterval);
+            baseTickInterval = Mathf.Max(0.01f, status.tickInterval);
             tickAccumulator = 0f;
             sharedTimer = 0f;
             Expired = false;
         }
 
-        // Add one application's entry. The WEIGHT is computed by the caller at
-        // apply-time (per-application snapshot) and passed in, so a mid-stack
-        // damage change is captured per entry. First entry into an empty pool
-        // ticks on apply; later entries just raise magnitude for the next
-        // scheduled tick (conditional tick-on-apply).
         public void AddEntry(float weight, DamageTypeSO type, int sourceFaction, int chainDepth)
         {
             bool wasEmpty = entries.Count == 0;
@@ -79,17 +74,15 @@ namespace Combat.Status
             e.Set(weight, type, sourceFaction, chainDepth, Status.duration);
             entries.Add(e);
 
-            // DURATION AXIS — adjust timers based on the status's mode
+            // DURATION AXIS
             switch (Status.durationMode)
             {
                 case StatusDurationMode.PerEntryIndependent:
                     break;
-
                 case StatusDurationMode.RefreshAll:
                     for (int i = 0; i < entries.Count; i++)
                         entries[i].RemainingDuration = Status.duration;
                     break;
-
                 case StatusDurationMode.ExtendShared:
                     float add = Status.extendByOriginalDuration ? Status.duration : Status.extendAmount;
                     sharedTimer += add;
@@ -98,9 +91,7 @@ namespace Combat.Status
                     break;
             }
 
-            // CAP + EVICTION — if over the cap, evict one entry by the strategy.
-            // New entry added first, so it's a candidate to KEEP (but could be the
-            // one evicted if it's itself the weakest/shortest).
+            // CAP + EVICTION
             if (Status.maxEntries > 0 && entries.Count > Status.maxEntries)
                 EvictOne();
 
@@ -110,7 +101,6 @@ namespace Combat.Status
                 DoTick();
         }
 
-        // Remove one entry per the configured strategy.
         private void EvictOne()
         {
             if (entries.Count == 0) return;
@@ -122,9 +112,7 @@ namespace Combat.Status
                     for (int i = 1; i < entries.Count; i++)
                         if (entries[i].Weight < entries[idx].Weight) idx = i;
                     break;
-
                 case StatusEvictionStrategy.ShortestRemaining:
-                    // ExtendShared entries share one timer -> use insertion order
                     if (Status.durationMode == StatusDurationMode.ExtendShared)
                         idx = 0;
                     else
@@ -137,10 +125,35 @@ namespace Combat.Status
             entries.RemoveAt(idx);
         }
 
-        // Compute one application's tick weight from CURRENT stats + the spec.
         public float ComputeWeight(StatBlock atApplyStats)
         {
             return Status.BuildTickSpec().ComputeRaw(atApplyStats, Target);
+        }
+
+        // INTENSITY AXIS — effective interval computed from entry count.
+        private float CurrentInterval()
+        {
+            if (Status.intensityMode == StatusIntensityMode.Magnitude)
+                return baseTickInterval;
+
+            // Rate / Both: shave reductionPerStack off per extra stack, clamped
+            int extra = Mathf.Max(0, entries.Count - 1);
+            float reduced = baseTickInterval - Status.intervalReductionPerStack * extra;
+            return Mathf.Max(Status.minInterval, reduced);
+        }
+
+        // INTENSITY AXIS — tick magnitude depends on mode.
+        private float CurrentTickDamage()
+        {
+            if (Status.intensityMode == StatusIntensityMode.Rate)
+            {
+                // Rate: base single weight (not summed); newest entry's weight
+                return entries.Count > 0 ? entries[entries.Count - 1].Weight : 0f;
+            }
+            // Magnitude / Both: sum all entries
+            float s = 0f;
+            for (int i = 0; i < entries.Count; i++) s += entries[i].Weight;
+            return s;
         }
 
         public void Tick(float scaledDelta)
@@ -164,11 +177,13 @@ namespace Combat.Status
             }
 
             tickAccumulator += scaledDelta;
-            while (tickAccumulator >= tickInterval && !Expired)
+            float interval = CurrentInterval();
+            while (tickAccumulator >= interval && !Expired)
             {
-                tickAccumulator -= tickInterval;
+                tickAccumulator -= interval;
                 DoTick();
                 if (entries.Count == 0) { Expired = true; return; }
+                interval = CurrentInterval(); // recompute in case count changed
             }
         }
 
@@ -176,19 +191,16 @@ namespace Combat.Status
         {
             if (Target == null || Target.IsDying) { Expired = true; return; }
 
-            float summed = 0f;
-            for (int i = 0; i < entries.Count; i++)
-                summed += entries[i].Weight;
+            float damage = CurrentTickDamage();
+            if (damage <= 0f) return;
 
-            if (summed <= 0f) return;
+            Debug.Log($"[StackPool] TICK {Status.name} | entries: {entries.Count} | dmg: {damage:F1} | interval: {CurrentInterval():F2} | mode: {Status.intensityMode}/{Status.durationMode}");
 
-            Debug.Log($"[StackPool] TICK {Status.name} | entries: {entries.Count} | summed: {summed:F1} | mode: {Status.durationMode}");
-
-            var ctx = BuildTickContext(summed);
+            var ctx = BuildTickContext(damage);
             Resolver.ResolveHit(ctx);
         }
 
-        private HitContext BuildTickContext(float summedWeight)
+        private HitContext BuildTickContext(float tickDamage)
         {
             return new HitContext
             {
@@ -200,7 +212,7 @@ namespace Combat.Status
                 ShowFloatingNumber = Status.showFloatingNumber,
                 FeedsAccumulator = Status.feedsAccumulator,
                 Stats = stats,
-                Effects = new List<IHitEffect> { new StatusSummedTickEffect(summedWeight, tickType, applyTickDamage) },
+                Effects = new List<IHitEffect> { new StatusSummedTickEffect(tickDamage, tickType, applyTickDamage) },
                 MaxChainDepth = 0,
                 ChainFalloff = 1f,
                 ChainGrowth = 1f,
