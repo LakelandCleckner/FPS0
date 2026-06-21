@@ -1,20 +1,22 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Combat.Core;
 
 namespace Combat.Status
 {
-    // Central ticker for all active status instances across all targets.
-    // The ONLY thing that ticks statuses. Uses deferred add/remove queues so the
-    // tick loop never mutates its collection mid-iteration — which is what makes
-    // it safe when a tick kills a target (cleanup) or triggers a chain that
-    // applies new statuses (addition) DURING the loop. (#2/#3/#4)
+    // Central ticker for all active EffectStackPools across all targets. The ONLY
+    // thing that ticks statuses. Deferred add/remove queues keep the tick loop
+    // from mutating its collection mid-iteration — safe when a tick kills a target
+    // (cleanup) or a chain applies a status DURING the loop.
+    //
+    // STAGE 2: ticks pools (was StatusInstances).
     public class StatusManager : MonoBehaviour
     {
         public static StatusManager Instance { get; private set; }
 
-        private readonly List<StatusInstance> active = new List<StatusInstance>();
-        private readonly List<StatusInstance> toAdd = new List<StatusInstance>();
-        private readonly List<StatusInstance> toRemove = new List<StatusInstance>();
+        private readonly List<EffectStackPool> active = new List<EffectStackPool>();
+        private readonly List<EffectStackPool> toAdd = new List<EffectStackPool>();
+        private readonly List<EffectStackPool> toRemove = new List<EffectStackPool>();
 
         private bool ticking;
 
@@ -24,38 +26,39 @@ namespace Combat.Status
             Instance = this;
         }
 
-        public void Register(StatusInstance instance)
+        public void Register(EffectStackPool pool)
         {
-            // Deferred if we're mid-tick, immediate otherwise.
-            if (ticking) toAdd.Add(instance);
-            else active.Add(instance);
+            if (ticking) toAdd.Add(pool);
+            else active.Add(pool);
         }
 
-        public void Unregister(StatusInstance instance)
+        public void Unregister(EffectStackPool pool)
         {
-            if (ticking) toRemove.Add(instance);
-            else active.Remove(instance);
+            if (ticking) toRemove.Add(pool);
+            else active.Remove(pool);
         }
 
         private void Update()
         {
-            float dt = Time.deltaTime; // scaled time (#6) — respects slow-mo/pause
+            float dt = Time.deltaTime; // scaled — respects slow-mo/pause
 
             ticking = true;
             for (int i = 0; i < active.Count; i++)
             {
-                var inst = active[i];
-                inst.Tick(dt);
-                if (inst.Expired)
-                    toRemove.Add(inst);
+                var pool = active[i];
+                pool.Tick(dt);
+                if (pool.Expired)
+                {
+                    toRemove.Add(pool);
+                    // tell the receiver to drop its reference too
+                    (pool.Target as MonoBehaviour)?.GetComponent<StatusReceiver>()?.OnPoolExpired(pool);
+                }
             }
             ticking = false;
 
-            // process deferred mutations after the loop
             if (toRemove.Count > 0)
             {
-                foreach (var inst in toRemove)
-                    active.Remove(inst);
+                foreach (var p in toRemove) active.Remove(p);
                 toRemove.Clear();
             }
             if (toAdd.Count > 0)

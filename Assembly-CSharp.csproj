@@ -79,6 +79,7 @@
     <Compile Include="Assets\Scripts\Combat\Delivery\DamageHitEffect.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\Enums.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\WanderGoal.cs" />
+    <Compile Include="Assets\Scripts\Combat\Status\StackEntry.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\InvestigateTargetSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\IFireStrategy.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\AgentBrain.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="Assets\Scripts\Combat\Core\ITargetInfo.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\Wandering\IsWanderingSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\DamageEffectSO.cs" />
+    <Compile Include="Assets\Scripts\Combat\Status\StatusSummedTickEffect.cs" />
     <Compile Include="Assets\Scripts\Combat\Sources\WeaponDamageSource.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\DebugLogEffectSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Sources\IProjectileSource.cs" />
@@ -101,7 +103,6 @@
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\IsWandering.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\Wandering\WanderTargetSensor.cs" />
     <Compile Include="Assets\StarterAssets\FirstPersonController\Scripts\FirstPersonController.cs" />
-    <Compile Include="Assets\Scripts\Combat\Status\StatusInstance.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\ApplyStatusHitEffect.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\LocationInvestigated.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\ProjectileStrategy.cs" />
@@ -131,7 +132,6 @@
     <Compile Include="Assets\Scripts\Combat\Core\StatBlock.cs" />
     <Compile Include="Assets\Scripts\Weapons\PistolAmmoCollect.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\PlayerTargetSensor.cs" />
-    <Compile Include="Assets\Scripts\Combat\Status\StatusTickDamageEffect.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\InvestigateGoal.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\TargetKeys\PlayerTarget.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\ChaseGoal.cs" />
@@ -144,6 +144,7 @@
     <Compile Include="Assets\Scripts\AI\HelperScripts\Enemyfovvisualizer.cs" />
     <Compile Include="Assets\StarterAssets\InputSystem\StarterAssetsInputs.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\AgentMoveBehaviour.cs" />
+    <Compile Include="Assets\Scripts\Combat\Status\EffectStackPool.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

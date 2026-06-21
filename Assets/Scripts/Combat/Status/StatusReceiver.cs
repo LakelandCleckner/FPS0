@@ -4,41 +4,64 @@ using Combat.Core;
 
 namespace Combat.Status
 {
-    // Lives on each enemy/target. Owns that target's active status instances,
-    // applies new ones (with dying-guard), and CLEANS UP from the central
-    // manager on death — preventing orphaned ticks on a destroyed target (#2).
+    // Lives on each enemy/target. Owns that target's EffectStackPools, keyed by
+    // StatusSO so any source applying the same status stacks into one pool.
+    // Applies new entries (with dying-guard), registers pools with the manager,
+    // and cleans up on death/disable.
     //
-    // Stage 1: just holds + applies + cleans up. Stacking and category counters
-    // arrive in stage 2.
+    // STAGE 2: replaces the old flat List<StatusInstance> with pools.
     [RequireComponent(typeof(EnemyHealth))]
     public class StatusReceiver : MonoBehaviour
     {
         private ITargetInfo target;
-        private readonly List<StatusInstance> myStatuses = new List<StatusInstance>();
+
+        // one pool per status type on this target
+        private readonly Dictionary<StatusSO, EffectStackPool> pools
+            = new Dictionary<StatusSO, EffectStackPool>();
 
         private void Awake()
         {
             target = GetComponent<EnemyHealth>();
         }
 
-        public void Apply(StatusInstance instance)
+        // Apply one application of a status. Finds or creates the pool, adds an
+        // entry snapshotting the tick weight at this moment.
+        public void Apply(
+            StatusSO status,
+            IHitResolver resolver,
+            StatBlock stats,
+            DamageTypeSO tickType,
+            int sourceFaction,
+            int chainDepth,
+            System.Action<float> applyTickDamage)
         {
-            if (target == null || target.IsDying) return; // dying-guard (#1)
+            if (target == null || target.IsDying) return; // dying-guard
 
-            myStatuses.Add(instance);
-            StatusManager.Instance.Register(instance);
+            if (!pools.TryGetValue(status, out var pool))
+            {
+                pool = new EffectStackPool();
+                pool.Init(target, status, resolver, stats, tickType, applyTickDamage);
+                pools[status] = pool;
+                StatusManager.Instance.Register(pool);
+            }
+
+            // snapshot this application's weight from the pool's stats + spec
+            float weight = pool.ComputeWeight();
+            pool.AddEntry(weight, tickType, sourceFaction, chainDepth);
+        }
+
+        // Called by the manager when a pool expires, so the receiver drops it.
+        public void OnPoolExpired(EffectStackPool pool)
+        {
+            if (pool.Status != null) pools.Remove(pool.Status);
         }
 
         private void OnDisable()
         {
-            // Death/despawn cleanup — pull all our statuses out of the manager
-            // so it never ticks instances pointing at a gone target (#2).
             if (StatusManager.Instance == null) return;
-
-            foreach (var inst in myStatuses)
-                StatusManager.Instance.Unregister(inst);
-
-            myStatuses.Clear();
+            foreach (var kv in pools)
+                StatusManager.Instance.Unregister(kv.Value);
+            pools.Clear();
         }
     }
 }
