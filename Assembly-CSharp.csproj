@@ -66,6 +66,7 @@
     <Compile Include="Assets\Scripts\Weapons\GlobalAmmo.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\IHitEffect.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\playerInputs.cs" />
+    <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\HandgunFire.cs" />
     <Compile Include="Assets\Scripts\AudioScripts\PlayerAudio.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualTouchZone.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\WeaponHitResolver.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\WanderGoal.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StackEntry.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\InvestigateTargetSensor.cs" />
+    <Compile Include="Assets\Scripts\Combat\Weapons\Data\WeaponArchetypeSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\IFireStrategy.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\AgentBrain.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\DamageTypeSO.cs" />
@@ -107,7 +109,6 @@
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\LocationInvestigated.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\ProjectileStrategy.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\Projectile.cs" />
-    <Compile Include="Assets\Scripts\Weapons\HandgunFire.cs" />
     <Compile Include="Assets\Scripts\Enemies\DamageAndHealth\EnemyHitbox.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\DamageNumberFormatter.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\EnemyHealth.cs" />
@@ -137,11 +138,13 @@
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\ChaseGoal.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\HitContext.cs" />
+    <Compile Include="Assets\Scripts\Combat\Weapons\Data\WeaponSO.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\Accumulator\AccumulatorNumber.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\GoapControllerMono.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\LocationInvestigatedSensor.cs" />
     <Compile Include="Assets\Scripts\Weapons\HitmarkerUI.cs" />
     <Compile Include="Assets\Scripts\AI\HelperScripts\Enemyfovvisualizer.cs" />
+    <Compile Include="Assets\Scripts\Combat\Weapons\Data\WeaponTypeSO.cs" />
     <Compile Include="Assets\StarterAssets\InputSystem\StarterAssetsInputs.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\AgentMoveBehaviour.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\EffectStackPool.cs" />

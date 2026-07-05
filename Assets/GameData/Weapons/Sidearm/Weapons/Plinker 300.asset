@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c87bf3b35c07714b9aa7cdd526b8349, type: 3}
+  m_Name: Plinker 300
+  m_EditorClassIdentifier: 
+  archetype: {fileID: 11400000, guid: de9b59a6508a668419e93fdee45ddc0d, type: 2}
+  id: plinker_300
+  displayName: Plinker 300
+  baseDamageType: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
+  weaponDamageDelta: 0
+  critDamageDelta: 0
+  critChanceDelta: 0
+  globalDamageMultiplierDelta: 0
+  roundsPerMinuteDelta: 0
+  fireClip: {fileID: 8300000, guid: a02ac01715490c646a720c0bcc70ec7a, type: 3}
+  emptyClip: {fileID: 8300000, guid: 08eb29cab0988c349bc1c4de52aaf72c, type: 3}
+  riderEffects:
+  - {fileID: 11400000, guid: 3b922d529e0a65644b8e87b012100768, type: 2}
+  perkPool: []
+  faction: 0
+  maxChainDepth: 0
+  chainFalloff: 1
+  chainGrowth: 1
+  dedupMode: 0
