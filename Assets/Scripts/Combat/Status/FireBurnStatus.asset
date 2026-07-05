@@ -19,9 +19,13 @@ MonoBehaviour:
   tickInterval: 0.5
   maxEntries: 5
   evictionStrategy: 0
-  durationMode: 2
+  durationMode: 0
   extendByOriginalDuration: 1
   extendAmount: 1
   extensionCap: 6
+  intensityMode: 0
+  intervalReductionPerStack: 0
+  minInterval: 0.1
+  tickTimerMode: 0
   showFloatingNumber: 1
   feedsAccumulator: 1
