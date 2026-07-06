@@ -56,12 +56,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c8f2d3ec049d5e4eabcf6867f50d068, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 1000
   resistances:
   - type: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
-    multiplier: 0.5
+    multiplier: 1
   - type: {fileID: 11400000, guid: bb5cd7710169fec488edfdb57f9d8ade, type: 2}
-    multiplier: 0.5
+    multiplier: 1
+  bodyPartResistances: []
 --- !u!136 &7434240647481629374
 CapsuleCollider:
   m_ObjectHideFlags: 0

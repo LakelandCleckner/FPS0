@@ -20,5 +20,8 @@ MonoBehaviour:
   critChance: 0.1
   globalDamageMultiplier: 1
   roundsPerMinute: 300
-  primaryFireMode: {fileID: 11400000, guid: dcb38966c8efa4a4d9b34a88b3d3338c, type: 2}
+  magazineSize: 20
+  reloadTime: 1.5
+  infiniteReserves: 0
+  primaryFireMode: {fileID: 11400000, guid: d9b09738d496bff44808023208825c5a, type: 2}
   crosshairPrefab: {fileID: 6358792504129393579, guid: f65e2aca27d6353489d3b57cde01da47, type: 3}

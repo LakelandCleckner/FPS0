@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Combat.Weapons
 {
     // The frame STAT PROFILE within a type. Owns base numeric stats + crosshair +
-    // the PRIMARY FIRE MODE (behavior + delivery). Damage type is per-weapon.
+    // primary fire mode + ammo profile. Damage type is per-weapon.
     [CreateAssetMenu(fileName = "WeaponArchetype", menuName = "Combat/Weapons/Weapon Archetype")]
     public class WeaponArchetypeSO : ScriptableObject
     {
@@ -21,12 +21,18 @@ namespace Combat.Weapons
         [Tooltip("Fire rate — core to the frame identity.")]
         public float roundsPerMinute = 0f;
 
+        [Header("Ammo / Reload")]
+        [Tooltip("Rounds the magazine holds.")]
+        public float magazineSize = 10f;
+        [Tooltip("Seconds to reload.")]
+        public float reloadTime = 1.5f;
+        [Tooltip("If true, reserves never deplete (primaries). A weapon can override.")]
+        public bool infiniteReserves = false;
+
         [Header("Fire Mode (primary)")]
-        [Tooltip("The primary fire mode: firing behavior + delivery. Alt modes later.")]
         public FireModeSO primaryFireMode;
 
         [Header("Presentation")]
-        [Tooltip("Crosshair for this frame.")]
         public GameObject crosshairPrefab;
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Combat.Core;
@@ -6,37 +7,41 @@ using Combat.Sources;
 
 namespace Combat.Weapons
 {
-    // The weapon runtime coordinator (replaces HandgunFire). It's the ONLY thing
-    // that knows about both firing behavior and delivery — it wires them together
-    // and keeps them decoupled from each other:
+    // The weapon runtime coordinator. Wires the (decoupled) firing behavior and
+    // delivery together and drives ammo/reload. It EMITS EVENTS for what happened
+    // (fired, reload started) and knows NOTHING about animation/presentation — a
+    // separate WeaponAnimator (or any subscriber) reacts to these. This keeps the
+    // controller focused and lets each gun present differently without touching it.
     //
-    //   reads input -> builds a TriggerState -> ticks the fire behavior ->
-    //   behavior decides when to fire and invokes FireRequested ->
-    //   controller routes that to the delivery.
-    //
-    // Behavior + delivery are built ONCE from the fire-mode data (cached, reused),
-    // with scene refs injected into the delivery. No per-shot allocation.
+    // (These events are an early, local version of the weapon event surface in the
+    // combat design docs; they can migrate onto the event bus later.)
     public class WeaponFireController : MonoBehaviour
     {
         [Header("Weapon")]
         [SerializeField] private WeaponDamageSource damageSource;
+        [SerializeField] private WeaponAmmo ammo;
 
         [Header("Scene refs injected into delivery")]
         [SerializeField] private WeaponHitResolver resolver;
-        [SerializeField] private Transform muzzle;             // projectile spawn
-        [SerializeField] private Projectile projectilePrefab;  // projectile prefab
+        [SerializeField] private Transform muzzle;
+        [SerializeField] private Projectile projectilePrefab;
 
-        [Header("Audio / Animation")]
-        [SerializeField] private GameObject weaponModel;       // for fire anim
-        [SerializeField] private GameObject crosshair;         // for fire anim
+        [Header("Input")]
+        [SerializeField] private Key reloadKey = Key.R;
+
         private PlayerAudio playerAudio;
 
-        // built-once runtime pieces
+        // ---- Weapon events (subscribers: animator, future perks/event bus) ----
+        public event Action OnFired;          // a shot actually went off
+        public event Action OnReloadStarted;  // a reload actually began
+        public event Action OnDryFire;        // trigger pulled but no ammo
+
         private IFireBehavior behavior;
         private IDelivery delivery;
-
-        // trigger edge tracking
         private bool triggerHeldLast;
+
+        // expose stats for subscribers that need them (e.g. animation RPM scaling)
+        public WeaponDamageSource DamageSource => damageSource;
 
         private void Awake()
         {
@@ -48,8 +53,6 @@ namespace Combat.Weapons
             BuildFireMode();
         }
 
-        // Build behavior + delivery from the archetype's primary fire mode.
-        // Called once; call again if the fire mode changes (upgrade later).
         public void BuildFireMode()
         {
             var weapon = damageSource != null ? damageSource.Weapon : null;
@@ -62,11 +65,9 @@ namespace Combat.Weapons
                 return;
             }
 
-            // behavior (plain class), wired to route its fire signal to delivery
             behavior = mode.fireBehavior.CreateBehavior();
             behavior.FireRequested = HandleFireRequested;
 
-            // delivery (plain class) with scene refs injected
             var buildCtx = new DeliveryBuildContext(resolver, muzzle, projectilePrefab);
             delivery = mode.delivery.CreateDelivery(buildCtx);
         }
@@ -75,52 +76,51 @@ namespace Combat.Weapons
         {
             if (behavior == null) return;
 
-            // read input, build the input-agnostic trigger snapshot
+            // reload input — only fires the event if a reload actually STARTED
+            if (ammo != null && Keyboard.current != null && Keyboard.current[reloadKey].wasPressedThisFrame)
+            {
+                if (ammo.BeginReload())
+                {
+                    PlayReloadAudio();
+                    OnReloadStarted?.Invoke();
+                }
+            }
+
+            // trigger snapshot
             bool held = Mouse.current != null && Mouse.current.leftButton.isPressed;
             bool pressed = held && !triggerHeldLast;
             bool released = !held && triggerHeldLast;
             triggerHeldLast = held;
 
             var trigger = new TriggerState(held, pressed, released);
-
-            // tick the behavior with resolved stats (RPM etc.)
             var stats = damageSource.GetStats();
             behavior.Tick(Time.deltaTime, trigger, stats);
         }
 
-        // Called by the behavior when a shot should fire. Routes to delivery.
         private void HandleFireRequested()
         {
-            // ammo gate (still GlobalAmmo for now — reload system is 1c)
-            if (GlobalAmmo.handgunAmmoCount <= 0)
+            // ammo gate — consume a round (also cancels a reload in progress)
+            if (ammo != null && !ammo.TryConsume())
             {
                 var empty = damageSource.EmptyClip;
                 if (empty != null && playerAudio != null) playerAudio.Play3D(empty);
+                OnDryFire?.Invoke();
                 return;
             }
-            GlobalAmmo.handgunAmmoCount -= 1;
 
             var fire = damageSource.FireClip;
             if (fire != null && playerAudio != null) playerAudio.Play3D(fire);
 
-            // fire the delivery down the camera ray
             Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
             delivery.Fire(ray.origin, ray.direction, damageSource);
 
-            PlayFireAnims();
+            OnFired?.Invoke();
         }
 
-        private void PlayFireAnims()
+        private void PlayReloadAudio()
         {
-            if (weaponModel != null) weaponModel.GetComponent<Animator>()?.Play("HandgunFire");
-            if (crosshair != null) crosshair.GetComponent<Animator>()?.Play("HandgunFireCrosshair");
-            Invoke(nameof(ResetAnims), 0.1f);
-        }
-
-        private void ResetAnims()
-        {
-            if (weaponModel != null) weaponModel.GetComponent<Animator>()?.Play("New State");
-            if (crosshair != null) crosshair.GetComponent<Animator>()?.Play("New State");
+            var rc = damageSource.Weapon != null ? damageSource.Weapon.reloadClip : null;
+            if (rc != null && playerAudio != null) playerAudio.Play3D(rc);
         }
 
         private void OnDisable()
