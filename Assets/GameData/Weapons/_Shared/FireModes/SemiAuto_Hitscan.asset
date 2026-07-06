@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8216bb2f8761604bb34086043b20e88, type: 3}
+  m_Name: SemiAuto_Hitscan
+  m_EditorClassIdentifier: 
+  displayName: Semi Automatic Hitscan
+  fireBehavior: {fileID: 11400000, guid: e994552d4c33e474fbaf1138181dc5b5, type: 2}
+  delivery: {fileID: 11400000, guid: 1c41df3a0a8d49b4383250703fc259c2, type: 2}
