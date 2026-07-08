@@ -93,6 +93,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\TargetKeys\WanderTarget.cs" />
     <Compile Include="Assets\Scripts\Enemies\DamageAndHealth\BodyPart.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Actions\InvestigateAction.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Buckets\StatBucketSO.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\DamageNumberPool.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\HitscanDeliverySO.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\ITargetInfo.cs" />
@@ -119,6 +120,8 @@
     <Compile Include="Assets\Scripts\Enemies\DamageAndHealth\EnemyHitbox.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\DamageNumberFormatter.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\EnemyHealth.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Buckets\StatModifierValue.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Buckets\StatResolver.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualButton.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\IDelivery.cs" />
@@ -152,6 +155,7 @@
     <Compile Include="Assets\Scripts\Combat\Core\HitContext.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\IFireBehavior.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\WeaponSO.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Debug\StatResolveTest.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\Accumulator\AccumulatorNumber.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\GoapControllerMono.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\LocationInvestigatedSensor.cs" />

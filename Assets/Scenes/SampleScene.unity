@@ -850,6 +850,7 @@ GameObject:
   m_Component:
   - component: {fileID: 691975962}
   - component: {fileID: 691975961}
+  - component: {fileID: 691975963}
   m_Layer: 0
   m_Name: Stat Test Object
   m_TagString: Untagged
@@ -886,6 +887,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &691975963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 691975960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f71a2fe6ccf944741b05b8d403e07eba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponDamage: {fileID: 11400000, guid: 74e01aed325cce348acbd5d421549c4f, type: 2}
+  critDamage: {fileID: 11400000, guid: fc43bc424a3cd7241a8d86e29f7b33b5, type: 2}
 --- !u!1 &754033184
 GameObject:
   m_ObjectHideFlags: 0
