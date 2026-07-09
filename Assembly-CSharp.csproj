@@ -127,6 +127,7 @@
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualButton.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\IDelivery.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Debug\StatDerivationTest.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\ProjectileConfig.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\PlayerEngagedSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Sources\IDamageSource.cs" />

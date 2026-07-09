@@ -3,90 +3,81 @@ using UnityEngine;
 
 namespace Combat.Stats
 {
-    // Per-entity stat storage + resolution (GDD 14 §3, §7). Upgraded from 2a/2b:
-    //   - stores BASE values by index (2a)
-    //   - holds registered MODIFIERS per stat (2c)
-    //   - Resolve(stat) gathers a stat's modifiers and runs the bucket math (2b)
-    //   - caches resolved values with a per-stat VERSION stamp; add/remove bumps the
-    //     version and invalidates the cache; reads return cached until it changes
+    // Per-entity stat storage + resolution (GDD 14 §3, §6, §7). Phase 2d adds:
+    //   - DERIVED modifiers (value = coeff × resolved(sourceStat), optionally capped)
+    //   - lazy-recursive resolution with a CYCLE GUARD
+    //   - CROSS-STAT invalidation via version stamps: a cached value records the
+    //     versions of the source stats it depended on and invalidates if any moved
+    //     (local + lazy; no reverse-dependency graph)
     //
-    // Phase 2c: fixed-value modifiers, push registration by handle, cache/version.
-    // Derivation + cross-stat invalidation come in 2d.
+    // Derived modifiers may read stats in THIS container. (Cross-CONTAINER derivation
+    // — e.g. a stack reading its source's stats — is handled at the tick/consumer
+    // level in later phases; the container-local case is the engine core.)
     public class StatContainer
     {
-        // base storage (2a)
         private readonly float[] bases;
         private readonly bool[] hasBase;
-
-        // per-stat modifier lists (index -> its modifiers)
         private readonly List<StatModifier>[] modifiers;
-
-        // per-stat cache + version
-        private readonly float[] cachedValue;
-        private readonly int[] version;        // bumps on any change to this stat
-        private readonly int[] cachedVersion;  // version the cache was computed at
-        private readonly bool[] hasCache;
-
-        // scratch list reused during resolution (avoids per-resolve allocation)
-        private readonly List<StatModifierValue> scratch = new List<StatModifierValue>(16);
-
-        // custom bucket trees per stat (optional; null = default tree by mode)
         private readonly StatBucketSO[] customTree;
 
-        private static long nextHandleId = 1; // 0 reserved for "None"
+        // cache + version
+        private readonly float[] cachedValue;
+        private readonly int[] version;         // bumps on any direct change to this stat
+        private readonly int[] cachedVersion;   // this stat's own version at cache time
+        private readonly bool[] hasCache;
+
+        // cross-stat dependency tracking: for a cached stat, which source stats it
+        // read and their versions at cache time. If any moved, the cache is stale.
+        private readonly List<(int sourceIndex, int sourceVersion)>[] cacheDeps;
+
+        // cycle guard: stats currently mid-resolution
+        private readonly bool[] resolving;
+
+        private readonly List<StatModifierValue> scratch = new List<StatModifierValue>(16);
+        private static long nextHandleId = 1;
 
         public StatContainer()
         {
-            int n = StatRegistry.Count;
-            if (n <= 0)
-                Debug.LogWarning("[StatContainer] Created before StatRegistry initialized (Count=0). " +
-                                 "Ensure StatBootstrap runs first.");
-            n = Mathf.Max(0, n);
+            int n = Mathf.Max(0, StatRegistry.Count);
+            if (StatRegistry.Count <= 0)
+                Debug.LogWarning("[StatContainer] Created before StatRegistry initialized. Ensure StatBootstrap runs first.");
 
             bases = new float[n];
             hasBase = new bool[n];
             modifiers = new List<StatModifier>[n];
+            customTree = new StatBucketSO[n];
             cachedValue = new float[n];
             version = new int[n];
             cachedVersion = new int[n];
             hasCache = new bool[n];
-            customTree = new StatBucketSO[n];
+            cacheDeps = new List<(int, int)>[n];
+            resolving = new bool[n];
         }
 
-        // ---- base values (2a) ----
-
+        // ---- base ----
         public void SetBase(StatDefinitionSO stat, float value)
         {
             int i = Idx(stat); if (i < 0) return;
-            bases[i] = value; hasBase[i] = true;
-            Invalidate(i);
+            bases[i] = value; hasBase[i] = true; Invalidate(i);
         }
-
         public void ClearBase(StatDefinitionSO stat)
         {
             int i = Idx(stat); if (i < 0) return;
-            bases[i] = 0f; hasBase[i] = false;
-            Invalidate(i);
+            bases[i] = 0f; hasBase[i] = false; Invalidate(i);
         }
-
         public float GetBase(StatDefinitionSO stat)
         {
             int i = Idx(stat);
             if (i < 0) return stat != null ? stat.defaultValue : 0f;
             return hasBase[i] ? bases[i] : stat.defaultValue;
         }
-
-        // optional custom tree for a stat
         public void SetCustomTree(StatDefinitionSO stat, StatBucketSO tree)
         {
             int i = Idx(stat); if (i < 0) return;
-            customTree[i] = tree;
-            Invalidate(i);
+            customTree[i] = tree; Invalidate(i);
         }
 
-        // ---- modifiers (2c) ----
-
-        // Register a modifier; returns its handle (unique id + owner) for removal.
+        // ---- modifiers ----
         public ModifierHandle AddModifier(StatModifier mod, object owner = null)
         {
             if (mod == null || mod.TargetStat == null)
@@ -99,13 +90,11 @@ namespace Combat.Stats
 
             var handle = new ModifierHandle(nextHandleId++, owner);
             mod.Handle = handle;
-
             (modifiers[i] ??= new List<StatModifier>(4)).Add(mod);
             Invalidate(i);
             return handle;
         }
 
-        // Precise removal by handle. Idempotent (unknown handle = no-op).
         public bool RemoveModifier(ModifierHandle handle)
         {
             if (!handle.IsValid) return false;
@@ -114,20 +103,16 @@ namespace Combat.Stats
                 var list = modifiers[i];
                 if (list == null) continue;
                 for (int j = 0; j < list.Count; j++)
-                {
                     if (list[j].Handle.Id == handle.Id)
                     {
                         list.RemoveAt(j);
                         Invalidate(i);
                         return true;
                     }
-                }
             }
             return false;
         }
 
-        // Bulk removal: every modifier whose handle owner == owner (unequip a weapon,
-        // respec a tree). Null owner not bulk-removable (skipped).
         public int RemoveAllFromOwner(object owner)
         {
             if (owner == null) return 0;
@@ -138,38 +123,75 @@ namespace Combat.Stats
                 if (list == null) continue;
                 bool changed = false;
                 for (int j = list.Count - 1; j >= 0; j--)
-                {
                     if (ReferenceEquals(list[j].Handle.Owner, owner))
                     {
-                        list.RemoveAt(j);
-                        removed++;
-                        changed = true;
+                        list.RemoveAt(j); removed++; changed = true;
                     }
-                }
                 if (changed) Invalidate(i);
             }
             return removed;
         }
 
-        // ---- resolution + caching (2c) ----
-
-        // Resolve a stat's final value: base + its modifiers through the bucket math,
-        // cached until the stat's version changes.
+        // ---- resolution ----
         public float Resolve(StatDefinitionSO stat)
         {
             int i = Idx(stat);
             if (i < 0) return stat != null ? stat.defaultValue : 0f;
+            return ResolveIndex(i, stat);
+        }
 
-            // cache hit?
-            if (hasCache[i] && cachedVersion[i] == version[i])
+        private float ResolveIndex(int i, StatDefinitionSO stat)
+        {
+            // cycle guard: already resolving this stat -> break the loop
+            if (resolving[i])
+            {
+                Debug.LogWarning($"[StatContainer] Cycle detected resolving '{stat.id}'. " +
+                                 "A derived modifier forms a loop; contribution treated as 0.");
+                return hasBase[i] ? bases[i] : stat.defaultValue; // best-effort, no recurse
+            }
+
+            // cache valid? (own version unchanged AND all dependency versions unchanged)
+            if (hasCache[i] && cachedVersion[i] == version[i] && DepsStillValid(i))
                 return cachedValue[i];
 
-            // gather this stat's modifiers into the scratch value list
+            resolving[i] = true;
+
             scratch.Clear();
+            var deps = cacheDeps[i];
+            if (deps == null) { deps = new List<(int, int)>(); cacheDeps[i] = deps; }
+            deps.Clear();
+
             var list = modifiers[i];
             if (list != null)
+            {
                 for (int j = 0; j < list.Count; j++)
-                    scratch.Add(new StatModifierValue(list[j].BucketId, list[j].Value));
+                {
+                    var m = list[j];
+                    float val;
+                    if (!m.IsDerived)
+                    {
+                        val = m.Value;
+                    }
+                    else
+                    {
+                        // derived: coeff × resolved(sourceStat), optionally capped.
+                        int si = StatRegistry.IndexOf(m.SourceStat);
+                        if (si < 0)
+                        {
+                            val = 0f;
+                        }
+                        else
+                        {
+                            float sourceVal = ResolveIndex(si, m.SourceStat);
+                            val = m.Coefficient * sourceVal;
+                            if (m.UseCap && val > m.Cap) val = m.Cap;
+                            // record the dependency (source index + its version at read)
+                            deps.Add((si, version[si]));
+                        }
+                    }
+                    scratch.Add(new StatModifierValue(m.BucketId, val));
+                }
+            }
 
             float baseValue = hasBase[i] ? bases[i] : stat.defaultValue;
             float resolved = StatResolver.Resolve(stat, baseValue, scratch, customTree[i]);
@@ -177,14 +199,25 @@ namespace Combat.Stats
             cachedValue[i] = resolved;
             cachedVersion[i] = version[i];
             hasCache[i] = true;
+            resolving[i] = false;
             return resolved;
         }
 
-        // ---- internals ----
+        // Are all recorded dependency versions still current?
+        private bool DepsStillValid(int i)
+        {
+            var deps = cacheDeps[i];
+            if (deps == null || deps.Count == 0) return true;
+            for (int k = 0; k < deps.Count; k++)
+                if (version[deps[k].sourceIndex] != deps[k].sourceVersion)
+                    return false;
+            return true;
+        }
 
+        // ---- internals ----
         private void Invalidate(int i)
         {
-            version[i]++;      // bump so the cached value is considered stale
+            version[i]++;
             hasCache[i] = false;
         }
 
@@ -193,8 +226,7 @@ namespace Combat.Stats
             int i = StatRegistry.IndexOf(stat);
             if (i < 0)
             {
-                Debug.LogError($"[StatContainer] Stat '{(stat != null ? stat.name : "null")}' " +
-                               "has no runtime index (not registered / registry not initialized).");
+                Debug.LogError($"[StatContainer] Stat '{(stat != null ? stat.name : "null")}' has no runtime index.");
                 return -1;
             }
             if (i >= bases.Length)
