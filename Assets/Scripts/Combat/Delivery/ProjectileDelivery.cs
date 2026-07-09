@@ -14,6 +14,7 @@ namespace Combat.Delivery
         private readonly Transform muzzle;
         private readonly ProjectileConfig config;
 
+
         public ProjectileDelivery(WeaponHitResolver resolver, Projectile projectilePrefab,
                                   Transform muzzle, ProjectileConfig config)
         {
@@ -33,6 +34,7 @@ namespace Combat.Delivery
             projectile.Init(
                 resolver:       resolver,
                 stats:          source.GetStats(),
+                attackerStats:  source.AttackerStats,
                 effects:        source.GetEffects(),
                 sourceFaction:  source.Faction,
                 damageType:     source.BaseDamageType,

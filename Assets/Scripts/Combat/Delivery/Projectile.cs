@@ -1,20 +1,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Combat.Core;
+using Combat.Stats;
 
 namespace Combat.Delivery
 {
     // Raycast-per-frame kinematic projectile. Carries a SNAPSHOT of everything it
-    // needs at spawn (source stats, effects, faction, chain config, projectile
-    // config) so it never reaches back to a source that may have changed or been
-    // destroyed. Built by ProjectileDelivery.Fire via Init().
+    // needs at spawn so it never reaches back to a source that may have changed or
+    // been destroyed.
     //
-    // Phase 2f: the carried snapshot is now DamageStats (source-agnostic) instead
-    // of the retired StatBlock.
+    // Phase 2g: also carries the attacker's player-scope StatContainer (AttackerStats)
+    // as a live reference, stamped onto the hit context so the resolver can read
+    // crit/global at impact.
     public class Projectile : MonoBehaviour
     {
         private WeaponHitResolver resolver;
         private DamageStats stats;
+        private StatContainer attackerStats;      // player-scope stats (nullable)
         private List<IHitEffect> effects;
         private int sourceFaction;
         private DamageTypeSO damageType;
@@ -35,6 +37,7 @@ namespace Combat.Delivery
         public void Init(
             WeaponHitResolver resolver,
             DamageStats stats,
+            StatContainer attackerStats,
             List<IHitEffect> effects,
             int sourceFaction,
             DamageTypeSO damageType,
@@ -47,6 +50,7 @@ namespace Combat.Delivery
         {
             this.resolver = resolver;
             this.stats = stats;
+            this.attackerStats = attackerStats;
             this.effects = effects;
             this.sourceFaction = sourceFaction;
             this.damageType = damageType;
@@ -116,6 +120,7 @@ namespace Combat.Delivery
                 ApplyStatusTickDamage = (dmg, type) => hitbox.enemyHealth.TakeDamage(dmg, hitbox.bodyPart, type),
 
                 Stats = stats,
+                AttackerStats = attackerStats,
                 Effects = effects,
                 MaxChainDepth = maxChainDepth,
                 ChainFalloff = chainFalloff,

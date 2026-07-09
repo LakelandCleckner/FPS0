@@ -4,9 +4,9 @@ using Combat.Sources;
 
 namespace Combat.Delivery
 {
-    // Plain-class hitscan delivery (was HitscanStrategy MonoBehaviour). Built once
-    // by HitscanDeliverySO with the resolver injected. Logic unchanged from the
-    // original strategy — reads everything from the passed-in IDamageSource.
+    // Plain-class hitscan delivery. Built once by HitscanDeliverySO with the
+    // resolver injected. Phase 2g: stamps the attacker's player-scope stats onto
+    // the context (AttackerStats) so the resolver can read crit/global.
     public class HitscanDelivery : IDelivery
     {
         private readonly WeaponHitResolver resolver;
@@ -44,6 +44,7 @@ namespace Combat.Delivery
                 ApplyStatusTickDamage = (dmg, type) => hitbox.enemyHealth.TakeDamage(dmg, hitbox.bodyPart, type),
 
                 Stats = source.GetStats(),
+                AttackerStats = source.AttackerStats,
                 Effects = source.GetEffects(),
 
                 MaxChainDepth = source.MaxChainDepth,

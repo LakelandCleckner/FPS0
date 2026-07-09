@@ -221,6 +221,17 @@ namespace Combat.Stats
             hasCache[i] = false;
         }
 
+        // The current version of a stat (bumps on any base/modifier/tree change to it).
+        // Consumers cache a resolved value alongside the version it was built at, and
+        // recompute when the version moves. -1 if the stat isn't registered.
+        public int GetVersion(StatDefinitionSO stat)
+        {
+            int i = StatRegistry.IndexOf(stat);
+            if (i < 0 || i >= version.Length) return -1;
+            return version[i];
+        }
+
+
         private int Idx(StatDefinitionSO stat)
         {
             int i = StatRegistry.IndexOf(stat);

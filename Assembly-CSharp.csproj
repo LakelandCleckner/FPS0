@@ -104,6 +104,7 @@
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\ProjectileDeliverySO.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StatusSummedTickEffect.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\DebugLogEffectSO.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Runtime\CombatantStats.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StatusReceiver.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\PlayerVisibleSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StatusSO.cs" />
