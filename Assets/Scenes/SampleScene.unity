@@ -849,7 +849,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 691975962}
-  - component: {fileID: 691975961}
   - component: {fileID: 691975963}
   m_Layer: 0
   m_Name: Stat Test Object
@@ -858,20 +857,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &691975961
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 691975960}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed230f82dd6dfc94da4103ee4b5f4391, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  statA: {fileID: 11400000, guid: 2d453d23674d7e5419fdb375fc761414, type: 2}
-  statB: {fileID: 11400000, guid: fc43bc424a3cd7241a8d86e29f7b33b5, type: 2}
 --- !u!4 &691975962
 Transform:
   m_ObjectHideFlags: 0
@@ -896,7 +881,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 691975960}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f71a2fe6ccf944741b05b8d403e07eba, type: 3}
+  m_Script: {fileID: 11500000, guid: 1e520d9cbcdda014da1ecccd9f4b9777, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   weaponDamage: {fileID: 11400000, guid: 74e01aed325cce348acbd5d421549c4f, type: 2}
@@ -2648,6 +2633,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6612740343518719550, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7503194494376760278, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: bodyPartResistances.Array.size
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

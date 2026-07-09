@@ -85,6 +85,7 @@
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\TriggerState.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\WanderGoal.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\StatSystemTest.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Modifiers\StatModifier.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StackEntry.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\InvestigateTargetSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\WeaponArchetypeSO.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\LocationInvestigated.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\Projectile.cs" />
     <Compile Include="Assets\Scripts\Enemies\DamageAndHealth\EnemyHitbox.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Modifiers\ModifierHandle.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\DamageNumberFormatter.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\EnemyHealth.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Buckets\StatModifierValue.cs" />
@@ -132,6 +134,7 @@
     <Compile Include="Assets\Scripts\PlayerScripts\MouseLook.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StatusManager.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\DamageNumber.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Debug\StatModifierTest.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\HitEffectSO.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\PlayerEngaged.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\BurnStatusSO.cs" />

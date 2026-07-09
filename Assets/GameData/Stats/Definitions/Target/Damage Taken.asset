@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: damage_taken
   displayName: Damage Taken
+  resolutionMode: 1
   defaultValue: 0
   useMin: 0
   minValue: 0
