@@ -77,7 +77,7 @@ namespace Combat.Weapons
 
             if (scaleFireToRPM && fireClipLength > 0f && damageSource != null)
             {
-                float rpm = damageSource.GetStats().RoundsPerMinute;
+                float rpm = damageSource.ResolvedRPM;
                 if (rpm > 0f)
                 {
                     float interval = 60f / rpm;
@@ -94,7 +94,7 @@ namespace Combat.Weapons
 
             if (scaleReloadToTime && reloadClipLength > 0f && damageSource != null)
             {
-                float reloadTime = damageSource.GetStats().ReloadTime;
+                float reloadTime = damageSource.ResolvedReloadTime;
                 if (reloadTime > 0f)
                     animator.SetFloat(ReloadSpeedParam, reloadClipLength / reloadTime);
             }

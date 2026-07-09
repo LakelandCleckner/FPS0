@@ -881,11 +881,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 691975960}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13055dd5afa037143bf143bb3d777d60, type: 3}
+  m_Script: {fileID: 11500000, guid: 9dfb2b8d9aac7584ca89c0bcc6e9f84b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  critDamage: {fileID: 11400000, guid: fc43bc424a3cd7241a8d86e29f7b33b5, type: 2}
-  globalDamage: {fileID: 11400000, guid: e5a738ee31f17c64682b1c822f19ced0, type: 2}
+  weapon: {fileID: 11400000, guid: d3924d4d97123f64abdced4856c5c9fc, type: 2}
+  keys: {fileID: 11400000, guid: 09a13dc11d493ca499a3955b5ee02738, type: 2}
+  epsilon: 0.0001
 --- !u!1 &754033184
 GameObject:
   m_ObjectHideFlags: 0
@@ -2357,6 +2358,10 @@ PrefabInstance:
       propertyPath: crosshair
       value: 
       objectReference: {fileID: 1533581869}
+    - target: {fileID: 2176066724308284047, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
+      propertyPath: statKeys
+      value: 
+      objectReference: {fileID: 11400000, guid: 09a13dc11d493ca499a3955b5ee02738, type: 2}
     - target: {fileID: 3210834218394652636, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.09002686

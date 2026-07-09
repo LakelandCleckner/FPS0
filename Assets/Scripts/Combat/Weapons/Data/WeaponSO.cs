@@ -56,20 +56,7 @@ namespace Combat.Weapons
         public float chainGrowth = 1f;
         public HitDedupMode dedupMode = HitDedupMode.PerShot;
 
-        // Resolved stats: archetype base + this weapon's intrinsic deltas.
-        // Named args — only the stats this weapon has are specified; the rest
-        // default. (Heading for keyed data-driven stats later.)
-        public StatBlock ResolveStats()
-        {
-            return new StatBlock(
-                weaponDamage: archetype.weaponDamage + weaponDamageDelta,
-                critDamage: archetype.critDamage + critDamageDelta,
-                critChance: archetype.critChance + critChanceDelta,
-                globalMult: archetype.globalDamageMultiplier + globalDamageMultiplierDelta,
-                roundsPerMinute: archetype.roundsPerMinute + roundsPerMinuteDelta,
-                magazineSize: archetype.magazineSize + magazineSizeDelta,
-                reloadTime: archetype.reloadTime + reloadTimeDelta);
-        }
+        
 
         // Resolved infinite-reserves setting (archetype default, weapon override).
         public bool ResolveInfiniteReserves()

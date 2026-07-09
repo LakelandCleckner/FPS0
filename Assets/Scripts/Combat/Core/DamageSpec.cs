@@ -23,8 +23,6 @@ namespace Combat.Core
             AffectedByChainFalloffOverride = affectedByChainFalloff ?? false;
         }
 
-        // Default by derivation type (source-anchored = yes, target = no),
-        // overridable per spec.
         public bool AffectedByChainFalloff
         {
             get
@@ -34,7 +32,6 @@ namespace Combat.Core
                 {
                     case DamageDerivation.Flat:
                     case DamageDerivation.PercentOfWeapon:
-                    case DamageDerivation.PercentOfCrit:
                         return true;
                     default:
                         return false; // target-anchored
@@ -42,14 +39,20 @@ namespace Combat.Core
             }
         }
 
-        // Raw value BEFORE chain falloff is applied.
-        public float ComputeRaw(in StatBlock stats, ITargetInfo target)
+        // Raw value BEFORE chain falloff is applied. Reads the source-agnostic
+        // DamageStats snapshot.
+        //
+        // NOTE: PercentOfCrit was removed in the stat-system migration (Phase 2f).
+        // Crit is a PLAYER stat now, not a weapon/source scalar — crit damage will
+        // be applied at the resolver (Phase 2h) reading the player's resolved
+        // crit_damage, not via a source snapshot. If a "percent of crit damage"
+        // derivation is wanted later, it reads the player container, not DamageStats.
+        public float ComputeRaw(in DamageStats stats, ITargetInfo target)
         {
             switch (Derivation)
             {
-                case DamageDerivation.Flat:                 return Coefficient;
-                case DamageDerivation.PercentOfWeapon:      return stats.WeaponDamage * Coefficient;
-                case DamageDerivation.PercentOfCrit:        return stats.CritDamage * Coefficient;
+                case DamageDerivation.Flat: return Coefficient;
+                case DamageDerivation.PercentOfWeapon: return stats.BaseDamage * Coefficient;
                 case DamageDerivation.PercentOfTargetMaxHp: return target.MaxHealth * Coefficient;
                 case DamageDerivation.PercentOfTargetMissingHp:
                     return (target.MaxHealth - target.CurrentHealth) * Coefficient;

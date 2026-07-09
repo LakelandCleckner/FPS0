@@ -4,19 +4,15 @@ using Combat.Core;
 
 namespace Combat.Status
 {
-    // The stack of one status on one target — the unit that ticks. Replaces
-    // StatusInstance: owns the tick timer(s), the entry collection, the snapshot
-    // stats, and routes ticks through the resolver.
+    // The stack of one status on one target — the unit that ticks. Owns the tick
+    // timer(s), the entry collection, the snapshot stats, and routes ticks through
+    // the resolver.
     //
-    // STEP 2: duration axis (Status.durationMode).
-    // STEP 3: cap + eviction (maxEntries / evictionStrategy) + per-application weight.
-    // STEP 4: intensity axis (Status.intensityMode: Magnitude / Rate / Both) —
-    //         applies to SharedPoolTimer mode.
-    // STEP 5: tick-timer axis (Status.tickTimerMode):
-    //   SharedPoolTimer (default) -> one timer, intensity axis scales it
-    //   PerEntryTimer             -> each entry ticks independently at the base
-    //                                interval dealing its own weight (intensity
-    //                                axis ignored)
+    // Phase 2f: the carried snapshot is DamageStats (source-agnostic) instead of
+    // the retired StatBlock. A status's tick weight still derives from the snapshot
+    // (ComputeWeight -> ComputeRaw). Live-querying dynamic player stats per tick
+    // (buffs affecting DOTs) is a later phase (2i); this preserves current behavior
+    // (weight snapshotted at apply).
     //
     // NOTE: contains [StackPool] Debug.Log lines for testing — strip for release.
     public class EffectStackPool
@@ -25,16 +21,15 @@ namespace Combat.Status
         public StatusSO Status { get; private set; }
         public IHitResolver Resolver { get; private set; }
 
-        private StatBlock stats;
+        private DamageStats stats;
         private System.Action<float> applyTickDamage;
         private DamageTypeSO tickType;
 
         private readonly List<StackEntry> entries = new List<StackEntry>();
 
         private float baseTickInterval;
-        private float tickAccumulator; // SharedPoolTimer mode
-
-        private float sharedTimer; // ExtendShared duration mode
+        private float tickAccumulator;
+        private float sharedTimer;
 
         public bool Empty => entries.Count == 0;
         public bool Expired { get; private set; }
@@ -49,7 +44,7 @@ namespace Combat.Status
             ITargetInfo target,
             StatusSO status,
             IHitResolver resolver,
-            StatBlock stats,
+            DamageStats stats,
             DamageTypeSO tickType,
             System.Action<float> applyTickDamage)
         {
@@ -74,7 +69,6 @@ namespace Combat.Status
             e.Set(weight, type, sourceFaction, chainDepth, Status.duration);
             entries.Add(e);
 
-            // DURATION AXIS
             switch (Status.durationMode)
             {
                 case StatusDurationMode.PerEntryIndependent:
@@ -91,13 +85,11 @@ namespace Combat.Status
                     break;
             }
 
-            // CAP + EVICTION
             if (Status.maxEntries > 0 && entries.Count > Status.maxEntries)
                 EvictOne();
 
             Debug.Log($"[StackPool] +entry {Status.name} | weight {weight:F1} | now {entries.Count}/{(Status.maxEntries > 0 ? Status.maxEntries.ToString() : "inf")}" + (wasEmpty ? " (first)" : ""));
 
-            // tick-on-first-apply
             if (wasEmpty)
             {
                 if (Status.tickTimerMode == StatusTickTimerMode.PerEntryTimer)
@@ -131,12 +123,11 @@ namespace Combat.Status
             entries.RemoveAt(idx);
         }
 
-        public float ComputeWeight(StatBlock atApplyStats)
+        public float ComputeWeight(DamageStats atApplyStats)
         {
             return Status.BuildTickSpec().ComputeRaw(atApplyStats, Target);
         }
 
-        // INTENSITY AXIS — effective shared interval (SharedPoolTimer mode).
         private float CurrentInterval()
         {
             if (Status.intensityMode == StatusIntensityMode.Magnitude)
@@ -146,7 +137,6 @@ namespace Combat.Status
             return Mathf.Max(Status.minInterval, reduced);
         }
 
-        // INTENSITY AXIS — shared tick magnitude (SharedPoolTimer mode).
         private float CurrentTickDamage()
         {
             if (Status.intensityMode == StatusIntensityMode.Rate)
@@ -160,7 +150,6 @@ namespace Combat.Status
         {
             if (Expired) return;
 
-            // DURATION AXIS — expiry first
             if (Status.durationMode == StatusDurationMode.ExtendShared)
             {
                 sharedTimer -= scaledDelta;
@@ -177,10 +166,8 @@ namespace Combat.Status
                 if (entries.Count == 0) { Expired = true; return; }
             }
 
-            // TICK-TIMER AXIS
             if (Status.tickTimerMode == StatusTickTimerMode.PerEntryTimer)
             {
-                // each entry ticks independently at the base interval
                 for (int i = 0; i < entries.Count; i++)
                 {
                     entries[i].TickAccumulator += scaledDelta;
@@ -194,7 +181,6 @@ namespace Combat.Status
             }
             else
             {
-                // shared timer; intensity axis scales it
                 tickAccumulator += scaledDelta;
                 float interval = CurrentInterval();
                 while (tickAccumulator >= interval && !Expired)
@@ -207,7 +193,6 @@ namespace Combat.Status
             }
         }
 
-        // one summed/base tick for the whole pool (SharedPoolTimer)
         private void DoSharedTick()
         {
             if (Target == null || Target.IsDying) { Expired = true; return; }
@@ -220,7 +205,6 @@ namespace Combat.Status
             Resolver.ResolveHit(BuildTickContext(damage));
         }
 
-        // one tick for a single entry (PerEntryTimer)
         private void FireEntryTick(StackEntry entry)
         {
             if (Target == null || Target.IsDying) { Expired = true; return; }

@@ -16,7 +16,7 @@ MonoBehaviour:
   id: plinker_300
   displayName: Plinker 300
   baseDamageType: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
-  weaponDamageDelta: 0
+  weaponDamageDelta: 10
   critDamageDelta: 0
   critChanceDelta: 0
   globalDamageMultiplierDelta: 0

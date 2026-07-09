@@ -8,13 +8,11 @@ using Combat.Sources;
 namespace Combat.Weapons
 {
     // The weapon runtime coordinator. Wires the (decoupled) firing behavior and
-    // delivery together and drives ammo/reload. It EMITS EVENTS for what happened
-    // (fired, reload started) and knows NOTHING about animation/presentation — a
-    // separate WeaponAnimator (or any subscriber) reacts to these. This keeps the
-    // controller focused and lets each gun present differently without touching it.
+    // delivery together and drives ammo/reload. Emits events (fired/reload/dry) and
+    // knows nothing about animation/presentation.
     //
-    // (These events are an early, local version of the weapon event surface in the
-    // combat design docs; they can migrate onto the event bus later.)
+    // Phase 2f: passes the weapon's RESOLVED RPM (from its StatContainer) to the
+    // behavior instead of the retired StatBlock.
     public class WeaponFireController : MonoBehaviour
     {
         [Header("Weapon")]
@@ -31,16 +29,14 @@ namespace Combat.Weapons
 
         private PlayerAudio playerAudio;
 
-        // ---- Weapon events (subscribers: animator, future perks/event bus) ----
-        public event Action OnFired;          // a shot actually went off
-        public event Action OnReloadStarted;  // a reload actually began
-        public event Action OnDryFire;        // trigger pulled but no ammo
+        public event Action OnFired;
+        public event Action OnReloadStarted;
+        public event Action OnDryFire;
 
         private IFireBehavior behavior;
         private IDelivery delivery;
         private bool triggerHeldLast;
 
-        // expose stats for subscribers that need them (e.g. animation RPM scaling)
         public WeaponDamageSource DamageSource => damageSource;
 
         private void Awake()
@@ -76,7 +72,6 @@ namespace Combat.Weapons
         {
             if (behavior == null) return;
 
-            // reload input — only fires the event if a reload actually STARTED
             if (ammo != null && Keyboard.current != null && Keyboard.current[reloadKey].wasPressedThisFrame)
             {
                 if (ammo.BeginReload())
@@ -86,20 +81,18 @@ namespace Combat.Weapons
                 }
             }
 
-            // trigger snapshot
             bool held = Mouse.current != null && Mouse.current.leftButton.isPressed;
             bool pressed = held && !triggerHeldLast;
             bool released = !held && triggerHeldLast;
             triggerHeldLast = held;
 
             var trigger = new TriggerState(held, pressed, released);
-            var stats = damageSource.GetStats();
-            behavior.Tick(Time.deltaTime, trigger, stats);
+            float rpm = damageSource != null ? damageSource.ResolvedRPM : 0f;
+            behavior.Tick(Time.deltaTime, trigger, rpm);
         }
 
         private void HandleFireRequested()
         {
-            // ammo gate — consume a round (also cancels a reload in progress)
             if (ammo != null && !ammo.TryConsume())
             {
                 var empty = damageSource.EmptyClip;

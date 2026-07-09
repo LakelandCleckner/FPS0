@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: global_damage
   displayName: Global Damage
-  resolutionMode: 1
-  defaultValue: 0
+  resolutionMode: 0
+  defaultValue: 1
   useMin: 0
   minValue: 0
   useMax: 0

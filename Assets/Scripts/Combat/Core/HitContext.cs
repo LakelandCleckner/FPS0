@@ -18,22 +18,18 @@ namespace Combat.Core
         // delivery -> Direct, status tick -> StatusTick, chain -> Chain.
         public HitSource Source = HitSource.Direct;
 
-
         // per-hit info from the hitbox that was struck
-        public float HitboxMultiplier = 1f;     // headshot/crit multiplier
+        public float HitboxMultiplier = 1f;     // precision (headshot) multiplier
         public BodyPart BodyPartHit = BodyPart.Torso;
 
         // how to actually deal damage to the concrete target (set by delivery)
         public System.Action<float> ApplyDamageToTarget;
 
-        //version used by status ticks so resistance/type is respected:
+        // version used by status ticks so resistance/type is respected:
         public System.Action<float, DamageTypeSO> ApplyStatusTickDamage;
 
-
-        // source snapshot (immutable)
-        public StatBlock Stats;
-
-
+        // source snapshot (immutable, source-agnostic). Replaces the old StatBlock.
+        public DamageStats Stats;
 
         // effects
         public List<IHitEffect> Effects;
@@ -50,21 +46,17 @@ namespace Combat.Core
         public float DamageDealt;
         public bool WasKill;
         public bool WasHeadshot;
-        public bool WasCrit;     // inert for now; ready for crit-tick / crit feature later
-        public bool WasDebuffed;// settable test variable for now; real "debuffed" trigger defined later
-
+        public bool WasCrit;     // inert for now; ready for crit feature (Phase 2h)
+        public bool WasDebuffed; // settable test variable for now; real trigger later
 
         public bool CanPropagate => ChainDepth < MaxChainDepth;
         public float ChainMultiplier =>
             Mathf.Pow(ChainFalloff, ChainDepth) * Mathf.Pow(ChainGrowth, ChainDepth);
 
-        // which status produced this tick (null for direct hits). Used to key the
-        // accumulator, and later the per-status tick sound.
+        // which status produced this tick (null for direct hits).
         public Combat.Status.StatusSO SourceStatus;
         // presentation flags carried from the status (defaults suit direct hits)
-        public bool ShowFloatingNumber = true;   // you may already have this
-        public bool FeedsAccumulator = false;    // direct hits don't accumulate
-
-
+        public bool ShowFloatingNumber = true;
+        public bool FeedsAccumulator = false;
     }
 }

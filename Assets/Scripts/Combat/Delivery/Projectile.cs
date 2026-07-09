@@ -4,14 +4,17 @@ using Combat.Core;
 
 namespace Combat.Delivery
 {
-    // Raycast-per-frame kinematic projectile. Carries a SNAPSHOT of everything
-    // it needs at spawn (stats, effects, faction, chain config, projectile
-    // config) so it never reaches back to a source that may have changed or
-    // been destroyed. Built by ProjectileStrategy.Fire via Init().
+    // Raycast-per-frame kinematic projectile. Carries a SNAPSHOT of everything it
+    // needs at spawn (source stats, effects, faction, chain config, projectile
+    // config) so it never reaches back to a source that may have changed or been
+    // destroyed. Built by ProjectileDelivery.Fire via Init().
+    //
+    // Phase 2f: the carried snapshot is now DamageStats (source-agnostic) instead
+    // of the retired StatBlock.
     public class Projectile : MonoBehaviour
     {
         private WeaponHitResolver resolver;
-        private StatBlock stats;
+        private DamageStats stats;
         private List<IHitEffect> effects;
         private int sourceFaction;
         private DamageTypeSO damageType;
@@ -26,15 +29,12 @@ namespace Combat.Delivery
         private float age;
         private int pierceUsed;
 
-        // Per-projectile already-hit set, so a piercing shot never double-hits
-        // the same enemy (separate from chain dedup).
         private readonly HashSet<ITargetInfo> hitTargets = new HashSet<ITargetInfo>();
-
         private bool initialized;
 
         public void Init(
             WeaponHitResolver resolver,
-            StatBlock stats,
+            DamageStats stats,
             List<IHitEffect> effects,
             int sourceFaction,
             DamageTypeSO damageType,
@@ -66,13 +66,10 @@ namespace Combat.Delivery
             float step = config.speed * Time.deltaTime;
             Vector3 start = transform.position;
 
-            // Raycast from current position along the step distance — catches
-            // anything we'd pass through this frame (no tunnelling).
             if (Physics.Raycast(start, direction, out var hit, step, config.collisionMask))
             {
                 HandleHit(hit);
-                if (!initialized) return; // destroyed inside HandleHit
-                // piercing: move to the hit point and continue past it
+                if (!initialized) return;
                 transform.position = hit.point;
             }
             else
@@ -91,10 +88,8 @@ namespace Combat.Delivery
         {
             var hitbox = hit.collider.GetComponentInParent<EnemyHitbox>();
 
-            // ---- ENVIRONMENT ----
             if (hitbox == null)
             {
-                // Hit something that isn't an enemy.
                 if (config.stopOnEnvironment)
                     Despawn();
                 return;
@@ -103,12 +98,10 @@ namespace Combat.Delivery
             var target = hitbox.enemyHealth as ITargetInfo;
             if (target == null) return;
 
-            // Pierce dedup: never hit the same enemy twice with one projectile.
             if (hitTargets.Contains(target))
                 return;
             hitTargets.Add(target);
 
-            // Build context from the carried snapshot and resolve.
             var ctx = new HitContext
             {
                 Target = target,
@@ -131,22 +124,17 @@ namespace Combat.Delivery
             };
             resolver.ResolveHit(ctx);
 
-            // ---- IMPACT MODE ----
             switch (config.impactMode)
             {
                 case ProjectileImpactMode.DestroyOnHit:
                     Despawn();
                     break;
-
                 case ProjectileImpactMode.Pierce:
                     pierceUsed++;
                     if (pierceUsed > config.maxPierceCount)
                         Despawn();
-                    // else keep flying
                     break;
-
                 case ProjectileImpactMode.Embed:
-                    // TODO: placed-trap/mine behaviour. For now behaves like destroy.
                     Despawn();
                     break;
             }

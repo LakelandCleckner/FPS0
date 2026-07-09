@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bc3170f4fc203847863c6e5e6d667a4, type: 3}
+  m_Name: WeaponStatKeys
+  m_EditorClassIdentifier: 
+  weaponDamage: {fileID: 11400000, guid: 74e01aed325cce348acbd5d421549c4f, type: 2}
+  critDamage: {fileID: 11400000, guid: fc43bc424a3cd7241a8d86e29f7b33b5, type: 2}
+  critChance: {fileID: 11400000, guid: 2d453d23674d7e5419fdb375fc761414, type: 2}
+  globalDamage: {fileID: 11400000, guid: e5a738ee31f17c64682b1c822f19ced0, type: 2}
+  rpm: {fileID: 11400000, guid: 6a60948ce14798c4383dfc31d3281302, type: 2}
+  magazineSize: {fileID: 11400000, guid: 14d268e731c835c47a1b4ac02ea452ac, type: 2}
+  reloadTime: {fileID: 11400000, guid: 7579532ea69da3744ab17777fafe21c6, type: 2}
