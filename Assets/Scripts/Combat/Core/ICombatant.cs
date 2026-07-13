@@ -3,7 +3,7 @@ namespace Combat.Core
     // Minimal view of a target the combat system needs. Implemented by
     // EnemyHealth (and any destructible object).
 
-    public interface ITargetInfo
+    public interface ICombatant
     {
         float MaxHealth { get; }
         float CurrentHealth { get; }

@@ -14,7 +14,7 @@ namespace Combat.Status
     [RequireComponent(typeof(EnemyHealth))]
     public class StatusReceiver : MonoBehaviour
     {
-        private ITargetInfo target;
+        private ICombatant target;
 
         private readonly Dictionary<StatusSO, EffectStackPool> pools
             = new Dictionary<StatusSO, EffectStackPool>();

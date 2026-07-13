@@ -84,6 +84,7 @@
     <Compile Include="Assets\Scripts\Combat\Core\Enums.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponAnimator.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\TriggerState.cs" />
+    <Compile Include="Assets\Scripts\Combat\Core\ICombatant.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\WanderGoal.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\StatSystemTest.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Modifiers\StatModifier.cs" />
@@ -98,7 +99,6 @@
     <Compile Include="Assets\Scripts\Combat\Stats\Buckets\StatBucketSO.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\DamageNumberPool.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\HitscanDeliverySO.cs" />
-    <Compile Include="Assets\Scripts\Combat\Core\ITargetInfo.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\Wandering\IsWanderingSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\DamageEffectSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\ProjectileDeliverySO.cs" />

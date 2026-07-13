@@ -30,7 +30,7 @@ namespace Combat.Status
         public DamageSpec TickSpec;
 
         // the target (needed by target-anchored derivations)
-        public ITargetInfo Target;
+        public ICombatant Target;
 
         // frozen at apply: chain scaling for THIS application
         public float ChainMultiplier;
@@ -57,7 +57,7 @@ namespace Combat.Status
         }
 
         public void Set(IDamageSource source, DamageStats snapshotFallback, DamageSpec tickSpec,
-                        ITargetInfo target, float chainMultiplier, DamageTypeSO type,
+                        ICombatant target, float chainMultiplier, DamageTypeSO type,
                         int sourceFaction, int chainDepth, float duration)
         {
             Source = source;

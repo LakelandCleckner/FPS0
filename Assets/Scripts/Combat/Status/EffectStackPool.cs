@@ -18,7 +18,7 @@ namespace Combat.Status
     // NOTE: contains [StackPool] Debug.Log lines for testing — strip for release.
     public class EffectStackPool
     {
-        public ITargetInfo Target { get; private set; }
+        public ICombatant Target { get; private set; }
         public StatusSO Status { get; private set; }
         public IHitResolver Resolver { get; private set; }
 
@@ -44,7 +44,7 @@ namespace Combat.Status
         }
 
         public void Init(
-            ITargetInfo target,
+            ICombatant target,
             StatusSO status,
             IHitResolver resolver,
             StatContainer attackerStats,

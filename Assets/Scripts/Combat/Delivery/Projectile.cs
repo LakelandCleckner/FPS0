@@ -33,7 +33,7 @@ namespace Combat.Delivery
         private float age;
         private int pierceUsed;
 
-        private readonly HashSet<ITargetInfo> hitTargets = new HashSet<ITargetInfo>();
+        private readonly HashSet<ICombatant> hitTargets = new HashSet<ICombatant>();
         private bool initialized;
 
         public void Init(
@@ -103,7 +103,7 @@ namespace Combat.Delivery
                 return;
             }
 
-            var target = hitbox.enemyHealth as ITargetInfo;
+            var target = hitbox.enemyHealth as ICombatant;
             if (target == null) return;
 
             if (hitTargets.Contains(target))

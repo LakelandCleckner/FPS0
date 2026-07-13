@@ -19,7 +19,7 @@ namespace Combat.Feedback
         private TextMeshPro text;
         private DamageAccumulatorRegistry registry;
 
-        public ITargetInfo Target { get; private set; }
+        public ICombatant Target { get; private set; }
         public object EffectKey { get; private set; }
 
         // current accumulated total — the registry sorts the column by this
@@ -54,7 +54,7 @@ namespace Combat.Feedback
 
         public void Begin(
             DamageAccumulatorRegistry registry,
-            ITargetInfo target,
+            ICombatant target,
             object effectKey,
             Transform follow,
             DamageTypeSO type,

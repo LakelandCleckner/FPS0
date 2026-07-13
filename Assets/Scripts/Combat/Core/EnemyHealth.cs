@@ -1,7 +1,7 @@
 using UnityEngine;
 using Combat.Core;
 
-public class EnemyHealth : MonoBehaviour, ITargetInfo
+public class EnemyHealth : MonoBehaviour, ICombatant
 {
     public float maxHealth = 100f;
     private float currentHealth;

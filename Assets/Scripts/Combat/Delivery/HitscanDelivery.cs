@@ -26,7 +26,7 @@ namespace Combat.Delivery
             var hitbox = hit.collider.GetComponentInParent<EnemyHitbox>();
             if (hitbox == null) return;
 
-            var target = hitbox.enemyHealth as ITargetInfo;
+            var target = hitbox.enemyHealth as ICombatant;
             if (target == null) return;
 
             var ctx = new HitContext

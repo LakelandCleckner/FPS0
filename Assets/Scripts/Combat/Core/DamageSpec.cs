@@ -47,7 +47,7 @@ namespace Combat.Core
         // be applied at the resolver (Phase 2h) reading the player's resolved
         // crit_damage, not via a source snapshot. If a "percent of crit damage"
         // derivation is wanted later, it reads the player container, not DamageStats.
-        public float ComputeRaw(in DamageStats stats, ITargetInfo target)
+        public float ComputeRaw(in DamageStats stats, ICombatant target)
         {
             switch (Derivation)
             {

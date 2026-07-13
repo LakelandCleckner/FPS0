@@ -42,8 +42,8 @@ namespace Combat.Feedback
             public readonly Dictionary<object, AccumulatorNumber> byEffect
                 = new Dictionary<object, AccumulatorNumber>();
         }
-        private readonly Dictionary<ITargetInfo, TargetGroup> groups
-            = new Dictionary<ITargetInfo, TargetGroup>();
+        private readonly Dictionary<ICombatant, TargetGroup> groups
+            = new Dictionary<ICombatant, TargetGroup>();
 
         private void Awake()
         {
@@ -74,7 +74,7 @@ namespace Combat.Feedback
         }
 
         public void Report(
-            ITargetInfo target, object effectKey, Transform follow,
+            ICombatant target, object effectKey, Transform follow,
             float amount, DamageTypeSO type, bool isCrit, bool isDebuffed)
         {
             if (target == null || effectKey == null) return;
@@ -111,7 +111,7 @@ namespace Combat.Feedback
             Layout(group);
         }
 
-        public void RequestRepack(ITargetInfo target)
+        public void RequestRepack(ICombatant target)
         {
             if (groups.TryGetValue(target, out var group))
                 Layout(group);

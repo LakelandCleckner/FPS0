@@ -9,7 +9,7 @@ namespace Combat.Core
     public class HitContext
     {
         // who/what
-        public ITargetInfo Target;
+        public ICombatant Target;
         public Vector3 HitPoint;
         public int SourceFaction;
         public DamageTypeSO DamageType;
@@ -46,7 +46,7 @@ namespace Combat.Core
         public int MaxChainDepth = 0;
         public float ChainFalloff = 1f;
         public float ChainGrowth = 1f;
-        public HashSet<ITargetInfo> AlreadyHit = new HashSet<ITargetInfo>();
+        public HashSet<ICombatant> AlreadyHit = new HashSet<ICombatant>();
         public HitDedupMode DedupMode = HitDedupMode.PerShot;
 
         // Crit multiplier for this hit, rolled ONCE at the resolver. 1 = no crit; on a
