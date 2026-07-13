@@ -15,9 +15,6 @@ namespace Combat.Weapons
 
         [Header("Base Stats (the frame profile)")]
         public float weaponDamage = 0f;
-        public float critDamage = 0f;
-        public float critChance = 0f;
-        public float globalDamageMultiplier = 1f;
         [Tooltip("Fire rate — core to the frame identity.")]
         public float roundsPerMinute = 0f;
 

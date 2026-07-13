@@ -49,6 +49,18 @@ namespace Combat.Core
         public HashSet<ITargetInfo> AlreadyHit = new HashSet<ITargetInfo>();
         public HitDedupMode DedupMode = HitDedupMode.PerShot;
 
+        // Crit multiplier for this hit, rolled ONCE at the resolver. 1 = no crit; on a
+        // crit it's (1 + resolved crit_damage). Damage effects multiply by it.
+        public float CritMultiplier = 1f;
+
+
+        // The source that produced this hit (weapon/grenade/hazard). Nullable.
+        // Carried so a status application can live-link its entries to the source and
+        // read its CURRENT cached stats per tick (GetStats() is version-invalidated).
+        // Named DamageSource to avoid colliding with the existing `Source` (HitSource enum).
+        public Combat.Sources.IDamageSource DamageSource;
+
+
         // mutable results (effects write, feedback reads)
         public float DamageDealt;
         public bool WasKill;

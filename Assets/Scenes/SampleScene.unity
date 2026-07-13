@@ -2346,6 +2346,30 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3353619507588852826, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
   m_PrefabInstance: {fileID: 4717497599679480891}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2130910819 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6041466214417116510, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
+  m_PrefabInstance: {fileID: 4717497599679480891}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2130910821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2130910819}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdf4ae702aea108449104d23d3b24ade, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseStats:
+  - stat: {fileID: 11400000, guid: 2d453d23674d7e5419fdb375fc761414, type: 2}
+    baseValue: 0.5
+  - stat: {fileID: 11400000, guid: fc43bc424a3cd7241a8d86e29f7b33b5, type: 2}
+    baseValue: 0.5
+  - stat: {fileID: 11400000, guid: e5a738ee31f17c64682b1c822f19ced0, type: 2}
+    baseValue: 1
 --- !u!1001 &4717497599679480891
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2362,6 +2386,10 @@ PrefabInstance:
       propertyPath: statKeys
       value: 
       objectReference: {fileID: 11400000, guid: 09a13dc11d493ca499a3955b5ee02738, type: 2}
+    - target: {fileID: 2176066724308284047, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
+      propertyPath: wielderStats
+      value: 
+      objectReference: {fileID: 2130910821}
     - target: {fileID: 3210834218394652636, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.09002686
@@ -2411,6 +2439,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5668810610464258445, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
+      propertyPath: statKeys
+      value: 
+      objectReference: {fileID: 11400000, guid: d08ea03d7f569de4ea98d55cfd34a719, type: 2}
+    - target: {fileID: 5668810610464258445, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
       propertyPath: hitmarkerUI
       value: 
       objectReference: {fileID: 1169347220}
@@ -2422,6 +2454,9 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6041466214417116510, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2130910821}
     - targetCorrespondingSourceObject: {fileID: 3210834218394489848, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1567209343}

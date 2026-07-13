@@ -26,6 +26,8 @@ namespace Combat.Delivery
         private HitDedupMode dedupMode;
         private ProjectileConfig config;
 
+        private Combat.Sources.IDamageSource damageSource;
+
         private Vector3 direction;
         private float distanceTravelled;
         private float age;
@@ -37,6 +39,7 @@ namespace Combat.Delivery
         public void Init(
             WeaponHitResolver resolver,
             DamageStats stats,
+            Combat.Sources.IDamageSource damageSource,
             StatContainer attackerStats,
             List<IHitEffect> effects,
             int sourceFaction,
@@ -50,6 +53,7 @@ namespace Combat.Delivery
         {
             this.resolver = resolver;
             this.stats = stats;
+            this.damageSource = damageSource;
             this.attackerStats = attackerStats;
             this.effects = effects;
             this.sourceFaction = sourceFaction;
@@ -111,6 +115,7 @@ namespace Combat.Delivery
                 Target = target,
                 HitPoint = hit.point,
                 Source = HitSource.Direct,
+                DamageSource = damageSource,
                 SourceFaction = sourceFaction,
                 DamageType = damageType,
                 HitboxMultiplier = hitbox.damageMultiplier,

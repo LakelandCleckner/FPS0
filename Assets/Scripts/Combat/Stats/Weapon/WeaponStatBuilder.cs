@@ -18,9 +18,6 @@ namespace Combat.Weapons
             var a = weapon.archetype;
 
             container.SetBase(keys.weaponDamage, a.weaponDamage + weapon.weaponDamageDelta);
-            container.SetBase(keys.critDamage,   a.critDamage   + weapon.critDamageDelta);
-            container.SetBase(keys.critChance,   a.critChance   + weapon.critChanceDelta);
-            container.SetBase(keys.globalDamage, a.globalDamageMultiplier + weapon.globalDamageMultiplierDelta);
             container.SetBase(keys.rpm,          a.roundsPerMinute + weapon.roundsPerMinuteDelta);
             container.SetBase(keys.magazineSize, a.magazineSize + weapon.magazineSizeDelta);
             container.SetBase(keys.reloadTime,   a.reloadTime   + weapon.reloadTimeDelta);

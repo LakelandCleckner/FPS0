@@ -35,6 +35,7 @@ namespace Combat.Delivery
                 resolver:       resolver,
                 stats:          source.GetStats(),
                 attackerStats:  source.AttackerStats,
+                damageSource:   source,
                 effects:        source.GetEffects(),
                 sourceFaction:  source.Faction,
                 damageType:     source.BaseDamageType,

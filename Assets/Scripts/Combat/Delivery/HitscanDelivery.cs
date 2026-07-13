@@ -35,6 +35,7 @@ namespace Combat.Delivery
                 HitPoint = hit.point,
                 Source = HitSource.Direct,
                 SourceFaction = source.Faction,
+                DamageSource = source,
                 DamageType = source.BaseDamageType,
 
                 HitboxMultiplier = hitbox.damageMultiplier,

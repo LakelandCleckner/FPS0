@@ -4,9 +4,11 @@ using UnityEngine;
 
 namespace Combat.Effects
 {
-    // Bridges the on-hit effect list into the status system. Tells the target's
-    // StatusReceiver to apply a status, which adds an entry to the (target,
-    // StatusSO) pool. STAGE 2: pool-based.
+    // Bridges the on-hit effect list into the status system.
+    //
+    // Phase 2h: passes the SOURCE (so the entry live-links to it and derives its
+    // weight from current cached stats) and the ATTACKER's stats (so each tick can
+    // roll crit).
     public class ApplyStatusHitEffect : IHitEffect
     {
         public EffectPhase Phase => EffectPhase.Application;
@@ -25,9 +27,6 @@ namespace Combat.Effects
 
             var tickType = statusDef.damageType;
 
-            // tick damage callback — routes the (already-summed, post-defense)
-            // tick value to the same target this hit landed on, carrying type so
-            // the chokepoint logging/feedback is correct
             System.Action<float> applyTick = null;
             if (ctx.ApplyStatusTickDamage != null)
                 applyTick = (dmg) => ctx.ApplyStatusTickDamage(dmg, tickType);
@@ -35,10 +34,13 @@ namespace Combat.Effects
             receiver.Apply(
                 status: statusDef,
                 resolver: resolver,
-                stats: ctx.Stats,
+                source: ctx.DamageSource,            // live link for weight derivation
+                snapshotStats: ctx.Stats,            // fallback if the source dies
+                attackerStats: ctx.AttackerStats,    // crit stats for tick rolls
                 tickType: tickType,
                 sourceFaction: ctx.SourceFaction,
-                chainDepth: 0,           // chain links set this later
+                chainDepth: 0,
+                chainMultiplier: ctx.ChainMultiplier,  // frozen for THIS application
                 applyTickDamage: applyTick);
         }
     }

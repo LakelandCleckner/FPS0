@@ -2,11 +2,9 @@ using Combat.Core;
 
 namespace Combat.Effects
 {
-    // WORKING SLICE: flat damage that respects the precision (hitbox) multiplier
-    // carried on the context, the target's composed defensive multiplier (type +
-    // body-part resistance + future layers), and chain scaling. Writes the FINAL
-    // post-everything value back so feedback (damage numbers) always matches what
-    // actually lands.
+    // Damage that respects: precision (hitbox) multiplier, the CRIT multiplier
+    // (rolled once at the resolver), chain scaling, and the target's composed
+    // defensive multiplier. Writes the FINAL value back so feedback matches.
     public class DamageHitEffect : IHitEffect
     {
         public EffectPhase Phase => EffectPhase.Application;
@@ -18,23 +16,24 @@ namespace Combat.Effects
 
         public void Apply(HitContext ctx, IHitResolver resolver)
         {
-            // raw from the immutable source snapshot (DamageStats)
             float raw = spec.ComputeRaw(ctx.Stats, ctx.Target);
 
-            // apply the per-hit precision multiplier the hitbox supplied
+            // precision (hitbox/headshot)
             float final = raw * ctx.HitboxMultiplier;
 
-            // chain scaling — no-op at depth 0, here for when chains land later
+            // CRIT — rolled at the resolver; 1f when no crit. Independent of
+            // precision: a precision crit gets BOTH.
+            final *= ctx.CritMultiplier;
+
+            // chain scaling — no-op at depth 0
             if (spec.AffectedByChainFalloff)
                 final *= ctx.ChainMultiplier;
 
-            // DEFENSE: target composes all its resistance layers into one multiplier
+            // DEFENSE
             final *= ctx.Target.GetDamageMultiplier(spec.Type, ctx.BodyPartHit);
 
-            // deal the final value
             ctx.ApplyStatusTickDamage?.Invoke(final, spec.Type);
 
-            // write results for feedback — DamageDealt == what actually landed
             ctx.DamageDealt += final;
             ctx.WasHeadshot = ctx.BodyPartHit == BodyPart.Head;
             ctx.WasKill = ctx.Target.CurrentHealth <= 0f;

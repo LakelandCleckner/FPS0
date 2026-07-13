@@ -25,9 +25,6 @@ namespace Combat.Weapons
 
         [Header("Intrinsic Stat Deltas (deviation from the archetype; 0 = as-is)")]
         public float weaponDamageDelta = 0f;
-        public float critDamageDelta = 0f;
-        public float critChanceDelta = 0f;
-        public float globalDamageMultiplierDelta = 0f;
         public float roundsPerMinuteDelta = 0f;
         public float magazineSizeDelta = 0f;
         public float reloadTimeDelta = 0f;
