@@ -103,7 +103,7 @@ namespace Combat.Delivery
                 return;
             }
 
-            var target = hitbox.enemyHealth as ICombatant;
+            var target = hitbox.combatantHealth as ICombatant;
             if (target == null) return;
 
             if (hitTargets.Contains(target))
@@ -121,8 +121,8 @@ namespace Combat.Delivery
                 HitboxMultiplier = hitbox.damageMultiplier,
                 BodyPartHit = hitbox.bodyPart,
 
-                ApplyDamageToTarget = (dmg) => hitbox.enemyHealth.TakeDamage(dmg, hitbox.bodyPart, damageType),
-                ApplyStatusTickDamage = (dmg, type) => hitbox.enemyHealth.TakeDamage(dmg, hitbox.bodyPart, type),
+                ApplyDamageToTarget = (dmg) => hitbox.combatantHealth.TakeDamage(dmg, hitbox.bodyPart, damageType),
+                ApplyStatusTickDamage = (dmg, type) => hitbox.combatantHealth.TakeDamage(dmg, hitbox.bodyPart, type),
 
                 Stats = stats,
                 AttackerStats = attackerStats,

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Combat.Core
 {
     // WORKING SLICE version. Same carrier idea, plus the concrete hooks the slice
-    // needs to talk to your existing EnemyHealth/EnemyHitbox. Chain fields exist
+    // needs to talk to CombatantHealth/EnemyHitbox. Chain fields exist
     // but are inert at depth 0.
     public class HitContext
     {

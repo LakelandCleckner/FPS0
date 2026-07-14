@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6612740343518719550}
-  - component: {fileID: 7503194494376760278}
   - component: {fileID: 7434240647481629374}
   - component: {fileID: 7654303295665472057}
   - component: {fileID: 3998239378526427580}
@@ -20,7 +19,8 @@ GameObject:
   - component: {fileID: 149718689330863646}
   - component: {fileID: 8478488495213342464}
   - component: {fileID: 2870863443277306071}
-  - component: {fileID: 6202201215946115517}
+  - component: {fileID: 4457919424505222122}
+  - component: {fileID: 1021028654358225159}
   m_Layer: 7
   m_Name: EnemyRoot
   m_TagString: Untagged
@@ -44,25 +44,6 @@ Transform:
   - {fileID: 2476765083511694465}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7503194494376760278
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2780478270126569151}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c8f2d3ec049d5e4eabcf6867f50d068, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 1000
-  resistances:
-  - type: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
-    multiplier: 1
-  - type: {fileID: 11400000, guid: bb5cd7710169fec488edfdb57f9d8ade, type: 2}
-    multiplier: 1
-  bodyPartResistances: []
 --- !u!136 &7434240647481629374
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -98,7 +79,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5529ec283bc18164ba01dac2c03e8ecc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyHealth: {fileID: 7503194494376760278}
+  combatantHealth: {fileID: 4457919424505222122}
   bodyPart: 1
   damageMultiplier: 1
   damageType: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
@@ -233,7 +214,26 @@ MonoBehaviour:
   RayCount: 30
   IdleColor: {r: 1, g: 1, b: 0, a: 0.15}
   AlertColor: {r: 1, g: 0, b: 0, a: 0.25}
---- !u!114 &6202201215946115517
+--- !u!114 &4457919424505222122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2780478270126569151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c8f2d3ec049d5e4eabcf6867f50d068, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 1000
+  resistances:
+  - type: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
+    multiplier: 1
+  - type: {fileID: 11400000, guid: bb5cd7710169fec488edfdb57f9d8ade, type: 2}
+    multiplier: 1
+  bodyPartResistances: []
+--- !u!114 &1021028654358225159
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -357,7 +357,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5529ec283bc18164ba01dac2c03e8ecc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyHealth: {fileID: 7503194494376760278}
+  combatantHealth: {fileID: 0}
   bodyPart: 0
   damageMultiplier: 1.1
   damageType: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}

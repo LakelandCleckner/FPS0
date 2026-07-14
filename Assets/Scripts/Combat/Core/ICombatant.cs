@@ -1,7 +1,7 @@
 namespace Combat.Core
 {   
     // Minimal view of a target the combat system needs. Implemented by
-    // EnemyHealth (and any destructible object).
+    // CombatantHealth (and any destructible object).
 
     public interface ICombatant
     {

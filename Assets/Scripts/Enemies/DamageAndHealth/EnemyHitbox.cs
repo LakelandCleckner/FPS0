@@ -3,7 +3,7 @@ using Combat.Core;
 
 public class EnemyHitbox : MonoBehaviour
 {
-    public EnemyHealth enemyHealth;
+    public CombatantHealth combatantHealth;
     public BodyPart bodyPart;
     public float damageMultiplier = 1f;
     [SerializeField] private DamageTypeSO damageType; // assign Physical in inspector
@@ -11,6 +11,6 @@ public class EnemyHitbox : MonoBehaviour
     public void ApplyDamage(float baseDamage)
     {
         float finalDamage = baseDamage * damageMultiplier;
-        enemyHealth.TakeDamage(finalDamage, bodyPart, damageType);
+        combatantHealth.TakeDamage(finalDamage, bodyPart, damageType);
     }
 }

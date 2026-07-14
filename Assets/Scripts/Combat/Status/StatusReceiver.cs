@@ -11,7 +11,7 @@ namespace Combat.Status
     //
     // Phase 2h: carries the ATTACKER's stats (so ticks can crit) and the SOURCE
     // (so entries live-link to it for cached weight derivation).
-    [RequireComponent(typeof(EnemyHealth))]
+    [RequireComponent(typeof(CombatantHealth))]
     public class StatusReceiver : MonoBehaviour
     {
         private ICombatant target;
@@ -21,7 +21,7 @@ namespace Combat.Status
 
         private void Awake()
         {
-            target = GetComponent<EnemyHealth>();
+            target = GetComponent<CombatantHealth>();
         }
 
         // Apply one application of a status.

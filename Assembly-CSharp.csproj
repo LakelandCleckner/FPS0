@@ -124,7 +124,6 @@
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\WeaponStatParityTest.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Modifiers\ModifierHandle.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\DamageNumberFormatter.cs" />
-    <Compile Include="Assets\Scripts\Combat\Core\EnemyHealth.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Buckets\StatModifierValue.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Buckets\StatResolver.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualButton.cs" />
@@ -137,6 +136,7 @@
     <Compile Include="Assets\Scripts\Combat\Sources\IDamageSource.cs" />
     <Compile Include="Assets\StarterAssets\FirstPersonController\Scripts\BasicRigidBodyPush.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\MouseLook.cs" />
+    <Compile Include="Assets\Scripts\Combat\Core\CombatantHealth.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StatusManager.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\DamageNumber.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\StatModifierTest.cs" />
