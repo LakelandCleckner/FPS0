@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\AI\GOAP\TargetKeys\InvestigateTarget.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Keys\WeaponStatKeys.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Debug\MaxHealthChangeTest.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\AutoFireBehaviorSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\DeliverySO.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\DamageMagnitudeReference.cs" />

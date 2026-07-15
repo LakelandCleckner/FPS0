@@ -35,6 +35,8 @@ namespace Combat.Sources
 
         public StatContainer Container => container;
 
+        public StatContainer SourceStats => container;
+
         // The wielder's player-scope container (nullable). Delivery stamps this onto
         // the hit context as AttackerStats.
         public StatContainer AttackerStats => wielderStats != null ? wielderStats.Container : null;

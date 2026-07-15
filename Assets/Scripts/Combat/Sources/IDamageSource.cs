@@ -4,10 +4,12 @@ using Combat.Stats;
 
 namespace Combat.Sources
 {
-    // Anything that can START a chain: weapon, grenade, melee, explosive barrel.
-    // Source-agnostic. GetStats() returns a DamageStats snapshot; AttackerStats
-    // returns the attacker's PLAYER-SCOPE stat container (crit, global) or null for
-    // a sourceless source (hazard/environment).
+    // Anything that can produce damage: weapon, grenade, melee, explosive barrel.
+    // Source-agnostic.
+    //
+    // Phase 2i-a: exposes the source's own StatContainer, so Source-scoped
+    // derivations can resolve ANY of its stats (weapon_damage, rpm, ...), not just
+    // the base-damage snapshot.
     public interface IDamageSource
     {
         DamageStats GetStats();
@@ -19,8 +21,12 @@ namespace Combat.Sources
         float ChainGrowth { get; }
         HitDedupMode DedupMode { get; }
 
-        // Attacker's player-scope stats (nullable). Deliveries stamp this onto the
-        // hit context as AttackerStats so the resolver can read crit/global.
+        // The ATTACKER's stat container (the wielder). Nullable — a sourceless
+        // hazard has none.
         StatContainer AttackerStats { get; }
+
+        // The SOURCE's OWN stat container (this weapon's stats). Nullable — a simple
+        // source (thrown rock) may have none.
+        StatContainer SourceStats { get; }
     }
 }
