@@ -3,87 +3,88 @@ using Combat.Sources;
 
 namespace Combat.Status
 {
-    // One application of a status. Phase 2h: entries are LIVE-LINKED to their source
-    // rather than freezing a weight.
+    // One application of a status. Phase 2i-b: weight derives LIVE through a
+    // DerivationContext built from the entry's stored refs (source / attacker /
+    // target), so a tick can scale off any participant's stats or health quantities
+    // — resolved cached (source.SourceStats / attacker.Stats are version-invalidated).
     //
-    // The tick weight is DERIVED on demand from the source's CURRENT stats:
-    //     weight = spec.ComputeRaw(source.GetStats(), target) * ChainMultiplier
-    // source.GetStats() is cache-and-version-invalidated (Phase 2g), so this is a
-    // cached read — no per-tick recompute unless the source's stats actually changed.
-    // If the weapon's damage changes mid-burn, existing stacks reflect it next tick.
-    //
-    // Per-application identity is preserved: each entry reads ITS OWN source, so a
-    // burn from weapon A and one from weapon B scale off their own weapons.
-    //
-    // ChainMultiplier is frozen at apply (it's a property of THAT application's chain
-    // depth, not a live stat). SnapshotFallback is used if the source is gone
-    // (destroyed grenade/barrel) so a dead source can't null-crash a live DOT.
+    // DEAD-SOURCE FALLBACK: if the source is destroyed (Source becomes null), the
+    // entry freezes at the last weight it successfully computed while alive, so a
+    // live DOT from a now-gone grenade keeps ticking sanely. (Replaces the old
+    // DamageStats snapshot — the fallback is the cached OUTPUT, not a frozen input,
+    // so it works for any derivation, not just base damage.)
     public class StackEntry
     {
-        // live link to the source that applied this entry (nullable)
-        public IDamageSource Source;
-
-        // fallback stats if Source is null/destroyed (frozen at apply)
-        public DamageStats SnapshotFallback;
-
-        // the spec that derives this entry's weight (from the StatusSO)
-        public DamageSpec TickSpec;
-
-        // the target (needed by target-anchored derivations)
+        public IDamageSource Source;    // live link (nullable once destroyed)
+        public ICombatant Attacker;     // for Attacker-scope derivations (nullable)
         public ICombatant Target;
 
-        // frozen at apply: chain scaling for THIS application
-        public float ChainMultiplier;
+        public DamageSpec TickSpec;
+        public float ChainMultiplier;   // frozen at apply (this application's chain link)
 
-        // metadata
         public DamageTypeSO DamageType;
         public int SourceFaction;
         public int ChainDepth;
 
-        // per-entry lifetime
         public float RemainingDuration;
-
-        // per-entry tick timer (PerEntryTimer mode)
         public float TickAccumulator;
 
-        // LIVE-CACHED weight: derives from the source's current (cached) stats.
+        // last weight computed while the source was alive — the dead-source fallback
+        private float lastAliveWeight;
+        private bool hasLastWeight;
+
+        // LIVE weight: resolve through the derivation context. If the source is gone
+        // AND the derivation needs it, fall back to the last alive weight.
         public float Weight
         {
             get
             {
-                DamageStats stats = Source != null ? Source.GetStats() : SnapshotFallback;
-                return TickSpec.ComputeRaw(stats, Target) * ChainMultiplier;
+                // Source destroyed (Unity-null) -> freeze at last known weight
+                bool sourceAlive = !(Source is UnityEngine.Object o) || o != null;
+                if (!sourceAlive)
+                    return hasLastWeight ? lastAliveWeight : 0f;
+
+                var dctx = new DerivationContext(Attacker, Source, Target);
+                float w = TickSpec.Resolve(in dctx) * ChainMultiplier;
+
+                lastAliveWeight = w;
+                hasLastWeight = true;
+                return w;
             }
         }
 
-        public void Set(IDamageSource source, DamageStats snapshotFallback, DamageSpec tickSpec,
-                        ICombatant target, float chainMultiplier, DamageTypeSO type,
+        public void Set(IDamageSource source, ICombatant attacker, ICombatant target,
+                        DamageSpec tickSpec, float chainMultiplier, DamageTypeSO type,
                         int sourceFaction, int chainDepth, float duration)
         {
             Source = source;
-            SnapshotFallback = snapshotFallback;
-            TickSpec = tickSpec;
+            Attacker = attacker;
             Target = target;
+            TickSpec = tickSpec;
             ChainMultiplier = chainMultiplier;
             DamageType = type;
             SourceFaction = sourceFaction;
             ChainDepth = chainDepth;
             RemainingDuration = duration;
             TickAccumulator = 0f;
+            lastAliveWeight = 0f;
+            hasLastWeight = false;
         }
 
         public void Reset()
         {
             Source = null;
-            SnapshotFallback = default;
-            TickSpec = default;
+            Attacker = null;
             Target = null;
+            TickSpec = default;
             ChainMultiplier = 1f;
             DamageType = null;
             SourceFaction = 0;
             ChainDepth = 0;
             RemainingDuration = 0f;
             TickAccumulator = 0f;
+            lastAliveWeight = 0f;
+            hasLastWeight = false;
         }
     }
 }

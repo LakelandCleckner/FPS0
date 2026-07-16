@@ -1,63 +1,149 @@
+using UnityEngine;
+using Combat.Stats;
+
 namespace Combat.Core
 {
-    // Describes HOW to compute a damage number, not the number itself.
-    // An effect holds one of these and resolves it against a context.
+    // Describes HOW to compute a damage number (data-driven). A derivation names a
+    // KIND (Flat / PercentOfStat / PercentOfQuantity), an OWNER scope, and the stat
+    // or quantity to read. Resolved against a DerivationContext.
     public readonly struct DamageSpec
     {
-        public readonly DamageDerivation Derivation;
-        public readonly float Coefficient;   // 0.5 = 50% of whatever the derivation points at
+        public readonly DerivationKind Kind;
+        public readonly float Coefficient;      // 0.5 = 50% of what the derivation points at
         public readonly DamageTypeSO Type;
-        public readonly DerivationTiming Timing;
+        public readonly StatScope Owner;        // for PercentOfStat / PercentOfQuantity
+
+        // payload — only the one matching Kind is used
+        public readonly StatDefinitionSO Stat;      // PercentOfStat
+        public readonly QuantityKind Quantity;      // PercentOfQuantity
+
         public readonly bool AffectedByChainFalloffOverride;
         public readonly bool HasOverride;
 
-        public DamageSpec(DamageDerivation derivation, float coefficient, DamageTypeSO type,
-                          DerivationTiming timing = DerivationTiming.SnapshotAtApply,
+        // Flat
+        public DamageSpec(float flatCoefficient, DamageTypeSO type,
                           bool? affectedByChainFalloff = null)
         {
-            Derivation = derivation;
-            Coefficient = coefficient;
+            Kind = DerivationKind.Flat;
+            Coefficient = flatCoefficient;
             Type = type;
-            Timing = timing;
+            Owner = StatScope.Source;
+            Stat = null;
+            Quantity = default;
             HasOverride = affectedByChainFalloff.HasValue;
             AffectedByChainFalloffOverride = affectedByChainFalloff ?? false;
         }
 
+        // PercentOfStat
+        public DamageSpec(StatDefinitionSO stat, StatScope owner, float coefficient,
+                          DamageTypeSO type, bool? affectedByChainFalloff = null)
+        {
+            Kind = DerivationKind.PercentOfStat;
+            Coefficient = coefficient;
+            Type = type;
+            Owner = owner;
+            Stat = stat;
+            Quantity = default;
+            HasOverride = affectedByChainFalloff.HasValue;
+            AffectedByChainFalloffOverride = affectedByChainFalloff ?? false;
+        }
+
+        // PercentOfQuantity
+        public DamageSpec(QuantityKind quantity, StatScope owner, float coefficient,
+                          DamageTypeSO type, bool? affectedByChainFalloff = null)
+        {
+            Kind = DerivationKind.PercentOfQuantity;
+            Coefficient = coefficient;
+            Type = type;
+            Owner = owner;
+            Stat = null;
+            Quantity = quantity;
+            HasOverride = affectedByChainFalloff.HasValue;
+            AffectedByChainFalloffOverride = affectedByChainFalloff ?? false;
+        }
+
+        // Source-anchored derivations fall off with chain distance; target-anchored
+        // do not (a %-of-target-HP hit shouldn't shrink because it's a far chain link).
+        // Default by scope: Target -> not affected; Attacker/Source/Flat -> affected.
         public bool AffectedByChainFalloff
         {
             get
             {
                 if (HasOverride) return AffectedByChainFalloffOverride;
-                switch (Derivation)
-                {
-                    case DamageDerivation.Flat:
-                    case DamageDerivation.PercentOfWeapon:
-                        return true;
-                    default:
-                        return false; // target-anchored
-                }
+                if (Kind == DerivationKind.Flat) return true;
+                return Owner != StatScope.Target;
             }
         }
 
-        // Raw value BEFORE chain falloff is applied. Reads the source-agnostic
-        // DamageStats snapshot.
-        //
-        // NOTE: PercentOfCrit was removed in the stat-system migration (Phase 2f).
-        // Crit is a PLAYER stat now, not a weapon/source scalar — crit damage will
-        // be applied at the resolver (Phase 2h) reading the player's resolved
-        // crit_damage, not via a source snapshot. If a "percent of crit damage"
-        // derivation is wanted later, it reads the player container, not DamageStats.
-        public float ComputeRaw(in DamageStats stats, ICombatant target)
+        // Resolve the derivation to a raw number (before chain falloff / precision /
+        // crit / defense — those are applied by the effect).
+        public float Resolve(in DerivationContext ctx)
         {
-            switch (Derivation)
+            switch (Kind)
             {
-                case DamageDerivation.Flat: return Coefficient;
-                case DamageDerivation.PercentOfWeapon: return stats.BaseDamage * Coefficient;
-                case DamageDerivation.PercentOfTargetMaxHp: return target.MaxHealth * Coefficient;
-                case DamageDerivation.PercentOfTargetMissingHp:
-                    return (target.MaxHealth - target.CurrentHealth) * Coefficient;
+                case DerivationKind.Flat:
+                    return Coefficient;
+                case DerivationKind.PercentOfStat:
+                    return Coefficient * ResolveStat(in ctx);
+                case DerivationKind.PercentOfQuantity:
+                    return Coefficient * ResolveQuantity(in ctx);
+                default:
+                    return 0f;
+            }
+        }
+
+        private float ResolveStat(in DerivationContext ctx)
+        {
+            if (Stat == null) return 0f;
+            StatContainer container = OwnerContainer(in ctx);
+            if (container == null) return 0f;
+            return container.Resolve(Stat);
+        }
+
+        private StatContainer OwnerContainer(in DerivationContext ctx)
+        {
+            switch (Owner)
+            {
+                case StatScope.Attacker: return ctx.Attacker != null ? ctx.Attacker.Stats : null;
+                case StatScope.Source: return ctx.Source != null ? ctx.Source.SourceStats : null;
+                case StatScope.Target: return ctx.Target != null ? ctx.Target.Stats : null;
+                default: return null;
+            }
+        }
+
+        private float ResolveQuantity(in DerivationContext ctx)
+        {
+            // quantities read HEALTH — Source has no health.
+            ICombatant c;
+            switch (Owner)
+            {
+                case StatScope.Attacker: c = ctx.Attacker; break;
+                case StatScope.Target: c = ctx.Target; break;
+                case StatScope.Source:
+                    WarnInvalidSourceQuantity();
+                    return 0f;
                 default: return 0f;
             }
+            if (c == null) return 0f;
+
+            switch (Quantity)
+            {
+                case QuantityKind.CurrentHealth: return c.CurrentHealth;
+                case QuantityKind.MissingHealth: return Mathf.Max(0f, c.MaxHealth - c.CurrentHealth);
+                case QuantityKind.HealthFraction:
+                    return c.MaxHealth > 0f ? c.CurrentHealth / c.MaxHealth : 0f;
+                default: return 0f;
+            }
+        }
+
+        // warn once per session about the invalid Source+quantity combo
+        private static bool warnedSourceQuantity;
+        private static void WarnInvalidSourceQuantity()
+        {
+            if (warnedSourceQuantity) return;
+            warnedSourceQuantity = true;
+            Debug.LogWarning("[DamageSpec] PercentOfQuantity with Source scope is invalid " +
+                             "(a source has no health). Resolving to 0. Use Attacker or Target.");
         }
     }
 }

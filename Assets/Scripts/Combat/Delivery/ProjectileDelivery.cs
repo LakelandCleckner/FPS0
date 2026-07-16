@@ -33,8 +33,7 @@ namespace Combat.Delivery
 
             projectile.Init(
                 resolver:       resolver,
-                stats:          source.GetStats(),
-                attackerStats:  source.AttackerStats,
+                attacker:       source.Attacker,
                 damageSource:   source,
                 effects:        source.GetEffects(),
                 sourceFaction:  source.Faction,

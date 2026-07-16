@@ -28,14 +28,9 @@ namespace Combat.Core
         // version used by status ticks so resistance/type is respected:
         public System.Action<float, DamageTypeSO> ApplyStatusTickDamage;
 
-        // source snapshot (immutable, source-agnostic). Replaces the old StatBlock.
-        public DamageStats Stats;
 
-        // The attacker's PLAYER-SCOPE stat container (crit, global damage, ...).
-        // Nullable: sourceless damage (hazards) has none; crit/player bonuses then
-        // simply don't apply. Carried as a live reference (read fresh at resolution),
-        // multi-entity ready — each attacker carries its own.
-        public Combat.Stats.StatContainer AttackerStats;
+
+        public ICombatant Attacker;
 
 
         // effects

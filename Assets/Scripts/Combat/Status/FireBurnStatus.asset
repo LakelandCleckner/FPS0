@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9e46ea5383849d418754e91729a8cdd, type: 3}
   m_Name: FireBurnStatus
   m_EditorClassIdentifier: 
-  derivation: 1
+  derivationKind: 1
+  owner: 1
+  stat: {fileID: 11400000, guid: 74e01aed325cce348acbd5d421549c4f, type: 2}
+  quantity: 0
   coefficient: 0.2
   damageType: {fileID: 11400000, guid: bb5cd7710169fec488edfdb57f9d8ade, type: 2}
   duration: 3

@@ -12,8 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9e46ea5383849d418754e91729a8cdd, type: 3}
   m_Name: PoisonBurnStatus
   m_EditorClassIdentifier: 
-  derivation: 1
+  derivationKind: 1
+  owner: 1
+  stat: {fileID: 11400000, guid: 74e01aed325cce348acbd5d421549c4f, type: 2}
+  quantity: 0
   coefficient: 0.1
   damageType: {fileID: 11400000, guid: 1b2eaa9ee1d78754f9e8def8f252f9e4, type: 2}
   duration: 5
   tickInterval: 0.33
+  maxEntries: 0
+  evictionStrategy: 0
+  durationMode: 0
+  extendByOriginalDuration: 1
+  extendAmount: 1
+  extensionCap: 0
+  intensityMode: 0
+  intervalReductionPerStack: 0
+  minInterval: 0.1
+  tickTimerMode: 0
+  showFloatingNumber: 1
+  feedsAccumulator: 1

@@ -2,32 +2,27 @@ using Combat.Stats;
 
 namespace Combat.Core
 {
-    // Any entity the combat system can damage or attribute damage to: enemies, the
-    // player, destructibles. Used as TARGET (who's hit) and as ATTACKER (whose stats
-    // scale the hit) — hence "combatant", not "target".
+    // A combatant: an entity with a stat container and (optionally) health + defense.
+    // Used as ATTACKER (whose stats scale a hit; whose health a derivation may read)
+    // and as TARGET (who's hit).
     //
-    // Phase 2i-a: exposes the entity's StatContainer, so derivations can resolve
-    // stats scoped to any combatant (attacker or target), and health becomes
-    // stat-driven (MaxHealth resolves from the container).
+    // Implemented by CombatantStats (the identity is the stat-bearer). Stats are read
+    // directly from Stats; health is delegated to a CombatantHealth sibling, so
+    // reading a stat (e.g. crit) NEVER routes through the health component.
     public interface ICombatant
     {
-        // Runtime health state. MaxHealth is STAT-DRIVEN (resolved from Stats);
-        // CurrentHealth is authoritative runtime state (TakeDamage writes it).
-        float MaxHealth { get; }
-        float CurrentHealth { get; }
-
-        bool IsDying { get; }  // already-dead / despawning guard
-        int Faction { get; }   // for can-damage checks
-
-        // This combatant's stat container (max_health, damage_taken, crit for a
-        // player-combatant, ...). Nullable in principle; a combatant without stats
-        // resolves defaults.
+        // The combatant's stat container — the direct path for stat derivations
+        // (crit, global damage, ...). No health involved.
         StatContainer Stats { get; }
 
-        // Single composed DEFENSIVE multiplier for an incoming hit. The combatant
-        // folds ALL of its damage-reduction/amplification into one number here, so
-        // callers apply one multiplier and never need to know which layers exist.
-        // 1 = neutral, <1 resist, >1 weak, 0 immune.
+        // Health (delegated to a CombatantHealth sibling; 0/defaults if none).
+        float MaxHealth { get; }
+        float CurrentHealth { get; }
+        bool IsDying { get; }
+
+        int Faction { get; }
+
+        // Single composed DEFENSIVE multiplier for an incoming hit.
         float GetDamageMultiplier(DamageTypeSO type, BodyPart bodyPart);
     }
 }

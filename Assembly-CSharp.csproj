@@ -110,6 +110,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\PlayerVisibleSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StatusSO.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\Utilities\MobileDisableAutoSwitchControls.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Core\DerivationContext.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\FireModeSO.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Actions\ChaseAction.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\IsWandering.cs" />
@@ -153,7 +154,6 @@
     <Compile Include="Assets\Scripts\AI\GOAP\Actions\WanderAction.cs" />
     <Compile Include="Assets\Scripts\UI\AmmoDisplay.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\HitscanDelivery.cs" />
-    <Compile Include="Assets\Scripts\Combat\Core\DamageStats.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\PlayerTargetSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponDamageSource.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\InvestigateGoal.cs" />

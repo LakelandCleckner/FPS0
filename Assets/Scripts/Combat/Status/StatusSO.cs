@@ -1,76 +1,73 @@
 using UnityEngine;
 using Combat.Core;
+using Combat.Stats;
 
 namespace Combat.Status
 {
-    // Stateless status recipe. Holds the authored config; produces configured
-    // StatusInstances. Stage 1: tick spec, duration, interval. Category +
-    // stacking config arrive in stage 2.
-
     public enum StatusDurationMode { PerEntryIndependent, RefreshAll, ExtendShared }
     public enum StatusEvictionStrategy { LowestWeight, ShortestRemaining }
     public enum StatusIntensityMode { Magnitude, Rate, Both }
     public enum StatusTickTimerMode { SharedPoolTimer, PerEntryTimer }
+
+    // Stateless status recipe. Phase 2i-b: the tick's derivation is authored as a
+    // KIND + owner scope + stat/quantity, matching the data-driven DamageSpec.
     public abstract class StatusSO : ScriptableObject
     {
-        [Header("Tick Damage")]
-            public DamageDerivation derivation = DamageDerivation.PercentOfWeapon;
-            public float coefficient = 0.2f;
-            public DamageTypeSO damageType;
+        [Header("Tick Damage — derivation")]
+        [Tooltip("Flat: fixed. PercentOfStat: % of a stat. PercentOfQuantity: % of a runtime quantity (health, ...).")]
+        public DerivationKind derivationKind = DerivationKind.PercentOfStat;
+        [Tooltip("Whose stat/quantity the tick reads.")]
+        public StatScope owner = StatScope.Source;
+        [Tooltip("PercentOfStat: which stat (e.g. weapon_damage on Source).")]
+        public StatDefinitionSO stat;
+        [Tooltip("PercentOfQuantity: which runtime quantity.")]
+        public QuantityKind quantity = QuantityKind.CurrentHealth;
+        [Tooltip("Multiplier applied to whatever the derivation points at (0.2 = 20%).")]
+        public float coefficient = 0.2f;
+        public DamageTypeSO damageType;
 
         [Header("Timing")]
-            public float duration = 3f;
-            public float tickInterval = 0.5f;
+        public float duration = 3f;
+        public float tickInterval = 0.5f;
 
         [Header("Stack Cap")]
-            [Tooltip("Max entries in the pool. 0 = uncapped.")]
-            public int maxEntries = 0;
-            [Tooltip("LowestWeight: a stronger application pushes out the weakest entry " +
-                     "(scorch 'kick the weakest').\n" +
-                     "ShortestRemaining: evict the entry closest to expiring, so a long " +
-                     "DOT isn't lost to cap pressure.")]
-            public StatusEvictionStrategy evictionStrategy = StatusEvictionStrategy.LowestWeight;
+        [Tooltip("Max entries in the pool. 0 = uncapped.")]
+        public int maxEntries = 0;
+        public StatusEvictionStrategy evictionStrategy = StatusEvictionStrategy.LowestWeight;
 
         [Header("Duration Behaviour")]
-            [Tooltip("PerEntryIndependent: each application expires on its own timer.\n" +
-                     "RefreshAll: any new application resets ALL entries' timers.\n" +
-                     "ExtendShared: one shared pool timer that applications extend.")]
-            public StatusDurationMode durationMode = StatusDurationMode.PerEntryIndependent;
+        public StatusDurationMode durationMode = StatusDurationMode.PerEntryIndependent;
 
         [Header("ExtendShared settings (only used in ExtendShared mode)")]
-            [Tooltip("If true, each application extends by the status's own 'duration'. " +
-                     "If false, extends by 'extendAmount'.")]
-            public bool extendByOriginalDuration = true;
-            [Tooltip("Extension per application when extendByOriginalDuration is false.")]
-            public float extendAmount = 1f;
-            [Tooltip("Max total remaining time the shared timer can hold (0 = uncapped).")]
-            public float extensionCap = 0f;
+        public bool extendByOriginalDuration = true;
+        public float extendAmount = 1f;
+        public float extensionCap = 0f;
 
-         [Header("Intensity (how stacks scale the DOT)")]
-            public StatusIntensityMode intensityMode = StatusIntensityMode.Magnitude;
-            [Tooltip("Rate/Both: seconds shaved off the tick interval per extra stack.")]
-            public float intervalReductionPerStack = 0f;
-            [Tooltip("Rate/Both: tick interval can't go below this.")]
-            public float minInterval = 0.1f;
+        [Header("Intensity (how stacks scale the DOT)")]
+        public StatusIntensityMode intensityMode = StatusIntensityMode.Magnitude;
+        public float intervalReductionPerStack = 0f;
+        public float minInterval = 0.1f;
 
         [Header("Tick Timer")]
-            [Tooltip("SharedPoolTimer: one timer, entries scale magnitude/rate.\n" +
-             "PerEntryTimer: each entry ticks independently at the base interval " +
-             "(intensity axis ignored).")]
-            public StatusTickTimerMode tickTimerMode = StatusTickTimerMode.SharedPoolTimer;
-
+        public StatusTickTimerMode tickTimerMode = StatusTickTimerMode.SharedPoolTimer;
 
         [Header("Damage Number Presentation")]
-            [Tooltip("Spawn an individual floating number each tick.")]
-            public bool showFloatingNumber = true;
-            [Tooltip("Feed this effect's damage into a rolling accumulator number.")]
-            public bool feedsAccumulator = true;
+        public bool showFloatingNumber = true;
+        public bool feedsAccumulator = true;
 
+        // Build the tick's DamageSpec from the authored derivation.
         public DamageSpec BuildTickSpec()
         {
-            return new DamageSpec(derivation, coefficient, damageType,
-                                  DerivationTiming.SnapshotAtApply);
+            switch (derivationKind)
+            {
+                case DerivationKind.Flat:
+                    return new DamageSpec(coefficient, damageType);
+                case DerivationKind.PercentOfQuantity:
+                    return new DamageSpec(quantity, owner, coefficient, damageType);
+                case DerivationKind.PercentOfStat:
+                default:
+                    return new DamageSpec(stat, owner, coefficient, damageType);
+            }
         }
     }
-    
 }

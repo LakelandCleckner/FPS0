@@ -4,11 +4,9 @@ using UnityEngine;
 
 namespace Combat.Effects
 {
-    // Bridges the on-hit effect list into the status system.
-    //
-    // Phase 2h: passes the SOURCE (so the entry live-links to it and derives its
-    // weight from current cached stats) and the ATTACKER's stats (so each tick can
-    // roll crit).
+    // Bridges the on-hit effect list into the status system. Phase 2i-b: passes the
+    // attacker (ICombatant) and source so the status's ticks can derive off any
+    // participant and can crit.
     public class ApplyStatusHitEffect : IHitEffect
     {
         public EffectPhase Phase => EffectPhase.Application;
@@ -34,13 +32,12 @@ namespace Combat.Effects
             receiver.Apply(
                 status: statusDef,
                 resolver: resolver,
-                source: ctx.DamageSource,            // live link for weight derivation
-                snapshotStats: ctx.Stats,            // fallback if the source dies
-                attackerStats: ctx.AttackerStats,    // crit stats for tick rolls
+                attacker: ctx.Attacker,
+                source: ctx.DamageSource,
                 tickType: tickType,
                 sourceFaction: ctx.SourceFaction,
                 chainDepth: 0,
-                chainMultiplier: ctx.ChainMultiplier,  // frozen for THIS application
+                chainMultiplier: ctx.ChainMultiplier,
                 applyTickDamage: applyTick);
         }
     }

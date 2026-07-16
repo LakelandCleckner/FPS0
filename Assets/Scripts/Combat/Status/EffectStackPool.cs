@@ -2,18 +2,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Combat.Core;
 using Combat.Sources;
-using Combat.Stats;
 
 namespace Combat.Status
 {
-    // The stack of one status on one target — the unit that ticks.
-    //
-    // Phase 2h changes:
-    //  - entries are LIVE-LINKED to their source (StackEntry.Weight is a cached read
-    //    off source.GetStats(), not a frozen float) — a weapon-damage change mid-burn
-    //    is reflected on the next tick, with no per-frame recompute (version-invalidated)
-    //  - the pool carries the ATTACKER's player-scope stats and stamps them onto every
-    //    tick context, so each tick's ResolveHit can roll CRIT independently
+    // The stack of one status on one target. Phase 2i-b: entries are live-linked via
+    // DerivationContext (source + attacker + target); the pool carries the ATTACKER
+    // as an ICombatant (crit rolls + attacker-scoped tick derivations) and the SOURCE
+    // (weight derivation + dead-source fallback).
     //
     // NOTE: contains [StackPool] Debug.Log lines for testing — strip for release.
     public class EffectStackPool
@@ -22,9 +17,8 @@ namespace Combat.Status
         public StatusSO Status { get; private set; }
         public IHitResolver Resolver { get; private set; }
 
-        // attacker's player-scope stats (crit) — live reference, cached reads
-        private StatContainer attackerStats;
-
+        private ICombatant attacker;
+        private IDamageSource source;
         private System.Action<float> applyTickDamage;
         private DamageTypeSO tickType;
 
@@ -47,14 +41,16 @@ namespace Combat.Status
             ICombatant target,
             StatusSO status,
             IHitResolver resolver,
-            StatContainer attackerStats,
+            ICombatant attacker,
+            IDamageSource source,
             DamageTypeSO tickType,
             System.Action<float> applyTickDamage)
         {
             Target = target;
             Status = status;
             Resolver = resolver;
-            this.attackerStats = attackerStats;
+            this.attacker = attacker;
+            this.source = source;
             this.tickType = tickType;
             this.applyTickDamage = applyTickDamage;
 
@@ -64,20 +60,12 @@ namespace Combat.Status
             Expired = false;
         }
 
-        // Add one application. The entry LIVE-LINKS to the source: its weight derives
-        // from the source's current (cached) stats each tick.
-        public void AddEntry(
-            IDamageSource source,
-            DamageStats snapshotFallback,
-            float chainMultiplier,
-            DamageTypeSO type,
-            int sourceFaction,
-            int chainDepth)
+        public void AddEntry(float chainMultiplier, DamageTypeSO type, int sourceFaction, int chainDepth)
         {
             bool wasEmpty = entries.Count == 0;
 
             var e = new StackEntry();
-            e.Set(source, snapshotFallback, Status.BuildTickSpec(), Target,
+            e.Set(source, attacker, Target, Status.BuildTickSpec(),
                   chainMultiplier, type, sourceFaction, chainDepth, Status.duration);
             entries.Add(e);
 
@@ -222,8 +210,6 @@ namespace Combat.Status
             Resolver.ResolveHit(BuildTickContext(entry.Weight));
         }
 
-        // Each tick is its own ResolveHit -> its own INDEPENDENT crit roll, reading
-        // the attacker's current (cached) crit stats.
         private HitContext BuildTickContext(float tickDamage)
         {
             return new HitContext
@@ -236,7 +222,7 @@ namespace Combat.Status
                 ShowFloatingNumber = Status.showFloatingNumber,
                 FeedsAccumulator = Status.feedsAccumulator,
 
-                AttackerStats = attackerStats,   // -> the resolver can roll crit for this tick
+                Attacker = attacker,   // -> resolver rolls crit for this tick
 
                 Effects = new List<IHitEffect> { new StatusSummedTickEffect(tickDamage, tickType, applyTickDamage) },
                 MaxChainDepth = 0,

@@ -6,12 +6,9 @@ using Combat.Stats;
 
 namespace Combat.Status
 {
-    // Lives on each enemy/target. Owns that target's EffectStackPools, keyed by
-    // StatusSO so any source applying the same status stacks into one pool.
-    //
-    // Phase 2h: carries the ATTACKER's stats (so ticks can crit) and the SOURCE
-    // (so entries live-link to it for cached weight derivation).
-    [RequireComponent(typeof(CombatantHealth))]
+    // Lives on each combatant. Owns that target's EffectStackPools, keyed by StatusSO.
+    // The target is the ICombatant (CombatantStats).
+    [RequireComponent(typeof(CombatantStats))]
     public class StatusReceiver : MonoBehaviour
     {
         private ICombatant target;
@@ -21,19 +18,14 @@ namespace Combat.Status
 
         private void Awake()
         {
-            target = GetComponent<CombatantHealth>();
+            target = GetComponent<CombatantStats>();
         }
 
-        // Apply one application of a status.
-        //   source        — live link for the entry's weight (nullable)
-        //   snapshotStats — fallback if the source dies/disappears
-        //   attackerStats — the attacker's player-scope stats (crit) for tick rolls
         public void Apply(
             StatusSO status,
             IHitResolver resolver,
+            ICombatant attacker,
             IDamageSource source,
-            DamageStats snapshotStats,
-            StatContainer attackerStats,
             DamageTypeSO tickType,
             int sourceFaction,
             int chainDepth,
@@ -45,12 +37,12 @@ namespace Combat.Status
             if (!pools.TryGetValue(status, out var pool))
             {
                 pool = new EffectStackPool();
-                pool.Init(target, status, resolver, attackerStats, tickType, applyTickDamage);
+                pool.Init(target, status, resolver, attacker, source, tickType, applyTickDamage);
                 pools[status] = pool;
                 StatusManager.Instance.Register(pool);
             }
 
-            pool.AddEntry(source, snapshotStats, chainMultiplier, tickType, sourceFaction, chainDepth);
+            pool.AddEntry(chainMultiplier, tickType, sourceFaction, chainDepth);
         }
 
         public void OnPoolExpired(EffectStackPool pool)

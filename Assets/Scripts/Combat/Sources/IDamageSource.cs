@@ -5,14 +5,11 @@ using Combat.Stats;
 namespace Combat.Sources
 {
     // Anything that can produce damage: weapon, grenade, melee, explosive barrel.
-    // Source-agnostic.
-    //
-    // Phase 2i-a: exposes the source's own StatContainer, so Source-scoped
-    // derivations can resolve ANY of its stats (weapon_damage, rpm, ...), not just
-    // the base-damage snapshot.
+    // Phase 2i-b: DamageStats/GetStats retired — base damage now derives via
+    // PercentOfStat(weapon_damage, Source) resolving from SourceStats live. Attacker
+    // is carried as an ICombatant (stats + health), not a bare container.
     public interface IDamageSource
     {
-        DamageStats GetStats();
         List<IHitEffect> GetEffects();
         int Faction { get; }
         DamageTypeSO BaseDamageType { get; }
@@ -21,12 +18,11 @@ namespace Combat.Sources
         float ChainGrowth { get; }
         HitDedupMode DedupMode { get; }
 
-        // The ATTACKER's stat container (the wielder). Nullable — a sourceless
-        // hazard has none.
-        StatContainer AttackerStats { get; }
+        // The attacker wielding/owning this source (nullable). Gives both stats
+        // (Attacker.Stats) and health (for attacker-scope quantity derivations).
+        ICombatant Attacker { get; }
 
-        // The SOURCE's OWN stat container (this weapon's stats). Nullable — a simple
-        // source (thrown rock) may have none.
+        // This source's OWN stat container (weapon stats). Nullable.
         StatContainer SourceStats { get; }
     }
 }

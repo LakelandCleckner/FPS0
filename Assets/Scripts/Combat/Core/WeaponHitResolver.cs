@@ -53,15 +53,17 @@ namespace Combat.Core
         {
             ctx.CritMultiplier = 1f;
 
-            if (ctx.AttackerStats == null || statKeys == null) return;
+            var attackerStats = ctx.Attacker != null ? ctx.Attacker.Stats : null;
+            if (attackerStats == null || statKeys == null) return;
             if (statKeys.critChance == null || statKeys.critDamage == null) return;
+            
+            float chance = attackerStats.Resolve(statKeys.critChance);
 
-            float chance = ctx.AttackerStats.Resolve(statKeys.critChance);
             if (chance <= 0f) return;
 
             if (Random.value < chance)
             {
-                float critDamage = ctx.AttackerStats.Resolve(statKeys.critDamage);
+                float critDamage = attackerStats.Resolve(statKeys.critDamage);
                 ctx.CritMultiplier = 1f + critDamage;
                 ctx.WasCrit = true;
             }

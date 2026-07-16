@@ -2,9 +2,10 @@ using Combat.Core;
 
 namespace Combat.Effects
 {
-    // Damage that respects: precision (hitbox) multiplier, the CRIT multiplier
-    // (rolled once at the resolver), chain scaling, and the target's composed
-    // defensive multiplier. Writes the FINAL value back so feedback matches.
+    // Damage that respects precision (hitbox), CRIT, chain scaling, and the target's
+    // composed defense. Phase 2i-b: derivation resolves through a DerivationContext
+    // (attacker/source/target), so a spec can scale off any participant's stats or
+    // health quantities.
     public class DamageHitEffect : IHitEffect
     {
         public EffectPhase Phase => EffectPhase.Application;
@@ -16,21 +17,16 @@ namespace Combat.Effects
 
         public void Apply(HitContext ctx, IHitResolver resolver)
         {
-            float raw = spec.ComputeRaw(ctx.Stats, ctx.Target);
+            var dctx = new DerivationContext(ctx.Attacker, ctx.DamageSource, ctx.Target);
+            float raw = spec.Resolve(in dctx);
 
-            // precision (hitbox/headshot)
-            float final = raw * ctx.HitboxMultiplier;
+            float final = raw * ctx.HitboxMultiplier;   // precision
+            final *= ctx.CritMultiplier;                 // crit (rolled at resolver)
 
-            // CRIT — rolled at the resolver; 1f when no crit. Independent of
-            // precision: a precision crit gets BOTH.
-            final *= ctx.CritMultiplier;
-
-            // chain scaling — no-op at depth 0
             if (spec.AffectedByChainFalloff)
                 final *= ctx.ChainMultiplier;
 
-            // DEFENSE
-            final *= ctx.Target.GetDamageMultiplier(spec.Type, ctx.BodyPartHit);
+            final *= ctx.Target.GetDamageMultiplier(spec.Type, ctx.BodyPartHit);  // defense
 
             ctx.ApplyStatusTickDamage?.Invoke(final, spec.Type);
 

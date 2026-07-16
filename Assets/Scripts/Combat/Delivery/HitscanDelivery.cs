@@ -4,9 +4,9 @@ using Combat.Sources;
 
 namespace Combat.Delivery
 {
-    // Plain-class hitscan delivery. Built once by HitscanDeliverySO with the
-    // resolver injected. Phase 2g: stamps the attacker's player-scope stats onto
-    // the context (AttackerStats) so the resolver can read crit/global.
+    // Plain-class hitscan delivery. Stamps the attacker (ICombatant) + source on the
+    // context; target is the hitbox's combatant (ICombatant). Base damage derives
+    // live from the source container.
     public class HitscanDelivery : IDelivery
     {
         private readonly WeaponHitResolver resolver;
@@ -26,7 +26,7 @@ namespace Combat.Delivery
             var hitbox = hit.collider.GetComponentInParent<EnemyHitbox>();
             if (hitbox == null) return;
 
-            var target = hitbox.combatantHealth as ICombatant;
+            var target = hitbox.combatant as ICombatant;
             if (target == null) return;
 
             var ctx = new HitContext
@@ -34,18 +34,17 @@ namespace Combat.Delivery
                 Target = target,
                 HitPoint = hit.point,
                 Source = HitSource.Direct,
-                SourceFaction = source.Faction,
                 DamageSource = source,
+                Attacker = source.Attacker,
+                SourceFaction = source.Faction,
                 DamageType = source.BaseDamageType,
 
                 HitboxMultiplier = hitbox.damageMultiplier,
                 BodyPartHit = hitbox.bodyPart,
 
-                ApplyDamageToTarget = (dmg) => hitbox.combatantHealth.TakeDamage(dmg, hitbox.bodyPart, source.BaseDamageType),
-                ApplyStatusTickDamage = (dmg, type) => hitbox.combatantHealth.TakeDamage(dmg, hitbox.bodyPart, type),
+                ApplyDamageToTarget = (dmg) => hitbox.combatant.TakeDamage(dmg, hitbox.bodyPart, source.BaseDamageType),
+                ApplyStatusTickDamage = (dmg, type) => hitbox.combatant.TakeDamage(dmg, hitbox.bodyPart, type),
 
-                Stats = source.GetStats(),
-                AttackerStats = source.AttackerStats,
                 Effects = source.GetEffects(),
 
                 MaxChainDepth = source.MaxChainDepth,
