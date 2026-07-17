@@ -87,6 +87,7 @@
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\TriggerState.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\ICombatant.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\WanderGoal.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Keys\DefenseStatKeys.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\StatSystemTest.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Modifiers\StatModifier.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StackEntry.cs" />
@@ -164,6 +165,7 @@
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\HitContext.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\IFireBehavior.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Debug\DefenseDebuffTest.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\WeaponSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\StatResolveTest.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\Accumulator\AccumulatorNumber.cs" />

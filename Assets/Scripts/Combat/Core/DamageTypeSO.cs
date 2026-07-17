@@ -40,6 +40,13 @@ namespace Combat.Core
         [Tooltip("Crit AND debuffed.")]
         public VertexGradient critDebuffedGradient = Flat(Color.white);
 
+        [Header("Defense")]
+        [Tooltip("This type's resistance stat on a target (e.g. fire_resistance). " +
+         "Resolved from the target's container; 0 = no resist, 0.5 = takes half, " +
+         "negative (from a debuff) = takes more. Leave null for no type resistance.")]
+        public Combat.Stats.StatDefinitionSO resistanceStat;
+
+
         // Picks the gradient for the current modifier combination. Falls back to
         // the normal gradient if a slot was left at default (incremental authoring).
         public VertexGradient GetGradient(bool isCrit, bool isDebuffed)

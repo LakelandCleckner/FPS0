@@ -40,6 +40,7 @@ namespace Combat.Stats
         public float MaxHealth => health != null ? health.MaxHealth : 0f;
         public float CurrentHealth => health != null ? health.CurrentHealth : 0f;
         public bool IsDying => health != null && health.IsDying;
+        public bool IsDebuffed => health != null && health.IsDebuffed;
         public float GetDamageMultiplier(DamageTypeSO type, BodyPart bodyPart)
             => health != null ? health.GetDamageMultiplier(type, bodyPart) : 1f;
 

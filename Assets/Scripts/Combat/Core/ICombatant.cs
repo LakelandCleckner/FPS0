@@ -20,6 +20,8 @@ namespace Combat.Core
         float CurrentHealth { get; }
         bool IsDying { get; }
 
+        bool IsDebuffed { get; }
+
         int Faction { get; }
 
         // Single composed DEFENSIVE multiplier for an incoming hit.

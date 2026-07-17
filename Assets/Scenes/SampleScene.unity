@@ -871,6 +871,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 691975962}
+  - component: {fileID: 691975963}
   m_Layer: 0
   m_Name: Stat Test Object
   m_TagString: Untagged
@@ -893,6 +894,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &691975963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 691975960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e13ee7837d5f0d4ea7085c7b17f69e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyStats: {fileID: 100518933}
+  resistanceStat: {fileID: 11400000, guid: f5a8c623ad3a88c48bda3be493dbf950, type: 2}
+  damageTakenStat: {fileID: 11400000, guid: 42789f1ceb8ea56419424ce5f8ff04d8, type: 2}
+  shatterAmount: 0.5
+  vulnerabilityAmount: 0.5
+  hardenAmount: 0.5
 --- !u!1 &754033184
 GameObject:
   m_ObjectHideFlags: 0
@@ -1447,6 +1466,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fb98c1a74c5913c4ba0e2e28ff92952c, type: 2}
   - {fileID: 11400000, guid: 46cc998b415c8a840a76a3076f7d656f, type: 2}
   - {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
+  - {fileID: 11400000, guid: a89e67f16ea52304c9df256c094efcd4, type: 2}
+  - {fileID: 11400000, guid: f5a8c623ad3a88c48bda3be493dbf950, type: 2}
+  - {fileID: 11400000, guid: 87d6c1c70154b0348b8856aeee374a6c, type: 2}
+  - {fileID: 11400000, guid: 3a5aadef136191c46a35a5ecdf04e1ac, type: 2}
+  - {fileID: 11400000, guid: dc920a34e05adb64c958ff021c4eb339, type: 2}
 --- !u!4 &1041933018
 Transform:
   m_ObjectHideFlags: 0
@@ -2401,8 +2425,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   combatantStats: {fileID: 2130910821}
   maxHealthStat: {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
+  defenseKeys: {fileID: 0}
   maxHealthChangeMode: 0
-  resistances: []
   bodyPartResistances: []
 --- !u!1001 &4717497599679480891
 PrefabInstance:
@@ -2686,16 +2710,28 @@ PrefabInstance:
       objectReference: {fileID: 100518921}
     - target: {fileID: 3623431239706443026, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: baseStats.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3623431239706443026, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: baseStats.Array.data[0].stat
       value: 
       objectReference: {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
     - target: {fileID: 3623431239706443026, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: baseStats.Array.data[1].stat
+      value: 
+      objectReference: {fileID: 11400000, guid: f5a8c623ad3a88c48bda3be493dbf950, type: 2}
+    - target: {fileID: 3623431239706443026, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: baseStats.Array.data[0].baseValue
       value: 1000
       objectReference: {fileID: 0}
+    - target: {fileID: 3623431239706443026, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: baseStats.Array.data[1].baseValue
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4457919424505222122, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: defenseKeys
+      value: 
+      objectReference: {fileID: 11400000, guid: a75c75c49e7ade5439c54fa3d9905716, type: 2}
     - target: {fileID: 4457919424505222122, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: maxHealthStat
       value: 

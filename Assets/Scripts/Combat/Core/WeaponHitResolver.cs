@@ -133,8 +133,8 @@ namespace Combat.Core
                     follow,
                     ctx.DamageDealt,
                     ctx.DamageType,
-                    highlight,
-                    ctx.WasDebuffed);
+                    false,
+                    false);
             }
         }
     }

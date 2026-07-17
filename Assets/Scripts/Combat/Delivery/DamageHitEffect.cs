@@ -32,6 +32,7 @@ namespace Combat.Effects
 
             ctx.DamageDealt += final;
             ctx.WasHeadshot = ctx.BodyPartHit == BodyPart.Head;
+            ctx.WasDebuffed = ctx.Target != null && ctx.Target.IsDebuffed;
             ctx.WasKill = ctx.Target.CurrentHealth <= 0f;
         }
     }

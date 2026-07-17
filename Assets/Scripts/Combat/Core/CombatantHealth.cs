@@ -2,22 +2,26 @@ using UnityEngine;
 using Combat.Core;
 using Combat.Stats;
 
-// Health state + defensive layers for a combatant. Phase 2i-b refactor: NO LONGER
-// implements ICombatant — the combatant identity is CombatantStats, which delegates
-// health to this sibling. This keeps stat reads (crit) off the health path entirely.
+// Health state + defensive layers for a combatant. Phase: defensive stats.
 //
-// max_health is still a STAT resolved from the CombatantStats container (buffs/elites
-// are modifiers); current_health stays authoritative runtime state. Max changes are
-// detected lazily (version compare on access) and applied per MaxHealthChangeMode.
+// DEFENSE is now data-driven where it should be dynamic:
+//   - per-TYPE resistance is a STAT resolved from the container, keyed by the
+//     DamageTypeSO's resistanceStat (fire_resistance, physical_resistance, ...).
+//     A "shatter fire resist" debuff is a negative modifier on fire_resistance.
+//   - general vulnerability (damage_taken) is a STAT: +0.3 => takes 30% more.
+//   - body-part resistance stays an authored array for now (tied to hitbox setup).
+//
+// max_health is a stat (from earlier); current_health is authoritative runtime state.
 public class CombatantHealth : MonoBehaviour
 {
     public enum MaxHealthChangeMode { ClampOnly, Proportional, Additive }
 
     [Header("Stats")]
-    [Tooltip("The combatant's stats (max_health lives here). Auto-found if empty.")]
     [SerializeField] private CombatantStats combatantStats;
-    [Tooltip("The max_health StatDefinitionSO.")]
     [SerializeField] private StatDefinitionSO maxHealthStat;
+    [Tooltip("General defensive stats (damage_taken). Per-type resistance lives on " +
+             "the DamageTypeSO.")]
+    [SerializeField] private DefenseStatKeys defenseKeys;
 
     [Header("Max Health Changes")]
     [SerializeField] private MaxHealthChangeMode maxHealthChangeMode = MaxHealthChangeMode.ClampOnly;
@@ -33,14 +37,12 @@ public class CombatantHealth : MonoBehaviour
     public float MaxHealth { get { RefreshMax(); return cachedMax; } }
     public float CurrentHealth => currentHealth;
 
-    // --- resistances ---
-    [System.Serializable]
-    public struct Resistance { public DamageTypeSO type; public float multiplier; }
-    [SerializeField] private Resistance[] resistances;
-
+    // --- Body-part resistance (authored array; positional, tied to hitbox setup) ---
     [System.Serializable]
     public struct BodyPartResistance { public BodyPart part; public float multiplier; }
     [SerializeField] private BodyPartResistance[] bodyPartResistances;
+
+    private StatContainer Container => combatantStats != null ? combatantStats.Container : null;
 
     private void Awake()
     {
@@ -57,7 +59,7 @@ public class CombatantHealth : MonoBehaviour
 
     private void RefreshMax()
     {
-        var container = combatantStats != null ? combatantStats.Container : null;
+        var container = Container;
         if (container == null || maxHealthStat == null)
         {
             if (cachedMaxVersion == int.MinValue) { cachedMax = 1f; cachedMaxVersion = 0; }
@@ -95,12 +97,14 @@ public class CombatantHealth : MonoBehaviour
                   $"({maxHealthChangeMode}) | HP now {currentHealth:F0}/{newMax:F0}");
     }
 
-    private float GetTypeResistance(DamageTypeSO type)
+    // Per-type resistance — resolved from the container via the type's resistanceStat.
+    // 0 = no resist (x1), 0.5 = takes half (x0.5), negative (debuff) = takes more (>x1).
+    private float GetTypeMultiplier(DamageTypeSO type)
     {
-        if (type != null && resistances != null)
-            foreach (var r in resistances)
-                if (r.type == type) return r.multiplier;
-        return 1f;
+        var container = Container;
+        if (type == null || type.resistanceStat == null || container == null) return 1f;
+        float resist = container.Resolve(type.resistanceStat);
+        return Mathf.Max(0f, 1f - resist);   // floored so a huge resist can't go negative
     }
 
     private float GetBodyPartResistance(BodyPart part)
@@ -111,9 +115,32 @@ public class CombatantHealth : MonoBehaviour
         return 1f;
     }
 
+    // General vulnerability — (1 + resolved damage_taken). +0.3 => x1.3 (takes more).
+    private float GetVulnerabilityMultiplier()
+    {
+        var container = Container;
+        if (defenseKeys == null || defenseKeys.damageTaken == null || container == null) return 1f;
+        return Mathf.Max(0f, 1f + container.Resolve(defenseKeys.damageTaken));
+    }
+
+    // Composed defensive multiplier: type resistance x body-part x vulnerability.
     public float GetDamageMultiplier(DamageTypeSO type, BodyPart bodyPart)
     {
-        return GetTypeResistance(type) * GetBodyPartResistance(bodyPart);
+        return GetTypeMultiplier(type)
+             * GetBodyPartResistance(bodyPart)
+             * GetVulnerabilityMultiplier();
+    }
+
+    // Whether this combatant is currently DEBUFFED defensively (vulnerability active),
+    // for damage-number styling. True when damage_taken resolves above 0.
+    public bool IsDebuffed
+    {
+        get
+        {
+            var container = Container;
+            if (defenseKeys == null || defenseKeys.damageTaken == null || container == null) return false;
+            return container.Resolve(defenseKeys.damageTaken) > 0f;
+        }
     }
 
     public void TakeDamage(float damage, BodyPart partHit, DamageTypeSO type)

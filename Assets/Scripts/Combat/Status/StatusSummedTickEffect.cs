@@ -37,6 +37,7 @@ namespace Combat.Status
             ctx.DamageDealt += final;
             ctx.WasKill = ctx.Target.CurrentHealth <= 0f;
             // WasCrit set by the resolver's roll; WasHeadshot stays false for ticks.
+            ctx.WasDebuffed = ctx.Target != null && ctx.Target.IsDebuffed;
         }
     }
 }
