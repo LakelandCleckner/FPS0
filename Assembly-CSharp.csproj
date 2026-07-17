@@ -95,6 +95,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\AgentBrain.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\DamageTypeSO.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\TargetKeys\WanderTarget.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Keys\MovementStatKeys.cs" />
     <Compile Include="Assets\Scripts\Enemies\DamageAndHealth\BodyPart.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Actions\InvestigateAction.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Buckets\StatBucketSO.cs" />

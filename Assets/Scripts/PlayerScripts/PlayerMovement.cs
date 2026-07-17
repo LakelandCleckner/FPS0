@@ -1,38 +1,38 @@
 using KBCore.Refs;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Combat.Stats;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Movement")]
+    [Header("Movement (tuning — pushed into the stat container as bases at Start)")]
     [SerializeField] private float baseWalkSpeed;
     [SerializeField] private float baseSprintMultiplier;
 
-
-    [Header("Acceleration")]
+    [Header("Acceleration (tuning — pushed as bases)")]
     [SerializeField] private float groundAcceleration = 25f;
     [SerializeField] private float airAcceleration = 6f;
 
-
-    //[Header("Stats")] TO BE POSSIBLY ADDED LATER AFTER DEALING WITH MOVEMENT AND OTHER BASIC NEEDS
-    /*[SerializeField] private int baseStamina = 100;
-    [SerializeField, Self] private Stamina stamina;
-    private int currentStamina; */
-
-    [Header("Jump")]
+    [Header("Jump / Gravity (tuning — jumpForce + gravity pushed as bases)")]
     [SerializeField] private float jumpForce;
     [SerializeField] private float gravity;
-    [SerializeField] private float jumpBufferTime = 0.1f;
+    [SerializeField] private float jumpBufferTime = 0.1f;   // input feel — NOT a stat
     private float jumpBufferCounter;
 
-    [Header("Sprint Rules")]
-    [SerializeField] private float sprintTakeoffGraceTime = 0.12f; // press sprint slightly before jumping
-    [SerializeField] private float sprintForwardThreshold = 0.1f;  // require forward input to sprint
+    [Header("Sprint Rules (input feel — NOT stats)")]
+    [SerializeField] private float sprintTakeoffGraceTime = 0.12f;
+    [SerializeField] private float sprintForwardThreshold = 0.1f;
+
+    [Header("Stats")]
+    [Tooltip("The player's stat container (its CombatantStats). Movement stats live here.")]
+    [SerializeField] private CombatantStats combatantStats;
+    [Tooltip("References to the movement stat definitions.")]
+    [SerializeField] private MovementStatKeys statKeys;
 
     private float sprintGraceCounter;
-    private bool wantsToSprint;     // intent (button held)
-    private bool airSprintAllowed;  // locked-in sprint momentum for airtime
+    private bool wantsToSprint;
+    private bool airSprintAllowed;
     private bool wasGrounded;
 
     private Vector3 currentMovement = Vector3.zero;
@@ -47,10 +47,6 @@ public class PlayerMovement : MonoBehaviour
     [Header("References")]
     [SerializeField] private MouseLook mouseLook;
 
-    /// <summary>
-    /// Handles player Movement, Jumping, and Gravity
-    /// Takes a reference from MouseLook.cs to handle mouse control.
-    /// </summary>
     private void OnValidate()
     {
         this.ValidateRefs();
@@ -62,7 +58,8 @@ public class PlayerMovement : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        //currentStamina = baseStamina; for Undecided Stamina System
+        if (combatantStats == null)
+            combatantStats = GetComponent<CombatantStats>();
 
         playerInputs.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         playerInputs.Player.Move.canceled += _ => moveInput = Vector2.zero;
@@ -77,6 +74,36 @@ public class PlayerMovement : MonoBehaviour
 
         playerInputs.Player.Run.started += Sprint;
         playerInputs.Player.Run.canceled += Sprint;
+    }
+
+    private void Start()
+    {
+        // Push the serialized tuning values into the container as the stat BASES.
+        // (Author on this component; the container is what movement actually reads,
+        // so modifiers — slows, speed perks, low-grav — layer on top.)
+        PushBases();
+    }
+
+    private void PushBases()
+    {
+        var c = combatantStats != null ? combatantStats.Container : null;
+        if (c == null || statKeys == null) return;
+
+        if (statKeys.moveSpeed != null) c.SetBase(statKeys.moveSpeed, baseWalkSpeed);
+        if (statKeys.sprintMultiplier != null) c.SetBase(statKeys.sprintMultiplier, baseSprintMultiplier);
+        if (statKeys.jumpForce != null) c.SetBase(statKeys.jumpForce, jumpForce);
+        if (statKeys.groundAcceleration != null) c.SetBase(statKeys.groundAcceleration, groundAcceleration);
+        if (statKeys.airAcceleration != null) c.SetBase(statKeys.airAcceleration, airAcceleration);
+        if (statKeys.gravity != null) c.SetBase(statKeys.gravity, gravity);
+    }
+
+    // Resolve a movement stat live (cached). Falls back to the serialized tuning
+    // value if the container isn't ready (defensive — no zero-speed race).
+    private float Stat(StatDefinitionSO def, float fallback)
+    {
+        var c = combatantStats != null ? combatantStats.Container : null;
+        if (c == null || def == null) return fallback;
+        return c.Resolve(def);
     }
 
     private void Update()
@@ -97,7 +124,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateSprintState()
     {
-        // Count down grace window
         if (sprintGraceCounter > 0f)
         {
             sprintGraceCounter -= Time.deltaTime;
@@ -106,20 +132,15 @@ public class PlayerMovement : MonoBehaviour
 
         bool grounded = characterController.isGrounded;
 
-        // On takeoff, lock whether sprint is allowed for this airtime
         if (wasGrounded && !grounded)
         {
             bool hasForwardInput = moveInput.y > sprintForwardThreshold;
             bool sprintAtTakeoff = (wantsToSprint || sprintGraceCounter > 0f) && hasForwardInput;
-
             airSprintAllowed = sprintAtTakeoff;
         }
 
-        // On landing, clear air lock
         if (!wasGrounded && grounded)
-        {
             airSprintAllowed = false;
-        }
 
         wasGrounded = grounded;
     }
@@ -129,33 +150,33 @@ public class PlayerMovement : MonoBehaviour
         bool grounded = characterController.isGrounded;
         bool hasForwardInput = moveInput.y > sprintForwardThreshold;
 
-        // Sprint rules
         bool groundSprintAllowed = wantsToSprint && hasForwardInput;
         bool isSprintingNow = grounded ? groundSprintAllowed : airSprintAllowed;
 
-        float speedMultiplier = isSprintingNow ? baseSprintMultiplier : 1f;
+        // resolved movement stats (live — a slow/speed modifier applies immediately)
+        float moveSpeed = Stat(statKeys != null ? statKeys.moveSpeed : null, baseWalkSpeed);
+        float sprintMult = Stat(statKeys != null ? statKeys.sprintMultiplier : null, baseSprintMultiplier);
 
-        // Desired horizontal velocity (world space)
-        float desiredForward = moveInput.y * baseWalkSpeed * speedMultiplier;
-        float desiredStrafe = moveInput.x * baseWalkSpeed * speedMultiplier;
+        float speedMultiplier = isSprintingNow ? sprintMult : 1f;
+
+        float desiredForward = moveInput.y * moveSpeed * speedMultiplier;
+        float desiredStrafe = moveInput.x * moveSpeed * speedMultiplier;
 
         Vector3 desiredHorizontal = new Vector3(desiredStrafe, 0f, desiredForward);
         desiredHorizontal = transform.rotation * desiredHorizontal;
 
-        // Current horizontal velocity (world space)
         Vector3 currentHorizontal = new Vector3(currentMovement.x, 0f, currentMovement.z);
 
-        // Blend factor based on acceleration
-        float accel = grounded ? groundAcceleration : airAcceleration;
+        float groundAccel = Stat(statKeys != null ? statKeys.groundAcceleration : null, groundAcceleration);
+        float airAccel = Stat(statKeys != null ? statKeys.airAcceleration : null, airAcceleration);
+        float accel = grounded ? groundAccel : airAccel;
 
-        // MoveTowards gives a “speed per second” style acceleration (very controllable)
         currentHorizontal = Vector3.MoveTowards(
             currentHorizontal,
             desiredHorizontal,
             accel * Time.deltaTime
         );
 
-        // Apply blended horizontal back into movement
         currentMovement.x = currentHorizontal.x;
         currentMovement.z = currentHorizontal.z;
 
@@ -165,21 +186,6 @@ public class PlayerMovement : MonoBehaviour
         characterController.Move(currentMovement * Time.deltaTime);
     }
 
-
-    /*private void HandleStaminaUsage(Vector3 movement)
-    {
-        if (movement != Vector3.zero && isSprintPressed)
-        {
-            currentStamina -= 1;
-        }
-        else
-        {
-            currentStamina += 1;
-        }
-        currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina);
-        stamina.UpdateStamina(currentStamina);
-    }*/
-
     private void HandleJump()
     {
         if (!characterController.isGrounded)
@@ -187,7 +193,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (jumpBufferCounter > 0f)
         {
-            currentMovement.y = jumpForce;
+            currentMovement.y = Stat(statKeys != null ? statKeys.jumpForce : null, jumpForce);
             jumpBufferCounter = 0f;
         }
     }
@@ -200,28 +206,18 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            currentMovement.y -= gravity * Time.deltaTime;
+            float g = Stat(statKeys != null ? statKeys.gravity : null, gravity);
+            currentMovement.y -= g * Time.deltaTime;
         }
     }
 
     private void Sprint(InputAction.CallbackContext ctx)
     {
         wantsToSprint = ctx.ReadValueAsButton();
-
-        // If sprint is pressed, start/refresh the grace timer
         if (wantsToSprint)
-        {
             sprintGraceCounter = sprintTakeoffGraceTime;
-        }
     }
 
-    public float CurrentSpeed
-    {
-        get
-        {
-            return new Vector3(currentMovement.x, 0f, currentMovement.z).magnitude;
-        }
-    }
-
+    public float CurrentSpeed => new Vector3(currentMovement.x, 0f, currentMovement.z).magnitude;
     public bool IsGrounded => characterController.isGrounded;
 }

@@ -1440,6 +1440,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6a60948ce14798c4383dfc31d3281302, type: 2}
   - {fileID: 11400000, guid: 7579532ea69da3744ab17777fafe21c6, type: 2}
   - {fileID: 11400000, guid: 14d268e731c835c47a1b4ac02ea452ac, type: 2}
+  - {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
+  - {fileID: 11400000, guid: 043a6273eb7f1924b8ccb7fa987563b3, type: 2}
+  - {fileID: 11400000, guid: 2ebca9aacdc02f742b9c70ec3adbe7b9, type: 2}
+  - {fileID: 11400000, guid: 7612cb812e9c0204e8453fe383fd8279, type: 2}
+  - {fileID: 11400000, guid: fb98c1a74c5913c4ba0e2e28ff92952c, type: 2}
+  - {fileID: 11400000, guid: 46cc998b415c8a840a76a3076f7d656f, type: 2}
   - {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
 --- !u!4 &1041933018
 Transform:
@@ -2420,6 +2426,14 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 09a13dc11d493ca499a3955b5ee02738, type: 2}
     - target: {fileID: 2176066724308284047, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
       propertyPath: wielderStats
+      value: 
+      objectReference: {fileID: 2130910821}
+    - target: {fileID: 2501316767126194405, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
+      propertyPath: statKeys
+      value: 
+      objectReference: {fileID: 11400000, guid: e5297dbc1c3361844a44e561f0b7094f, type: 2}
+    - target: {fileID: 2501316767126194405, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
+      propertyPath: combatantStats
       value: 
       objectReference: {fileID: 2130910821}
     - target: {fileID: 3210834218394652636, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
