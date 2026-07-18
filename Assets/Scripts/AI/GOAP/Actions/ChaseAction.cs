@@ -12,10 +12,8 @@ namespace GOAPGettingStarted.Actions
         public override void Start(IMonoAgent agent, Data data)
         {
             var brain = agent.Transform.GetComponent<AgentBrain>();
-            var nav = agent.Transform.GetComponent<NavMeshAgent>();
-            if (nav != null && brain != null)
-                nav.speed = brain.BaseMoveSpeed * brain.ChaseSpeedMultiplier;
-
+            if (brain != null)
+                brain.CurrentSpeedMultiplier = brain.ChaseSpeedMultiplier;
         }
 
         public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
@@ -28,13 +26,10 @@ namespace GOAPGettingStarted.Actions
         {
             var brain = agent.Transform.GetComponent<AgentBrain>();
             var nav = agent.Transform.GetComponent<NavMeshAgent>();
+            if (brain != null)
+                brain.CurrentSpeedMultiplier = 1f;
             if (nav != null && nav.isActiveAndEnabled && nav.isOnNavMesh)
-            {
-                if (brain != null)
-                    nav.speed = brain.BaseMoveSpeed;
                 nav.ResetPath();
-            }
-
         }
 
         public class Data : IActionData

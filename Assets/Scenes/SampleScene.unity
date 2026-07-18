@@ -180,17 +180,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 79e624e6a8770a946afb866fd94b394b, type: 3}
---- !u!114 &100518921 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4457919424505222122, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-  m_PrefabInstance: {fileID: 8718396258175804275}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c8f2d3ec049d5e4eabcf6867f50d068, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &100518933 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3623431239706443026, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
@@ -2696,57 +2685,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2780478270126569151, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: m_Name
-      value: EnemyRoot
-      objectReference: {fileID: 0}
-    - target: {fileID: 2780478270126569151, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3623431239706443026, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: health
-      value: 
-      objectReference: {fileID: 100518921}
-    - target: {fileID: 3623431239706443026, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: baseStats.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3623431239706443026, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: baseStats.Array.data[0].stat
-      value: 
-      objectReference: {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
-    - target: {fileID: 3623431239706443026, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: baseStats.Array.data[1].stat
-      value: 
-      objectReference: {fileID: 11400000, guid: f5a8c623ad3a88c48bda3be493dbf950, type: 2}
-    - target: {fileID: 3623431239706443026, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: baseStats.Array.data[0].baseValue
-      value: 1000
-      objectReference: {fileID: 0}
-    - target: {fileID: 3623431239706443026, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: baseStats.Array.data[1].baseValue
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4457919424505222122, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: defenseKeys
-      value: 
-      objectReference: {fileID: 11400000, guid: a75c75c49e7ade5439c54fa3d9905716, type: 2}
-    - target: {fileID: 4457919424505222122, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: maxHealthStat
-      value: 
-      objectReference: {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
-    - target: {fileID: 4457919424505222122, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+    - target: {fileID: 149718689330863646, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: combatantStats
       value: 
       objectReference: {fileID: 100518933}
-    - target: {fileID: 6153080590672177399, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: combatant
-      value: 
-      objectReference: {fileID: 100518933}
-    - target: {fileID: 6202201215946115517, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: m_Enabled
-      value: 0
+    - target: {fileID: 2780478270126569151, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: m_Name
+      value: EnemyRoot
       objectReference: {fileID: 0}
     - target: {fileID: 6554507270622062351, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: runner
@@ -2792,14 +2737,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7503194494376760278, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: bodyPartResistances.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7654303295665472057, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
-      propertyPath: combatant
-      value: 
-      objectReference: {fileID: 100518933}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

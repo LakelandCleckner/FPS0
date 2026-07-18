@@ -18,6 +18,7 @@ namespace GOAPGettingStarted.Behaviours
         private AgentBrain brain;
         private ITarget currentTarget;
         private bool shouldMove;
+        private float lastAppliedSpeed = -1f;
 
         private void Awake()
         {
@@ -25,7 +26,6 @@ namespace GOAPGettingStarted.Behaviours
             nav = GetComponent<NavMeshAgent>();
             brain = GetComponent<AgentBrain>();
 
-            nav.speed = brain.BaseMoveSpeed;
             nav.stoppingDistance = StoppingDistance;
         }
 
@@ -68,6 +68,19 @@ namespace GOAPGettingStarted.Behaviours
 
         private void Update()
         {
+            // Speed resolves from stats (cached); only write to the agent when it actually
+            // changes, so a slow/buff lands the frame it's applied without a native write
+            // every frame.
+            float desiredSpeed = brain.BaseMoveSpeed * brain.CurrentSpeedMultiplier;
+            if (!Mathf.Approximately(desiredSpeed, lastAppliedSpeed))
+            {
+                nav.speed = desiredSpeed;
+                lastAppliedSpeed = desiredSpeed;
+            }
+
+            if (Time.frameCount % 60 == 0)
+                Debug.Log($"[Move] shouldMove={shouldMove} target={(currentTarget == null ? "null" : currentTarget.GetType().Name)} speed={nav.speed:F2} stopped={nav.isStopped} paused={agent.IsPaused}");
+
             if (agent.IsPaused)
             {
                 nav.isStopped = true;
@@ -79,6 +92,17 @@ namespace GOAPGettingStarted.Behaviours
             {
                 nav.SetDestination(currentTarget.Position);
                 nav.isStopped = false;
+
+                // Inside stopping distance the agent halts, and NavMesh rotation only turns it
+                // while moving — so face the target ourselves or it freezes staring one way.
+                Vector3 toTarget = currentTarget.Position - transform.position;
+                toTarget.y = 0f;
+                if (toTarget.sqrMagnitude > 0.01f && nav.velocity.sqrMagnitude < 0.01f)
+                {
+                    Quaternion look = Quaternion.LookRotation(toTarget);
+                    transform.rotation = Quaternion.RotateTowards(
+                        transform.rotation, look, nav.angularSpeed * Time.deltaTime);
+                }
                 return;
             }
 

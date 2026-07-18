@@ -93,6 +93,7 @@
     <Compile Include="Assets\Scripts\Combat\Status\StackEntry.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\InvestigateTargetSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\WeaponArchetypeSO.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Keys\EnemyMovementStatKeys.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\AgentBrain.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\DamageTypeSO.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\TargetKeys\WanderTarget.cs" />

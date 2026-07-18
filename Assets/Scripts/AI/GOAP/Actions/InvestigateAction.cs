@@ -27,12 +27,18 @@ namespace GOAPGettingStarted.Actions
                 data.TargetLookAngle = agent.Transform.eulerAngles.y;
             }
 
+            // Declare the speed multiplier; AgentMoveBehaviour applies nav.speed
+            // (base move_speed resolved from stats x this multiplier).
             var brain = agent.Transform.GetComponent<AgentBrain>();
+            if (brain != null)
+                brain.CurrentSpeedMultiplier = brain.InvestigateSpeedMultiplier;
+
             var nav = agent.Transform.GetComponent<NavMeshAgent>();
             if (nav != null && nav.isActiveAndEnabled && nav.isOnNavMesh)
             {
-                if (brain != null)
-                    nav.speed = brain.BaseMoveSpeed * brain.InvestigateSpeedMultiplier;
+                // Ensure we start under normal agent rotation even if a previous
+                // run was interrupted mid-look-around.
+                nav.updateRotation = true;
                 nav.SetDestination(data.Destination);
             }
         }
@@ -41,6 +47,12 @@ namespace GOAPGettingStarted.Actions
         {
             if (!data.Arrived)
             {
+                if (Time.frameCount % 60 == 0)
+                {
+                    Vector3 d = data.Destination - agent.Transform.position; d.y = 0f;
+                    Debug.Log($"[Inv] flatDist={d.magnitude:F2} arrive={ArrivalDistance} navRemaining={agent.Transform.GetComponent<UnityEngine.AI.NavMeshAgent>().remainingDistance:F2}");
+                }
+
                 if (Vector3.Distance(agent.Transform.position, data.Destination) <= ArrivalDistance)
                 {
                     data.Arrived = true;
@@ -51,6 +63,7 @@ namespace GOAPGettingStarted.Actions
                     if (nav != null && nav.isActiveAndEnabled && nav.isOnNavMesh)
                     {
                         nav.ResetPath();
+                        // hand rotation over to us for the look-around
                         nav.updateRotation = false;
                     }
                 }
@@ -89,12 +102,14 @@ namespace GOAPGettingStarted.Actions
         public override void Stop(IMonoAgent agent, Data data)
         {
             var brain = agent.Transform.GetComponent<AgentBrain>();
+            if (brain != null)
+                brain.CurrentSpeedMultiplier = 1f;
+
             var nav = agent.Transform.GetComponent<NavMeshAgent>();
             if (nav != null && nav.isActiveAndEnabled)
             {
+                // always hand rotation back, whatever stage we were interrupted at
                 nav.updateRotation = true;
-                if (brain != null)
-                    nav.speed = brain.BaseMoveSpeed;
                 if (nav.isOnNavMesh)
                     nav.ResetPath();
             }
