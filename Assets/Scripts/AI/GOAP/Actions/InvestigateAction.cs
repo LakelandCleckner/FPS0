@@ -47,11 +47,11 @@ namespace GOAPGettingStarted.Actions
         {
             if (!data.Arrived)
             {
-                if (Time.frameCount % 60 == 0)
+                /*if (Time.frameCount % 60 == 0)
                 {
                     Vector3 d = data.Destination - agent.Transform.position; d.y = 0f;
                     Debug.Log($"[Inv] flatDist={d.magnitude:F2} arrive={ArrivalDistance} navRemaining={agent.Transform.GetComponent<UnityEngine.AI.NavMeshAgent>().remainingDistance:F2}");
-                }
+                }*/
 
                 if (Vector3.Distance(agent.Transform.position, data.Destination) <= ArrivalDistance)
                 {

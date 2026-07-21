@@ -176,14 +176,14 @@ namespace GOAPGettingStarted.Behaviours
                     break;
             }
 
-            if (visible != wasVisible)
-                Debug.Log($"[Brain] {state} | visible {wasVisible}->{visible} | hasPos={memory.HasLastKnownPosition}");
+            //if (visible != wasVisible)
+                //Debug.Log($"[Brain] {state} | visible {wasVisible}->{visible} | hasPos={memory.HasLastKnownPosition}");
 
-            if (state != lastLoggedState)
+            /*if (state != lastLoggedState)
             {
                 Debug.Log($"[Brain] STATE -> {state} | visible={visible} | hasPos={memory.HasLastKnownPosition}");
                 lastLoggedState = state;
-            }
+            }*/
 
             wasVisible = visible;
         }
@@ -232,7 +232,7 @@ namespace GOAPGettingStarted.Behaviours
         private void EnterInvestigate()
         {
             state = AIState.Investigate;
-            Debug.Log($"[AgentBrain] EnterInvestigate — hasPos={memory.HasLastKnownPosition} pos={memory.LastKnownPlayerPosition}");
+            //Debug.Log($"[AgentBrain] EnterInvestigate — hasPos={memory.HasLastKnownPosition} pos={memory.LastKnownPlayerPosition}");
             actionProvider.RequestGoal<InvestigateGoal>();
         }
 
@@ -247,7 +247,7 @@ namespace GOAPGettingStarted.Behaviours
 
             if (distance > DetectionRange)
             {
-                if (Time.frameCount % 30 == 0) Debug.Log($"[Vis] FAIL range {distance:F1} > {DetectionRange}");
+                //if (Time.frameCount % 30 == 0) Debug.Log($"[Vis] FAIL range {distance:F1} > {DetectionRange}");
                 return false;
             }
 
@@ -261,7 +261,7 @@ namespace GOAPGettingStarted.Behaviours
             {
                 if (!hit.transform.CompareTag("Player"))
                 {
-                    if (Time.frameCount % 30 == 0) Debug.Log($"[Vis] FAIL blocked by {hit.transform.name} (tag {hit.transform.tag})");
+                    //if (Time.frameCount % 30 == 0) Debug.Log($"[Vis] FAIL blocked by {hit.transform.name} (tag {hit.transform.tag})");
                     return false;
                 }
             }

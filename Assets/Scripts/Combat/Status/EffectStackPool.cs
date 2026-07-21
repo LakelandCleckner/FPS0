@@ -195,7 +195,7 @@ namespace Combat.Status
             float damage = CurrentTickDamage();
             if (damage <= 0f) return;
 
-            Debug.Log($"[StackPool] TICK(shared) {Status.name} | entries: {entries.Count} | dmg: {damage:F1} | interval: {CurrentInterval():F2} | {Status.intensityMode}/{Status.durationMode}");
+            //Debug.Log($"[StackPool] TICK(shared) {Status.name} | entries: {entries.Count} | dmg: {damage:F1} | interval: {CurrentInterval():F2} | {Status.intensityMode}/{Status.durationMode}");
 
             Resolver.ResolveHit(BuildTickContext(damage));
         }
@@ -205,7 +205,7 @@ namespace Combat.Status
             if (Target == null || Target.IsDying) { Expired = true; return; }
             if (entry.Weight <= 0f) return;
 
-            Debug.Log($"[StackPool] TICK(per-entry) {Status.name} | weight: {entry.Weight:F1} | entries: {entries.Count}");
+            //Debug.Log($"[StackPool] TICK(per-entry) {Status.name} | weight: {entry.Weight:F1} | entries: {entries.Count}");
 
             Resolver.ResolveHit(BuildTickContext(entry.Weight));
         }
@@ -216,6 +216,12 @@ namespace Combat.Status
             {
                 Target = Target,
                 Source = HitSource.StatusTick,
+
+                // Carry the originating weapon onto the tick so per-weapon event routing
+                // works for DOTs. Without this, ticks publish with a null weapon and any
+                // weapon-scoped perk silently never hears the burn it applied.
+                DamageSource = source,
+
                 DamageType = tickType,
                 HitboxMultiplier = 1f,
                 SourceStatus = Status,

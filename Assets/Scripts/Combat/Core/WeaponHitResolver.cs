@@ -1,5 +1,7 @@
 using Combat.Feedback;
-using System.Linq;
+using Combat.Events;
+using Combat.Sources;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Combat.Core
@@ -21,6 +23,25 @@ namespace Combat.Core
         [Tooltip("Play hit audio on every status tick (can get noisy).")]
         [SerializeField] private bool playTickAudio = true;
 
+        [Header("Events")]
+        [Tooltip("Fire Hit/PrecisionHit even when the hit dealt no damage (fully " +
+                 "resisted, immune). ON lets 'on hit, apply a mark' perks work against " +
+                 "immune targets; OFF matches the feedback gate exactly. Gameplay call.")]
+        [SerializeField] private bool fireHitEventsOnZeroDamage = true;
+
+        private WeaponEventBus bus;
+
+        // ResolveHit RE-ENTERS (chains, splash, an effect that causes another hit),
+        // so the working effect list cannot be a single shared buffer. One per
+        // nesting level, grown on demand.
+        private readonly List<List<IHitEffect>> bufferPool = new List<List<IHitEffect>>(4);
+        private int resolveDepth;
+
+        private void Awake()
+        {
+            bus = WeaponEventBus.FindFor(this);
+        }
+
         public void ResolveHit(HitContext ctx)
         {
             if (ctx.Target == null) return;
@@ -31,17 +52,139 @@ namespace Combat.Core
             // chains) provided it carries the attacker's stats. Each DOT tick is its
             // own ResolveHit, so each tick rolls INDEPENDENTLY. Stat reads are
             // bucket-resolved and cached (version-invalidated), not per-frame recompute.
+            //
+            // Because this precedes the effect loop, a perk-contributed effect can
+            // never influence crit for the hit it joins. See IHitEffectContributor.
             RollCrit(ctx);
 
-            // PHASE SORTING: Modifier -> Application -> Reaction.
-            var ordered = ctx.Effects.OrderBy(e => (int)e.Phase);
+            var effects = RentBuffer();
+            try
+            {
+                if (ctx.Effects != null)
+                    effects.AddRange(ctx.Effects);
 
-            foreach (var effect in ordered)
-                effect.Apply(ctx, this);
+                // PERK INTERCEPTION: contributors may add effects for this hit only.
+                //
+                // The recursion budget is claimed BEFORE contributing, and held for
+                // the whole effect loop. Claiming it first matters: once contributed
+                // effects are phase-sorted they're interleaved with the weapon's own,
+                // so there'd be no clean way to withdraw them afterwards. If the
+                // budget is exhausted we simply don't ask — the hit degrades to the
+                // un-perked version and still does its damage, which is safer than
+                // dropping the hit.
+                //
+                // Scope is claimed ONLY when contributors exist. Chains re-enter
+                // ResolveHit with their own budget (MaxChainDepth); charging them
+                // against the event depth cap would drop events during ordinary
+                // chaining with no perk involved.
+                bool scoped = false;
+                if (bus != null && bus.HasContributors)
+                {
+                    scoped = bus.TryEnterScope();
+                    if (scoped)
+                        bus.Contribute(ctx, effects);
+                }
+
+                // PHASE SORTING: Modifier -> Application -> Reaction.
+                // MUST be a STABLE sort — doc 02 guarantees "a Modifier listed after
+                // an Application still runs first", i.e. authored order is preserved
+                // within a phase. LINQ OrderBy (the previous implementation) is
+                // stable; List<T>.Sort is NOT, so this is a hand-rolled insertion
+                // sort rather than the obvious one-liner. Effect lists are tiny, and
+                // this also removes the per-hit LINQ allocation that fired on every
+                // DOT tick.
+                StableSortByPhase(effects);
+
+                try
+                {
+                    for (int i = 0; i < effects.Count; i++)
+                        effects[i].Apply(ctx, this);
+                }
+                finally
+                {
+                    if (scoped) bus.ExitScope();
+                }
+            }
+            finally
+            {
+                ReturnBuffer(effects);
+            }
 
             if (ctx.DamageDealt > 0f)
                 ShowFeedback(ctx);
+
+            // AFTER feedback: this hit's presentation completes before any perk
+            // cascade begins, so a perk-caused follow-up can't spawn its damage
+            // number ahead of the number for the hit that caused it.
+            DispatchHitEvents(ctx);
         }
+
+        // ------------------------------------------------------------------ events
+
+        private void DispatchHitEvents(HitContext ctx)
+        {
+            if (bus == null) return;
+            if (ctx.DamageDealt <= 0f && !fireHitEventsOnZeroDamage && !ctx.WasKill) return;
+
+            var weapon = ctx.DamageSource as WeaponDamageSource;
+
+            // Read precision from BodyPartHit, NOT ctx.WasHeadshot. WasHeadshot is
+            // written by DamageHitEffect, so a hit carrying only a status-application
+            // effect leaves it false even on a genuine headshot. BodyPartHit is set
+            // by delivery and is always correct.
+            bool precision = ctx.BodyPartHit == BodyPart.Head;
+
+            bus.Publish(WeaponEvent.ForHit(WeaponEventType.Hit, weapon, ctx));
+
+            if (precision)
+                bus.Publish(WeaponEvent.ForHit(WeaponEventType.PrecisionHit, weapon, ctx));
+
+            if (ctx.WasKill)
+            {
+                bus.Publish(WeaponEvent.ForHit(WeaponEventType.Kill, weapon, ctx));
+                if (precision)
+                    bus.Publish(WeaponEvent.ForHit(WeaponEventType.PrecisionKill, weapon, ctx));
+            }
+        }
+
+        // ------------------------------------------------------------ effect list
+
+        // Insertion sort: stable, allocation-free, and faster than a comparison sort
+        // at these list sizes.
+        private static void StableSortByPhase(List<IHitEffect> list)
+        {
+            for (int i = 1; i < list.Count; i++)
+            {
+                var key = list[i];
+                int keyPhase = (int)key.Phase;
+                int j = i - 1;
+                while (j >= 0 && (int)list[j].Phase > keyPhase)
+                {
+                    list[j + 1] = list[j];
+                    j--;
+                }
+                list[j + 1] = key;
+            }
+        }
+
+        private List<IHitEffect> RentBuffer()
+        {
+            if (resolveDepth >= bufferPool.Count)
+                bufferPool.Add(new List<IHitEffect>(8));
+
+            var buffer = bufferPool[resolveDepth];
+            buffer.Clear();
+            resolveDepth++;
+            return buffer;
+        }
+
+        private void ReturnBuffer(List<IHitEffect> buffer)
+        {
+            buffer.Clear();
+            if (resolveDepth > 0) resolveDepth--;
+        }
+
+        // --------------------------------------------------------------------- crit
 
         // Roll crit from the ATTACKER's resolved crit_chance; on success set the crit
         // multiplier (1 + resolved crit_damage — the D4 model, base 0.5 => x1.5) and
@@ -56,7 +199,7 @@ namespace Combat.Core
             var attackerStats = ctx.Attacker != null ? ctx.Attacker.Stats : null;
             if (attackerStats == null || statKeys == null) return;
             if (statKeys.critChance == null || statKeys.critDamage == null) return;
-            
+
             float chance = attackerStats.Resolve(statKeys.critChance);
 
             if (chance <= 0f) return;
@@ -68,6 +211,8 @@ namespace Combat.Core
                 ctx.WasCrit = true;
             }
         }
+
+        // ----------------------------------------------------------------- feedback
 
         private void ShowFeedback(HitContext ctx)
         {

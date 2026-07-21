@@ -47,7 +47,7 @@ namespace Combat.Stats
             }
 
             initialized = true;
-            Debug.Log($"[StatRegistry] Initialized with {list.Length} stats.");
+            //Debug.Log($"[StatRegistry] Initialized with {list.Length} stats.");
         }
 
         public static StatDefinitionSO GetByIndex(int index)

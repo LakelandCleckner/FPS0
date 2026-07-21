@@ -242,8 +242,11 @@ GameObject:
   - component: {fileID: 361837227482591087}
   - component: {fileID: 5668753119110060874}
   - component: {fileID: 3751349381959288400}
+  - component: {fileID: 3694005707256881966}
+  - component: {fileID: 6450774073341179235}
+  - component: {fileID: 2437886977585437901}
   m_Layer: 8
-  m_Name: Player
+  m_Name: PlayerCapsuleRoot
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -259,7 +262,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 1, y: 1.01, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2818574277921317380}
@@ -389,6 +392,8 @@ MonoBehaviour:
   jumpBufferTime: 0.1
   sprintTakeoffGraceTime: 0.12
   sprintForwardThreshold: 0.1
+  combatantStats: {fileID: 3694005707256881966}
+  statKeys: {fileID: 11400000, guid: e5297dbc1c3361844a44e561f0b7094f, type: 2}
   characterController: {fileID: 6372030621816821298}
   moveInput: {x: 0, y: 0}
   mouseLook: {fileID: 361837227482591087}
@@ -473,6 +478,59 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audio3D: {fileID: 4798741777728412965}
   audio2D: {fileID: 7215732981988516626}
+--- !u!114 &3694005707256881966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6041466214417116510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdf4ae702aea108449104d23d3b24ade, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseStats:
+  - stat: {fileID: 11400000, guid: 2d453d23674d7e5419fdb375fc761414, type: 2}
+    baseValue: 0.5
+  - stat: {fileID: 11400000, guid: fc43bc424a3cd7241a8d86e29f7b33b5, type: 2}
+    baseValue: 0.5
+  - stat: {fileID: 11400000, guid: e5a738ee31f17c64682b1c822f19ced0, type: 2}
+    baseValue: 1
+  - stat: {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
+    baseValue: 1000
+  health: {fileID: 6450774073341179235}
+  faction: 1
+--- !u!114 &6450774073341179235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6041466214417116510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c8f2d3ec049d5e4eabcf6867f50d068, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  combatantStats: {fileID: 3694005707256881966}
+  maxHealthStat: {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
+  defenseKeys: {fileID: 0}
+  maxHealthChangeMode: 0
+  bodyPartResistances: []
+--- !u!114 &2437886977585437901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6041466214417116510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45f0caebb377b0d479709028e694df00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logDispatch: 0
 --- !u!1 &6377282824227111301
 GameObject:
   m_ObjectHideFlags: 0
@@ -856,6 +914,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 400006, guid: 6f8ee9e57f0ae87429c40e77c8b75822, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.09002686
+      objectReference: {fileID: 0}
     - target: {fileID: 2300000, guid: 6f8ee9e57f0ae87429c40e77c8b75822, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -898,6 +960,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100002, guid: 6f8ee9e57f0ae87429c40e77c8b75822, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6497626008849436845}
+    - targetCorrespondingSourceObject: {fileID: 100002, guid: 6f8ee9e57f0ae87429c40e77c8b75822, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5941131721419039506}
+    - targetCorrespondingSourceObject: {fileID: 100002, guid: 6f8ee9e57f0ae87429c40e77c8b75822, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3695984466015032666}
   m_SourcePrefab: {fileID: 100100000, guid: 6f8ee9e57f0ae87429c40e77c8b75822, type: 3}
 --- !u!1 &3210834218394489848 stripped
 GameObject:
@@ -942,8 +1010,10 @@ MonoBehaviour:
   playerAudio: {fileID: 3751349381959288400}
   hitmarkerClip: {fileID: 8300000, guid: 7d6f9e6454d5e774f8f596acb90c6d1e, type: 3}
   killClip: {fileID: 8300000, guid: 4107abbdf23642e418bf3611e95c789b, type: 3}
+  statKeys: {fileID: 11400000, guid: d08ea03d7f569de4ea98d55cfd34a719, type: 2}
   showTickHitmarkers: 1
   playTickAudio: 1
+  fireHitEventsOnZeroDamage: 1
 --- !u!114 &2176066724308284047
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -957,6 +1027,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weapon: {fileID: 11400000, guid: d3924d4d97123f64abdced4856c5c9fc, type: 2}
+  statKeys: {fileID: 11400000, guid: 09a13dc11d493ca499a3955b5ee02738, type: 2}
+  wielder: {fileID: 3694005707256881966}
 --- !u!114 &812466885183284375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -975,8 +1047,6 @@ MonoBehaviour:
   muzzle: {fileID: 4396387542550143682}
   projectilePrefab: {fileID: 4322860328306482254, guid: a0d67a2227acca64484a9fa125a4f8f6, type: 3}
   reloadKey: 32
-  weaponModel: {fileID: 3210834218394489848}
-  crosshair: {fileID: 0}
 --- !u!114 &6497626008849436845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -992,6 +1062,39 @@ MonoBehaviour:
   damageSource: {fileID: 2176066724308284047}
   refillPoint: 1
   autoReloadOnEmpty: 1
+--- !u!114 &5941131721419039506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3210834218394489848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89e8e725acaad2f4fa1533ed246dd713, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 812466885183284375}
+  animator: {fileID: 4146006712052589651}
+  damageSource: {fileID: 2176066724308284047}
+  fireClipName: HandgunFire
+  reloadClipName: HandgunReload
+  scaleFireToRPM: 1
+  scaleReloadToTime: 1
+--- !u!114 &3695984466015032666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3210834218394489848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f312c60d2ce1028409e14024a44d1a0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 812466885183284375}
+  damageSource: {fileID: 2176066724308284047}
 --- !u!4 &3210834218394652632 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400002, guid: 6f8ee9e57f0ae87429c40e77c8b75822, type: 3}

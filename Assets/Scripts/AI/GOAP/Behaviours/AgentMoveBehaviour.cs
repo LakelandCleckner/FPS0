@@ -78,8 +78,8 @@ namespace GOAPGettingStarted.Behaviours
                 lastAppliedSpeed = desiredSpeed;
             }
 
-            if (Time.frameCount % 60 == 0)
-                Debug.Log($"[Move] shouldMove={shouldMove} target={(currentTarget == null ? "null" : currentTarget.GetType().Name)} speed={nav.speed:F2} stopped={nav.isStopped} paused={agent.IsPaused}");
+            //if (Time.frameCount % 60 == 0)
+                //Debug.Log($"[Move] shouldMove={shouldMove} target={(currentTarget == null ? "null" : currentTarget.GetType().Name)} speed={nav.speed:F2} stopped={nav.isStopped} paused={agent.IsPaused}");
 
             if (agent.IsPaused)
             {
