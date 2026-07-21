@@ -9,7 +9,10 @@ namespace Combat.Status
     // from mutating its collection mid-iteration — safe when a tick kills a target
     // (cleanup) or a chain applies a status DURING the loop.
     //
-    // STAGE 2: ticks pools (was StatusInstances).
+    // PERF: removal is SWAP-BACK. Pool order carries no meaning (every pool ticks
+    // once per frame regardless of position), so paying List.Remove's linear search
+    // plus element shuffle bought nothing. Also caches each pool's StatusReceiver at
+    // registration instead of doing a cast + GetComponent per expiry.
     public class StatusManager : MonoBehaviour
     {
         public static StatusManager Instance { get; private set; }
@@ -28,6 +31,13 @@ namespace Combat.Status
 
         public void Register(EffectStackPool pool)
         {
+            // Fallback only. StatusReceiver.Apply assigns Owner at construction, so
+            // this normally does nothing. Kept so a pool registered by some future
+            // path without a receiver still gets its expiry notification, matching
+            // the original GetComponent behaviour exactly.
+            if (pool.Owner == null)
+                pool.Owner = (pool.Target as MonoBehaviour)?.GetComponent<StatusReceiver>();
+
             if (ticking) toAdd.Add(pool);
             else active.Add(pool);
         }
@@ -35,7 +45,7 @@ namespace Combat.Status
         public void Unregister(EffectStackPool pool)
         {
             if (ticking) toRemove.Add(pool);
-            else active.Remove(pool);
+            else SwapBackRemove(pool);
         }
 
         private void Update()
@@ -50,21 +60,43 @@ namespace Combat.Status
                 if (pool.Expired)
                 {
                     toRemove.Add(pool);
-                    // tell the receiver to drop its reference too
-                    (pool.Target as MonoBehaviour)?.GetComponent<StatusReceiver>()?.OnPoolExpired(pool);
+                    // Tell the receiver to drop its reference too.
+                    //
+                    // Deliberately `!= null` and NOT `?.` — the null-conditional
+                    // operator uses reference null, bypassing Unity's overloaded
+                    // equality, so it would happily invoke a method on a DESTROYED
+                    // MonoBehaviour and throw MissingReferenceException. `!= null`
+                    // calls Unity's operator and correctly treats destroyed as null.
+                    if (pool.Owner != null)
+                        pool.Owner.OnPoolExpired(pool);
                 }
             }
             ticking = false;
 
             if (toRemove.Count > 0)
             {
-                foreach (var p in toRemove) active.Remove(p);
+                for (int i = 0; i < toRemove.Count; i++) SwapBackRemove(toRemove[i]);
                 toRemove.Clear();
             }
             if (toAdd.Count > 0)
             {
                 active.AddRange(toAdd);
                 toAdd.Clear();
+            }
+        }
+
+        // Order-independent removal: overwrite the slot with the last element and
+        // clip the tail. O(n) find, O(1) removal, no shuffle.
+        private void SwapBackRemove(EffectStackPool pool)
+        {
+            for (int i = 0; i < active.Count; i++)
+            {
+                if (!ReferenceEquals(active[i], pool)) continue;
+
+                int last = active.Count - 1;
+                active[i] = active[last];
+                active.RemoveAt(last);
+                return;
             }
         }
     }

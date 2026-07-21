@@ -12,9 +12,13 @@ namespace Combat.Status
         public EffectPhase Phase => EffectPhase.Application;
         public bool PropagatesOnChain => false;
 
-        private readonly float summedWeight;
+        // Not readonly: the owning EffectStackPool reuses one instance across ticks
+        // rather than allocating a fresh effect every tick.
+        private float summedWeight;
         private readonly DamageTypeSO type;
         private readonly System.Action<float> applyDamage;
+
+        public void SetTickDamage(float weight) => summedWeight = weight;
 
         public StatusSummedTickEffect(float summedWeight, DamageTypeSO type,
                                       System.Action<float> applyDamage)

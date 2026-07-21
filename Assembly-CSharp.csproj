@@ -151,6 +151,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\PlayerEngaged.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\BurnStatusSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Core\StatRegistry.cs" />
+    <Compile Include="Assets\Scripts\Combat\Status\StatusLog.cs" />
     <Compile Include="Assets\Scripts\Combat\Events\WeaponEvents.cs" />
     <Compile Include="Assets\Scripts\AudioScripts\Footsteps.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\CanvasInputs\UICanvasControllerInput.cs" />

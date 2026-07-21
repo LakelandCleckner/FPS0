@@ -3,16 +3,21 @@ using Combat.Sources;
 
 namespace Combat.Status
 {
-    // One application of a status. Phase 2i-b: weight derives LIVE through a
-    // DerivationContext built from the entry's stored refs (source / attacker /
-    // target), so a tick can scale off any participant's stats or health quantities
-    // — resolved cached (source.SourceStats / attacker.Stats are version-invalidated).
+    // One application of a status. Weight derives LIVE through a DerivationContext
+    // built from the entry's stored refs (source / attacker / target), so a tick can
+    // scale off any participant's stats or health quantities.
     //
     // DEAD-SOURCE FALLBACK: if the source is destroyed (Source becomes null), the
     // entry freezes at the last weight it successfully computed while alive, so a
-    // live DOT from a now-gone grenade keeps ticking sanely. (Replaces the old
-    // DamageStats snapshot — the fallback is the cached OUTPUT, not a frozen input,
-    // so it works for any derivation, not just base damage.)
+    // live DOT from a now-gone grenade keeps ticking sanely. The fallback caches the
+    // OUTPUT, not a frozen input, so it works for any derivation.
+    //
+    // PERF: Weight is now cached PER FRAME. It used to rebuild a DerivationContext
+    // and re-resolve the whole spec on every read — and it is read several times per
+    // tick (guard, log, argument) plus once per entry by SummedWeight and EvictOne.
+    // Semantics change from "live per read" to "live per frame"; nothing observes it
+    // more than once per frame, and a modifier applied this frame still lands this
+    // frame unless it lands strictly between two reads within one frame.
     public class StackEntry
     {
         public IDamageSource Source;    // live link (nullable once destroyed)
@@ -33,25 +38,45 @@ namespace Combat.Status
         private float lastAliveWeight;
         private bool hasLastWeight;
 
-        // LIVE weight: resolve through the derivation context. If the source is gone
-        // AND the derivation needs it, fall back to the last alive weight.
+        // per-frame resolve cache
+        private int cachedFrame = -1;
+        private float cachedWeight;
+
+        // LIVE weight, resolved at most once per frame. If the source is gone, falls
+        // back to the last weight computed while it was alive.
         public float Weight
         {
             get
             {
+                int frame = UnityEngine.Time.frameCount;
+                if (cachedFrame == frame) return cachedWeight;
+
+                float w;
+
                 // Source destroyed (Unity-null) -> freeze at last known weight
                 bool sourceAlive = !(Source is UnityEngine.Object o) || o != null;
                 if (!sourceAlive)
-                    return hasLastWeight ? lastAliveWeight : 0f;
+                {
+                    w = hasLastWeight ? lastAliveWeight : 0f;
+                }
+                else
+                {
+                    var dctx = new DerivationContext(Attacker, Source, Target);
+                    w = TickSpec.Resolve(in dctx) * ChainMultiplier;
 
-                var dctx = new DerivationContext(Attacker, Source, Target);
-                float w = TickSpec.Resolve(in dctx) * ChainMultiplier;
+                    lastAliveWeight = w;
+                    hasLastWeight = true;
+                }
 
-                lastAliveWeight = w;
-                hasLastWeight = true;
+                cachedFrame = frame;
+                cachedWeight = w;
                 return w;
             }
         }
+
+        // Force the next Weight read to re-resolve. Call if something needs a
+        // mid-frame recompute (nothing does today).
+        public void InvalidateWeight() => cachedFrame = -1;
 
         public void Set(IDamageSource source, ICombatant attacker, ICombatant target,
                         DamageSpec tickSpec, float chainMultiplier, DamageTypeSO type,
@@ -69,6 +94,8 @@ namespace Combat.Status
             TickAccumulator = 0f;
             lastAliveWeight = 0f;
             hasLastWeight = false;
+            cachedFrame = -1;
+            cachedWeight = 0f;
         }
 
         public void Reset()
@@ -85,6 +112,8 @@ namespace Combat.Status
             TickAccumulator = 0f;
             lastAliveWeight = 0f;
             hasLastWeight = false;
+            cachedFrame = -1;
+            cachedWeight = 0f;
         }
     }
 }

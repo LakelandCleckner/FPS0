@@ -38,6 +38,7 @@ namespace Combat.Status
             {
                 pool = new EffectStackPool();
                 pool.Init(target, status, resolver, attacker, source, tickType, applyTickDamage);
+                pool.Owner = this;          // expiry notification without a GetComponent
                 pools[status] = pool;
                 StatusManager.Instance.Register(pool);
             }

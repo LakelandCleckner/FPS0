@@ -41,7 +41,18 @@ namespace Combat.Core
         public int MaxChainDepth = 0;
         public float ChainFalloff = 1f;
         public float ChainGrowth = 1f;
-        public HashSet<ICombatant> AlreadyHit = new HashSet<ICombatant>();
+
+        // Lazily allocated. Every HitContext used to allocate a HashSet at construction
+        // whether or not dedup was ever consulted — a per-hit allocation on every bullet
+        // and every DOT tick in the game.
+        private HashSet<ICombatant> alreadyHit;
+        public HashSet<ICombatant> AlreadyHit => alreadyHit ??= new HashSet<ICombatant>();
+
+        // True without forcing allocation — prefer this for read-only checks.
+        public bool HasAlreadyHit => alreadyHit != null && alreadyHit.Count > 0;
+
+        // For reused contexts (status ticks).
+        public void ResetAlreadyHit() => alreadyHit?.Clear();
         public HitDedupMode DedupMode = HitDedupMode.PerShot;
 
         // Crit multiplier for this hit, rolled ONCE at the resolver. 1 = no crit; on a

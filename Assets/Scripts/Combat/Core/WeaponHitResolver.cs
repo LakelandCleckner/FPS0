@@ -195,6 +195,7 @@ namespace Combat.Core
         private void RollCrit(HitContext ctx)
         {
             ctx.CritMultiplier = 1f;
+            ctx.WasCrit = false;
 
             var attackerStats = ctx.Attacker != null ? ctx.Attacker.Stats : null;
             if (attackerStats == null || statKeys == null) return;

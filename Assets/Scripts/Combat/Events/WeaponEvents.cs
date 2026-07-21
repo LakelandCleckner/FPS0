@@ -56,6 +56,16 @@ namespace Combat.Events
     // 02's correctness rule (every multiplier applied before DamageDealt is written,
     // so the floating number can't diverge from real HP loss). Perks that want to
     // change a shot do it by contributing an effect — see IHitEffectContributor.
+    //
+    // AND DO NOT RETAIN IT. The reference is valid only for the duration of the
+    // handler call. EffectStackPool reuses ONE HitContext per status across all its
+    // ticks, so a subscriber that stashes evt.Hit to inspect next frame will find it
+    // silently overwritten by the next tick — with plausible-looking data from a
+    // different hit, which is the worst kind of wrong.
+    //
+    // If a perk needs hit state later, COPY THE VALUES it cares about (target,
+    // damage, was-crit) into its own fields during the handler. Never hold the
+    // context itself.
     public readonly struct WeaponEvent
     {
         public readonly WeaponEventType Type;
