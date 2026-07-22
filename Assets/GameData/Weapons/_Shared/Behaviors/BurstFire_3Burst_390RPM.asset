@@ -9,7 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f61acfed3cad0ae4ab27ad42c376fb3a, type: 3}
-  m_Name: Projectile_Standard
+  m_Script: {fileID: 11500000, guid: 66c8a491832b70240ab67ecbe49425e2, type: 3}
+  m_Name: BurstFire_3Burst_390RPM
   m_EditorClassIdentifier: 
-  projectile: {fileID: 11400000, guid: 3ee8633e4e33a4840bdfa8ff3a5a4f85, type: 2}
+  shotsPerBurst: 3
+  intraBurstDelay: 0.1
+  repeatWhileHeld: 1

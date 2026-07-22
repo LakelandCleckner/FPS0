@@ -18,7 +18,7 @@ namespace Combat.Delivery
             this.range = range;
         }
 
-        public void Fire(Vector3 origin, Vector3 direction, IDamageSource source)
+        public void Fire(Vector3 origin, Vector3 direction, IDamageSource source, in ShotInfo shot)
         {
             if (!Physics.Raycast(origin, direction, out var hit, range))
                 return;
@@ -50,6 +50,11 @@ namespace Combat.Delivery
                 HitboxMultiplier = hitbox.damageMultiplier,
                 BodyPartHit = hitbox.bodyPart,
 
+                // Which shot this was. One hitscan shot produces one hit, so id and
+                // hit are 1:1 here — unlike a piercing projectile, where several hits
+                // share an id. A perk counting shots rather than hits reads this.
+                Shot = shot,
+
                 // Cached on the hitbox rather than built as a closure here. This
                 // delegate OUTLIVES the hit — EffectStackPool retains it for the life
                 // of any status this shot applies — so it must not capture anything
@@ -57,7 +62,6 @@ namespace Combat.Delivery
                 ApplyStatusTickDamage = hitbox.ApplyTickDamage,
 
                 Effects = source.GetEffects(),
-
                 MaxChainDepth = source.MaxChainDepth,
                 ChainFalloff = source.ChainFalloff,
                 ChainGrowth = source.ChainGrowth,

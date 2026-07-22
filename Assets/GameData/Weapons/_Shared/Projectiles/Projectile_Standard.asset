@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41b65424470d5f24a8bb10b203edbb91, type: 3}
+  m_Name: Projectile_Standard
+  m_EditorClassIdentifier: 
+  id: projectile_standard
+  displayName: Projectile Standard
+  prefab: {fileID: 4322860328306482254, guid: a0d67a2227acca64484a9fa125a4f8f6, type: 3}
+  config:
+    speed: 999
+    maxLifetime: 5
+    maxDistance: 100
+    impactMode: 1
+    maxPierceCount: 1
+    stopOnEnvironment: 1
+    collisionMask:
+      serializedVersion: 2
+      m_Bits: 469

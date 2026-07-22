@@ -82,5 +82,10 @@ namespace Combat.Core
         // presentation flags carried from the status (defaults suit direct hits)
         public bool ShowFloatingNumber = true;
         public bool FeedsAccumulator = false;
+
+        // Which shot produced this hit. Lets a perk count SHOTS rather than HITS: one
+        // piercing round through three enemies is three Hit events but one ShotId.
+        // Default for status ticks, which have no originating shot.
+        public ShotInfo Shot;
     }
 }

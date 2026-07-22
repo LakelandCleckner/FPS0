@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c87bf3b35c07714b9aa7cdd526b8349, type: 3}
+  m_Name: Burster390
+  m_EditorClassIdentifier: 
+  archetype: {fileID: 11400000, guid: 46e6b4025aafbfd46872417326676d04, type: 2}
+  id: burster390sidearm
+  displayName: Burster 389
+  baseDamageType: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
+  weaponDamageDelta: 0
+  roundsPerMinuteDelta: 0
+  magazineSizeDelta: 0
+  reloadTimeDelta: 0
+  startingReserves: 100
+  infiniteReservesOverride: 0
+  fireClip: {fileID: 8300000, guid: a02ac01715490c646a720c0bcc70ec7a, type: 3}
+  emptyClip: {fileID: 8300000, guid: 08eb29cab0988c349bc1c4de52aaf72c, type: 3}
+  reloadClip: {fileID: 8300000, guid: 49af6209dec94aa4a9216b5a301d0a88, type: 3}
+  riderEffects: []
+  perkPool: []
+  faction: 0
+  maxChainDepth: 0
+  chainFalloff: 1
+  chainGrowth: 1
+  dedupMode: 0

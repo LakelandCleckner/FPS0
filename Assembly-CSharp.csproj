@@ -84,8 +84,10 @@
     <Compile Include="Assets\Scripts\Combat\Core\DamageTypeRegistry.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\DamageHitEffect.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\Enums.cs" />
+    <Compile Include="Assets\Scripts\Combat\Weapons\Data\BurstFireBehaviorSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponAnimator.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\TriggerState.cs" />
+    <Compile Include="Assets\Scripts\Combat\Core\ShotInfo.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\ICombatant.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\WanderGoal.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Keys\DefenseStatKeys.cs" />
@@ -109,15 +111,16 @@
     <Compile Include="Assets\Scripts\Combat\Effects\DamageEffectSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\ProjectileDeliverySO.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StatusSummedTickEffect.cs" />
+    <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\BurstFireBehavior.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\DebugLogEffectSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Runtime\CombatantStats.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StatusReceiver.cs" />
+    <Compile Include="Assets\Scripts\Debugging\Performance\ContextResetAudit.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\PlayerVisibleSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StatusSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Events\WeaponEventBus.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\Utilities\MobileDisableAutoSwitchControls.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Core\DerivationContext.cs" />
-    <Compile Include="Assets\Scripts\Combat\Weapons\Data\FireModeSO.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Actions\ChaseAction.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\IsWandering.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\Wandering\WanderTargetSensor.cs" />
@@ -168,6 +171,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\TargetKeys\PlayerTarget.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\ChaseGoal.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Bootstrap\StatBootstrap.cs" />
+    <Compile Include="Assets\Scripts\Combat\Weapons\Data\ProjectileSO.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\HitContext.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\IFireBehavior.cs" />
@@ -178,6 +182,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\GoapControllerMono.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\LocationInvestigatedSensor.cs" />
     <Compile Include="Assets\Scripts\Weapons\HitmarkerUI.cs" />
+    <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\FireMode.cs" />
     <Compile Include="Assets\Scripts\AI\HelperScripts\Enemyfovvisualizer.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\WeaponTypeSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Core\StatDefinitionSO.cs" />

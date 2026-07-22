@@ -22,7 +22,7 @@ namespace Combat.Delivery
             {
                 if (instance != null) return instance;
 
-                instance = FindObjectOfType<ProjectilePool>();
+                instance = FindAnyObjectByType<ProjectilePool>();
                 if (instance != null) return instance;
 
                 var go = new GameObject("[ProjectilePool]");

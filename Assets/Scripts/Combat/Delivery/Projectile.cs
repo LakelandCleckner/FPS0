@@ -83,7 +83,8 @@ namespace Combat.Delivery
             float chainGrowth,
             HitDedupMode dedupMode,
             ProjectileConfig config,
-            Vector3 direction)
+            Vector3 direction,
+            in ShotInfo shot)
         {
             this.resolver = resolver;
             this.damageSource = damageSource;
@@ -118,6 +119,7 @@ namespace Combat.Delivery
             hitContext.ChainGrowth = chainGrowth;
             hitContext.DedupMode = dedupMode;
             hitContext.ApplyDamageToTarget = applyBaseDamage;
+            hitContext.Shot = shot;
 
             initialized = true;
         }
