@@ -267,6 +267,8 @@ namespace Combat.Status
         // cleared below.
         private HitContext BuildTickContext(float tickDamage)
         {
+            tickContext.BumpGeneration();
+
             tickEffect.SetTickDamage(tickDamage);
 
             tickContext.DamageDealt = 0f;

@@ -104,6 +104,7 @@
     <Compile Include="Assets\Scripts\Combat\Stats\Buckets\StatBucketSO.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\DamageNumberPool.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\HitscanDeliverySO.cs" />
+    <Compile Include="Assets\Scripts\Combat\Delivery\ProjectilePool.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\Wandering\IsWanderingSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\DamageEffectSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\ProjectileDeliverySO.cs" />

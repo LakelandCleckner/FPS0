@@ -7,6 +7,10 @@ namespace Combat.Delivery
     // Plain-class projectile delivery (was ProjectileStrategy MonoBehaviour). Built
     // once by ProjectileDeliverySO with resolver + prefab + muzzle injected. Logic
     // unchanged — snapshots the source into each spawned Projectile.
+    //
+    // Projectiles now come from ProjectilePool rather than Instantiate. Sustained
+    // auto-fire was creating and collecting a GameObject per shot, which dwarfed
+    // every other per-shot allocation in the combat path.
     public class ProjectileDelivery : IDelivery
     {
         private readonly WeaponHitResolver resolver;
@@ -28,22 +32,24 @@ namespace Combat.Delivery
         {
             Vector3 spawnPos = muzzle != null ? muzzle.position : origin;
 
-            var projectile = Object.Instantiate(projectilePrefab, spawnPos,
-                                                Quaternion.LookRotation(direction));
+            var projectile = ProjectilePool.Instance.Get(
+                projectilePrefab, spawnPos, Quaternion.LookRotation(direction));
+
+            if (projectile == null) return;
 
             projectile.Init(
-                resolver:       resolver,
-                attacker:       source.Attacker,
-                damageSource:   source,
-                effects:        source.GetEffects(),
-                sourceFaction:  source.Faction,
-                damageType:     source.BaseDamageType,
-                maxChainDepth:  source.MaxChainDepth,
-                chainFalloff:   source.ChainFalloff,
-                chainGrowth:    source.ChainGrowth,
-                dedupMode:      source.DedupMode,
-                config:         config.Clone(),   // snapshot — immune to later upgrades
-                direction:      direction);
+                resolver: resolver,
+                attacker: source.Attacker,
+                damageSource: source,
+                effects: source.GetEffects(),
+                sourceFaction: source.Faction,
+                damageType: source.BaseDamageType,
+                maxChainDepth: source.MaxChainDepth,
+                chainFalloff: source.ChainFalloff,
+                chainGrowth: source.ChainGrowth,
+                dedupMode: source.DedupMode,
+                config: config.Clone(),   // snapshot — immune to later upgrades
+                direction: direction);
         }
     }
 }

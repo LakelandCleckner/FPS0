@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using Combat.Core;
 using Combat.Effects;
 using Combat.Sources;
@@ -66,6 +67,11 @@ namespace Combat.Events
     // If a perk needs hit state later, COPY THE VALUES it cares about (target,
     // damage, was-crit) into its own fields during the handler. Never hold the
     // context itself.
+    //
+    // That rule is now ENFORCED rather than merely documented: the context carries a
+    // generation counter, captured here at publish and checked on every access. A
+    // retained context trips a loud editor error naming the mistake. The check
+    // compiles out of builds.
     public readonly struct WeaponEvent
     {
         public readonly WeaponEventType Type;
@@ -74,8 +80,33 @@ namespace Combat.Events
         // null (environmental damage, sourceless hazards).
         public readonly WeaponDamageSource Weapon;
 
-        // Hit family only. Null otherwise.
-        public readonly HitContext Hit;
+        // Hit family only. Null otherwise. Private so every read goes through the
+        // guarded accessor below.
+        private readonly HitContext hit;
+
+        // The context's generation at the moment this event was published. If it has
+        // moved on by the time someone reads Hit, the context was refilled for
+        // another resolution and the reader is holding a stale reference.
+        private readonly int hitGeneration;
+
+        public HitContext Hit
+        {
+            get
+            {
+#if UNITY_EDITOR || STATUS_DEBUG
+                if (hit != null && hit.Generation != hitGeneration)
+                {
+                    Debug.LogError(
+                        "[WeaponEvent] Stale HitContext read. A subscriber retained " +
+                        "the context past its handler and it has since been refilled " +
+                        "for a different resolution — the values returned belong to " +
+                        "another hit. Copy the fields you need during the handler " +
+                        "instead of holding the context.");
+                }
+#endif
+                return hit;
+            }
+        }
 
         // Ammo family only. Zero otherwise.
         public readonly int Magazine;
@@ -87,7 +118,8 @@ namespace Combat.Events
         {
             Type = type;
             Weapon = weapon;
-            Hit = hit;
+            this.hit = hit;
+            hitGeneration = hit != null ? hit.Generation : 0;
             Magazine = magazine;
             Reserves = reserves;
             MagSize = magSize;
@@ -103,7 +135,10 @@ namespace Combat.Events
         public static WeaponEvent ForWeapon(WeaponEventType type, WeaponDamageSource weapon)
             => new WeaponEvent(type, weapon, null, 0, 0, 0);
 
-        public bool IsHitEvent => Hit != null;
+        // Reads the private field deliberately: a null check must never trip the
+        // staleness guard, or every dispatch would report an error once a context
+        // had been reused.
+        public bool IsHitEvent => hit != null;
     }
 
     // WHICH KINDS OF RESOLUTION A SUBSCRIBER WANTS.
