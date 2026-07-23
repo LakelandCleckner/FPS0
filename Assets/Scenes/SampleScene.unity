@@ -856,7 +856,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 691975962}
-  - component: {fileID: 691975963}
   m_Layer: 0
   m_Name: Stat Test Object
   m_TagString: Untagged
@@ -879,24 +878,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &691975963
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 691975960}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e13ee7837d5f0d4ea7085c7b17f69e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyStats: {fileID: 100518933}
-  resistanceStat: {fileID: 11400000, guid: f5a8c623ad3a88c48bda3be493dbf950, type: 2}
-  damageTakenStat: {fileID: 11400000, guid: 42789f1ceb8ea56419424ce5f8ff04d8, type: 2}
-  shatterAmount: 0.5
-  vulnerabilityAmount: 0.5
-  hardenAmount: 0.5
 --- !u!1 &754033184
 GameObject:
   m_ObjectHideFlags: 0
@@ -1973,6 +1954,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 100002, guid: 6f8ee9e57f0ae87429c40e77c8b75822, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 100004, guid: 6f8ee9e57f0ae87429c40e77c8b75822, type: 3}
       propertyPath: m_Layer
       value: 8
@@ -2117,6 +2102,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1860cfe3349727246a21bf314deef015, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1350646964 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2501316767126194405, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
+  m_PrefabInstance: {fileID: 4717497599679480891}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1350646956}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66cf07d97ce298f429414f5d3cf77b2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1350646970
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2134,11 +2130,15 @@ MonoBehaviour:
     modelRoot: {fileID: 1646418644}
   - controller: {fileID: 1895516045}
     modelRoot: {fileID: 1895516041}
-  statKeys: {fileID: 11400000, guid: ff00c09179f6b7b4eb6197b46834acf0, type: 2}
+  statKeys: {fileID: 0}
   fallbackEquipTime: 0.5
   fallbackStowTime: 0.4
   swapKey: 31
   enableDigitSelect: 1
+  reloadKeyForSprintCancel: 32
+  playerMovement: {fileID: 1350646964}
+  sprintExitFraction: 0.5
+  actionsCancelSprint: 1
   debugLog: 0
 --- !u!4 &1439560959 stripped
 Transform:
@@ -2436,10 +2436,16 @@ MonoBehaviour:
   controller: {fileID: 1895516045}
   animator: {fileID: 1895516048}
   damageSource: {fileID: 1895516046}
+  loadout: {fileID: 1350646970}
+  playerMovement: {fileID: 1350646964}
   fireClipName: HandgunFire
   reloadClipName: HandgunReload
+  equipClipName: Equip
+  stowClipName: Stow
+  sprintExitClipName: SprintExit
   scaleFireToRPM: 1
   scaleReloadToTime: 1
+  scaleTransitions: 1
 --- !u!114 &1895516044
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2699,6 +2705,14 @@ PrefabInstance:
       propertyPath: hitmarkerUI
       value: 
       objectReference: {fileID: 1169347220}
+    - target: {fileID: 5941131721419039506, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
+      propertyPath: loadout
+      value: 
+      objectReference: {fileID: 1350646970}
+    - target: {fileID: 5941131721419039506, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
+      propertyPath: playerMovement
+      value: 
+      objectReference: {fileID: 1350646964}
     - target: {fileID: 6041466214417116510, guid: 26c21db11f556c5439f849d864f12b99, type: 3}
       propertyPath: m_Name
       value: PlayerCapsuleRoot

@@ -20,6 +20,7 @@ MonoBehaviour:
   roundsPerMinuteDelta: 0
   magazineSizeDelta: 0
   reloadTimeDelta: 0
+  handlingDelta: 0
   startingReserves: 100
   infiniteReservesOverride: 0
   fireClip: {fileID: 8300000, guid: a02ac01715490c646a720c0bcc70ec7a, type: 3}
@@ -27,6 +28,7 @@ MonoBehaviour:
   reloadClip: {fileID: 8300000, guid: 49af6209dec94aa4a9216b5a301d0a88, type: 3}
   riderEffects:
   - {fileID: 11400000, guid: 3b922d529e0a65644b8e87b012100768, type: 2}
+  - {fileID: 11400000, guid: 7876f6e7b2073c64eaa30f9c0cb49185, type: 2}
   perkPool: []
   faction: 0
   maxChainDepth: 0

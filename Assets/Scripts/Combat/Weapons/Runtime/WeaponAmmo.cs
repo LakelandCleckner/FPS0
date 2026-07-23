@@ -21,6 +21,11 @@ namespace Combat.Weapons
     // LOADOUT: this component keeps running while its weapon is stowed. BeginReload
     // stays ungated so a stowed weapon can be reloaded by a perk; only the AUTOMATIC
     // reload-on-empty is held to the weapon in hand.
+    //
+    // A RELOAD IS COMMITTED once it starts. Firing cannot cancel it — the Destiny
+    // model for magazine-fed weapons. Only two things cancel a reload, and both are
+    // the weapon leaving the ready position: stowing it, and starting a sprint.
+    // Both call CancelReload from WeaponLoadout.
     public class WeaponAmmo : MonoBehaviour
     {
         [Header("Weapon")]
@@ -125,8 +130,10 @@ namespace Combat.Weapons
                 return false;
             }
 
-            if (state == ReloadState.Reloading)
-                CancelReload();
+            // NOTE: firing during a reload used to CancelReload() here. It doesn't any
+            // more — a reload is committed. The controller refuses to fire while
+            // IsReloading, so this is never reached mid-reload; if something ever
+            // bypassed that gate, silently eating the reload would be the wrong answer.
 
             magazine--;
             Publish(WeaponEventType.AmmoChanged);
@@ -157,6 +164,8 @@ namespace Combat.Weapons
             return true;
         }
 
+        // Called on stow and on sprint start — the two cases where the weapon leaves
+        // the ready position. Firing does NOT call this.
         public void CancelReload()
         {
             if (state != ReloadState.Reloading) return;
@@ -164,8 +173,7 @@ namespace Combat.Weapons
 
             // Not in doc 07's table, but this is a real transition perks care about
             // (Destiny-style "cancel the reload to keep the buff" play patterns) and
-            // it costs nothing to expose now. Note it fires on the interrupt path in
-            // TryConsume as well, and on stow, which is exactly when it matters.
+            // it costs nothing to expose now.
             Publish(WeaponEventType.ReloadCancelled);
         }
 

@@ -16,8 +16,18 @@ namespace Combat.Weapons
     // Bait-and-Switch-style perk needs. A stowed weapon also has to keep running its
     // own Update so an Auto-Loading-Holster-style perk can reload it.
     //
-    // So "stowed" means: model hidden, input gated (WeaponFireController.IsActive),
-    // component alive and subscribed.
+    // So "stowed" means: renderers off, animator off, input gated, component alive
+    // and subscribed.
+    //
+    // TWO PERMISSIONS, not one:
+    //   IsActive  the weapon is in hand and may take input   -> reload
+    //   CanFire   ...and is settled enough to shoot          -> trigger
+    // Currently both are suppressed by the same conditions, but they mean different
+    // things and cost one line to keep apart — the moment a perk wants
+    // reload-on-the-move, the mechanism is already here.
+    //
+    // A RELOAD IS CANCELLED BY exactly two things, both "the weapon left the ready
+    // position": stowing it, and starting a sprint. Firing does not. See WeaponAmmo.
     //
     // The loadout is also the authoritative origin for Equip and Stow (doc 07 §2),
     // and the natural registry for anything player-side that modifies weapons —
@@ -55,7 +65,7 @@ namespace Combat.Weapons
         [SerializeField] private List<Slot> slots = new List<Slot>();
 
         [Header("Stats")]
-        [SerializeField] private LoadoutStatKeys statKeys;
+        [SerializeField] private WeaponStatKeys statKeys;
 
         [Tooltip("Used when a weapon has no equip_time stat wired.")]
         [SerializeField] private float fallbackEquipTime = 0.5f;
@@ -66,6 +76,26 @@ namespace Combat.Weapons
         [SerializeField] private Key swapKey = Key.Q;
         [Tooltip("Digit keys select a slot directly. 1 selects slot 0, and so on.")]
         [SerializeField] private bool enableDigitSelect = true;
+
+        [Tooltip("Should match WeaponFireController's reload key. Reloading cancels a " +
+                 "sprint the same way firing does. A shared input asset would remove " +
+                 "this duplication once the fire controller moves off raw device reads.")]
+        [SerializeField] private Key reloadKeyForSprintCancel = Key.R;
+
+        [Header("Sprint")]
+        [Tooltip("Optional. When set, the weapon cannot fire while sprinting and needs " +
+                 "a moment to come back on target afterwards.")]
+        [SerializeField] private PlayerMovement playerMovement;
+
+        [Tooltip("Sprint-exit time as a fraction of this weapon's equip time. Sharing " +
+                 "the stat keeps handling meaningful, but coming out of a sprint is a " +
+                 "shorter motion than drawing a weapon from nothing.")]
+        [Range(0f, 1f)]
+        [SerializeField] private float sprintExitFraction = 0.5f;
+
+        [Tooltip("Trying to fire or reload while sprinting drops the sprint and pays " +
+                 "the sprint-out first, instead of the input being silently swallowed.")]
+        [SerializeField] private bool actionsCancelSprint = true;
 
         [Header("Debug")]
         [SerializeField] private bool debugLog = false;
@@ -82,11 +112,22 @@ namespace Combat.Weapons
 
         private WeaponEventBus bus;
 
+        private bool wasSprinting;
+        private float sprintExitTimer;
+
         // Presentation hook. Fired when a weapon becomes the held one — on startup and
         // at the end of every equip. Direct C# event rather than the bus for the same
         // reason WeaponAnimator uses one: local, immediate, allocation-free, and a HUD
         // re-target isn't the owner-scoped view perks need.
         public event Action<WeaponFireController> OnWeaponEquipped;
+
+        // Fired when a transition BEGINS, carrying how long it will take, so a
+        // presentation component can scale its clip to match. The duration comes from
+        // the weapon's own stats, so a handling buff shortens the animation and the
+        // gate together rather than desyncing them.
+        public event Action<WeaponFireController, float> OnStowStarted;
+        public event Action<WeaponFireController, float> OnEquipStarted;
+        public event Action<WeaponFireController, float> OnSprintExitStarted;
 
         public int ActiveIndex => activeIndex;
         public bool IsSwapping => state != SwapState.Ready;
@@ -103,7 +144,7 @@ namespace Combat.Weapons
         private void Start()
         {
             for (int i = 0; i < slots.Count; i++)
-                CacheRenderers(i);
+                CacheVisuals(i);
 
             for (int i = 0; i < slots.Count; i++)
             {
@@ -135,6 +176,8 @@ namespace Combat.Weapons
         {
             ReadInput();
             TickSwap();
+            TickSprint();
+            ApplyReadiness();
         }
 
         // ------------------------------------------------------------------ input
@@ -154,6 +197,71 @@ namespace Combat.Weapons
             else if (kb.digit2Key.wasPressedThisFrame) RequestSwap(1);
             else if (kb.digit3Key.wasPressedThisFrame) RequestSwap(2);
             else if (kb.digit4Key.wasPressedThisFrame) RequestSwap(3);
+        }
+
+        // ------------------------------------------------------------------ sprint
+
+        // Sprinting lowers the weapon; coming out of it raises the weapon again. The
+        // same transition as an equip triggered by a different cause, so it reads the
+        // same stat — which is why equip_time exists once rather than twice.
+        private void TickSprint()
+        {
+            if (sprintExitTimer > 0f) sprintExitTimer -= Time.deltaTime;
+
+            bool sprinting = playerMovement != null && playerMovement.IsSprinting;
+
+            // Trying to act drops the sprint rather than being ignored, so the input
+            // produces the sprint-out and then the action instead of nothing at all.
+            if (actionsCancelSprint && sprinting)
+            {
+                bool wantsFire = Mouse.current != null && Mouse.current.leftButton.isPressed;
+                bool wantsReload = Keyboard.current != null
+                                   && Keyboard.current[reloadKeyForSprintCancel].wasPressedThisFrame;
+
+                if (wantsFire || wantsReload)
+                {
+                    playerMovement.CancelSprint();
+                    sprinting = false;
+                }
+            }
+
+            // Starting a sprint cancels an in-progress reload — the weapon leaves the
+            // ready position, the same reason a stow cancels one. Keyed on RESOLVED
+            // sprint, not the key, so holding sprint while strafing or walking
+            // backwards isn't sprinting and doesn't cost you the reload.
+            if (!wasSprinting && sprinting)
+                AmmoOf(activeIndex)?.CancelReload();
+
+            if (wasSprinting && !sprinting)
+            {
+                float d = EquipTime(activeIndex) * sprintExitFraction;
+                if (d > 0f)
+                {
+                    sprintExitTimer = d;
+                    OnSprintExitStarted?.Invoke(Active, d);
+                }
+            }
+
+            wasSprinting = sprinting;
+        }
+
+        // One place decides what the held weapon may do. Several independent things
+        // can suppress it — a swap in progress, sprinting, and the recovery after a
+        // sprint — and evaluating them together avoids the usual bug where one clears
+        // the flag while another still wants it held.
+        private void ApplyReadiness()
+        {
+            if (!IsValid(activeIndex)) return;
+
+            bool sprinting = playerMovement != null && playerMovement.IsSprinting;
+
+            // In hand once the swap finishes and you aren't sprinting.
+            bool inHand = state == SwapState.Ready && !sprinting;
+
+            // On target only once you've also paid the sprint-out.
+            bool canFire = inHand && sprintExitTimer <= 0f;
+
+            SetActive(activeIndex, inHand, canFire);
         }
 
         // ------------------------------------------------------------------ swap
@@ -215,6 +323,7 @@ namespace Combat.Weapons
                         duration = EquipTime(activeIndex);
                         timer = (1f - stowProgress) * duration;
                         pendingIndex = -1;
+                        OnEquipStarted?.Invoke(Active, duration - timer);
                     }
                     else
                     {
@@ -246,8 +355,10 @@ namespace Combat.Weapons
             if (debugLog)
                 Debug.Log($"[Loadout] STOW {activeIndex} -> {targetIndex} over {duration:F2}s");
 
+            OnStowStarted?.Invoke(Active, duration);
+
             // Gate input the instant the swap starts — the weapon is on its way down.
-            SetReady(activeIndex, false);
+            SetActive(activeIndex, false, false);
 
             // Stowing cancels an in-progress reload. This is a ONE-OFF on the
             // transition, not a standing rule: a stowed weapon must still be able to
@@ -280,13 +391,18 @@ namespace Combat.Weapons
                 state = SwapState.Equipping;
                 duration = EquipTime(activeIndex);
                 timer = 0f;
+
+                // After ApplyHeldState, which re-enables the animator and rebinds it.
+                // Rebind clears queued triggers, so the equip trigger must be set
+                // after — which is what this ordering guarantees.
+                OnEquipStarted?.Invoke(Active, duration);
                 return;
             }
 
             // Equipping finished
             state = SwapState.Ready;
             timer = 0f;
-            SetReady(activeIndex, true);
+            SetActive(activeIndex, true, true);
             PublishFor(activeIndex, WeaponEventType.Equip);
             OnWeaponEquipped?.Invoke(Active);
 
@@ -298,21 +414,20 @@ namespace Combat.Weapons
         // ------------------------------------------------------------------ state
 
         // held  -> model visible and this is the weapon in hand
-        // ready -> may accept fire/reload input (false during a swap animation)
+        // ready -> may accept input (false during a swap animation)
         private void ApplyHeldState(int index, bool held, bool ready)
         {
             if (!IsValid(index)) return;
             var slot = slots[index];
 
             SetVisible(slot, held);
-
-            SetReady(index, ready);
+            SetActive(index, ready, ready);
 
             var ammo = AmmoOf(index);
             if (ammo != null) ammo.IsHeld = held;
         }
 
-        private void CacheRenderers(int index)
+        private void CacheVisuals(int index)
         {
             if (!IsValid(index)) return;
             var slot = slots[index];
@@ -357,11 +472,13 @@ namespace Combat.Weapons
             slot.animator.Update(0f);
         }
 
-        private void SetReady(int index, bool ready)
+        private void SetActive(int index, bool active, bool canFire)
         {
             if (!IsValid(index)) return;
             var c = slots[index].controller;
-            if (c != null) c.IsActive = ready;
+            if (c == null) return;
+            c.IsActive = active;
+            c.CanFire = canFire && active;
         }
 
         // ------------------------------------------------------------------ stats

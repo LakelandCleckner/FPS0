@@ -32,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
 
     private float sprintGraceCounter;
     private bool wantsToSprint;
+    private bool isSprinting;
     private bool airSprintAllowed;
     private bool wasGrounded;
 
@@ -152,6 +153,8 @@ public class PlayerMovement : MonoBehaviour
 
         bool groundSprintAllowed = wantsToSprint && hasForwardInput;
         bool isSprintingNow = grounded ? groundSprintAllowed : airSprintAllowed;
+        isSprinting = isSprintingNow;
+
 
         // resolved movement stats (live — a slow/speed modifier applies immediately)
         float moveSpeed = Stat(statKeys != null ? statKeys.moveSpeed : null, baseWalkSpeed);
@@ -218,6 +221,26 @@ public class PlayerMovement : MonoBehaviour
             sprintGraceCounter = sprintTakeoffGraceTime;
     }
 
+    // Called when the player tries to act while sprinting. Drops sprint intent
+    // until the key is pressed again, rather than merely ignoring the action —
+    // otherwise the fire input does nothing at all and the sprint-out never runs.
+    public void CancelSprint()
+    {
+        wantsToSprint = false;
+        sprintGraceCounter = 0f;
+        airSprintAllowed = false;
+    }
+
+
     public float CurrentSpeed => new Vector3(currentMovement.x, 0f, currentMovement.z).magnitude;
     public bool IsGrounded => characterController.isGrounded;
+
+    // Sprint as the movement system actually resolved it, not the raw input —
+    // it already accounts for the forward-input threshold and the airborne
+    // takeoff rule, so a sideways "sprint" or a sprint-jump reads correctly.
+    public bool IsSprinting => isSprinting;
+
+    // Actual movement rather than input, so walking into a wall doesn't animate.
+    // Same threshold family as Footsteps.minSpeedToStep.
+    public bool IsMoving => CurrentSpeed > 0.2f && IsGrounded;
 }

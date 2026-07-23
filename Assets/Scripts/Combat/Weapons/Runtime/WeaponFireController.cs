@@ -17,6 +17,10 @@ namespace Combat.Weapons
     //
     // Fire rework: owns the shot-id counter, stamps it onto the behaviour's ShotInfo,
     // and picks a delivery per burst index so a burst can vary what it launches.
+    //
+    // INPUT POLICY lives here, not in WeaponAmmo. The ammo state machine stays
+    // ungated so perks can drive it; this component decides what the PLAYER may do
+    // with the weapon right now.
     public class WeaponFireController : MonoBehaviour
     {
         [Header("Weapon")]
@@ -42,6 +46,9 @@ namespace Combat.Weapons
         private IDelivery delivery;                       // default for this mode
         private Dictionary<int, IDelivery> burstOverrides; // by burst index, -1 = final
         private bool triggerHeldLast;
+        private float reloadBuffer;
+
+        private const float ReloadBufferWindow = 0.2f;
 
         // PER-WEAPON shot counter. Monotonic for the life of this controller — it
         // deliberately survives BuildFireMode, because resetting it on an equip would
@@ -59,6 +66,10 @@ namespace Combat.Weapons
         // player input.
         public bool IsActive { get; set; } = true;
 
+        // Firing specifically. False while sprinting and during the sprint-out
+        // recovery, when IsActive is still true — the weapon is in your hands, it
+        // just isn't on target yet.
+        public bool CanFire { get; set; } = true;
 
         public WeaponDamageSource DamageSource => damageSource;
 
@@ -108,16 +119,47 @@ namespace Combat.Weapons
         {
             if (behavior == null) return;
 
+            // Reload intent is buffered BEFORE the gates, and deliberately so.
+            // Pressing reload while sprinting cancels the sprint (WeaponLoadout), but
+            // PlayerMovement recomputes IsSprinting in its own Update, so IsActive can
+            // still be false on the frame the key goes down. wasPressedThisFrame is
+            // true for exactly one frame — without a buffer that press is simply lost
+            // and the player has to press reload twice to come out of a sprint.
+            //
+            // Buffering while stowed is harmless: IsActive gates the attempt and the
+            // window expires in a fifth of a second.
+            if (Keyboard.current != null && Keyboard.current[reloadKey].wasPressedThisFrame)
+                reloadBuffer = ReloadBufferWindow;
+
+            if (reloadBuffer > 0f) reloadBuffer -= Time.deltaTime;
+
             if (!IsActive) return;
 
-            if (ammo != null && Keyboard.current != null && Keyboard.current[reloadKey].wasPressedThisFrame)
+            // A burst is committed once started — releasing the trigger doesn't cut it
+            // short, so a reload can't interrupt one either. Without this the behaviour
+            // freezes mid-burst at the IsReloading gate below and resumes afterwards,
+            // firing its remaining shots seconds later. Narrow window, but reachable
+            // and it reads as broken.
+            bool midBurst = (behavior as BurstFireBehavior)?.Bursting ?? false;
+
+            if (!midBurst && ammo != null && reloadBuffer > 0f)
             {
                 if (ammo.BeginReload())
                 {
+                    reloadBuffer = 0f;
                     PlayReloadAudio();
                     OnReloadStarted?.Invoke();
                 }
             }
+
+            if (!CanFire) return;
+
+            // A reload is committed once started, so firing waits rather than
+            // cancelling it. The input isn't lost: an auto weapon reads Held live and
+            // fires the instant the reload completes. Semi-auto needs a fresh press,
+            // because triggerHeldLast stops updating below this line — no banked shot
+            // from a trigger you were already holding.
+            if (ammo != null && ammo.IsReloading) return;
 
             bool held = Mouse.current != null && Mouse.current.leftButton.isPressed;
             bool pressed = held && !triggerHeldLast;
