@@ -17,6 +17,10 @@ namespace Combat.Weapons
     // already the one place that transition could happen — no new state, no new
     // branching. Nothing else may announce these; WeaponFireController's
     // OnReloadStarted is a REQUEST, this is the decision (see WeaponEventBridge).
+    //
+    // LOADOUT: this component keeps running while its weapon is stowed. BeginReload
+    // stays ungated so a stowed weapon can be reloaded by a perk; only the AUTOMATIC
+    // reload-on-empty is held to the weapon in hand.
     public class WeaponAmmo : MonoBehaviour
     {
         [Header("Weapon")]
@@ -39,6 +43,14 @@ namespace Combat.Weapons
         private bool refilledThisReload;
 
         private WeaponEventBus bus;
+
+        // Set by WeaponLoadout. Gates the CONVENIENCE auto-reload only — a weapon you
+        // aren't holding shouldn't quietly reload itself the instant it empties.
+        //
+        // It deliberately does NOT gate BeginReload: an Auto-Loading-Holster-style
+        // perk reloads a weapon *because* it is stowed, and gating the state machine
+        // would make that impossible to express. Perks call BeginReload directly.
+        public bool IsHeld { get; set; } = true;
 
         // Exposed so a subscriber can filter bus events to THIS weapon (per-weapon
         // routing, doc 07 §2) without needing a separate inspector reference.
@@ -64,7 +76,7 @@ namespace Combat.Weapons
                 return;
             }
 
-            magSize = Mathf.Max(1, Mathf.RoundToInt(damageSource.ResolvedMagazineSize));
+            magSize = ResolveMagSize();
             infiniteReserves = weapon.ResolveInfiniteReserves();
 
             magazine = magSize;
@@ -75,11 +87,40 @@ namespace Combat.Weapons
             Publish(WeaponEventType.AmmoChanged);
         }
 
+        private int ResolveMagSize()
+            => damageSource != null
+                ? Mathf.Max(1, Mathf.RoundToInt(damageSource.ResolvedMagazineSize))
+                : 1;
+
+        // magSize used to be cached once in Start and never re-read, so a runtime
+        // magazine_size modifier — armour, a perk, an upgrade — silently did nothing.
+        // Re-resolved on access instead. ResolvedMagazineSize is already a cached
+        // container read, so this is a version compare in the steady state.
+        //
+        // On a change, current ammo is left alone and clamped down, matching
+        // CombatantHealth's ClampOnly: extra capacity is headroom you reload into,
+        // never free rounds.
+        private void RefreshMagSize()
+        {
+            int resolved = ResolveMagSize();
+            if (resolved == magSize) return;
+
+            magSize = resolved;
+
+            if (magazine > magSize)
+            {
+                magazine = magSize;
+                Publish(WeaponEventType.AmmoChanged);
+            }
+        }
+
         public bool TryConsume()
         {
+            RefreshMagSize();
+
             if (magazine <= 0)
             {
-                if (autoReloadOnEmpty && state != ReloadState.Reloading)
+                if (autoReloadOnEmpty && IsHeld && state != ReloadState.Reloading)
                     BeginReload();
                 return false;
             }
@@ -93,7 +134,7 @@ namespace Combat.Weapons
             if (magazine <= 0)
             {
                 Publish(WeaponEventType.MagEmpty);
-                if (autoReloadOnEmpty)
+                if (autoReloadOnEmpty && IsHeld)
                     BeginReload();
             }
             return true;
@@ -101,6 +142,8 @@ namespace Combat.Weapons
 
         public bool BeginReload()
         {
+            RefreshMagSize();
+
             if (state == ReloadState.Reloading) return false;
             if (magazine >= magSize) return false;
             if (!infiniteReserves && reserves <= 0) return false;
@@ -122,7 +165,7 @@ namespace Combat.Weapons
             // Not in doc 07's table, but this is a real transition perks care about
             // (Destiny-style "cancel the reload to keep the buff" play patterns) and
             // it costs nothing to expose now. Note it fires on the interrupt path in
-            // TryConsume as well, which is exactly when it matters.
+            // TryConsume as well, and on stow, which is exactly when it matters.
             Publish(WeaponEventType.ReloadCancelled);
         }
 
@@ -144,7 +187,7 @@ namespace Combat.Weapons
                 if (!refilledThisReload) DoRefill();
                 state = ReloadState.Ready;
 
-                // Doc 03 §6 claims the animator is driven by "fire, reload start,
+                // Doc 03 §8 claims the animator is driven by "fire, reload start,
                 // reload end", but no reload-end event existed anywhere — the state
                 // machine completed here and told nobody. This is that event.
                 Publish(WeaponEventType.ReloadComplete);
@@ -153,6 +196,8 @@ namespace Combat.Weapons
 
         private void DoRefill()
         {
+            RefreshMagSize();
+
             int needed = magSize - magazine;
             if (needed <= 0) return;
 

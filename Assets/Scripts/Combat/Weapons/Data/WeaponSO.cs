@@ -28,6 +28,7 @@ namespace Combat.Weapons
         public float roundsPerMinuteDelta = 0f;
         public float magazineSizeDelta = 0f;
         public float reloadTimeDelta = 0f;
+        public float handlingDelta = 0f;
 
         [Header("Ammo")]
         [Tooltip("Starting reserve ammo (outside the magazine).")]

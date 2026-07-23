@@ -107,6 +107,7 @@
     <Compile Include="Assets\Scripts\DamageNumbers\DamageNumberPool.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\HitscanDeliverySO.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\ProjectilePool.cs" />
+    <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponLoadout.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\Wandering\IsWanderingSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\DamageEffectSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\ProjectileDeliverySO.cs" />
@@ -161,6 +162,7 @@
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\CanvasInputs\UICanvasControllerInput.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\DebugLogHitEffect.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\AmmoPickup.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Keys\LoadoutStatKeys.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\DamageSpec.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Actions\WanderAction.cs" />
     <Compile Include="Assets\Scripts\UI\AmmoDisplay.cs" />

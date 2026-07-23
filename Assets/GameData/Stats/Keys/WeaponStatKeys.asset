@@ -19,3 +19,6 @@ MonoBehaviour:
   rpm: {fileID: 11400000, guid: 6a60948ce14798c4383dfc31d3281302, type: 2}
   magazineSize: {fileID: 11400000, guid: 14d268e731c835c47a1b4ac02ea452ac, type: 2}
   reloadTime: {fileID: 11400000, guid: 7579532ea69da3744ab17777fafe21c6, type: 2}
+  handling: {fileID: 11400000, guid: 1af39531c4c9d474f810115fd25ae295, type: 2}
+  equipTime: {fileID: 11400000, guid: b4ea8b4bcdb02f547bfeeaad8ee8e5c2, type: 2}
+  stowTime: {fileID: 11400000, guid: 5889f82832948474b99d61d146958608, type: 2}

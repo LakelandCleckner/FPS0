@@ -54,6 +54,12 @@ namespace Combat.Weapons
         // which are on the hit context.
         private int nextShotId = 1;
 
+        // Set by WeaponLoadout. False while stowed or mid-swap. The component keeps
+        // running (its weapon can still be reloaded by a perk); it just stops taking
+        // player input.
+        public bool IsActive { get; set; } = true;
+
+
         public WeaponDamageSource DamageSource => damageSource;
 
         private void Awake()
@@ -101,6 +107,8 @@ namespace Combat.Weapons
         private void Update()
         {
             if (behavior == null) return;
+
+            if (!IsActive) return;
 
             if (ammo != null && Keyboard.current != null && Keyboard.current[reloadKey].wasPressedThisFrame)
             {

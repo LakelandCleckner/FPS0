@@ -32,6 +32,19 @@ namespace Combat.Weapons
         [Tooltip("If true, reserves never deplete (primaries). A weapon can override.")]
         public bool infiniteReserves = false;
 
+        [Header("Handling")]
+        [Tooltip("Base handling for this frame. A per-weapon delta layers on top. " +
+         "Reduces equip and stow time proportionally, and later ADS time.")]
+        public float handling = 0f;
+
+        [Tooltip("Seconds to bring this weapon up at ZERO handling. Frame identity — a " +
+                 "rocket launcher is slower than a sidearm no matter how it rolls.")]
+        public float baseEquipTime = 0.5f;
+
+        [Tooltip("Seconds to put this weapon away at ZERO handling.")]
+        public float baseStowTime = 0.4f;
+
+
         // Inline rather than a FireModeSO reference — see FireMode.cs for why.
         [Header("Fire Mode (primary)")]
         public FireMode primaryFire = new FireMode();

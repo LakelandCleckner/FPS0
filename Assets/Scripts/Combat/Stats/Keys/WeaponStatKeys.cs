@@ -21,6 +21,11 @@ namespace Combat.Weapons
         public StatDefinitionSO rpm;            // id "rpm"            (ScaledBase)
         public StatDefinitionSO magazineSize;   // id "magazine_size"  (ScaledBase)
         public StatDefinitionSO reloadTime;     // id "reload_time"    (ScaledBase)
+        [Header("Handling")]
+        public StatDefinitionSO handling;    // "handling"
+        public StatDefinitionSO equipTime;   // "equip_time"
+        public StatDefinitionSO stowTime;    // "stow_time"
+
 
         // NOTE (global_damage representation): the legacy StatBlock stores this as a
         // raw MULTIPLIER (1.0 = neutral). For a 1:1 parallel with the StatBlock in
