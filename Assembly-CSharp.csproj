@@ -70,6 +70,7 @@
     <Compile Include="Assets\Scripts\Combat\Events\WeaponEventBridge.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\IHitEffect.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\playerInputs.cs" />
+    <Compile Include="Assets\Scripts\Combat\Core\NeighbourFinder.cs" />
     <Compile Include="Assets\Scripts\AudioScripts\PlayerAudio.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualTouchZone.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\WeaponHitResolver.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="Assets\Scripts\DamageNumbers\Accumulator\DamageAccumulatorRegistry.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\ApplyStatusEffectSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Core\StatContainer.cs" />
+    <Compile Include="Assets\Scripts\Combat\Core\ChainResolver.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualJoystick.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\DamageTypeRegistry.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\DamageHitEffect.cs" />
@@ -100,6 +102,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\AgentBrain.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\DamageTypeSO.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\TargetKeys\WanderTarget.cs" />
+    <Compile Include="Assets\Scripts\Debugging\Combat\ChainTestProbe.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Keys\MovementStatKeys.cs" />
     <Compile Include="Assets\Scripts\Enemies\DamageAndHealth\BodyPart.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Actions\InvestigateAction.cs" />
@@ -127,10 +130,12 @@
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\Wandering\WanderTargetSensor.cs" />
     <Compile Include="Assets\StarterAssets\FirstPersonController\Scripts\FirstPersonController.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\ProjectileDelivery.cs" />
+    <Compile Include="Assets\Scripts\Combat\Core\ChainContextPool.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\ApplyStatusHitEffect.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponAmmo.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponFireController.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\LocationInvestigated.cs" />
+    <Compile Include="Assets\Scripts\Debugging\Combat\TestExplodeOnKill.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\Projectile.cs" />
     <Compile Include="Assets\Scripts\Enemies\DamageAndHealth\EnemyHitbox.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\WeaponStatParityTest.cs" />

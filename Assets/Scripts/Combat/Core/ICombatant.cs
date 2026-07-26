@@ -26,5 +26,13 @@ namespace Combat.Core
 
         // Single composed DEFENSIVE multiplier for an incoming hit.
         float GetDamageMultiplier(DamageTypeSO type, BodyPart bodyPart);
+
+        // Deal damage to this combatant, routed to the health sibling. On the
+        // interface so anything holding an ICombatant (a chain link, a perk effect)
+        // can damage a target found by overlap, not only a raycast that resolved a
+        // concrete hitbox. Defense is applied by the caller BEFORE this (DamageHitEffect
+        // multiplies by GetDamageMultiplier), so this delivers the post-defense number.
+        void TakeDamage(float damage, BodyPart partHit, DamageTypeSO type);
+
     }
 }

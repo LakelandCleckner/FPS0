@@ -31,6 +31,11 @@ namespace Combat.Core
 
         private WeaponEventBus bus;
 
+        // Deferred multi-target resolution: AoE blasts and chain links enqueue here
+        // and drain after the current TOP-LEVEL resolution finishes its feedback and
+        // events, so a splash target's number never beats the primary hit's.
+        private ChainResolver chain;
+
         // ResolveHit RE-ENTERS (chains, splash, an effect that causes another hit),
         // so the working effect list cannot be a single shared buffer. One per
         // nesting level, grown on demand.
@@ -40,6 +45,7 @@ namespace Combat.Core
         private void Awake()
         {
             bus = WeaponEventBus.FindFor(this);
+            chain = new ChainResolver(this);
         }
 
         public void ResolveHit(HitContext ctx)
@@ -47,7 +53,7 @@ namespace Combat.Core
             if (ctx.Target == null) return;
             if (ctx.Target.IsDying) return;
 
-            // CRIT ROLL — once per hit, BEFORE effects apply. UNIVERSAL: every
+            // CRIT ROLL  once per hit, BEFORE effects apply. UNIVERSAL: every
             // resolution flowing through here can crit (direct hits, DOT ticks,
             // chains) provided it carries the attacker's stats. Each DOT tick is its
             // own ResolveHit, so each tick rolls INDEPENDENTLY. Stat reads are
@@ -69,7 +75,7 @@ namespace Combat.Core
                 // the whole effect loop. Claiming it first matters: once contributed
                 // effects are phase-sorted they're interleaved with the weapon's own,
                 // so there'd be no clean way to withdraw them afterwards. If the
-                // budget is exhausted we simply don't ask — the hit degrades to the
+                // budget is exhausted we simply don't ask  the hit degrades to the
                 // un-perked version and still does its damage, which is safer than
                 // dropping the hit.
                 //
@@ -86,7 +92,7 @@ namespace Combat.Core
                 }
 
                 // PHASE SORTING: Modifier -> Application -> Reaction.
-                // MUST be a STABLE sort — doc 02 guarantees "a Modifier listed after
+                // MUST be a STABLE sort  doc 02 guarantees "a Modifier listed after
                 // an Application still runs first", i.e. authored order is preserved
                 // within a phase. LINQ OrderBy (the previous implementation) is
                 // stable; List<T>.Sort is NOT, so this is a hand-rolled insertion
@@ -117,6 +123,16 @@ namespace Combat.Core
             // cascade begins, so a perk-caused follow-up can't spawn its damage
             // number ahead of the number for the hit that caused it.
             DispatchHitEvents(ctx);
+
+            // TOP-LEVEL ONLY: drain the deferred AoE/chain queue once the outermost
+            // resolution is done. resolveDepth was decremented in ReturnBuffer (via
+            // the finally above), so it reads 0 exactly at a genuine top-level
+            // completion. A link resolved DURING the drain is itself a top-level
+            // ResolveHit (depth 0), so this guard alone can't prevent re-draining --
+            // ChainResolver.Drain holds its own draining flag for that. Two guards,
+            // two jobs: resolveDepth guards the effect buffer, draining guards the queue.
+            if (resolveDepth == 0)
+                chain.Drain();
         }
 
         // ------------------------------------------------------------------ events
@@ -146,6 +162,35 @@ namespace Combat.Core
                     bus.Publish(WeaponEvent.ForHit(WeaponEventType.PrecisionKill, weapon, ctx));
             }
         }
+
+        // ------------------------------------------------------------ chain / AoE
+
+        // ONE delivery striking many targets, all at the parent's depth and full
+        // damage (a rocket blast, a grenade). Deferred; drains at top level.
+        public void EnqueueSiblingHits(
+            HitContext parent,
+            IReadOnlyList<ICombatant> targets,
+            List<IHitEffect> effects,
+            HashSet<ICombatant> sharedAlreadyHit)
+            => chain.EnqueueSiblings(parent, targets, effects, sharedAlreadyHit);
+
+        // Successive chain HOPS: depth increments, ChainMultiplier falls off per hop,
+        // capped by MaxChainDepth. Lightning arc, explosion cascade.
+        public void EnqueueChainLinks(
+            HitContext parent,
+            IReadOnlyList<ICombatant> targets,
+            List<IHitEffect> effects,
+            HashSet<ICombatant> sharedAlreadyHit)
+            => chain.EnqueueLinks(parent, targets, effects, sharedAlreadyHit);
+
+#if UNITY_EDITOR || STATUS_DEBUG
+        // TEST ONLY. The queue normally drains at the end of a top-level ResolveHit,
+        // so an isolated probe (no surrounding resolution) would never drain. This
+        // forces it. NEVER call from the real path — the automatic top-level drain
+        // handles that, and calling it mid-resolution would drain early and reorder
+        // feedback, which is the exact bug the deferral prevents.
+        public void DebugDrainNow() => chain.Drain();
+#endif
 
         // ------------------------------------------------------------ effect list
 
@@ -187,7 +232,7 @@ namespace Combat.Core
         // --------------------------------------------------------------------- crit
 
         // Roll crit from the ATTACKER's resolved crit_chance; on success set the crit
-        // multiplier (1 + resolved crit_damage — the D4 model, base 0.5 => x1.5) and
+        // multiplier (1 + resolved crit_damage  the D4 model, base 0.5 => x1.5) and
         // WasCrit. Null-safe: no attacker stats (sourceless hazard) => no crit.
         //
         // Crit is INDEPENDENT of precision (hitbox multiplier): a precision hit that
@@ -251,7 +296,7 @@ namespace Combat.Core
 
             // floating damage number.
             // isCrit styling: a REAL crit OR a headshot lights it up (per current
-            // design — headshot and crit share the highlight for now; split later if
+            // design  headshot and crit share the highlight for now; split later if
             // you want distinct precision styling).
             bool highlight = ctx.WasCrit || ctx.WasHeadshot;
 
@@ -265,7 +310,7 @@ namespace Combat.Core
                     pos,
                     ctx.DamageDealt,
                     ctx.DamageType,
-                    highlight,           // isCrit — real crit OR headshot
+                    highlight,           // isCrit  real crit OR headshot
                     ctx.WasDebuffed);
             }
 

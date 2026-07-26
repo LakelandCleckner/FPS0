@@ -94,7 +94,8 @@ namespace Combat.Diagnostics
             "BodyPartHit",
             "ApplyDamageToTarget",
             "ApplyStatusTickDamage",
-            "Shot"
+            "Shot",
+            "sharedAlreadyHit",
         };
 
         // ------------------------------------------------------------------
@@ -115,7 +116,7 @@ namespace Combat.Diagnostics
             "ChainGrowth",
             "DedupMode",
             "ApplyDamageToTarget",
-            "Shot"
+            "Shot",
         };
 
         // Refilled per hit in HandleHit. Note this is a LARGER set than the pool's:
@@ -150,6 +151,7 @@ namespace Combat.Diagnostics
             "SourceStatus",
             "ShowFloatingNumber",
             "FeedsAccumulator",
+            "sharedAlreadyHit",
         };
 
         // ------------------------------------------------------------------
@@ -196,6 +198,60 @@ namespace Combat.Diagnostics
             "poolOrigin",
         };
 
+        // Carried from the parent for the whole blast/cascade; identical for every
+        // sibling of one delivery and every link of one cascade.
+        private static readonly string[] ChainInvariant =
+        {
+            "Attacker",
+            "DamageSource",
+            "SourceFaction",
+            "DamageType",
+            "MaxChainDepth",
+            "ChainFalloff",
+            "ChainGrowth",
+            "DedupMode",
+        };
+
+        // Set fresh for each target in RentSibling/RentLink (via Rent).
+        private static readonly string[] ChainPerHit =
+        {
+            "Source",           // Chain for a link, parent's Source for a sibling
+            "ChainDepth",       // parent depth (sibling) or +1 (link); drives ChainMultiplier
+            "Target",
+            "HitPoint",
+            "HitboxMultiplier",
+            "BodyPartHit",
+            "Effects",
+            "Shot",
+            "ShowFloatingNumber",
+            "FeedsAccumulator",
+            "DamageDealt",
+            "WasKill",
+            "WasHeadshot",
+            "WasDebuffed",
+            "sharedAlreadyHit", // pointed at the blast's shared set; cleared on Return
+        };
+
+        // Reset elsewhere on the path, not by Rent.
+        private static readonly string[] ChainExternallyManaged =
+        {
+            "CritMultiplier",   // WeaponHitResolver.RollCrit, top of every resolution
+            "WasCrit",          // ditto
+        };
+
+        // Explicitly nulled in Rent because a chain link never uses them: it routes
+        // damage through its DamageHitEffect (not the delivery delegates) and is not a
+        // status tick.
+        private static readonly string[] ChainUnused =
+        {
+            "ApplyDamageToTarget",
+            "ApplyStatusTickDamage",
+            "SourceStatus",
+            "alreadyHit",       // the per-context set is unused; the shared one is live
+        };
+
+
+
         // ------------------------------------------------------------------
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -219,6 +275,13 @@ namespace Combat.Diagnostics
                 ("configured-per-flight", ProjectileConfigured),
                 ("reset-per-flight", ProjectilePerFlightReset),
                 ("instance lifetime", ProjectileInstanceLifetime));
+
+            AuditType(typeof(HitContext), "HitContext @ ChainContextPool", report,
+                ("invariant-per-cascade", ChainInvariant),
+                ("reset-per-hit", ChainPerHit),
+                ("externally managed", ChainExternallyManaged),
+                ("unused at this site", ChainUnused));
+
 
             AuditSettableProperties(typeof(HitContext), report);
 

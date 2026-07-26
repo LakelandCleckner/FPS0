@@ -30,15 +30,35 @@ namespace Combat.Core
         public int MaxChainDepth = 0;
         public float ChainFalloff = 1f;
         public float ChainGrowth = 1f;
-        // Lazily allocated. Every HitContext used to allocate a HashSet at construction
-        // whether or not dedup was ever consulted — a per-hit allocation on every bullet
-        // and every DOT tick in the game.
+
+        // Per-context dedup (a projectile's pierce list). Lazily allocated. Every
+        // HitContext used to allocate a HashSet at construction whether or not dedup
+        // was ever consulted — a per-hit allocation on every bullet and every DOT tick.
         private HashSet<ICombatant> alreadyHit;
-        public HashSet<ICombatant> AlreadyHit => alreadyHit ??= new HashSet<ICombatant>();
+
+        // Optional SHARED dedup set, threaded through a whole AoE blast or cascade so
+        // every hit dedups against the same targets (ChainContextPool sets this). When
+        // present it OVERRIDES the per-context set. Never allocated here — the caller
+        // (the delivery / reaction that starts the blast) owns it.
+        private HashSet<ICombatant> sharedAlreadyHit;
+
+        public HashSet<ICombatant> AlreadyHit =>
+            sharedAlreadyHit ?? (alreadyHit ??= new HashSet<ICombatant>());
+
         // True without forcing allocation — prefer this for read-only checks.
-        public bool HasAlreadyHit => alreadyHit != null && alreadyHit.Count > 0;
-        // For reused contexts (status ticks).
+        public bool HasAlreadyHit =>
+            sharedAlreadyHit != null ? sharedAlreadyHit.Count > 0
+                                     : (alreadyHit != null && alreadyHit.Count > 0);
+
+        // For reused contexts (status ticks). Clears ONLY the per-context set — a
+        // shared blast/cascade set is owned by the blast and must not be cleared by
+        // one link's reset.
         public void ResetAlreadyHit() => alreadyHit?.Clear();
+
+        // Point this context at a blast/cascade's shared dedup set, or clear the
+        // override so it falls back to its own per-context set (on pool return).
+        public void ShareAlreadyHit(HashSet<ICombatant> shared) => sharedAlreadyHit = shared;
+        public void ClearSharedAlreadyHit() => sharedAlreadyHit = null;
 
         // ------------------------------------------------------------ reuse guard
 
@@ -51,8 +71,8 @@ namespace Combat.Core
         // are all valid, just from the wrong resolution.
         //
         // Freshly-constructed contexts never bump, so the direct-hit path pays
-        // nothing and can never false-fire. When direct hits are eventually pooled
-        // too, their refill must call this.
+        // nothing and can never false-fire. Pooled contexts (status ticks, and now
+        // chain/AoE links) must call this on refill.
         public int Generation { get; private set; }
 
         // Call from the refill method, NOT from individual call sites — one bump per
