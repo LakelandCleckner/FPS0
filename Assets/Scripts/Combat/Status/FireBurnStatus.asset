@@ -32,3 +32,5 @@ MonoBehaviour:
   tickTimerMode: 0
   showFloatingNumber: 1
   feedsAccumulator: 1
+  onKillEffects:
+  - {fileID: 11400000, guid: 01163cec9bbd6804d908851ae1c3bc41, type: 2}
