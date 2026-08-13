@@ -29,6 +29,7 @@ MonoBehaviour:
   riderEffects:
   - {fileID: 11400000, guid: 3b922d529e0a65644b8e87b012100768, type: 2}
   - {fileID: 11400000, guid: 7876f6e7b2073c64eaa30f9c0cb49185, type: 2}
+  - {fileID: 11400000, guid: 01163cec9bbd6804d908851ae1c3bc41, type: 2}
   perkPool: []
   faction: 0
   maxChainDepth: 0

@@ -15,11 +15,14 @@ MonoBehaviour:
   radius: 4
   hitLayers:
     serializedVersion: 2
-    m_Bits: 0
-  damageStat: {fileID: 0}
+    m_Bits: 128
+  damageStat: {fileID: 11400000, guid: 74e01aed325cce348acbd5d421549c4f, type: 2}
   damageCoefficient: 0.5
-  damageType: {fileID: 0}
-  applyStatus: {fileID: 0}
+  damageType: {fileID: 11400000, guid: bb5cd7710169fec488edfdb57f9d8ade, type: 2}
+  applyStatus: {fileID: 11400000, guid: 2c3506ec21153694b9dc51e7df2a289d, type: 2}
   maxChainDepthOverride: -1
   blastVfx: {fileID: 0}
   vfxLifetime: 2
+  vfxReferenceRadius: 0
+  usePlaceholderVfx: 1
+  placeholderColor: {r: 1, g: 0.4, b: 0.1, a: 0.35}

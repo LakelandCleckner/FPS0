@@ -55,6 +55,15 @@ namespace Combat.Status
         public bool showFloatingNumber = true;
         public bool feedsAccumulator = true;
 
+        [Header("On-Kill Reactions")]
+        [Tooltip("Effects that run when a TICK of this status kills the target. Drop an " +
+         "Explosion On Kill here and burn-kills detonate. Independent of any " +
+         "explosion the weapon itself carries, so they're balanced separately. " +
+         "These run in the tick's Reaction phase — they check WasKill themselves.")]
+        public System.Collections.Generic.List<Combat.Effects.HitEffectSO> onKillEffects
+            = new System.Collections.Generic.List<Combat.Effects.HitEffectSO>();
+
+
         // Build the tick's DamageSpec from the authored derivation.
         public DamageSpec BuildTickSpec()
         {

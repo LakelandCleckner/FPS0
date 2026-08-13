@@ -93,6 +93,21 @@ namespace Combat.Status
             tickEffects.Clear();
             tickEffects.Add(tickEffect);
 
+            // On-kill reactions authored on the status. Appended ONCE — they're
+            // stateless recipes, they only act when WasKill is true (which they check
+            // themselves), and they run in this tick's Reaction phase. So a burn tick
+            // that kills fires the status's explosion, exactly like a shot kill fires
+            // the weapon's. The damage effect (StatusSummedTickEffect) is Application
+            // phase and runs first, setting WasKill before these Reaction effects see it.
+            if (Status.onKillEffects != null)
+            {
+                for (int i = 0; i < Status.onKillEffects.Count; i++)
+                {
+                    var so = Status.onKillEffects[i];
+                    if (so != null) tickEffects.Add(so.GetInstance());
+                }
+            }
+
             tickContext = new HitContext
             {
                 Target = Target,
