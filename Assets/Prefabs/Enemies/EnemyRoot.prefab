@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 7434240647481629374}
   - component: {fileID: 7654303295665472057}
   - component: {fileID: 3998239378526427580}
-  - component: {fileID: 6554507270622062351}
   - component: {fileID: 8414873431570596816}
   - component: {fileID: 4535313937480974321}
   - component: {fileID: 8464061932734186438}
@@ -22,6 +21,7 @@ GameObject:
   - component: {fileID: 4457919424505222122}
   - component: {fileID: 3623431239706443026}
   - component: {fileID: 1021028654358225159}
+  - component: {fileID: 5938237327913932918}
   m_Layer: 7
   m_Name: EnemyRoot
   m_TagString: Untagged
@@ -106,20 +106,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &6554507270622062351
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2780478270126569151}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7044da18d78c47469224931fa3687980, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  config: {fileID: 11400000, guid: 9c368808795dae34ea987f7a74787d30, type: 2}
-  runner: {fileID: 0}
 --- !u!114 &8414873431570596816
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,7 +121,7 @@ MonoBehaviour:
   <LoggerConfig>k__BackingField:
     <DebugMode>k__BackingField: 1
     <MaxLogSize>k__BackingField: 20
-  <AgentTypeBehaviour>k__BackingField: {fileID: 6554507270622062351}
+  <AgentTypeBehaviour>k__BackingField: {fileID: 0}
   <DistanceMultiplier>k__BackingField: 1
 --- !u!114 &4535313937480974321
 MonoBehaviour:
@@ -188,7 +174,7 @@ MonoBehaviour:
   baseMoveSpeed: 3.5
   chaseSpeedMultiplier: 1.6
   investigateSpeedMultiplier: 1.3
-  combatantStats: {fileID: 0}
+  combatantStats: {fileID: 3623431239706443026}
   movementKeys: {fileID: 0}
 --- !u!114 &8478488495213342464
 MonoBehaviour:
@@ -248,9 +234,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseStats:
   - stat: {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
-    baseValue: 1000
+    baseValue: 25
   - stat: {fileID: 11400000, guid: f5a8c623ad3a88c48bda3be493dbf950, type: 2}
     baseValue: 0.5
+  - stat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
+    baseValue: 0.5
+  - stat: {fileID: 11400000, guid: a80e01f34d9994742bd8da080f5e830b, type: 2}
+    baseValue: 2
+  - stat: {fileID: 11400000, guid: 6fcba625bc9be654dbc0b4bc960ffea6, type: 2}
+    baseValue: 1.5
   health: {fileID: 4457919424505222122}
   faction: 1
 --- !u!114 &1021028654358225159
@@ -265,6 +257,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47bde1d4ca7078944a2f99b9d403ebb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5938237327913932918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2780478270126569151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d7eb5d5434ecb94aa69a66437f2faf6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentTypeName: FpsAgentTypeFactorySO
 --- !u!1001 &2726232234564731754
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -3,28 +3,40 @@
   "WorkspaceRootPath": "F:\\Game Dev\\FPS0\\FPS0\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\effects\\explosiononkillso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\spawning\\enemypoolhandle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\spawning\\enemypoolhandle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\core\\combatanthealth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\core\\combatanthealth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\status\\statussummedtickeffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\status\\statussummedtickeffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\effects\\explosiononkillso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\effects\\explosiononkillso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\effects\\explosiononkilleffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\effects\\explosiononkilleffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\effects\\explosiononkilleffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\status\\effectstackpool.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\status\\effectstackpool.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\status\\statusso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\status\\statusso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\effects\\applystatushiteffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\effects\\applystatushiteffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\status\\effectstackpool.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\status\\effectstackpool.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\status\\statusreceiver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\status\\statusreceiver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\status\\statusreceiver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\status\\statusso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\status\\statusso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\effects\\hiteffectso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -51,45 +63,80 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "ExplosionOnKillSO.cs",
-              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillSO.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillSO.cs",
-              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillSO.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillSO.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAAAuwCkAAAAnAAAAAAAAAA==",
+              "Title": "EnemyPoolHandle.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Spawning\\EnemyPoolHandle.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Spawning\\EnemyPoolHandle.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Spawning\\EnemyPoolHandle.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\Spawning\\EnemyPoolHandle.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAA2AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-10T21:20:48.734Z",
+              "WhenOpened": "2026-08-14T20:00:28.725Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "CombatantHealth.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Core\\CombatantHealth.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Core\\CombatantHealth.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Core\\CombatantHealth.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\Core\\CombatantHealth.cs",
+              "ViewState": "AgIAADIAAAAAAAAAAAAswKgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-13T20:56:41.498Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "StatusSummedTickEffect.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\StatusSummedTickEffect.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Status\\StatusSummedTickEffect.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\StatusSummedTickEffect.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\Status\\StatusSummedTickEffect.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAC4AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-13T19:21:53.844Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ExplosionOnKillSO.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillSO.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillSO.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillSO.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillSO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAD4AAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-10T21:20:48.734Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "ExplosionOnKillEffect.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillEffect.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillEffect.cs",
               "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillEffect.cs",
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillEffect.cs",
-              "ViewState": "AgIAAD8AAAAAAAAAAAAAAFYAAAAfAAAAAAAAAA==",
+              "ViewState": "AgIAADUAAAAAAAAAAAA+wFoAAABCAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-10T21:09:39.24Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-08-10T21:09:39.24Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "EffectStackPool.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\EffectStackPool.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Status\\EffectStackPool.cs",
               "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\EffectStackPool.cs",
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Status\\EffectStackPool.cs",
-              "ViewState": "AgIAAOgAAAAAAAAAAAAIwCUBAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACoAAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-10T21:01:38.045Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-08-10T21:01:38.045Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 8,
               "Title": "StatusReceiver.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\StatusReceiver.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Status\\StatusReceiver.cs",
@@ -97,25 +144,23 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Status\\StatusReceiver.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAD0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-10T20:59:43.618Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-08-10T20:59:43.618Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "StatusSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\StatusSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Status\\StatusSO.cs",
               "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\StatusSO.cs",
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Status\\StatusSO.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEgAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADIAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-10T20:32:06.361Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-08-10T20:32:06.361Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 7,
               "Title": "ApplyStatusHitEffect.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ApplyStatusHitEffect.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Effects\\ApplyStatusHitEffect.cs",
@@ -123,12 +168,11 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Effects\\ApplyStatusHitEffect.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAACcAAABYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-10T20:31:42.173Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-08-10T20:31:42.173Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 9,
               "Title": "HitEffectSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\HitEffectSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Effects\\HitEffectSO.cs",
@@ -140,7 +184,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 10,
               "Title": "WeaponDamageSource.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponDamageSource.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponDamageSource.cs",
@@ -152,7 +196,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 11,
               "Title": "TestExplodeOnKill.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Debugging\\Combat\\TestExplodeOnKill.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Debugging\\Combat\\TestExplodeOnKill.cs",

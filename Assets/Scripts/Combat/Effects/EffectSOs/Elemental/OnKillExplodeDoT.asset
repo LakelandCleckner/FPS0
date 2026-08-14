@@ -21,7 +21,7 @@ MonoBehaviour:
   damageType: {fileID: 11400000, guid: bb5cd7710169fec488edfdb57f9d8ade, type: 2}
   applyStatus: {fileID: 11400000, guid: 2c3506ec21153694b9dc51e7df2a289d, type: 2}
   maxChainDepthOverride: -1
-  blastVfx: {fileID: 0}
+  blastVfx: {fileID: 2852749916858317326, guid: 7808f6b25f91dae4f9fe9444281616f3, type: 3}
   vfxLifetime: 2
   vfxReferenceRadius: 0
   usePlaceholderVfx: 1

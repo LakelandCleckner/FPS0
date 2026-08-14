@@ -3,7 +3,39 @@
   "WorkspaceRootPath": "F:\\Game Dev\\FPS0\\FPS0\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\effects\\explosiononkillso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{9FD9ECDD-2094-710C-0065-D19C266CB085}|CrashKonijn.Goap.Runtime.csproj|f:\\game dev\\fps0\\fps0\\packages\\com.crashkonijn.goap\\runtime\\crashkonijn.goap.runtime\\behaviours\\goapactionprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9FD9ECDD-2094-710C-0065-D19C266CB085}|CrashKonijn.Goap.Runtime.csproj|solutionrelative:packages\\com.crashkonijn.goap\\runtime\\crashkonijn.goap.runtime\\behaviours\\goapactionprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1D6351A8-3947-8CA8-6580-F2FBFC36F8D9}|CrashKonijn.Goap.Editor.csproj|f:\\game dev\\fps0\\fps0\\packages\\com.crashkonijn.goap\\editor\\crashkonijn.goap.editor\\typedrawers\\goapactionprovidereditor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1D6351A8-3947-8CA8-6580-F2FBFC36F8D9}|CrashKonijn.Goap.Editor.csproj|solutionrelative:packages\\com.crashkonijn.goap\\editor\\crashkonijn.goap.editor\\typedrawers\\goapactionprovidereditor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{58372D10-C47B-BF1E-1494-6A9C9F74700E}|CrashKonijn.Goap.Core.csproj|f:\\game dev\\fps0\\fps0\\packages\\com.crashkonijn.goap\\runtime\\crashkonijn.goap.core\\interfaces\\imonogoapactionprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{58372D10-C47B-BF1E-1494-6A9C9F74700E}|CrashKonijn.Goap.Core.csproj|solutionrelative:packages\\com.crashkonijn.goap\\runtime\\crashkonijn.goap.core\\interfaces\\imonogoapactionprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9FD9ECDD-2094-710C-0065-D19C266CB085}|CrashKonijn.Goap.Runtime.csproj|f:\\game dev\\fps0\\fps0\\packages\\com.crashkonijn.goap\\runtime\\crashkonijn.goap.runtime\\behaviours\\agenttypebehaviour.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9FD9ECDD-2094-710C-0065-D19C266CB085}|CrashKonijn.Goap.Runtime.csproj|solutionrelative:packages\\com.crashkonijn.goap\\runtime\\crashkonijn.goap.runtime\\behaviours\\agenttypebehaviour.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\spawning\\enemypool.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\spawning\\enemypool.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\spawning\\enemypoolhandle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\spawning\\enemypoolhandle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\core\\combatanthealth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\core\\combatanthealth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\status\\statussummedtickeffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\status\\statussummedtickeffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\effects\\explosiononkillso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\effects\\explosiononkillso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -11,20 +43,20 @@
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\effects\\explosiononkilleffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\effects\\applystatushiteffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\effects\\applystatushiteffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\status\\effectstackpool.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\status\\effectstackpool.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\status\\statusreceiver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\status\\statusreceiver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\status\\statusso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\status\\statusso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\effects\\applystatushiteffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\effects\\applystatushiteffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\status\\statusreceiver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\status\\statusreceiver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\effects\\hiteffectso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -46,49 +78,149 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ExplosionOnKillSO.cs",
-              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillSO.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillSO.cs",
-              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillSO.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillSO.cs",
-              "ViewState": "AgIAABAAAAAAAAAAAAAuwD4AAAAmAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "GoapActionProviderEditor.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Editor\\CrashKonijn.Goap.Editor\\TypeDrawers\\GoapActionProviderEditor.cs",
+              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Editor\\CrashKonijn.Goap.Editor\\TypeDrawers\\GoapActionProviderEditor.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Editor\\CrashKonijn.Goap.Editor\\TypeDrawers\\GoapActionProviderEditor.cs",
+              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Editor\\CrashKonijn.Goap.Editor\\TypeDrawers\\GoapActionProviderEditor.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-10T21:20:48.734Z",
+              "WhenOpened": "2026-08-14T20:31:40.663Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "ExplosionOnKillEffect.cs",
-              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillEffect.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillEffect.cs",
-              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillEffect.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillEffect.cs",
-              "ViewState": "AgIAADsAAAAAAAAAAAAuwFoAAABCAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "IMonoGoapActionProvider.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IMonoGoapActionProvider.cs",
+              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IMonoGoapActionProvider.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IMonoGoapActionProvider.cs",
+              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IMonoGoapActionProvider.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-10T21:09:39.24Z",
+              "WhenOpened": "2026-08-14T20:31:37.487Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
+              "Title": "AgentTypeBehaviour.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeBehaviour.cs",
+              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeBehaviour.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeBehaviour.cs",
+              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeBehaviour.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-14T20:27:48.965Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "GoapActionProvider.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\GoapActionProvider.cs",
+              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\GoapActionProvider.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\GoapActionProvider.cs",
+              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\GoapActionProvider.cs",
+              "ViewState": "AgIAAFsAAAAAAAAAAAAkwDgAAAA8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-14T20:17:53.826Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "EnemyPool.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Spawning\\EnemyPool.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Spawning\\EnemyPool.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Spawning\\EnemyPool.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\Spawning\\EnemyPool.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAABRAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-14T20:17:34.135Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "EnemyPoolHandle.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Spawning\\EnemyPoolHandle.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Spawning\\EnemyPoolHandle.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Spawning\\EnemyPoolHandle.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\Spawning\\EnemyPoolHandle.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABwAAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-14T20:00:28.725Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "CombatantHealth.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Core\\CombatantHealth.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Core\\CombatantHealth.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Core\\CombatantHealth.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\Core\\CombatantHealth.cs",
+              "ViewState": "AgIAADIAAAAAAAAAAAAswKgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-13T20:56:41.498Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "StatusSummedTickEffect.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\StatusSummedTickEffect.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Status\\StatusSummedTickEffect.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\StatusSummedTickEffect.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\Status\\StatusSummedTickEffect.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAC4AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-13T19:21:53.844Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ExplosionOnKillSO.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillSO.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillSO.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillSO.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillSO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAD4AAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-10T21:20:48.734Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "ExplosionOnKillEffect.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillEffect.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillEffect.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillEffect.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillEffect.cs",
+              "ViewState": "AgIAADUAAAAAAAAAAAA+wFoAAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-10T21:09:39.24Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "EffectStackPool.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\EffectStackPool.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Status\\EffectStackPool.cs",
               "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\EffectStackPool.cs",
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Status\\EffectStackPool.cs",
-              "ViewState": "AgIAAOgAAAAAAAAAAAAIwCUBAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACoAAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-08-10T21:01:38.045Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 13,
               "Title": "StatusReceiver.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\StatusReceiver.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Status\\StatusReceiver.cs",
@@ -100,19 +232,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 11,
               "Title": "StatusSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\StatusSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Status\\StatusSO.cs",
               "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\StatusSO.cs",
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Status\\StatusSO.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEgAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADIAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-08-10T20:32:06.361Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 12,
               "Title": "ApplyStatusHitEffect.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ApplyStatusHitEffect.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Effects\\ApplyStatusHitEffect.cs",
@@ -124,7 +256,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 14,
               "Title": "HitEffectSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\HitEffectSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Effects\\HitEffectSO.cs",
@@ -136,7 +268,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 15,
               "Title": "WeaponDamageSource.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponDamageSource.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponDamageSource.cs",
@@ -148,7 +280,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 16,
               "Title": "TestExplodeOnKill.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Debugging\\Combat\\TestExplodeOnKill.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Debugging\\Combat\\TestExplodeOnKill.cs",
