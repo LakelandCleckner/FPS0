@@ -59,7 +59,18 @@ namespace Combat.Spawning
                 Debug.LogError($"[EnemySpawner] No enemy type registered for id '{typeId}'.");
                 return null;
             }
-            return pool.Rent(position, rotation);
+
+            var handle = pool.Rent(position, rotation);
+
+            // Tell the instance how to get home, so its death handler can return it to
+            // THIS pool with THIS type id. Bound every spawn (the handle is reused, but
+            // the binding is cheap and keeps a reused instance correct even if it were
+            // ever moved between pools).
+            var pooled = handle.GameObject.GetComponent<PooledEnemy>();
+            if (pooled != null)
+                pooled.Bind(this, typeId, handle);
+
+            return handle;
         }
 
         public EnemyPoolHandle Spawn(string typeId, Vector3 position)

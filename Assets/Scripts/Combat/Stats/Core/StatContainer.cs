@@ -132,6 +132,21 @@ namespace Combat.Stats
             return removed;
         }
 
+        // Strip EVERY modifier, returning the container to pure bases. For pooled
+        // entity reuse: a respawned enemy must start at its authored base stats, with
+        // no slow/debuff/buff carried from its last life. 
+        public void ClearAllModifiers()
+        {
+            for (int i = 0; i < modifiers.Length; i++)
+            {
+                var list = modifiers[i];
+                if (list == null || list.Count == 0) continue;
+                list.Clear();
+                Invalidate(i);
+            }
+        }
+
+
         // ---- resolution ----
         public float Resolve(StatDefinitionSO stat)
         {

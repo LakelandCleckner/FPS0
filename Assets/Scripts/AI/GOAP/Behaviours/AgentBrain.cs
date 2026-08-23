@@ -4,13 +4,14 @@ using GOAPGettingStarted.Goals;
 using UnityEngine;
 using UnityEngine.AI;
 using Combat.Stats;
+using Combat.Spawning;
 
 namespace GOAPGettingStarted.Behaviours
 {
     [RequireComponent(typeof(AgentBehaviour))]
     [RequireComponent(typeof(GoapActionProvider))]
     [RequireComponent(typeof(EnemyMemory))]
-    public class AgentBrain : MonoBehaviour
+    public class AgentBrain : MonoBehaviour, IPoolable
     {
         [Header("Detection")]
         public float DetectionRange = 25f;
@@ -25,11 +26,11 @@ namespace GOAPGettingStarted.Behaviours
 
 
 
-        // MOVEMENT — tuning values, pushed into the stat container as BASES at Start.
+        // MOVEMENT  tuning values, pushed into the stat container as BASES at Start.
         // The public properties below resolve from the container, so slows/speed buffs
         // are modifiers. Callers (ChaseAction, InvestigateAction, AgentMoveBehaviour)
         // read the properties and need no changes.
-        [Header("Movement (tuning — pushed as stat bases at Start)")]
+        [Header("Movement (tuning  pushed as stat bases at Start)")]
         [SerializeField] private float baseMoveSpeed = 3.5f;
         [SerializeField] private float chaseSpeedMultiplier = 1.6f;
         [SerializeField] private float investigateSpeedMultiplier = 1.3f;
@@ -40,7 +41,7 @@ namespace GOAPGettingStarted.Behaviours
         [Tooltip("References to the movement stat definitions.")]
         [SerializeField] private EnemyMovementStatKeys movementKeys;
 
-        // Resolved movement stats (live, cached — a slow applies on the next read).
+        // Resolved movement stats (live, cached  a slow applies on the next read).
         // Serialized tuning value is the fallback if stats aren't wired.
         public float BaseMoveSpeed
             => Stat(movementKeys != null ? movementKeys.moveSpeed : null, baseMoveSpeed);
@@ -92,6 +93,40 @@ namespace GOAPGettingStarted.Behaviours
                 player = playerObj.transform;
 
             actionProvider.RequestGoal<WanderGoal>();
+        }
+
+        // ---- IPoolable ----
+
+        // Reused enemy: wipe AI state and RE-PLAN from scratch. Without this a
+        // respawned enemy resumes its last life's goal (mid-chase, mid-investigate)
+        // and its awareness timers. Start doesn't run on reuse, so this is the only
+        // reset path. Runs after SetActive(true), so the GOAP provider is already
+        // enabled and accepts the goal request.
+        public void OnSpawn()
+        {
+            state = AIState.Normal;
+            awarenessTimer = 0f;
+            wasVisible = false;
+            lastLoggedState = AIState.Normal;
+            CurrentSpeedMultiplier = 1f;
+
+            // Re-find the player in case the reference went stale (player re-spawned,
+            // scene changed). Cheap insurance; usually the same transform.
+            var playerObj = GameObject.FindWithTag("Player");
+            player = playerObj != null ? playerObj.transform : null;
+
+            // Bases persist in the stat container across reuse, so no re-push needed.
+            // The GOAP goal, however, is only set once in Start — re-request it so the
+            // agent plans a fresh wander instead of continuing its old plan.
+            if (actionProvider != null)
+                actionProvider.RequestGoal<WanderGoal>();
+        }
+
+        public void OnDespawn()
+        {
+            // Nothing to stop pre-deactivate today. The GOAP agent's event wiring
+            // tears down in its own OnDisable; the plan is replaced on the next
+            // OnSpawn. Kept for the IPoolable contract.
         }
 
         // Serialized tuning -> stat bases. Modifiers layer on top of these.
@@ -177,7 +212,7 @@ namespace GOAPGettingStarted.Behaviours
             }
 
             //if (visible != wasVisible)
-                //Debug.Log($"[Brain] {state} | visible {wasVisible}->{visible} | hasPos={memory.HasLastKnownPosition}");
+            //Debug.Log($"[Brain] {state} | visible {wasVisible}->{visible} | hasPos={memory.HasLastKnownPosition}");
 
             /*if (state != lastLoggedState)
             {
@@ -222,7 +257,7 @@ namespace GOAPGettingStarted.Behaviours
             }
             else
             {
-                Debug.Log("[AgentBrain] EnterAware — player ref is null!");
+                Debug.Log("[AgentBrain] EnterAware  player ref is null!");
             }
 
             // Immediately start moving to last known position
@@ -232,7 +267,7 @@ namespace GOAPGettingStarted.Behaviours
         private void EnterInvestigate()
         {
             state = AIState.Investigate;
-            //Debug.Log($"[AgentBrain] EnterInvestigate — hasPos={memory.HasLastKnownPosition} pos={memory.LastKnownPlayerPosition}");
+            //Debug.Log($"[AgentBrain] EnterInvestigate  hasPos={memory.HasLastKnownPosition} pos={memory.LastKnownPlayerPosition}");
             actionProvider.RequestGoal<InvestigateGoal>();
         }
 

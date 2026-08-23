@@ -22,6 +22,9 @@ GameObject:
   - component: {fileID: 3623431239706443026}
   - component: {fileID: 1021028654358225159}
   - component: {fileID: 5938237327913932918}
+  - component: {fileID: 8124297071241021447}
+  - component: {fileID: 7901192667955486522}
+  - component: {fileID: 4993420078943901302}
   m_Layer: 7
   m_Name: EnemyRoot
   m_TagString: Untagged
@@ -270,6 +273,44 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentTypeName: FpsAgentTypeFactorySO
+--- !u!114 &8124297071241021447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2780478270126569151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86c3060c0d5a298418f5d155edd48fe4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7901192667955486522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2780478270126569151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 222310eede66fd5408dffe40fc733e93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sampleRadius: 5
+--- !u!114 &4993420078943901302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2780478270126569151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4e8261dce8ddb6499c6de5f2dce488e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PickFreshTarget: 1
 --- !u!1001 &2726232234564731754
 PrefabInstance:
   m_ObjectHideFlags: 0

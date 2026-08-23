@@ -136,6 +136,7 @@
     <Compile Include="Assets\Scripts\Combat\Events\WeaponEventBus.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\Utilities\MobileDisableAutoSwitchControls.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Core\DerivationContext.cs" />
+    <Compile Include="Assets\Scripts\Combat\Spawning\NavMeshAgentPoolReset.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VFXTester.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Actions\ChaseAction.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\IsWandering.cs" />
@@ -208,6 +209,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\ChaseGoal.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Bootstrap\StatBootstrap.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\ProjectileSO.cs" />
+    <Compile Include="Assets\Scripts\Combat\Spawning\PooledEnemy.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\HitContext.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\BaseVfx.cs" />
@@ -227,6 +229,7 @@
     <Compile Include="Assets\Scripts\Combat\Stats\Keys\CombatStatKeys.cs" />
     <Compile Include="Assets\StarterAssets\InputSystem\StarterAssetsInputs.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\AutoFireBehavior.cs" />
+    <Compile Include="Assets\Scripts\AI\GOAP\Markers\WanderMarker.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\AgentMoveBehaviour.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\EffectStackPool.cs" />
   </ItemGroup>
