@@ -4,14 +4,14 @@ using Combat.Core;
 
 namespace Combat.Feedback
 {
-    // Owns active rolling accumulator numbers, GROUPED PER TARGET so all
-    // operations (find, count, repack) touch only one enemy's short list rather
-    // than scanning every accumulator in the scene — scales to many enemies.
+    // Owns active rolling accumulator numbers, grouped per target so operations touch
+    // one enemy's short list rather than every accumulator in the scene. Within a
+    // target, numbers fold by effect key and lay out biggest-at-the-bottom, sliding to
+    // their slots.
     //
-    // Within a target, numbers fold by effect key (one climbing number per
-    // StatusSO) and lay out in a cumulative-height column ordered by accumulated
-    // total (BIGGEST AT THE BOTTOM). Numbers slide smoothly to their slots, so
-    // when totals change and the order shifts, they glide rather than snap.
+    // Pooled reuse: a pooled enemy is the same ICombatant across lives, so numbers can
+    // bleed between lives. ClearTarget wipes a target's numbers on despawn/spawn, and a
+    // generation check drops any number left from a previous life regardless of timing.
     public class DamageAccumulatorRegistry : MonoBehaviour
     {
         public static DamageAccumulatorRegistry Instance { get; private set; }
@@ -79,6 +79,10 @@ namespace Combat.Feedback
         {
             if (target == null || effectKey == null) return;
 
+            // Evict numbers left from a previous life of this pooled target before
+            // adding — a generation mismatch means the number belongs to a dead life.
+            EvictStale(target);
+
             if (!groups.TryGetValue(target, out var group))
             {
                 group = new TargetGroup();
@@ -117,15 +121,60 @@ namespace Combat.Feedback
                 Layout(group);
         }
 
-        // Cumulative-height column ordered by accumulated total, biggest at the
-        // bottom (slot 0). Numbers slide to these offsets. Local to one target.
+        // Immediately drop all accumulator numbers for a target — called when a pooled
+        // enemy despawns/spawns so its numbers don't linger onto its next life.
+        public void ClearTarget(ICombatant target)
+        {
+            if (target == null) return;
+            if (!groups.TryGetValue(target, out var group)) return;
+
+            foreach (var kv in group.byEffect)
+            {
+                var n = kv.Value;
+                if (n != null)
+                {
+                    n.gameObject.SetActive(false);
+                    pool.Enqueue(n);
+                }
+            }
+            group.byEffect.Clear();
+            groups.Remove(target);
+        }
+
+        // Drop any of a target's numbers whose generation no longer matches the target's
+        // current life. Runs before each Report so a fresh hit on a reused enemy can't
+        // absorb into a number from the previous life, even if a tick reported on the
+        // same frame the previous life died.
+        private static readonly List<AccumulatorNumber> staleBuffer = new List<AccumulatorNumber>();
+        private void EvictStale(ICombatant target)
+        {
+            if (!groups.TryGetValue(target, out var group)) return;
+
+            int currentGen = AccumulatorPoolReset.GetGeneration(target);
+
+            staleBuffer.Clear();
+            foreach (var kv in group.byEffect)
+                if (kv.Value.Generation != currentGen)
+                    staleBuffer.Add(kv.Value);
+
+            for (int i = 0; i < staleBuffer.Count; i++)
+            {
+                var n = staleBuffer[i];
+                group.byEffect.Remove(n.EffectKey);
+                n.gameObject.SetActive(false);
+                pool.Enqueue(n);
+            }
+
+            if (group.byEffect.Count == 0)
+                groups.Remove(target);
+        }
+
         private static readonly List<AccumulatorNumber> sortBuffer = new List<AccumulatorNumber>();
         private void Layout(TargetGroup group)
         {
             sortBuffer.Clear();
             foreach (var kv in group.byEffect)
                 sortBuffer.Add(kv.Value);
-            // biggest total first -> placed at the bottom (lowest y)
             sortBuffer.Sort((a, b) => b.Total.CompareTo(a.Total));
 
             float y = 0f;

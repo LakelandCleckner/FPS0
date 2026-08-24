@@ -1,5 +1,6 @@
 using UnityEngine;
 using Combat.Core;
+using Combat.Spawning;   // for IPoolable
 
 namespace Combat.Stats
 {
@@ -10,7 +11,7 @@ namespace Combat.Stats
     // Because it also passes through TakeDamage, a hitbox/delivery needs only ONE
     // reference (the CombatantStats/ICombatant) for both the hit context AND dealing
     // damage.
-    public class CombatantStats : MonoBehaviour, ICombatant
+    public class CombatantStats : MonoBehaviour, ICombatant, IPoolable
     {
         [System.Serializable]
         public struct BaseStat
@@ -65,5 +66,19 @@ namespace Combat.Stats
 
         public float Resolve(StatDefinitionSO stat)
             => container != null ? container.Resolve(stat) : (stat != null ? stat.defaultValue : 0f);
+
+        // Reused enemy: strip every stat modifier so it returns to authored base
+        // stats — no slow, debuff, or buff carried from its last life. Bases persist
+        // in the container across reuse (pushed in Awake, not tied to enable), so
+        // clearing modifiers is the whole reset. Most status-driven modifiers are
+        // already gone once StatusReceiver clears its pools, but this is the catch-all
+        // for anything applied outside the status system.
+        public void OnSpawn()
+        {
+            container?.ClearAllModifiers();
+        }
+
+        public void OnDespawn() { }
+
     }
 }

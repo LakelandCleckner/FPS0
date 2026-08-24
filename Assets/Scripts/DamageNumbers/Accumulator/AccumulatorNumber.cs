@@ -21,6 +21,7 @@ namespace Combat.Feedback
 
         public ICombatant Target { get; private set; }
         public object EffectKey { get; private set; }
+        public int Generation { get; private set; }
 
         // current accumulated total — the registry sorts the column by this
         // (biggest at the bottom)
@@ -67,6 +68,7 @@ namespace Combat.Feedback
         {
             this.registry = registry;
             Target = target;
+            Generation = Combat.Feedback.AccumulatorPoolReset.GetGeneration(target);
             EffectKey = effectKey;
             this.follow = follow;
             this.type = type;

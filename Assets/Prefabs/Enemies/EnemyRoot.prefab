@@ -25,6 +25,7 @@ GameObject:
   - component: {fileID: 8124297071241021447}
   - component: {fileID: 7901192667955486522}
   - component: {fileID: 4993420078943901302}
+  - component: {fileID: 6310763789783104317}
   m_Layer: 7
   m_Name: EnemyRoot
   m_TagString: Untagged
@@ -311,6 +312,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PickFreshTarget: 1
+--- !u!114 &6310763789783104317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2780478270126569151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d907e014d4409fc44aaea0c559920404, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2726232234564731754
 PrefabInstance:
   m_ObjectHideFlags: 0
