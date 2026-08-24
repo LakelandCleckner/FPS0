@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a55291c5528c0e344a75c56933a0cb0e, type: 3}
+  m_Name: OnKillExplodeTransfer
+  m_EditorClassIdentifier: 
+  radius: 4
+  hitLayers:
+    serializedVersion: 2
+    m_Bits: 128
+  damageStat: {fileID: 11400000, guid: 74e01aed325cce348acbd5d421549c4f, type: 2}
+  damageCoefficient: 0.5
+  damageType: {fileID: 11400000, guid: bb5cd7710169fec488edfdb57f9d8ade, type: 2}
+  applyStatus: {fileID: 11400000, guid: 2c3506ec21153694b9dc51e7df2a289d, type: 2}
+  maxChainDepthOverride: -1
+  blastVfx: {fileID: 2852749916858317326, guid: 7808f6b25f91dae4f9fe9444281616f3, type: 3}
+  vfxLifetime: 2
+  vfxReferenceRadius: 0
+  usePlaceholderVfx: 1
+  placeholderColor: {r: 1, g: 0.4, b: 0.1, a: 0.35}

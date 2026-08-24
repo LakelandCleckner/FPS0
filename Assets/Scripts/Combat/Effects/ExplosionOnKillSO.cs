@@ -81,6 +81,17 @@ namespace Combat.Effects
         // overlap buffer. HitEffectSO rebuilds each GetInstance() when this is true.
         protected override bool RequiresFreshInstance => true;
 
+        [Header("Status Transfer")]
+        [Tooltip("Statuses the explosion CARRIES from the killed victim onto everyone it " +
+         "hits, preserving their remaining duration and stack count. Empty = no " +
+         "transfer (default). Separate from applyStatus, which applies a FRESH " +
+         "status — transfer moves the victim's EXISTING stacks. List Burn here and " +
+         "a burn-kill spreads the victim's burn (with its real remaining life) to " +
+         "neighbours.")]
+        public System.Collections.Generic.List<Combat.Status.StatusSO> transferableStatuses
+            = new System.Collections.Generic.List<Combat.Status.StatusSO>();
+
+
         protected override IHitEffect Build()
         {
             var spec = new DamageSpec(
@@ -96,6 +107,7 @@ namespace Combat.Effects
                 vfxLifetime: vfxLifetime,
                 vfxReferenceRadius: vfxReferenceRadius,
                 usePlaceholderVfx: usePlaceholderVfx,
+                transferableStatuses: transferableStatuses,
                 placeholderColor: placeholderColor);
         }
     }

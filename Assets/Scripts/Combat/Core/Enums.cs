@@ -32,9 +32,10 @@ namespace Combat.Core
     // modifiers adjust values before damage applies, reactions fire after.
     public enum EffectPhase
     {
-        Modifier = 0,    // adjust damage/stats before application
-        Application = 1, // actually deal damage / apply status
-        Reaction = 2     // respond to results (explode-on-death, on-kill)
+        Modifier = 0,          // adjust damage/stats before application
+        StatusApplication = 1, // apply statuses — BEFORE damage, so a lethal hit still stamps its DOTs
+        Application = 2,        // deal damage / apply the hit itself
+        Reaction = 3           // respond to results (explode-on-death, on-kill)
     }
     // How repeated applications of the same status combine.
     public enum StackingMode

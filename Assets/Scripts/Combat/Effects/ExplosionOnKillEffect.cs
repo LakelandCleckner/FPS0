@@ -43,7 +43,9 @@ namespace Combat.Effects
         private readonly float vfxReferenceRadius;   // radius the prefab was authored at
         private readonly bool usePlaceholderVfx;
         private readonly Color placeholderColor;
-
+        private readonly List<StatusSO> transferableStatuses;
+        private readonly List<(StatusSO, EffectStackPool.TransferEntry)> transferRecords
+            = new List<(StatusSO, EffectStackPool.TransferEntry)>();
         private NeighbourFinder finder;
         private readonly List<ICombatant> found = new List<ICombatant>(16);
 
@@ -61,6 +63,7 @@ namespace Combat.Effects
             float vfxLifetime,
             float vfxReferenceRadius,
             bool usePlaceholderVfx,
+            List<StatusSO> transferableStatuses,
             Color placeholderColor)
         {
             this.radius = radius;
@@ -72,6 +75,7 @@ namespace Combat.Effects
             this.vfxLifetime = vfxLifetime;
             this.vfxReferenceRadius = vfxReferenceRadius;
             this.usePlaceholderVfx = usePlaceholderVfx;
+            this.transferableStatuses = transferableStatuses;
             this.placeholderColor = placeholderColor;
 
             blastEffects = new List<IHitEffect>(2) { new DamageHitEffect(blastSpec) };
@@ -82,6 +86,7 @@ namespace Combat.Effects
         public void Apply(HitContext ctx, IHitResolver resolver)
         {
             if (!ctx.WasKill) return;
+            Debug.Log($"[Transfer] explosion Apply, WasKill=true, transferable count={transferableStatuses?.Count ?? -1}");
 
             var whr = resolver as WeaponHitResolver;
             if (whr == null) return;
@@ -126,7 +131,32 @@ namespace Combat.Effects
             var alreadyHit = new HashSet<ICombatant> { ctx.Target };
 
             finder.FindInRadius(center, radius, ctx.SourceFaction, alreadyHit, found);
+            Debug.Log($"[Transfer] found {found.Count} targets, radius={radius}");
             if (found.Count == 0) return;
+
+            // STATUS TRANSFER: carry the victim's authored-transferable stacks onto everyone
+            // the blast hit, preserving remaining duration + stack count. Victim (ctx.Target)
+            // is alive this Reaction phase, before its pools clear on teardown.
+            if (transferableStatuses != null && transferableStatuses.Count > 0)
+            {
+                var victimReceiver = (ctx.Target as MonoBehaviour)?.GetComponent<StatusReceiver>();
+                if (victimReceiver != null)
+                {
+                    transferRecords.Clear();
+                    victimReceiver.ExportTransferable(transferableStatuses, transferRecords);
+
+                    if (transferRecords.Count > 0)
+                    {
+                        for (int i = 0; i < found.Count; i++)
+                        {
+                            var targetReceiver = (found[i] as MonoBehaviour)?.GetComponent<StatusReceiver>();
+                            if (targetReceiver != null)
+                                targetReceiver.ImportTransferred(transferRecords, resolver);
+                        }
+                    }
+                }
+            }
+
 
             // Optionally override the depth cap for this specific explosion. The parent
             // context carries the weapon's MaxChainDepth; a per-effect override lets an

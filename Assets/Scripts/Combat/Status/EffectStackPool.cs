@@ -320,5 +320,67 @@ namespace Combat.Status
             entries.Clear();
             Expired = true;
         }
+
+
+        public readonly struct TransferEntry
+        {
+            public readonly IDamageSource Source;
+            public readonly ICombatant Attacker;
+            public readonly DamageSpec TickSpec;
+            public readonly float ChainMultiplier;
+            public readonly DamageTypeSO DamageType;
+            public readonly int SourceFaction;
+            public readonly int ChainDepth;
+            public readonly float RemainingDuration;
+            public readonly float TickAccumulator;
+
+            public TransferEntry(StackEntry e)
+            {
+                Source = e.Source;
+                Attacker = e.Attacker;
+                TickSpec = e.TickSpec;
+                ChainMultiplier = e.ChainMultiplier;
+                DamageType = e.DamageType;
+                SourceFaction = e.SourceFaction;
+                ChainDepth = e.ChainDepth;
+                RemainingDuration = e.RemainingDuration;
+                TickAccumulator = e.TickAccumulator;
+            }
+        }
+
+        public void ExportEntries(List<TransferEntry> outList)
+        {
+            for (int i = 0; i < entries.Count; i++)
+                outList.Add(new TransferEntry(entries[i]));
+        }
+
+
+        public void ImportEntry(in TransferEntry t, bool resetTickCadence)
+        {
+            var e = new StackEntry();
+
+            // Set with this pool's Target (the NEW enemy) so weight derives against it and
+            // the dead-source fallback tracks the right target. Source/Attacker stay the
+            // ORIGINAL (from the record) — attribution and source-scoped derivations keep
+            // the burn's identity. Duration placeholder is overwritten below.
+            e.Set(t.Source, t.Attacker, Target, t.TickSpec,
+                  t.ChainMultiplier, t.DamageType, t.SourceFaction, t.ChainDepth,
+                  t.RemainingDuration);
+
+            // Set() zeroes TickAccumulator; restore it unless we're resetting cadence.
+            if (!resetTickCadence)
+                e.TickAccumulator = t.TickAccumulator;
+
+            entries.Add(e);
+
+            if (Status.maxEntries > 0 && entries.Count > Status.maxEntries)
+                EvictOne();
+
+            // NOTE: no wasEmpty instant-tick here (unlike AddEntry). A transferred DOT
+            // waits its normal cadence. The pool is already registered with StatusManager
+            // (existing pool) or will be by ImportTransferred (new pool), so it ticks.
+        }
+
+
     }
 }

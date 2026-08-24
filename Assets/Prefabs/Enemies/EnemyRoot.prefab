@@ -173,7 +173,7 @@ MonoBehaviour:
   BaseAwarenessDuration: 3
   ProximityAwarenessBonus: 4
   ProximityThreshold: 6
-  baseMoveSpeed: 3.5
+  baseMoveSpeed: 0
   chaseSpeedMultiplier: 1.6
   investigateSpeedMultiplier: 1.3
   combatantStats: {fileID: 3623431239706443026}
@@ -197,7 +197,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2780478270126569151}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a4af2c47e2bc8954eb785c3ea495e9fa, type: 3}
   m_Name: 
@@ -236,7 +236,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseStats:
   - stat: {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
-    baseValue: 25
+    baseValue: 10
   - stat: {fileID: 11400000, guid: f5a8c623ad3a88c48bda3be493dbf950, type: 2}
     baseValue: 0.5
   - stat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}

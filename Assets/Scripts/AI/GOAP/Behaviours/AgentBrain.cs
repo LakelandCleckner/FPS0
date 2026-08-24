@@ -22,7 +22,7 @@ namespace GOAPGettingStarted.Behaviours
         public float ProximityAwarenessBonus = 4f;
         public float ProximityThreshold = 6f;
 
-        private AIState lastLoggedState;
+        //private AIState lastLoggedState;
 
 
 
@@ -107,7 +107,7 @@ namespace GOAPGettingStarted.Behaviours
             state = AIState.Normal;
             awarenessTimer = 0f;
             wasVisible = false;
-            lastLoggedState = AIState.Normal;
+            //lastLoggedState = AIState.Normal;
             CurrentSpeedMultiplier = 1f;
 
             // Re-find the player in case the reference went stale (player re-spawned,

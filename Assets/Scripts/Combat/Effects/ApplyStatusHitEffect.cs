@@ -21,7 +21,7 @@ namespace Combat.Effects
     // path the day its context becomes pooled.
     public class ApplyStatusHitEffect : IHitEffect
     {
-        public EffectPhase Phase => EffectPhase.Application;
+        public EffectPhase Phase => EffectPhase.StatusApplication;
         public bool PropagatesOnChain => true;
 
         private readonly StatusSO statusDef;

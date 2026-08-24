@@ -52,7 +52,7 @@ namespace Combat.Spawning
                 return;
             }
 
-            var goap = FindObjectOfType<GoapBehaviour>();
+            var goap = FindFirstObjectByType<GoapBehaviour>();
             if (goap == null)
             {
                 Debug.LogError("[GoapRuntimeInit] No GoapBehaviour (GOAP manager) in the scene.");

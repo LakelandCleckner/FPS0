@@ -9,7 +9,7 @@ namespace Combat.Status
     // tick rolls independently, so a burn can crit on some ticks and not others.
     public class StatusSummedTickEffect : IHitEffect
     {
-        public EffectPhase Phase => EffectPhase.Application;
+        public EffectPhase Phase => EffectPhase.StatusApplication;
         public bool PropagatesOnChain => false;
 
         // Not readonly: the owning EffectStackPool reuses one instance across ticks

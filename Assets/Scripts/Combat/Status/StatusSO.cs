@@ -63,6 +63,15 @@ namespace Combat.Status
         public System.Collections.Generic.List<Combat.Effects.HitEffectSO> onKillEffects
             = new System.Collections.Generic.List<Combat.Effects.HitEffectSO>();
 
+        [Header("Transfer")]
+        [Tooltip("When this status transfers to a new target (e.g. via an explosion), " +
+         "reset its tick cadence. OFF (default) preserves the tick timer so a SLOW " +
+         "DOT doesn't sit for a full interval before its first tick on the new " +
+         "target — avoids a dead beat. ON restarts the cadence cleanly, better for " +
+         "fast DOTs where a near-immediate carried-over tick would feel off.")]
+        public bool transferResetsTickCadence = false;
+
+
 
         // Build the tick's DamageSpec from the authored derivation.
         public DamageSpec BuildTickSpec()

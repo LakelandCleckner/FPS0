@@ -5,17 +5,14 @@ using Combat.Feedback;
 
 namespace Combat.Spawning
 {
-    // One coordinator for an enemy's pooling concerns: death-to-pool return, nav reset,
-    // and damage-number reset with a per-life generation. Replaces PooledEnemy,
-    // NavMeshAgentPoolReset, and AccumulatorPoolReset. (WanderMarker stays separate — it
-    // is a wander-system flag that merely implements IPoolable, not a pooling component.)
-    //
-    // Merging also fixes an ordering ambiguity: as separate components the pool called
-    // their OnSpawns in GetComponents order. Here OnSpawn runs them in a defined order.
+    // Coordinates an enemy's pooling: death-to-pool return, nav reset, damage-number
+    // reset with a per-life generation. The return is deferred to end of frame so the
+    // killing hit's full resolution — including the Reaction phase, where an on-kill
+    // explosion reads this victim's still-live status pools for transfer — completes
+    // before the enemy tears down.
     [RequireComponent(typeof(CombatantHealth))]
     public class EnemyPoolAdapter : MonoBehaviour, IPoolable
     {
-        [Tooltip("NavMesh search radius when snapping the agent to a valid point on spawn.")]
         [SerializeField] private float navSampleRadius = 5f;
 
         private CombatantHealth health;
@@ -27,8 +24,6 @@ namespace Combat.Spawning
         private EnemyPoolHandle handle;
         private bool returning;
 
-        // Per-life counter. The accumulator registry reads this off the target to drop
-        // numbers left from a previous life of this pooled (same-instance) enemy.
         public int Generation { get; private set; }
 
         private void Awake()
@@ -49,7 +44,6 @@ namespace Combat.Spawning
             if (health != null) health.OnDeath -= HandleDeath;
         }
 
-        // Pool tells a spawned instance where home is.
         public void Bind(EnemySpawner spawner, string typeId, EnemyPoolHandle handle)
         {
             this.spawner = spawner;
@@ -61,9 +55,7 @@ namespace Combat.Spawning
 
         public void OnSpawn()
         {
-            // New life first, so any number created from here on carries the new gen.
             Generation++;
-
             ClearAccumulator();
             ResetNavAgent();
         }
@@ -71,9 +63,6 @@ namespace Combat.Spawning
         public void OnDespawn()
         {
             ClearAccumulator();
-
-            // Stop the agent so a deactivating enemy leaves no residual path/velocity
-            // for a reused instance to briefly express before OnSpawn runs.
             if (agent != null && agent.isOnNavMesh)
             {
                 agent.ResetPath();
@@ -81,21 +70,31 @@ namespace Combat.Spawning
             }
         }
 
-        // ---- death -> pool ----
+        // ---- death -> pool (deferred) ----
 
         private void HandleDeath()
         {
             if (returning) return;
             returning = true;
 
-            // Deferred-return seam: today immediate. A death animation, or a status
-            // transfer reading this corpse's still-live status pools, delays the return
-            // here later. On-death reactions have already run (killing hit's Reaction
-            // phase completes before Die fires OnDeath).
+            // Defer to end of frame so the current hit resolution finishes first —
+            // including its Reaction phase, where an on-kill explosion reads this
+            // victim's still-live status pools (transfer). Returning synchronously here
+            // would clear the pools mid-resolution, before the explosion reads them.
+            // The dying enemy is already inert during this window: CombatantHealth and
+            // the status ticks both early-out on IsDying, so it takes no more damage and
+            // its DOTs stop.
+            StartCoroutine(ReturnAtEndOfFrame());
+        }
+
+        private System.Collections.IEnumerator ReturnAtEndOfFrame()
+        {
+            yield return new WaitForEndOfFrame();
+
             if (spawner != null && handle != null)
                 spawner.Despawn(typeId, handle);
             else
-                Destroy(gameObject);   // not pooled -> still disappears
+                Destroy(gameObject);
         }
 
         // ---- reset helpers ----
@@ -112,9 +111,6 @@ namespace Combat.Spawning
             if (agent == null) agent = GetComponent<NavMeshAgent>();
             if (agent == null) return;
 
-            // Transform is already at the spawn position (pool sets it before OnSpawn).
-            // Sample the mesh nearby and warp onto it, syncing the agent and hardening
-            // off-mesh scatter spawns.
             Vector3 target = transform.position;
             if (NavMesh.SamplePosition(target, out var hit, navSampleRadius, NavMesh.AllAreas))
                 target = hit.position;
@@ -129,8 +125,6 @@ namespace Combat.Spawning
             }
         }
 
-        // Registry helper: current generation for a target, or 0 for non-pooled things
-        // (which never reuse, so their numbers never mismatch).
         public static int GetGeneration(ICombatant target)
         {
             var mb = target as MonoBehaviour;
