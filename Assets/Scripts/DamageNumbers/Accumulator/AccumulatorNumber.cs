@@ -68,7 +68,7 @@ namespace Combat.Feedback
         {
             this.registry = registry;
             Target = target;
-            Generation = Combat.Feedback.AccumulatorPoolReset.GetGeneration(target);
+            Generation = Combat.Spawning.EnemyPoolAdapter.GetGeneration(target);
             EffectKey = effectKey;
             this.follow = follow;
             this.type = type;

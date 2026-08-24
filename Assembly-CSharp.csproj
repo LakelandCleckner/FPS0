@@ -127,6 +127,7 @@
     <Compile Include="Assets\PixPlays\Components\Scripts\BindingPointType.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\BurstFireBehavior.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\DebugLogEffectSO.cs" />
+    <Compile Include="Assets\Scripts\Combat\Spawning\EnemyPoolAdapter.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Runtime\CombatantStats.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StatusReceiver.cs" />
     <Compile Include="Assets\Scripts\Debugging\Performance\ContextResetAudit.cs" />

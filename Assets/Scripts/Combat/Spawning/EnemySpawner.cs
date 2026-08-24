@@ -66,9 +66,9 @@ namespace Combat.Spawning
             // THIS pool with THIS type id. Bound every spawn (the handle is reused, but
             // the binding is cheap and keeps a reused instance correct even if it were
             // ever moved between pools).
-            var pooled = handle.GameObject.GetComponent<PooledEnemy>();
-            if (pooled != null)
-                pooled.Bind(this, typeId, handle);
+            var adapter = handle.GameObject.GetComponent<EnemyPoolAdapter>();
+            if (adapter != null)
+                adapter.Bind(this, typeId, handle);
 
             return handle;
         }

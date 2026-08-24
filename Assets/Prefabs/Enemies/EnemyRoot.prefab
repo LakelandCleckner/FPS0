@@ -22,10 +22,8 @@ GameObject:
   - component: {fileID: 3623431239706443026}
   - component: {fileID: 1021028654358225159}
   - component: {fileID: 5938237327913932918}
-  - component: {fileID: 8124297071241021447}
-  - component: {fileID: 7901192667955486522}
   - component: {fileID: 4993420078943901302}
-  - component: {fileID: 6310763789783104317}
+  - component: {fileID: 8591141333270702738}
   m_Layer: 7
   m_Name: EnemyRoot
   m_TagString: Untagged
@@ -274,31 +272,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentTypeName: FpsAgentTypeFactorySO
---- !u!114 &8124297071241021447
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2780478270126569151}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86c3060c0d5a298418f5d155edd48fe4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &7901192667955486522
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2780478270126569151}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 222310eede66fd5408dffe40fc733e93, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sampleRadius: 5
 --- !u!114 &4993420078943901302
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -312,7 +285,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PickFreshTarget: 1
---- !u!114 &6310763789783104317
+--- !u!114 &8591141333270702738
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -321,9 +294,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2780478270126569151}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d907e014d4409fc44aaea0c559920404, type: 3}
+  m_Script: {fileID: 11500000, guid: f438f5996c94440458b584e62fbc3421, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  navSampleRadius: 5
 --- !u!1001 &2726232234564731754
 PrefabInstance:
   m_ObjectHideFlags: 0
