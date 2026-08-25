@@ -18,7 +18,7 @@ MonoBehaviour:
   defaultValue: 1
   useMin: 0
   minValue: 0
-  useMax: 1
+  useMax: 0
   maxValue: 0
   isPercent: 0
   displayDecimals: 0

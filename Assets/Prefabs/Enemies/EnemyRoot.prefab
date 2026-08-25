@@ -173,11 +173,11 @@ MonoBehaviour:
   BaseAwarenessDuration: 3
   ProximityAwarenessBonus: 4
   ProximityThreshold: 6
-  baseMoveSpeed: 0
-  chaseSpeedMultiplier: 1.6
-  investigateSpeedMultiplier: 1.3
+  baseMoveSpeed: 5
+  chaseSpeedMultiplier: 2
+  investigateSpeedMultiplier: 1.5
   combatantStats: {fileID: 3623431239706443026}
-  movementKeys: {fileID: 0}
+  movementKeys: {fileID: 11400000, guid: 6f8048b017eb752408ba18b45be727af, type: 2}
 --- !u!114 &8478488495213342464
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -240,7 +240,7 @@ MonoBehaviour:
   - stat: {fileID: 11400000, guid: f5a8c623ad3a88c48bda3be493dbf950, type: 2}
     baseValue: 0.5
   - stat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
-    baseValue: 0.5
+    baseValue: 5
   - stat: {fileID: 11400000, guid: a80e01f34d9994742bd8da080f5e830b, type: 2}
     baseValue: 2
   - stat: {fileID: 11400000, guid: 6fcba625bc9be654dbc0b4bc960ffea6, type: 2}

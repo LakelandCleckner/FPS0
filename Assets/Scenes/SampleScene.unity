@@ -3086,6 +3086,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 149718689330863646, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: movementKeys
+      value: 
+      objectReference: {fileID: 11400000, guid: 6f8048b017eb752408ba18b45be727af, type: 2}
+    - target: {fileID: 149718689330863646, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: baseMoveSpeed
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 2780478270126569151, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: m_Name
       value: EnemyRoot
@@ -3093,6 +3101,10 @@ PrefabInstance:
     - target: {fileID: 2780478270126569151, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3623431239706443026, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: baseStats.Array.data[2].baseValue
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6612740343518719550, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: m_LocalPosition.x

@@ -33,4 +33,5 @@ MonoBehaviour:
   showFloatingNumber: 1
   feedsAccumulator: 1
   onKillEffects:
-  - {fileID: 11400000, guid: 01163cec9bbd6804d908851ae1c3bc41, type: 2}
+  - {fileID: 11400000, guid: e22eff1903066ed45b588f475a538cb7, type: 2}
+  transferResetsTickCadence: 1

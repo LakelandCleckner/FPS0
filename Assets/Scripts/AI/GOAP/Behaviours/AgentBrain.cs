@@ -133,14 +133,28 @@ namespace GOAPGettingStarted.Behaviours
         private void PushMovementBases()
         {
             var c = combatantStats != null ? combatantStats.Container : null;
-            if (c == null || movementKeys == null) return;
+            if (c == null || movementKeys == null) { Debug.Log($"[Speed] push skipped: container={c != null} keys={movementKeys != null}"); return; }
 
             if (movementKeys.moveSpeed != null)
+            {
                 c.SetBase(movementKeys.moveSpeed, baseMoveSpeed);
+                Debug.Log($"[Speed] pushed base {baseMoveSpeed} to '{movementKeys.moveSpeed.name}', resolves to {c.Resolve(movementKeys.moveSpeed)}");
+            }
+            else Debug.Log("[Speed] moveSpeed key is NULL");
+
             if (movementKeys.chaseSpeedMultiplier != null)
+            {
                 c.SetBase(movementKeys.chaseSpeedMultiplier, chaseSpeedMultiplier);
+                Debug.Log($"[Speed] pushed chase {chaseSpeedMultiplier} to '{movementKeys.chaseSpeedMultiplier.name}', resolves to {c.Resolve(movementKeys.chaseSpeedMultiplier)}");
+            }
+            else Debug.Log("[Speed] chaseSpeedMultiplier key is NULL");
+
             if (movementKeys.investigateSpeedMultiplier != null)
+            {
                 c.SetBase(movementKeys.investigateSpeedMultiplier, investigateSpeedMultiplier);
+                Debug.Log($"[Speed] pushed investigate {investigateSpeedMultiplier} to '{movementKeys.investigateSpeedMultiplier.name}', resolves to {c.Resolve(movementKeys.investigateSpeedMultiplier)}");
+            }
+            else Debug.Log("[Speed] investigateSpeedMultiplier key is NULL");
         }
 
         private void Update()

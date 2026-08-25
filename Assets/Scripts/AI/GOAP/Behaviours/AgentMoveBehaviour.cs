@@ -72,6 +72,8 @@ namespace GOAPGettingStarted.Behaviours
             // changes, so a slow/buff lands the frame it's applied without a native write
             // every frame.
             float desiredSpeed = brain.BaseMoveSpeed * brain.CurrentSpeedMultiplier;
+            if (desiredSpeed == 0f && Time.frameCount % 30 == 0)
+                Debug.Log($"[Move] FROZEN: base={brain.BaseMoveSpeed} mult={brain.CurrentSpeedMultiplier}");
             if (!Mathf.Approximately(desiredSpeed, lastAppliedSpeed))
             {
                 nav.speed = desiredSpeed;
