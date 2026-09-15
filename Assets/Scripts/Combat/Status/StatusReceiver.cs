@@ -43,8 +43,10 @@ namespace Combat.Status
         }
         public void OnPoolExpired(EffectStackPool pool)
         {
+            pool.OnExpiredCleanup();          //lift any stat modifier it applied
             if (pool.Status != null) pools.Remove(pool.Status);
         }
+
 
         // ---- IPoolable ----
 
@@ -121,7 +123,7 @@ namespace Combat.Status
 
                 if (!pools.TryGetValue(status, out var pool))
                 {
-                    // Bind the tick delegate to THIS target (not a pooled context), type
+                    // Bind the tick delegate to THIS target, type
                     // from the record. Mirrors ApplyStatusHitEffect.
                     var victim = target;
                     System.Action<float> applyTick =

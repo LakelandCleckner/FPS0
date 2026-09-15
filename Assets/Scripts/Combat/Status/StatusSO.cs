@@ -13,6 +13,21 @@ namespace Combat.Status
     // KIND + owner scope + stat/quantity, matching the data-driven DamageSpec.
     public abstract class StatusSO : ScriptableObject
     {
+        [Header("Stat Modifier (while active)")]
+        [Tooltip("Stat this status modifies while active (e.g. Move Speed for a slow). " +
+         "null = no modifier (damage-only statuses like burn).")]
+        public StatDefinitionSO modifierTargetStat;
+
+        [Tooltip("Bucket the modifier contributes to: 'mult' (multiplicative, e.g. -0.3 = " +
+                 "30% slower), 'additive', or 'flat'.")]
+        public string modifierBucket = "mult";
+
+        [Tooltip("Modifier value PER UNIT OF INTENSITY. Final = this × CurrentIntensity, so " +
+                 "the modifier deepens with stacks exactly as intensityMode dictates. E.g. " +
+                 "-0.15 per intensity: 1 stack = -0.15 (15% slow), summed 3 stacks = -0.45.")]
+        public float modifierPerIntensity = 0f;
+
+
         [Header("Tick Damage — derivation")]
         [Tooltip("Flat: fixed. PercentOfStat: % of a stat. PercentOfQuantity: % of a runtime quantity (health, ...).")]
         public DerivationKind derivationKind = DerivationKind.PercentOfStat;

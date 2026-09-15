@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Combat.Core;
 using Combat.Sources;
+using Combat.Stats;
 
 namespace Combat.Status
 {
@@ -36,6 +37,12 @@ namespace Combat.Status
         private IDamageSource source;
         private System.Action<float> applyTickDamage;
         private DamageTypeSO tickType;
+
+        // Stat modifier this status applies while active (e.g. a slow on Move Speed).
+        // null status field = damage-only status, no modifier. Value scales with
+        // intensity and is kept in sync as stacks change (mutate-in-place + invalidate).
+        private StatModifier activeModifier;
+        private ModifierHandle modifierHandle;
 
         private readonly List<StackEntry> entries = new List<StackEntry>();
 
@@ -79,6 +86,9 @@ namespace Combat.Status
             tickAccumulator = 0f;
             sharedTimer = 0f;
             Expired = false;
+
+            activeModifier = null;
+            modifierHandle = ModifierHandle.None;
 
             BuildReusableTickPayload();
         }
@@ -172,6 +182,8 @@ namespace Combat.Status
                 else
                     DoSharedTick();
             }
+
+            SyncStatModifier();
         }
 
         private void EvictOne()
@@ -213,13 +225,18 @@ namespace Combat.Status
             }
             else
             {
+                bool removedAny = false;
                 for (int i = entries.Count - 1; i >= 0; i--)
                 {
                     entries[i].RemainingDuration -= scaledDelta;
                     if (entries[i].RemainingDuration <= 0f)
+                    {
                         entries.RemoveAt(i);
+                        removedAny = true;
+                    }
                 }
                 if (entries.Count == 0) { Expired = true; return; }
+                if (removedAny) SyncStatModifier();
             }
 
             if (Status.tickTimerMode == StatusTickTimerMode.PerEntryTimer)
@@ -315,8 +332,75 @@ namespace Combat.Status
             return s;
         }
 
+        // Intensity that scales the modifier. Mirrors the damage path's intensityMode:
+        // Rate = latest only (doesn't deepen with stacks -> intensity 1 while any exist),
+        // otherwise stack count (deepens). So refresh-only vs stack-intensity follows the
+        // SAME authoring as tick damage.
+        private float CurrentModifierIntensity()
+        {
+            if (entries.Count == 0) return 0f;
+            if (Status.intensityMode == StatusIntensityMode.Rate) return 1f;
+            return entries.Count;
+        }
+
+        // Apply / update / remove the status's stat modifier to match current intensity.
+        // Called whenever entries change (add, expire, import) and on teardown. Mutates
+        // the modifier value in place + invalidates — the established cache pattern, no
+        // remove/re-add churn.
+        private void SyncStatModifier()
+        {
+            if (Status.modifierTargetStat == null) return;   // damage-only status
+
+            var container = (Target as CombatantStats)?.Container;
+            if (container == null) return;
+
+            float intensity = CurrentModifierIntensity();
+            float value = Status.modifierPerIntensity * intensity;
+
+            if (intensity <= 0f)
+            {
+                if (activeModifier != null)
+                {
+                    container.RemoveModifier(modifierHandle);
+                    activeModifier = null;
+                    modifierHandle = ModifierHandle.None;
+                }
+                return;
+            }
+
+            if (activeModifier == null)
+            {
+                activeModifier = new StatModifier(
+                    Status.modifierTargetStat, Status.modifierBucket, value,
+                    ActivityScope.InHands);
+                modifierHandle = container.AddModifier(activeModifier, owner: this);
+            }
+            else
+            {
+                activeModifier.Value = value;
+                container.NotifyModifierChanged(Status.modifierTargetStat);
+            }
+        }
+
+        private void RemoveStatModifier()
+        {
+            if (activeModifier == null) return;
+            var container = (Target as CombatantStats)?.Container;
+            if (container != null) container.RemoveModifier(modifierHandle);
+            activeModifier = null;
+            modifierHandle = ModifierHandle.None;
+        }
+
+        // Called by StatusReceiver.OnPoolExpired so an expired modifier-status (a slow)
+        // lifts its modifier. Idempotent.
+        public void OnExpiredCleanup()
+        {
+            RemoveStatModifier();
+        }
+
         public void ClearAll()
         {
+            RemoveStatModifier();
             entries.Clear();
             Expired = true;
         }
@@ -375,6 +459,8 @@ namespace Combat.Status
 
             if (Status.maxEntries > 0 && entries.Count > Status.maxEntries)
                 EvictOne();
+
+            SyncStatModifier();
 
             // NOTE: no wasEmpty instant-tick here (unlike AddEntry). A transferred DOT
             // waits its normal cadence. The pool is already registered with StatusManager

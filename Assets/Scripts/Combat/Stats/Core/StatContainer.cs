@@ -246,6 +246,16 @@ namespace Combat.Stats
             return version[i];
         }
 
+        // Force a re-resolve of a stat after a modifier's value was mutated in place.
+        // Modifier value changes normally go through Add/RemoveModifier, but an
+        // intensity-scaled modifier (e.g. a slow that deepens with stacks) mutates its
+        // Value and needs to invalidate the cache the same way — version bump + drop cache.
+        public void NotifyModifierChanged(StatDefinitionSO stat)
+        {
+            int i = Idx(stat);
+            if (i >= 0) Invalidate(i);
+        }
+
 
         private int Idx(StatDefinitionSO stat)
         {

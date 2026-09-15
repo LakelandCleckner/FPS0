@@ -236,7 +236,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseStats:
   - stat: {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
-    baseValue: 10
+    baseValue: 500
   - stat: {fileID: 11400000, guid: f5a8c623ad3a88c48bda3be493dbf950, type: 2}
     baseValue: 0.5
   - stat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}

@@ -25,7 +25,7 @@ namespace Combat.Stats
         public ModifierHandle Handle;
 
         // fixed value (used when not derived)
-        public readonly float Value;
+        public float Value;
 
         // derivation (optional)
         public readonly bool IsDerived;
