@@ -224,6 +224,7 @@
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\Shields\WaterShield.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\LocationInvestigatedSensor.cs" />
     <Compile Include="Assets\Scripts\Weapons\HitmarkerUI.cs" />
+    <Compile Include="Assets\Animations\Enemies\Mixamo\Imports\Alien_Zombie\AlienZombieBaseLocomotionAnimator.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\FireMode.cs" />
     <Compile Include="Assets\Scripts\AI\HelperScripts\Enemyfovvisualizer.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\WeaponTypeSO.cs" />

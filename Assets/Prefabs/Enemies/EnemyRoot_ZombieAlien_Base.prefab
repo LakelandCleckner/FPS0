@@ -1,0 +1,224 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &3731491139080714551
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2780478270126569151, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: m_Name
+      value: EnemyRoot_ZombieAlien_Base
+      objectReference: {fileID: 0}
+    - target: {fileID: 6612740343518719550, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1.1115923
+      objectReference: {fileID: 0}
+    - target: {fileID: 6612740343518719550, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.00000047683716
+      objectReference: {fileID: 0}
+    - target: {fileID: 6612740343518719550, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 61.590187
+      objectReference: {fileID: 0}
+    - target: {fileID: 6612740343518719550, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6612740343518719550, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6612740343518719550, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6612740343518719550, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6612740343518719550, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6612740343518719550, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6612740343518719550, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 7434240647481629374, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6612740343518719550, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1395721484645245828}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2780478270126569151, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1861118611952990833}
+  m_SourcePrefab: {fileID: 100100000, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+--- !u!114 &108623951137932325 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3623431239706443026, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+  m_PrefabInstance: {fileID: 3731491139080714551}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539902503267225480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdf4ae702aea108449104d23d3b24ade, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!195 &339022231229669515 stripped
+NavMeshAgent:
+  m_CorrespondingSourceObject: {fileID: 3998239378526427580, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+  m_PrefabInstance: {fileID: 3731491139080714551}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1539902503267225480 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2780478270126569151, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+  m_PrefabInstance: {fileID: 3731491139080714551}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1861118611952990833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539902503267225480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a9029381bde3334ab585dd95945ecc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nav: {fileID: 339022231229669515}
+  animator: {fileID: 2825080124066039189}
+  speedParam: Speed
+  dampTime: 0.1
+  stopThreshold: 0.05
+--- !u!4 &7497867919796180745 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6612740343518719550, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+  m_PrefabInstance: {fileID: 3731491139080714551}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &8320093332699053242
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 7497867919796180745}
+    m_Modifications:
+    - target: {fileID: 392766533136373572, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: combatant
+      value: 
+      objectReference: {fileID: 108623951137932325}
+    - target: {fileID: 714286537888233967, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: m_Name
+      value: AlienZombie_Base_Animator
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360837712044613199, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: combatant
+      value: 
+      objectReference: {fileID: 108623951137932325}
+    - target: {fileID: 2369780135505459747, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: combatant
+      value: 
+      objectReference: {fileID: 108623951137932325}
+    - target: {fileID: 2602816378396453756, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: combatant
+      value: 
+      objectReference: {fileID: 108623951137932325}
+    - target: {fileID: 3591315630327721464, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: combatant
+      value: 
+      objectReference: {fileID: 108623951137932325}
+    - target: {fileID: 3781608892204635066, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: m_Name
+      value: AlienZombie_Base_Root
+      objectReference: {fileID: 0}
+    - target: {fileID: 5542483223191906513, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: combatant
+      value: 
+      objectReference: {fileID: 108623951137932325}
+    - target: {fileID: 5769021760083210008, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: combatant
+      value: 
+      objectReference: {fileID: 108623951137932325}
+    - target: {fileID: 6785571487446830750, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: combatant
+      value: 
+      objectReference: {fileID: 108623951137932325}
+    - target: {fileID: 6928912848260587326, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6928912848260587326, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6928912848260587326, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6928912848260587326, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6928912848260587326, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6928912848260587326, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6928912848260587326, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6928912848260587326, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6928912848260587326, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6928912848260587326, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6985034912337123054, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: combatant
+      value: 
+      objectReference: {fileID: 108623951137932325}
+    - target: {fileID: 7159580639876020029, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: m_Name
+      value: Alien_Zombie_Base_Mesh
+      objectReference: {fileID: 0}
+    - target: {fileID: 8935582822050722531, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: combatant
+      value: 
+      objectReference: {fileID: 108623951137932325}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+--- !u!4 &1395721484645245828 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6928912848260587326, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+  m_PrefabInstance: {fileID: 8320093332699053242}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &2825080124066039189 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 6071516034448652591, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+  m_PrefabInstance: {fileID: 8320093332699053242}
+  m_PrefabAsset: {fileID: 0}

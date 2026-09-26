@@ -699,7 +699,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   types:
   - id: basic
-    prefab: {fileID: 2780478270126569151, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+    prefab: {fileID: 1539902503267225480, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
   poolParent: {fileID: 0}
 --- !u!4 &427031536
 Transform:
@@ -2585,6 +2585,63 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27c46d4a207d4a742ab354ef299d0b34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1001 &1754590421
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1539902503267225480, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
+      propertyPath: m_Name
+      value: EnemyRoot_ZombieAlien_Base
+      objectReference: {fileID: 0}
+    - target: {fileID: 7497867919796180745, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1.1115923
+      objectReference: {fileID: 0}
+    - target: {fileID: 7497867919796180745, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.00000047683716
+      objectReference: {fileID: 0}
+    - target: {fileID: 7497867919796180745, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 61.590187
+      objectReference: {fileID: 0}
+    - target: {fileID: 7497867919796180745, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7497867919796180745, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7497867919796180745, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7497867919796180745, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7497867919796180745, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7497867919796180745, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7497867919796180745, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
 --- !u!1 &1895516040 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100002, guid: 6f8ee9e57f0ae87429c40e77c8b75822, type: 3}
@@ -3176,3 +3233,4 @@ SceneRoots:
   - {fileID: 4717497599679480891}
   - {fileID: 143810561}
   - {fileID: 427031536}
+  - {fileID: 1754590421}
