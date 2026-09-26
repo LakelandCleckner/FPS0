@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 using Combat.Core;
 
@@ -11,7 +11,7 @@ namespace Combat.Delivery
     // POOLED. Despawn returns to ProjectilePool instead of destroying, so sustained
     // auto-fire no longer instantiates and collects a GameObject per shot.
     //
-    // Everything that varies per flight MUST be reset in Init — field initialisers
+    // Everything that varies per flight MUST be reset in Init - field initialisers
     // run once per instance, not once per spawn, and a missed reset gives you a
     // projectile that despawns instantly (stale age) or refuses to hit an enemy it
     // struck in a previous life (stale hitTargets). Same failure class as the
@@ -52,7 +52,7 @@ namespace Combat.Delivery
 
         // Allocated once per projectile instead of once per hit. Safe to bind to
         // mutable fields because ApplyDamageToTarget is consumed synchronously during
-        // resolution and never retained — unlike ApplyStatusTickDamage, which
+        // resolution and never retained - unlike ApplyStatusTickDamage, which
         // EffectStackPool holds for the life of a status and which therefore lives on
         // EnemyHitbox instead.
         private System.Action<float> applyBaseDamage;
@@ -99,7 +99,7 @@ namespace Combat.Delivery
             this.config = config;
             this.direction = direction.normalized;
 
-            // PER-FLIGHT RESET — required for pooling. Previously implicit in being a
+            // PER-FLIGHT RESET - required for pooling. Previously implicit in being a
             // freshly instantiated object.
             distanceTravelled = 0f;
             age = 0f;
@@ -155,22 +155,40 @@ namespace Combat.Delivery
 
             if (hitbox == null)
             {
+                HitLog.Log($"[HitDebug:Projectile] {HitLog.DescribeCollider(hit.collider)} " +
+                           "-> no EnemyHitbox in parents, " +
+                           (config.stopOnEnvironment ? "despawned" : "continuing"), hit.collider);
                 if (config.stopOnEnvironment)
                     Despawn();
                 return;
             }
 
             var target = hitbox.combatant as ICombatant;
-            if (target == null) return;
+            if (target == null)
+            {
+                HitLog.Warn($"[HitDebug:Projectile] {HitLog.DescribeCollider(hit.collider)} " +
+                            $"-> hitbox on '{hitbox.name}' has no combatant, dropped", hitbox);
+                return;
+            }
 
             if (hitTargets.Contains(target))
+            {
+                // Repeated lines here for one flight = the projectile is stuck re-hitting
+                // another bone of a target it already struck.
+                HitLog.Log($"[HitDebug:Projectile] {HitLog.DescribeCollider(hit.collider)} " +
+                           $"-> {HitLog.NameOf(target)} already hit this flight, ignored (pierce dedup)",
+                           hit.collider);
                 return;
+            }
             hitTargets.Add(target);
+
+            HitLog.Log($"[HitDebug:Projectile] {HitLog.DescribeHitbox(hit.collider, hitbox, hitbox.bodyPart, hitbox.damageMultiplier)}",
+                       hit.collider);
 
             currentHitbox = hitbox;
 
             // Refill the reusable context. Every field an effect or the resolver
-            // WRITES must be reset here or state leaks from the previous hit —
+            // WRITES must be reset here or state leaks from the previous hit -
             // CritMultiplier and WasCrit are reset by RollCrit before any effect runs.
             hitContext.BumpGeneration();
 

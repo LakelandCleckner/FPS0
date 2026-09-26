@@ -2593,9 +2593,33 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 108623951137932325, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
+      propertyPath: baseStats.Array.data[0].baseValue
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 339022231229669515, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1539902503267225480, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
       propertyPath: m_Name
       value: EnemyRoot_ZombieAlien_Base
+      objectReference: {fileID: 0}
+    - target: {fileID: 4863348135967559138, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
+      propertyPath: m_Size.x
+      value: 0.3738699
+      objectReference: {fileID: 0}
+    - target: {fileID: 4863348135967559138, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
+      propertyPath: m_Center.x
+      value: 0.004200458
+      objectReference: {fileID: 0}
+    - target: {fileID: 4863348135967559138, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
+      propertyPath: m_Center.y
+      value: 0.2196103
+      objectReference: {fileID: 0}
+    - target: {fileID: 4863348135967559138, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
+      propertyPath: m_Center.z
+      value: 0.017905936
       objectReference: {fileID: 0}
     - target: {fileID: 7497867919796180745, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2758,6 +2782,7 @@ MonoBehaviour:
   showTickHitmarkers: 1
   playTickAudio: 1
   fireHitEventsOnZeroDamage: 1
+  logHits: 1
 --- !u!95 &1895516048
 Animator:
   serializedVersion: 7

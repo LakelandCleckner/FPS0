@@ -1,4 +1,4 @@
-using Combat.Feedback;
+ï»¿using Combat.Feedback;
 using Combat.Events;
 using Combat.Sources;
 using System.Collections.Generic;
@@ -29,6 +29,12 @@ namespace Combat.Core
                  "immune targets; OFF matches the feedback gate exactly. Gameplay call.")]
         [SerializeField] private bool fireHitEventsOnZeroDamage = true;
 
+        [Header("Debug")]
+        [Tooltip("Log every resolution, plus delivery-side HitLog lines. Only has an " +
+                 "effect when HIT_DEBUG is defined (Player Settings > Scripting Define " +
+                 "Symbols); without it the log calls compile out entirely.")]
+        [SerializeField] private bool logHits = true;
+
         private WeaponEventBus bus;
 
         // Deferred multi-target resolution: AoE blasts and chain links enqueue here
@@ -46,12 +52,16 @@ namespace Combat.Core
         {
             bus = WeaponEventBus.FindFor(this);
             chain = new ChainResolver(this);
+            HitLog.Enabled = logHits;
         }
+
+        // Lets the inspector toggle mute/unmute live in play mode.
+        private void OnValidate() => HitLog.Enabled = logHits;
 
         public void ResolveHit(HitContext ctx)
         {
-            if (ctx.Target == null) return;
-            if (ctx.Target.IsDying) return;
+            if (ctx.Target == null) { LogSkipped(ctx, "no target"); return; }
+            if (ctx.Target.IsDying) { LogSkipped(ctx, "target dying"); return; }
 
             // CRIT ROLL  once per hit, BEFORE effects apply. UNIVERSAL: every
             // resolution flowing through here can crit (direct hits, DOT ticks,
@@ -115,6 +125,11 @@ namespace Combat.Core
             {
                 ReturnBuffer(effects);
             }
+
+            // After the effect loop, before feedback/events. resolveDepth is already
+            // back to THIS call's nesting level, so d1+ lines are nested resolutions
+            // (e.g. a burn's instant first tick, which logs before its parent shot).
+            LogResolved(ctx);
 
             if (ctx.DamageDealt > 0f)
                 ShowFeedback(ctx);
@@ -186,7 +201,7 @@ namespace Combat.Core
 #if UNITY_EDITOR || STATUS_DEBUG
         // TEST ONLY. The queue normally drains at the end of a top-level ResolveHit,
         // so an isolated probe (no surrounding resolution) would never drain. This
-        // forces it. NEVER call from the real path — the automatic top-level drain
+        // forces it. NEVER call from the real path - the automatic top-level drain
         // handles that, and calling it mid-resolution would drain early and reorder
         // feedback, which is the exact bug the deferral prevents.
         public void DebugDrainNow() => chain.Drain();
@@ -256,6 +271,56 @@ namespace Combat.Core
                 ctx.CritMultiplier = 1f + critDamage;
                 ctx.WasCrit = true;
             }
+        }
+
+        // -------------------------------------------------------------------- debug
+
+        // [Conditional] strips the call AND its argument evaluation at every call site
+        // unless HIT_DEBUG is defined, so the StringBuilder work below never exists in
+        // a normal build. Read-only: touches nothing the pipeline writes.
+        [System.Diagnostics.Conditional("HIT_DEBUG")]
+        private void LogResolved(HitContext ctx)
+        {
+            if (!HitLog.Enabled) return;
+
+            var sb = new System.Text.StringBuilder(200);
+            sb.Append("[HitDebug] d").Append(resolveDepth).Append(' ').Append(ctx.Source);
+            if (ctx.SourceStatus != null) sb.Append(" (").Append(ctx.SourceStatus.name).Append(')');
+
+            sb.Append(" | ").Append(HitLog.NameOf(ctx.DamageSource))
+              .Append(" (").Append(HitLog.NameOf(ctx.Attacker)).Append(") -> ")
+              .Append(HitLog.NameOf(ctx.Target));
+
+            sb.Append(" | ").Append(ctx.BodyPartHit)
+              .Append(" x").Append(ctx.HitboxMultiplier.ToString("F2"));
+
+            sb.Append(" | crit ");
+            if (ctx.WasCrit) sb.Append("Y x").Append(ctx.CritMultiplier.ToString("F2"));
+            else sb.Append('N');
+
+            sb.Append(" | ").Append(ctx.DamageType != null ? ctx.DamageType.name : "<no type>");
+
+            sb.Append(" | chain ").Append(ctx.ChainDepth);
+            if (ctx.ChainDepth > 0) sb.Append(" x").Append(ctx.ChainMultiplier.ToString("F2"));
+
+            sb.Append(" | dealt ").Append(ctx.DamageDealt.ToString("F1"));
+            sb.Append(" | HP ").Append(ctx.Target.CurrentHealth.ToString("F0"))
+              .Append('/').Append(ctx.Target.MaxHealth.ToString("F0"));
+            sb.Append(" | kill ").Append(ctx.WasKill ? 'Y' : 'N');
+
+            // Ticks carry no hit point.
+            if (ctx.Source != HitSource.StatusTick)
+                sb.Append(" | pt ").Append(ctx.HitPoint.ToString("F2"));
+
+            // Context = the target, so clicking the log line pings the enemy.
+            HitLog.Log(sb.ToString(), ctx.Target as UnityEngine.Object);
+        }
+
+        [System.Diagnostics.Conditional("HIT_DEBUG")]
+        private void LogSkipped(HitContext ctx, string reason)
+        {
+            HitLog.Log($"[HitDebug] d{resolveDepth} {ctx.Source} SKIPPED ({reason}) | " +
+                       $"{HitLog.NameOf(ctx.DamageSource)} -> {HitLog.NameOf(ctx.Target)}");
         }
 
         // ----------------------------------------------------------------- feedback
