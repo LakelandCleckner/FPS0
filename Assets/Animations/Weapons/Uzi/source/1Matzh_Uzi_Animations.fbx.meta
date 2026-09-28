@@ -3,7 +3,52 @@ guid: 436321032720b2640a2d808f4a51b643
 ModelImporter:
   serializedVersion: 24000
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Aim
+    second: {fileID: 2100000, guid: 3ca00a2878bc94d4e9c016a9b85222e4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Background
+    second: {fileID: 2100000, guid: e473aef9b6830fe4997e63098345e218, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Body
+    second: {fileID: 2100000, guid: 6d3550d6b0d512a4ab860b2b227eb349, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Cloths
+    second: {fileID: 2100000, guid: 430ecf2c84c26d14bbde6c8e39c4a63e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Gloves
+    second: {fileID: 2100000, guid: 19c6601ba8bf22942a1a0622e83b76cd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: UZI
+    second: {fileID: 2100000, guid: 3f14dab70461a6e46a2591902cce1e4a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: UZI Magazine and Bullet
+    second: {fileID: 2100000, guid: 19535b4ab7741e444a383b5237f10522, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Watch
+    second: {fileID: 2100000, guid: 3bdfc2f09ba155e40b4643ad0c9ec3a4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Watch_Emission
+    second: {fileID: 2100000, guid: cbc1ebc614b59c149b5597700e0be808, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -98,7 +143,7 @@ ModelImporter:
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
-  avatarSetup: 0
+  avatarSetup: 1
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
   importBlendShapeDeformPercent: 1
   remapMaterialsIfMaterialImportModeIsNone: 0
