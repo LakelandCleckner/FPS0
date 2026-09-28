@@ -920,6 +920,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1826,17 +1827,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1232219901}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1137407109 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 108623951137932325, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
-  m_PrefabInstance: {fileID: 1754590421}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdf4ae702aea108449104d23d3b24ade, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1149411716
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2608,10 +2598,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnemyRoot_ZombieAlien_Base
       objectReference: {fileID: 0}
-    - target: {fileID: 5812584576018706095, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
-      propertyPath: combatant
-      value: 
-      objectReference: {fileID: 1137407109}
     - target: {fileID: 7497867919796180745, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.1115923
