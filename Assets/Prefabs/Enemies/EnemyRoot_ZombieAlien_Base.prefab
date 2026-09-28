@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnemyRoot_ZombieAlien_Base
       objectReference: {fileID: 0}
+    - target: {fileID: 3623431239706443026, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      propertyPath: baseStats.Array.data[0].baseValue
+      value: 500
+      objectReference: {fileID: 0}
     - target: {fileID: 6612740343518719550, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.1115923
@@ -135,6 +139,18 @@ PrefabInstance:
       propertyPath: combatant
       value: 
       objectReference: {fileID: 108623951137932325}
+    - target: {fileID: 3461295113500160344, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: m_Size.x
+      value: 0.3738699
+      objectReference: {fileID: 0}
+    - target: {fileID: 3461295113500160344, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: m_Center.x
+      value: 0.004200458
+      objectReference: {fileID: 0}
+    - target: {fileID: 3461295113500160344, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: m_Center.y
+      value: 0.2196103
+      objectReference: {fileID: 0}
     - target: {fileID: 3591315630327721464, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
       propertyPath: combatant
       value: 
