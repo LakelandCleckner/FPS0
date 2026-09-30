@@ -159,7 +159,16 @@ namespace Combat.Weapons
             // fires the instant the reload completes. Semi-auto needs a fresh press,
             // because triggerHeldLast stops updating below this line — no banked shot
             // from a trigger you were already holding.
-            if (ammo != null && ammo.IsReloading) return;
+            //
+            // EXCEPTION: a per-shell reload (shotgun) is interruptible. Pulling the
+            // trigger asks WeaponAmmo to stop after the current shell; it then pays a
+            // handling-driven ready time and the shot goes out once IsReloading clears.
+            if (ammo != null && ammo.IsReloading)
+            {
+                if (ammo.IsShellReload && Mouse.current != null && Mouse.current.leftButton.isPressed)
+                    ammo.RequestInterrupt();
+                return;
+            }
 
             bool held = Mouse.current != null && Mouse.current.leftButton.isPressed;
             bool pressed = held && !triggerHeldLast;

@@ -73,6 +73,8 @@ namespace Combat.Sources
         public float ResolvedMagazineSize => container != null && statKeys != null ? container.Resolve(statKeys.magazineSize) : 0f;
         public float ResolvedReloadTime => container != null && statKeys != null ? container.Resolve(statKeys.reloadTime) : 0f;
 
+        public float ResolvedEquipTime => container != null && statKeys != null && statKeys.equipTime != null ? container.Resolve(statKeys.equipTime) : 0f;
+
         public WeaponSO Weapon => weapon;
         public AudioClip FireClip => weapon != null ? weapon.fireClip : null;
         public AudioClip EmptyClip => weapon != null ? weapon.emptyClip : null;

@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace Combat.Weapons
 {
+    public enum ReloadStyle { Magazine, PerShell }
     // The frame STAT PROFILE within a type. Owns base numeric stats + crosshair +
     // primary fire mode + ammo profile. Damage type is per-weapon.
     [CreateAssetMenu(fileName = "WeaponArchetype", menuName = "Combat/Weapons/Weapon Archetype")]
@@ -22,6 +23,15 @@ namespace Combat.Weapons
                  "the number is directly comparable across weapons.")]
         public float roundsPerMinute = 0f;
 
+        [Header("Reload Style")]
+        public ReloadStyle reloadStyle = ReloadStyle.Magazine;
+        [Tooltip("PerShell: share of reload_time spent opening the reload.")]
+        [Range(0f, 1f)] public float shellStartFraction = 0.15f;
+        [Tooltip("PerShell: share of reload_time spent closing it (skipped on interrupt).")]
+        [Range(0f, 1f)] public float shellEndFraction = 0.2f;
+        [Tooltip("PerShell: ready time after a fire-interrupt, as a fraction of equip_time (handling-driven).")]
+        public float interruptReadyFraction = 0.3f;
+        
         [Header("Ammo / Reload")]
         [Tooltip("Rounds the magazine holds.")]
         public float magazineSize = 10f;

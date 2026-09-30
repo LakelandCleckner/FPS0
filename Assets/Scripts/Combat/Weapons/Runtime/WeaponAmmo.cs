@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Combat.Sources;
 using Combat.Weapons;
@@ -26,6 +27,12 @@ namespace Combat.Weapons
     // model for magazine-fed weapons. Only two things cancel a reload, and both are
     // the weapon leaving the ready position: stowing it, and starting a sprint.
     // Both call CancelReload from WeaponLoadout.
+    //
+    // PER-SHELL RELOAD (archetype reloadStyle = PerShell, e.g. shotguns) is the one
+    // exception: Start -> one shell per step -> End. Firing requests an interrupt;
+    // the current shell finishes, End is skipped, and a handling-driven READY time
+    // (equip_time x interruptReadyFraction) runs before the weapon may fire.
+    // Sprint/stow cancel still works and keeps the shells already loaded.
     public class WeaponAmmo : MonoBehaviour
     {
         [Header("Weapon")]
@@ -47,6 +54,25 @@ namespace Combat.Weapons
         private float reloadDuration;
         private bool refilledThisReload;
 
+        // Per-shell reload state. Durations are fixed at BeginReload, from the same
+        // resolved reload_time, so a reload perk scales every phase together.
+        private enum ShellPhase { Start, Loading, End, Readying }
+        private bool shellReload;
+        private ShellPhase shellPhase;
+        private float phaseElapsed;
+        private float shellStartDuration;
+        private float shellDuration;
+        private float shellEndDuration;
+        private float readyDuration;
+        private bool interruptRequested;
+
+        // Presentation hooks — direct C# events, same convention as the controller's
+        // OnFired. ReloadStarted is the DECISION (fires for auto-reload-on-empty too,
+        // which the controller's OnReloadStarted request never announced).
+        public event Action ReloadStarted;
+        public event Action ReloadCancelled;
+        public event Action<float> ReloadInterrupted;   // arg: ready duration
+
         private WeaponEventBus bus;
 
         // Set by WeaponLoadout. Gates the CONVENIENCE auto-reload only — a weapon you
@@ -66,6 +92,26 @@ namespace Combat.Weapons
         public bool IsReloading => state == ReloadState.Reloading;
         public int MagSize => magSize;
         public bool InfiniteReserves => infiniteReserves;
+
+        public bool IsShellReload => state == ReloadState.Reloading && shellReload;
+        public float ReloadDuration => reloadDuration;
+        public float ShellStartDuration => shellStartDuration;
+        public float ShellDuration => shellDuration;
+        public float ShellEndDuration => shellEndDuration;
+
+        // True while another shell will follow the one currently loading. Drives the
+        // animator's ReloadStep -> ReloadEnd exit. An interrupt does NOT clear this —
+        // interrupts skip End and cross-fade out instead.
+        public bool ShellWillContinue
+        {
+            get
+            {
+                if (!IsShellReload) return false;
+                if (shellPhase == ShellPhase.Start) return true;
+                if (shellPhase != ShellPhase.Loading) return false;
+                return magazine + 1 < magSize && (infiniteReserves || reserves > 1);
+            }
+        }
 
         private void Awake()
         {
@@ -160,7 +206,12 @@ namespace Combat.Weapons
             refilledThisReload = false;
             state = ReloadState.Reloading;
 
+            var archetype = damageSource.Weapon != null ? damageSource.Weapon.archetype : null;
+            shellReload = archetype != null && archetype.reloadStyle == ReloadStyle.PerShell;
+            if (shellReload) SetupShellReload(archetype);
+
             Publish(WeaponEventType.ReloadStart);
+            ReloadStarted?.Invoke();
             return true;
         }
 
@@ -170,6 +221,8 @@ namespace Combat.Weapons
         {
             if (state != ReloadState.Reloading) return;
             state = ReloadState.Ready;
+            interruptRequested = false;
+            ReloadCancelled?.Invoke();
 
             // Not in doc 07's table, but this is a real transition perks care about
             // (Destiny-style "cancel the reload to keep the buff" play patterns) and
@@ -177,9 +230,106 @@ namespace Combat.Weapons
             Publish(WeaponEventType.ReloadCancelled);
         }
 
+        // Fire input during a per-shell reload. Honoured after the current shell.
+        // Ignored once End or Ready is already running.
+        public void RequestInterrupt()
+        {
+            if (!IsShellReload) return;
+            if (shellPhase == ShellPhase.Start || shellPhase == ShellPhase.Loading)
+                interruptRequested = true;
+        }
+
+        private void SetupShellReload(WeaponArchetypeSO a)
+        {
+            // reload_time = a FULL reload from empty. Start and End are fractions of
+            // it; the remainder is split evenly across the magazine, so a partial
+            // reload is naturally shorter.
+            float startF = Mathf.Clamp01(a.shellStartFraction);
+            float endF = Mathf.Clamp01(a.shellEndFraction);
+            float loadF = Mathf.Max(0.01f, 1f - startF - endF);
+
+            shellStartDuration = reloadDuration * startF;
+            shellEndDuration = reloadDuration * endF;
+            shellDuration = reloadDuration * loadF / Mathf.Max(1, magSize);
+            readyDuration = Mathf.Max(0f, damageSource.ResolvedEquipTime * a.interruptReadyFraction);
+
+            shellPhase = ShellPhase.Start;
+            phaseElapsed = 0f;
+            interruptRequested = false;
+        }
+
+        private void TickShellReload()
+        {
+            phaseElapsed += Time.deltaTime;
+
+            switch (shellPhase)
+            {
+                case ShellPhase.Start:
+                    if (phaseElapsed < shellStartDuration) return;
+                    phaseElapsed -= shellStartDuration;
+                    shellPhase = ShellPhase.Loading;
+                    return;
+
+                case ShellPhase.Loading:
+                    if (phaseElapsed < shellDuration) return;
+                    phaseElapsed -= shellDuration;
+                    InsertShell();
+
+                    if (!CanLoadMore())
+                    {
+                        shellPhase = ShellPhase.End;
+                    }
+                    else if (interruptRequested)
+                    {
+                        shellPhase = ShellPhase.Readying;
+                        phaseElapsed = 0f;
+                        ReloadInterrupted?.Invoke(readyDuration);
+                    }
+                    return;
+
+                case ShellPhase.End:
+                    if (phaseElapsed >= shellEndDuration) CompleteReload();
+                    return;
+
+                case ShellPhase.Readying:
+                    if (phaseElapsed >= readyDuration) CompleteReload();
+                    return;
+            }
+        }
+
+        private bool CanLoadMore()
+        {
+            RefreshMagSize();
+            return magazine < magSize && (infiniteReserves || reserves > 0);
+        }
+
+        private void InsertShell()
+        {
+            if (!CanLoadMore()) return;
+
+            magazine++;
+            if (!infiniteReserves) reserves--;
+
+            Publish(WeaponEventType.AmmoChanged);
+            if (magazine >= magSize) Publish(WeaponEventType.MagFull);
+        }
+
+        private void CompleteReload()
+        {
+            state = ReloadState.Ready;
+            interruptRequested = false;
+            Publish(WeaponEventType.ReloadComplete);
+        }
+
         private void Update()
         {
             if (state != ReloadState.Reloading) return;
+
+            if (shellReload)
+            {
+                TickShellReload();
+                return;
+            }
 
             reloadElapsed += Time.deltaTime;
 

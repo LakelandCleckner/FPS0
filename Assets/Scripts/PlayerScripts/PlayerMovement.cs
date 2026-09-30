@@ -235,6 +235,11 @@ public class PlayerMovement : MonoBehaviour
     public float CurrentSpeed => new Vector3(currentMovement.x, 0f, currentMovement.z).magnitude;
     public bool IsGrounded => characterController.isGrounded;
 
+    // Resolved (live) walk speed and sprint multiplier, so presentation can
+    // normalize CurrentSpeed into a 0..1 walk / 1..2 sprint blend value.
+    public float WalkSpeed => Stat(statKeys != null ? statKeys.moveSpeed : null, baseWalkSpeed);
+    public float SprintMultiplier => Stat(statKeys != null ? statKeys.sprintMultiplier : null, baseSprintMultiplier);
+
     // Sprint as the movement system actually resolved it, not the raw input —
     // it already accounts for the forward-input threshold and the airborne
     // takeoff rule, so a sideways "sprint" or a sprint-jump reads correctly.

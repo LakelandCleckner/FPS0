@@ -1,106 +1,162 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Combat.Sources;
 
 namespace Combat.Weapons
 {
-    // Presentation component: drives a weapon's Animator in response to
-    // WeaponFireController and WeaponLoadout events. All animation concerns live
-    // HERE, per-gun — the fire controller and the loadout know nothing about
-    // animation. A gun with no animation simply omits this component.
+    // Presentation: drives the SHARED arms Animator (ViewmodelRig) and this weapon's
+    // own gun Animator from WeaponFireController / WeaponAmmo / WeaponLoadout events.
+    // The fire controller, ammo and loadout know nothing about animation.
     //
-    // Every timed animation scales via a per-state Speed MULTIPLIER param, so a clip
-    // authored at one length plays across whatever duration the stats resolve to.
-    // Fire fills exactly one fire interval; reload fills reload_time; equip, stow and
-    // sprint-exit fill the durations the loadout reports when each begins. Author the
-    // clips at whatever length feels right — the code reads their real length at
-    // startup and works out the multiplier.
+    // Every timed clip scales through a Speed-multiplier param so it fills the
+    // stat-driven duration. Arms and gun clips differ in length, so each Animator
+    // gets its own multiplier from its own clip length. Lengths come from the
+    // override controllers via ViewmodelRig's base clips — no clip-name strings.
     //
-    // ANIMATOR SETUP:
-    //   Parameters
-    //     Trigger : Fire, Reload, Equip, Stow
-    //     Bool    : IsMoving, IsSprinting
-    //     Float   : FireSpeed, ReloadSpeed, EquipSpeed, StowSpeed, SprintExitSpeed
-    //   States (Speed -> Multiplier -> the matching float param)
-    //     Idle (default, loop), Walk (loop), Sprint (loop),
-    //     HandgunFire, Reload, Equip, Stow, SprintExit (all one-shot, Loop Time OFF)
-    //   Transitions
-    //     Any State -> Fire/Reload/Equip/Stow on their triggers, Has Exit Time OFF
-    //     one-shots -> Idle, Has Exit Time ON, Fixed Duration OFF
-    //     Idle <-> Walk on IsMoving, Idle <-> Sprint on IsSprinting, Exit Time OFF
-    //     Sprint -> SprintExit on IsSprinting false, Exit Time OFF
-    //     SprintExit -> Idle, Has Exit Time ON
+    // ARMS OWNERSHIP: only the weapon the rig is currently running (rig.Current)
+    // touches the arms. A stowed weapon reloaded by a holster perk must not play a
+    // reload on arms holding a different gun.
     //
-    //   Fixed Duration must be OFF on every return transition, or the blend won't
-    //   scale with playback speed and a stat-driven duration will desync.
+    // PARAMETERS (arms; the gun uses the subset it needs — missing params are skipped)
+    //   Trigger : Fire, Reload, ReloadCancel, Equip, Stow
+    //   Float   : Speed (0 idle, 1 walk, 2 sprint), FireSpeed, ReloadSpeed,
+    //             ReloadStartSpeed, ReloadStepSpeed, ReloadEndSpeed, EquipSpeed, StowSpeed
+    //   Int     : ReloadType (0 magazine, 1 per-shell)
+    //   Bool    : Reloading (another shell follows), Empty (gun: mag is empty)
+    //
+    // Fixed Duration must be OFF on every exit-time return transition, or blends
+    // won't scale with playback speed and stat-driven durations desync.
     public class WeaponAnimator : MonoBehaviour
     {
-        [Header("Refs")]
+        [Header("Refs (found automatically if empty)")]
         [SerializeField] private WeaponFireController controller;
-        [SerializeField] private Animator animator;
-        [SerializeField] private WeaponDamageSource damageSource;
-
-        [Tooltip("Optional. Found in parents if empty. Drives equip/stow/sprint-exit.")]
+        [SerializeField] private WeaponAmmo ammo;
         [SerializeField] private WeaponLoadout loadout;
-
-        [Tooltip("Optional. Found in parents if empty. Drives the walk/sprint bools.")]
         [SerializeField] private PlayerMovement playerMovement;
-
-        [Header("Clip names (for length reading)")]
-        [SerializeField] private string fireClipName = "HandgunFire";
-        [SerializeField] private string reloadClipName = "Reload";
-        [SerializeField] private string equipClipName = "Equip";
-        [SerializeField] private string stowClipName = "Stow";
-        [SerializeField] private string sprintExitClipName = "SprintExit";
 
         [Header("Scaling")]
         [Tooltip("Scale the fire animation so one recoil fills one shot interval.")]
         [SerializeField] private bool scaleFireToRPM = true;
-        [Tooltip("Scale the reload animation to match reloadTime.")]
+        [Tooltip("Scale reload animations to the resolved reload durations.")]
         [SerializeField] private bool scaleReloadToTime = true;
-        [Tooltip("Scale equip/stow/sprint-exit to the durations the loadout reports.")]
+        [Tooltip("Scale equip/stow to the durations the loadout reports.")]
         [SerializeField] private bool scaleTransitions = true;
 
         private static readonly int FireTrigger = Animator.StringToHash("Fire");
         private static readonly int ReloadTrigger = Animator.StringToHash("Reload");
+        private static readonly int ReloadCancelTrigger = Animator.StringToHash("ReloadCancel");
         private static readonly int EquipTrigger = Animator.StringToHash("Equip");
         private static readonly int StowTrigger = Animator.StringToHash("Stow");
 
+        private static readonly int SpeedParam = Animator.StringToHash("Speed");
         private static readonly int FireSpeedParam = Animator.StringToHash("FireSpeed");
         private static readonly int ReloadSpeedParam = Animator.StringToHash("ReloadSpeed");
+        private static readonly int ReloadStartSpeedParam = Animator.StringToHash("ReloadStartSpeed");
+        private static readonly int ReloadStepSpeedParam = Animator.StringToHash("ReloadStepSpeed");
+        private static readonly int ReloadEndSpeedParam = Animator.StringToHash("ReloadEndSpeed");
         private static readonly int EquipSpeedParam = Animator.StringToHash("EquipSpeed");
         private static readonly int StowSpeedParam = Animator.StringToHash("StowSpeed");
-        private static readonly int SprintExitSpeedParam = Animator.StringToHash("SprintExitSpeed");
 
-        private static readonly int IsMovingParam = Animator.StringToHash("IsMoving");
-        private static readonly int IsSprintingParam = Animator.StringToHash("IsSprinting");
+        private static readonly int ReloadTypeParam = Animator.StringToHash("ReloadType");
+        private static readonly int ReloadingParam = Animator.StringToHash("Reloading");
+        private static readonly int EmptyParam = Animator.StringToHash("Empty");
 
-        private float fireClipLength;
-        private float reloadClipLength;
-        private float equipClipLength;
-        private float stowClipLength;
-        private float sprintExitClipLength;
+        // One Animator plus the clip lengths THIS weapon plays on it.
+        private sealed class Target
+        {
+            public Animator Anim;
+            public float Fire, Reload, ReloadStart, ReloadStep, ReloadEnd, Equip, Stow;
+            private HashSet<int> parameters;
+
+            public bool Live => Anim != null && Anim.isActiveAndEnabled
+                                && Anim.runtimeAnimatorController != null;
+
+            public void Read(RuntimeAnimatorController rc, ViewmodelRig.ClipRoles roles)
+            {
+                if (roles == null) return;
+                Fire = ViewmodelRig.LengthOf(rc, roles.fire);
+                Reload = ViewmodelRig.LengthOf(rc, roles.reload);
+                ReloadStart = ViewmodelRig.LengthOf(rc, roles.reloadStart);
+                ReloadStep = ViewmodelRig.LengthOf(rc, roles.reloadStep);
+                ReloadEnd = ViewmodelRig.LengthOf(rc, roles.reloadEnd);
+                Equip = ViewmodelRig.LengthOf(rc, roles.equip);
+                Stow = ViewmodelRig.LengthOf(rc, roles.stow);
+            }
+
+            // Built lazily: Animator.parameters is only valid on an enabled Animator.
+            // Every override of a base controller shares its parameter set, so one
+            // cache survives controller swaps on the shared arms.
+            private bool Has(int hash)
+            {
+                if (!Live) return false;
+                if (parameters == null)
+                {
+                    parameters = new HashSet<int>();
+                    foreach (var p in Anim.parameters) parameters.Add(p.nameHash);
+                }
+                return parameters.Contains(hash);
+            }
+
+            public void Trigger(int h) { if (Has(h)) Anim.SetTrigger(h); }
+            public void Float(int h, float v) { if (Has(h)) Anim.SetFloat(h, v); }
+            public void Int(int h, int v) { if (Has(h)) Anim.SetInteger(h, v); }
+            public void Bool(int h, bool v) { if (Has(h)) Anim.SetBool(h, v); }
+        }
+
+        private readonly Target gun = new Target();
+        private readonly Target arms = new Target();
+        private ViewmodelRig rig;
+        private WeaponDamageSource damageSource;
+
+        // Sprint-exit ramp for Speed (Run -> Hip over the exact sprint-out time).
+        private float exitDuration;
+        private float exitTimer;
+        private float exitFrom;
+        private float lastSpeed;
+
+        private bool DrivesArms => rig != null && rig.Current == controller && arms.Live;
 
         private void Awake()
         {
-            if (animator == null) animator = GetComponentInChildren<Animator>();
             if (controller == null) controller = GetComponentInParent<WeaponFireController>();
-            if (damageSource == null && controller != null) damageSource = controller.DamageSource;
+            if (ammo == null && controller != null) ammo = controller.GetComponent<WeaponAmmo>();
             if (loadout == null) loadout = GetComponentInParent<WeaponLoadout>();
             if (playerMovement == null) playerMovement = GetComponentInParent<PlayerMovement>();
+            damageSource = controller != null ? controller.DamageSource : null;
+        }
 
-            fireClipLength = ReadClipLength(fireClipName);
-            reloadClipLength = ReadClipLength(reloadClipName);
-            equipClipLength = ReadClipLength(equipClipName);
-            stowClipLength = ReadClipLength(stowClipName);
-            sprintExitClipLength = ReadClipLength(sprintExitClipName);
+        // Start, not Awake: the loadout spawns gun models in its Awake.
+        private void Start()
+        {
+            rig = loadout != null ? loadout.Rig : null;
+            var vm = damageSource != null && damageSource.Weapon != null
+                ? damageSource.Weapon.viewmodel : null;
+
+            if (vm == null || rig == null)
+            {
+                Debug.LogError($"[WeaponAnimator] '{name}' needs a WeaponViewmodelSO on its " +
+                               "WeaponSO and a ViewmodelRig on the loadout.");
+                enabled = false;
+                return;
+            }
+
+            arms.Anim = rig.Arms;
+            arms.Read(vm.armsController, rig.armsBaseClips);
+
+            gun.Anim = loadout.GunAnimatorOf(controller);
+            if (gun.Anim != null)
+                gun.Read(gun.Anim.runtimeAnimatorController, rig.gunBaseClips);
         }
 
         private void OnEnable()
         {
-            if (controller != null)
+            if (controller != null) controller.OnFired += HandleFired;
+
+            if (ammo != null)
             {
-                controller.OnFired += HandleFired;
-                controller.OnReloadStarted += HandleReloadStarted;
+                ammo.ReloadStarted += HandleReloadStarted;
+                ammo.ReloadCancelled += HandleReloadCancelled;
+                ammo.ReloadInterrupted += HandleReloadInterrupted;
             }
 
             if (loadout != null)
@@ -113,10 +169,13 @@ namespace Combat.Weapons
 
         private void OnDisable()
         {
-            if (controller != null)
+            if (controller != null) controller.OnFired -= HandleFired;
+
+            if (ammo != null)
             {
-                controller.OnFired -= HandleFired;
-                controller.OnReloadStarted -= HandleReloadStarted;
+                ammo.ReloadStarted -= HandleReloadStarted;
+                ammo.ReloadCancelled -= HandleReloadCancelled;
+                ammo.ReloadInterrupted -= HandleReloadInterrupted;
             }
 
             if (loadout != null)
@@ -127,92 +186,140 @@ namespace Combat.Weapons
             }
         }
 
-        // Locomotion is a continuous condition, so it's a bool read each frame rather
-        // than an event. Cheap: SetBool no-ops when the value is unchanged.
+        // Continuous conditions. Set* no-ops when the value is unchanged.
         private void Update()
         {
-            if (animator == null || playerMovement == null) return;
+            if (ammo != null)
+            {
+                gun.Bool(EmptyParam, ammo.Magazine <= 0);
 
-            animator.SetBool(IsSprintingParam, playerMovement.IsSprinting);
-            animator.SetBool(IsMovingParam, playerMovement.IsMoving);
+                if (ammo.IsShellReload)
+                {
+                    bool more = ammo.ShellWillContinue;
+                    gun.Bool(ReloadingParam, more);
+                    if (DrivesArms) arms.Bool(ReloadingParam, more);
+                }
+            }
+
+            if (DrivesArms && playerMovement != null)
+                arms.Float(SpeedParam, LocomotionSpeed());
+        }
+
+        // 0..1 = idle..walk, 1..2 = walk..sprint, from ACTUAL speed so it follows the
+        // movement's own acceleration. During a sprint-out, ramps linearly from where
+        // it was down to the live value over the loadout's sprint-exit duration.
+        private float LocomotionSpeed()
+        {
+            float walk = Mathf.Max(0.01f, playerMovement.WalkSpeed);
+            float sprintRange = Mathf.Max(0.01f, walk * (playerMovement.SprintMultiplier - 1f));
+            float s = playerMovement.CurrentSpeed;
+
+            float value = s <= walk ? s / walk : 1f + (s - walk) / sprintRange;
+            value = Mathf.Clamp(value, 0f, 2f);
+
+            if (exitTimer > 0f)
+            {
+                exitTimer -= Time.deltaTime;
+                float t = 1f - Mathf.Clamp01(exitTimer / exitDuration);
+                value = Mathf.Lerp(exitFrom, Mathf.Min(value, 1f), t);
+            }
+
+            lastSpeed = value;
+            return value;
         }
 
         private void HandleFired()
         {
-            if (animator == null) return;
-
-            if (scaleFireToRPM && fireClipLength > 0f && damageSource != null)
+            if (scaleFireToRPM && damageSource != null)
             {
                 float rpm = damageSource.ResolvedRPM;
                 if (rpm > 0f)
                 {
                     float interval = 60f / rpm;
-                    animator.SetFloat(FireSpeedParam, fireClipLength / interval);
+                    gun.Float(FireSpeedParam, SpeedFor(gun.Fire, interval));
+                    if (DrivesArms) arms.Float(FireSpeedParam, SpeedFor(arms.Fire, interval));
                 }
             }
 
-            animator.SetTrigger(FireTrigger);
+            gun.Trigger(FireTrigger);
+            if (DrivesArms) arms.Trigger(FireTrigger);
         }
 
         private void HandleReloadStarted()
         {
-            if (animator == null) return;
-
-            if (scaleReloadToTime && reloadClipLength > 0f && damageSource != null)
-            {
-                float reloadTime = damageSource.ResolvedReloadTime;
-                if (reloadTime > 0f)
-                    animator.SetFloat(ReloadSpeedParam, reloadClipLength / reloadTime);
-            }
-
-            animator.SetTrigger(ReloadTrigger);
+            ApplyReload(gun);
+            if (DrivesArms) ApplyReload(arms);
         }
 
-        // The loadout raises these for whichever weapon is transitioning, so each
-        // animator ignores the ones that aren't about its own gun.
+        private void ApplyReload(Target t)
+        {
+            bool shell = ammo.IsShellReload;
+            t.Int(ReloadTypeParam, shell ? 1 : 0);
+
+            if (scaleReloadToTime)
+            {
+                if (shell)
+                {
+                    t.Float(ReloadStartSpeedParam, SpeedFor(t.ReloadStart, ammo.ShellStartDuration));
+                    t.Float(ReloadStepSpeedParam, SpeedFor(t.ReloadStep, ammo.ShellDuration));
+                    t.Float(ReloadEndSpeedParam, SpeedFor(t.ReloadEnd, ammo.ShellEndDuration));
+                }
+                else
+                {
+                    t.Float(ReloadSpeedParam, SpeedFor(t.Reload, ammo.ReloadDuration));
+                }
+            }
+
+            if (shell) t.Bool(ReloadingParam, ammo.ShellWillContinue);
+            t.Trigger(ReloadTrigger);
+        }
+
+        private void HandleReloadCancelled()
+        {
+            gun.Trigger(ReloadCancelTrigger);
+            if (DrivesArms) arms.Trigger(ReloadCancelTrigger);
+        }
+
+        // Shell reload interrupted by fire: skip End, blend straight out over the
+        // handling-driven ready time. Cross-fade from code because the duration is
+        // stat-driven, which a fixed transition can't express.
+        private void HandleReloadInterrupted(float readyTime)
+        {
+            if (gun.Live)
+                gun.Anim.CrossFadeInFixedTime(rig.GunRestStateHash, readyTime, 0);
+
+            if (DrivesArms && rig.ArmsActionsLayer >= 0)
+                arms.Anim.CrossFadeInFixedTime(rig.ArmsEmptyStateHash, readyTime, rig.ArmsActionsLayer);
+        }
+
+        // The loadout raises these for whichever weapon is transitioning.
         private void HandleEquipStarted(WeaponFireController c, float duration)
         {
-            if (c != controller || animator == null) return;
-
-            SetTransitionSpeed(EquipSpeedParam, equipClipLength, duration);
-
-            // Rebind happens in WeaponLoadout the moment the weapon becomes visible,
-            // and it clears queued triggers — so this must be set AFTER, which it is:
-            // the event fires once the incoming weapon is already shown.
-            animator.SetTrigger(EquipTrigger);
+            if (c != controller || !DrivesArms) return;
+            if (scaleTransitions) arms.Float(EquipSpeedParam, SpeedFor(arms.Equip, duration));
+            arms.Trigger(EquipTrigger);
         }
 
         private void HandleStowStarted(WeaponFireController c, float duration)
         {
-            if (c != controller || animator == null) return;
-
-            SetTransitionSpeed(StowSpeedParam, stowClipLength, duration);
-            animator.SetTrigger(StowTrigger);
+            if (c != controller || !DrivesArms) return;
+            if (scaleTransitions) arms.Float(StowSpeedParam, SpeedFor(arms.Stow, duration));
+            arms.Trigger(StowTrigger);
         }
 
-        // No trigger — the Sprint -> SprintExit transition fires off the IsSprinting
-        // bool that Update is already writing. This only sets the playback speed so
-        // the clip finishes exactly when the weapon becomes firable again.
         private void HandleSprintExitStarted(WeaponFireController c, float duration)
         {
-            if (c != controller || animator == null) return;
-            SetTransitionSpeed(SprintExitSpeedParam, sprintExitClipLength, duration);
+            if (c != controller || duration <= 0f) return;
+            exitDuration = duration;
+            exitTimer = duration;
+            exitFrom = lastSpeed;
         }
 
-        private void SetTransitionSpeed(int param, float clipLength, float duration)
+        // Playback multiplier that makes a clip of `length` fill `duration`.
+        private static float SpeedFor(float length, float duration)
         {
-            if (!scaleTransitions || clipLength <= 0f || duration <= 0f) return;
-            animator.SetFloat(param, clipLength / duration);
-        }
-
-        private float ReadClipLength(string clipName)
-        {
-            if (animator == null || animator.runtimeAnimatorController == null || string.IsNullOrEmpty(clipName))
-                return 0f;
-            foreach (var clip in animator.runtimeAnimatorController.animationClips)
-                if (clip != null && clip.name == clipName)
-                    return clip.length;
-            return 0f;
+            if (length <= 0f || duration <= 0f) return 1f;
+            return Mathf.Min(length / duration, 100f);
         }
     }
 }

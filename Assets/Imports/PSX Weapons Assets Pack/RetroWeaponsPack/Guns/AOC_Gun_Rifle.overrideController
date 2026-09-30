@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: AOC_Gun_Rifle
+  m_Controller: {fileID: 9100000, guid: c1762e57701b20848bd71048d95d09d7, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: -623603649343465320, guid: 4a8ab403ae29fac4fa3fa152af5dcb97, type: 3}
+    m_OverrideClip: {fileID: -623603649343465320, guid: c9b9a1b50d1482c4297957db5e705a66, type: 3}
+  - m_OriginalClip: {fileID: -623603649343465320, guid: 66454389348f1314883905af18fe83f9, type: 3}
+    m_OverrideClip: {fileID: -623603649343465320, guid: 4cdf6af6473bec14d8d8c66d597e6de3, type: 3}
+  - m_OriginalClip: {fileID: -623603649343465320, guid: ee02d2998866e7046b94ddfe34c69eb3, type: 3}
+    m_OverrideClip: {fileID: -623603649343465320, guid: e675aceca1a07484296a60da76c6f9c0, type: 3}
+  - m_OriginalClip: {fileID: -623603649343465320, guid: 47874e82b3dd8184bb60012d04bdb675, type: 3}
+    m_OverrideClip: {fileID: -623603649343465320, guid: c9b9a1b50d1482c4297957db5e705a66, type: 3}

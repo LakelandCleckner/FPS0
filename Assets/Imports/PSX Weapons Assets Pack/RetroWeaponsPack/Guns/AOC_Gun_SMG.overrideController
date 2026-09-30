@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: AOC_Gun_SMG
+  m_Controller: {fileID: 9100000, guid: c1762e57701b20848bd71048d95d09d7, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: -623603649343465320, guid: 4a8ab403ae29fac4fa3fa152af5dcb97, type: 3}
+    m_OverrideClip: {fileID: -623603649343465320, guid: f2c116a64d4fa6a40930ce989c661d32, type: 3}
+  - m_OriginalClip: {fileID: -623603649343465320, guid: 47874e82b3dd8184bb60012d04bdb675, type: 3}
+    m_OverrideClip: {fileID: -623603649343465320, guid: f2c116a64d4fa6a40930ce989c661d32, type: 3}
+  - m_OriginalClip: {fileID: -623603649343465320, guid: 66454389348f1314883905af18fe83f9, type: 3}
+    m_OverrideClip: {fileID: -623603649343465320, guid: 0e0fbaea839bd4d44ba189487f9dca66, type: 3}
+  - m_OriginalClip: {fileID: -623603649343465320, guid: ee02d2998866e7046b94ddfe34c69eb3, type: 3}
+    m_OverrideClip: {fileID: -623603649343465320, guid: 0efc55d5cf8dda742bc96a18f111c02e, type: 3}

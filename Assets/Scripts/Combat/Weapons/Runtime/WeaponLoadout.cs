@@ -59,10 +59,20 @@ namespace Combat.Weapons
             // and so it can't come back up frozen mid-reload. The COMPONENT is
             // disabled, never the GameObject, for the same subscription reason.
             [NonSerialized] public Animator animator;
+
+            // The spawned gun model when the weapon has a WeaponViewmodelSO. Set in
+            // Awake so WeaponAnimator can read it in Start regardless of order.
+            [NonSerialized] public GameObject gunInstance;
+            [NonSerialized] public Animator gunAnimator;
+            [NonSerialized] public RuntimeAnimatorController armsController;
         }
 
         [Header("Weapons")]
         [SerializeField] private List<Slot> slots = new List<Slot>();
+
+        [Header("Viewmodel")]
+        [Tooltip("The shared first-person arms. Required for weapons with a WeaponViewmodelSO.")]
+        [SerializeField] private ViewmodelRig rig;
 
         [Header("Stats")]
         [SerializeField] private WeaponStatKeys statKeys;
@@ -136,9 +146,50 @@ namespace Combat.Weapons
         public WeaponFireController Active =>
             IsValid(activeIndex) ? slots[activeIndex].controller : null;
 
+        public ViewmodelRig Rig => rig;
+
         private void Awake()
         {
             bus = WeaponEventBus.FindFor(this);
+
+            for (int i = 0; i < slots.Count; i++)
+                SpawnViewmodel(i);
+        }
+
+        // Spawns the slot's gun model onto the rig's hand socket and makes it the
+        // slot's modelRoot, so the existing renderer/animator hiding applies to it
+        // unchanged. Slots without a WeaponViewmodelSO keep the old behaviour.
+        private void SpawnViewmodel(int index)
+        {
+            if (!IsValid(index)) return;
+            var slot = slots[index];
+
+            var source = slot.controller.DamageSource;
+            var vm = source != null && source.Weapon != null ? source.Weapon.viewmodel : null;
+            if (vm == null) return;
+
+            if (rig == null)
+            {
+                Debug.LogError($"[Loadout] Slot {index} has a viewmodel but no ViewmodelRig is assigned.");
+                return;
+            }
+
+            slot.armsController = vm.armsController;
+
+            if (vm.gunPrefab != null)
+            {
+                slot.gunInstance = Instantiate(vm.gunPrefab, rig.GunSocket, false);
+                slot.gunAnimator = slot.gunInstance.GetComponentInChildren<Animator>(true);
+                slot.modelRoot = slot.gunInstance.transform;
+            }
+        }
+
+        public Animator GunAnimatorOf(WeaponFireController controller)
+        {
+            for (int i = 0; i < slots.Count; i++)
+                if (IsValid(i) && slots[i].controller == controller)
+                    return slots[i].gunAnimator;
+            return null;
         }
 
         private void Start()
@@ -419,6 +470,11 @@ namespace Combat.Weapons
         {
             if (!IsValid(index)) return;
             var slot = slots[index];
+
+            // Arms swap BEFORE the gun is shown and before OnEquipStarted: the swap
+            // rebinds the arms, which clears triggers, so Equip must be set after.
+            if (held && rig != null && slot.armsController != null)
+                rig.SetWeapon(slot.controller, slot.armsController);
 
             SetVisible(slot, held);
             SetActive(index, ready, ready);

@@ -20,6 +20,9 @@ namespace Combat.Weapons
         public string id = "";
         public string displayName = "";
 
+        [Header("Presentation")]
+        public WeaponViewmodelSO viewmodel;
+
         [Header("Element (per-weapon damage type)")]
         public DamageTypeSO baseDamageType;
 
