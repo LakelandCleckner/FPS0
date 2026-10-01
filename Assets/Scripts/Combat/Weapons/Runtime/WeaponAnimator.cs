@@ -21,8 +21,10 @@ namespace Combat.Weapons
     //   Trigger : Fire, Reload, ReloadCancel, Equip, Stow
     //   Float   : Speed (0 idle, 1 walk, 2 sprint), FireSpeed, ReloadSpeed,
     //             ReloadStartSpeed, ReloadStepSpeed, ReloadEndSpeed, EquipSpeed, StowSpeed
+    //             AimProgress (0 hip .. 1 aimed — drives AimRaise's Motion Time)
     //   Int     : ReloadType (0 magazine, 1 per-shell)
-    //   Bool    : Reloading (another shell follows), Empty (gun: mag is empty)
+    //   Bool    : Reloading (another shell follows), Empty (gun: mag is empty),
+    //             Aiming, Crouching
     //
     // Fixed Duration must be OFF on every exit-time return transition, or blends
     // won't scale with playback speed and stat-driven durations desync.
@@ -33,6 +35,8 @@ namespace Combat.Weapons
         [SerializeField] private WeaponAmmo ammo;
         [SerializeField] private WeaponLoadout loadout;
         [SerializeField] private PlayerMovement playerMovement;
+        [SerializeField] private PlayerAim playerAim;
+        [SerializeField] private PlayerCrouch playerCrouch;
 
         [Header("Scaling")]
         [Tooltip("Scale the fire animation so one recoil fills one shot interval.")]
@@ -60,6 +64,9 @@ namespace Combat.Weapons
         private static readonly int ReloadTypeParam = Animator.StringToHash("ReloadType");
         private static readonly int ReloadingParam = Animator.StringToHash("Reloading");
         private static readonly int EmptyParam = Animator.StringToHash("Empty");
+        private static readonly int AimingParam = Animator.StringToHash("Aiming");
+        private static readonly int CrouchingParam = Animator.StringToHash("Crouching");
+        private static readonly int AimProgressParam = Animator.StringToHash("AimProgress");
 
         // One Animator plus the clip lengths THIS weapon plays on it.
         private sealed class Target
@@ -122,6 +129,8 @@ namespace Combat.Weapons
             if (ammo == null && controller != null) ammo = controller.GetComponent<WeaponAmmo>();
             if (loadout == null) loadout = GetComponentInParent<WeaponLoadout>();
             if (playerMovement == null) playerMovement = GetComponentInParent<PlayerMovement>();
+            if (playerAim == null) playerAim = GetComponentInParent<PlayerAim>();
+            if (playerCrouch == null) playerCrouch = GetComponentInParent<PlayerCrouch>();
             damageSource = controller != null ? controller.DamageSource : null;
         }
 
@@ -165,6 +174,8 @@ namespace Combat.Weapons
                 loadout.OnStowStarted += HandleStowStarted;
                 loadout.OnSprintExitStarted += HandleSprintExitStarted;
             }
+
+            if (playerAim != null) playerAim.AimChanged += HandleAimChanged;
         }
 
         private void OnDisable()
@@ -184,6 +195,8 @@ namespace Combat.Weapons
                 loadout.OnStowStarted -= HandleStowStarted;
                 loadout.OnSprintExitStarted -= HandleSprintExitStarted;
             }
+
+            if (playerAim != null) playerAim.AimChanged -= HandleAimChanged;
         }
 
         // Continuous conditions. Set* no-ops when the value is unchanged.
@@ -201,8 +214,29 @@ namespace Combat.Weapons
                 }
             }
 
-            if (DrivesArms && playerMovement != null)
-                arms.Float(SpeedParam, LocomotionSpeed());
+            if (DrivesArms)
+            {
+                if (playerMovement != null) arms.Float(SpeedParam, LocomotionSpeed());
+
+                // Re-asserted every frame: a rebind on equip resets parameters.
+                // AimProgress IS the arms' aim pose (AimRaise Motion Time), so a
+                // release at any point reverses from exactly that point.
+                if (playerAim != null)
+                {
+                    arms.Bool(AimingParam, playerAim.IsAiming);
+                    arms.Float(AimProgressParam, playerAim.Blend);
+                }
+                if (playerCrouch != null) arms.Bool(CrouchingParam, playerCrouch.IsCrouched);
+            }
+        }
+
+        // Set on the edge too, not just in Update, so the state machine sees the
+        // flip on the same frame PlayerAim decides it.
+        private void HandleAimChanged(bool aiming, float duration)
+        {
+            if (!DrivesArms) return;
+            arms.Bool(AimingParam, aiming);
+            arms.Float(AimProgressParam, playerAim.Blend);
         }
 
         // 0..1 = idle..walk, 1..2 = walk..sprint, from ACTUAL speed so it follows the

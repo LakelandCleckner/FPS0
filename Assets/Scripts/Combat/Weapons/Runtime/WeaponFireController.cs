@@ -73,6 +73,11 @@ namespace Combat.Weapons
 
         public WeaponDamageSource DamageSource => damageSource;
 
+        // Set by WeaponLoadout from the spawned gun model's GunModel. Called in the
+        // loadout's Awake, before this component's Start builds the delivery, so the
+        // delivery is built with it — no rebuild needed.
+        public void SetMuzzle(Transform newMuzzle) => muzzle = newMuzzle;
+
         private void Awake()
         {
             playerAudio = GetComponentInParent<PlayerAudio>();

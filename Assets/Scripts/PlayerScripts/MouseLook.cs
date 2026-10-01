@@ -6,7 +6,11 @@ public class MouseLook : MonoBehaviour
     [SerializeField] private Transform playerBody;   // Yaw (left/right)
     [SerializeField] private Camera playerCamera;    // Pitch (up/down)
 
-    [Header("Sensitivity (degrees per mouse unit)")]
+    [Header("Settings")]
+    [Tooltip("Hip sensitivity comes from here when assigned.")]
+    [SerializeField] private GameSettingsSO settings;
+
+    [Header("Sensitivity (degrees per mouse unit) — fallback when no settings asset")]
     [SerializeField] private float hipSensitivity = 0.1f;
 
     [Header("Pitch Clamp")]
@@ -14,6 +18,10 @@ public class MouseLook : MonoBehaviour
 
     private float verticalRotation;
     private Vector2 lookInput;
+
+    // Set every frame by PlayerAim (1 at hip). Follows the live FOV, so it's
+    // correct mid-transition, not just at full ADS.
+    public float SensitivityScale { get; set; } = 1f;
 
     /// <summary>
     /// Called by PlayerMovement when look input is received.
@@ -30,9 +38,10 @@ public class MouseLook : MonoBehaviour
 
     private void ApplyLook()
     {
-        // Raw mouse delta scaled by sensitivity
-        float mouseX = lookInput.x * hipSensitivity;
-        float mouseY = lookInput.y * hipSensitivity;
+        float sens = GetHipSensitivity() * SensitivityScale;
+
+        float mouseX = lookInput.x * sens;
+        float mouseY = lookInput.y * sens;
 
         // Horizontal rotation (yaw)
         playerBody.Rotate(Vector3.up * mouseX);
@@ -49,11 +58,12 @@ public class MouseLook : MonoBehaviour
 
     public void SetHipSensitivity(float value)
     {
-        hipSensitivity = value;
+        if (settings != null) settings.hipSensitivity = value;
+        else hipSensitivity = value;
     }
 
     public float GetHipSensitivity()
     {
-        return hipSensitivity;
+        return settings != null ? settings.hipSensitivity : hipSensitivity;
     }
 }

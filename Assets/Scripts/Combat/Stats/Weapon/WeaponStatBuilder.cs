@@ -7,9 +7,9 @@ namespace Combat.Weapons
     // mirror of ResolveStats used to prove equivalence (Phase 2e) and, later, to
     // become the weapon's real stat source (2f).
     //
-    // Also registers the HANDLING DERIVATIONS: equip_time and stow_time are authored
-    // per archetype as real seconds, then reduced proportionally by the weapon's
-    // handling. Two levers, doing different jobs — see RegisterHandlingDerivations.
+    // Also registers the HANDLING DERIVATIONS: equip_time, stow_time and ads_time are
+    // authored per archetype as real seconds, then reduced proportionally by the
+    // weapon's handling. Two levers, doing different jobs — see RegisterHandlingDerivations.
     public static class WeaponStatBuilder
     {
         // ---------------------------------------------------------------- tuning
@@ -22,6 +22,7 @@ namespace Combat.Weapons
         // archetype and these constants become its default. One-field upgrade.
         private const float EquipHandlingCoefficient = -0.005f;
         private const float StowHandlingCoefficient = -0.005f;
+        private const float AdsHandlingCoefficient = -0.005f;
 
         // Populate `container` with a weapon's base stat values (archetype + deltas)
         // and register its derived modifiers. Sets each stat's BASE; modifiers
@@ -43,12 +44,16 @@ namespace Combat.Weapons
             // their own equip/stow authoring.
             container.SetBase(keys.handling, a.handling + weapon.handlingDelta);
 
-            // Equip/stow are authored in SECONDS on the archetype and have no
+            // Equip/stow/ADS time are authored in SECONDS on the archetype and have no
             // per-weapon delta on purpose. If one gun in a frame should be snappier,
             // give it handling — that keeps a single legible knob, and means armour
             // and perks reach it through the same channel.
             container.SetBase(keys.equipTime, a.baseEquipTime);
             container.SetBase(keys.stowTime, a.baseStowTime);
+            if (keys.adsTime != null) container.SetBase(keys.adsTime, a.baseAdsTime);
+
+            // Zoom is optics, not handling: archetype base plus a per-weapon delta.
+            if (keys.adsZoom != null) container.SetBase(keys.adsZoom, a.adsZoom + weapon.adsZoomDelta);
 
             RegisterHandlingDerivations(container, weapon, keys);
         }
@@ -73,23 +78,9 @@ namespace Combat.Weapons
             // copy of each derivation and double the reduction.
             container.RemoveAllFromOwner(weapon);
 
-            if (keys.equipTime != null)
-            {
-                container.AddModifier(new StatModifier(
-                    keys.equipTime,
-                    StatResolver.ADDITIVE,
-                    sourceStat: keys.handling,
-                    coefficient: EquipHandlingCoefficient), weapon);
-            }
-
-            if (keys.stowTime != null)
-            {
-                container.AddModifier(new StatModifier(
-                    keys.stowTime,
-                    StatResolver.ADDITIVE,
-                    sourceStat: keys.handling,
-                    coefficient: StowHandlingCoefficient), weapon);
-            }
+            AddHandling(container, weapon, keys, keys.equipTime, EquipHandlingCoefficient);
+            AddHandling(container, weapon, keys, keys.stowTime, StowHandlingCoefficient);
+            AddHandling(container, weapon, keys, keys.adsTime, AdsHandlingCoefficient);
 
             // NOTE — DELIBERATELY NO CAP ON THESE MODIFIERS.
             //
@@ -99,10 +90,21 @@ namespace Combat.Weapons
             // cap yields min(-0.5, -0.8) = -0.8 (uncapped), while a -0.3 contribution
             // yields min(-0.5, -0.3) = -0.5, i.e. the cap makes it STRONGER.
             //
-            // The floor that actually matters is on the stat: equip_time and
-            // stow_time carry a min clamp (0.05), applied last in StatResolver.
-            // Resolve, so no amount of handling can drive a swap to zero. Set those
+            // The floor that actually matters is on the stat: equip_time, stow_time
+            // and ads_time carry a min clamp (0.05), applied last in StatResolver.
+            // Resolve, so no amount of handling can drive them to zero. Set those
             // clamps on the definitions — they are the guard here.
+        }
+
+        private static void AddHandling(StatContainer container, WeaponSO weapon,
+                                        WeaponStatKeys keys, StatDefinitionSO target, float coefficient)
+        {
+            if (target == null) return;
+            container.AddModifier(new StatModifier(
+                target,
+                StatResolver.ADDITIVE,
+                sourceStat: keys.handling,
+                coefficient: coefficient), weapon);
         }
     }
 }

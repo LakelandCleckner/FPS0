@@ -32,6 +32,8 @@ namespace Combat.Weapons
         public float magazineSizeDelta = 0f;
         public float reloadTimeDelta = 0f;
         public float handlingDelta = 0f;
+        [Tooltip("ADS magnification delta. ADS TIME has no delta — it follows handling.")]
+        public float adsZoomDelta = 0f;
 
         [Header("Ammo")]
         [Tooltip("Starting reserve ammo (outside the magazine).")]
@@ -57,7 +59,7 @@ namespace Combat.Weapons
         public float chainGrowth = 1f;
         public HitDedupMode dedupMode = HitDedupMode.PerShot;
 
-        
+
 
         // Resolved infinite-reserves setting (archetype default, weapon override).
         public bool ResolveInfiniteReserves()

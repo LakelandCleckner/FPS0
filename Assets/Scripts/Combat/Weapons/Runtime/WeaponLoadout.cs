@@ -65,6 +65,7 @@ namespace Combat.Weapons
             [NonSerialized] public GameObject gunInstance;
             [NonSerialized] public Animator gunAnimator;
             [NonSerialized] public RuntimeAnimatorController armsController;
+            [NonSerialized] public Transform sight;
         }
 
         [Header("Weapons")]
@@ -181,6 +182,13 @@ namespace Combat.Weapons
                 slot.gunInstance = Instantiate(vm.gunPrefab, rig.GunSocket, false);
                 slot.gunAnimator = slot.gunInstance.GetComponentInChildren<Animator>(true);
                 slot.modelRoot = slot.gunInstance.transform;
+
+                var model = slot.gunInstance.GetComponent<GunModel>();
+                if (model != null) slot.sight = model.Sight;
+                if (model != null && model.Muzzle != null)
+                    slot.controller.SetMuzzle(model.Muzzle);
+                else
+                    Debug.LogWarning($"[Loadout] Gun prefab '{vm.gunPrefab.name}' has no GunModel muzzle.");
             }
         }
 
@@ -474,7 +482,7 @@ namespace Combat.Weapons
             // Arms swap BEFORE the gun is shown and before OnEquipStarted: the swap
             // rebinds the arms, which clears triggers, so Equip must be set after.
             if (held && rig != null && slot.armsController != null)
-                rig.SetWeapon(slot.controller, slot.armsController);
+                rig.SetWeapon(slot.controller, slot.armsController, slot.sight);
 
             SetVisible(slot, held);
             SetActive(index, ready, ready);

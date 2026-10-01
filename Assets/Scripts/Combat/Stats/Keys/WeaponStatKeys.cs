@@ -25,6 +25,9 @@ namespace Combat.Weapons
         public StatDefinitionSO handling;    // "handling"
         public StatDefinitionSO equipTime;   // "equip_time"
         public StatDefinitionSO stowTime;    // "stow_time"
+        [Header("Aim")]
+        public StatDefinitionSO adsTime;     // "ads_time"  seconds hip -> fully aimed
+        public StatDefinitionSO adsZoom;     // "ads_zoom"  magnification (1.25 = 1.25x)
 
 
         // NOTE (global_damage representation): the legacy StatBlock stores this as a

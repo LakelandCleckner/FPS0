@@ -151,7 +151,7 @@ public class PlayerMovement : MonoBehaviour
         bool grounded = characterController.isGrounded;
         bool hasForwardInput = moveInput.y > sprintForwardThreshold;
 
-        bool groundSprintAllowed = wantsToSprint && hasForwardInput;
+        bool groundSprintAllowed = wantsToSprint && hasForwardInput && !SprintBlocked;
         bool isSprintingNow = grounded ? groundSprintAllowed : airSprintAllowed;
         isSprinting = isSprintingNow;
 
@@ -234,6 +234,13 @@ public class PlayerMovement : MonoBehaviour
 
     public float CurrentSpeed => new Vector3(currentMovement.x, 0f, currentMovement.z).magnitude;
     public bool IsGrounded => characterController.isGrounded;
+
+    // Raw sprint intent (key held), before forward-input and block rules. PlayerCrouch
+    // reads this: pressing sprint while crouched means "stand up and sprint".
+    public bool WantsToSprint => wantsToSprint;
+
+    // Set by PlayerCrouch while crouched, so a crouched player can't sprint.
+    public bool SprintBlocked { get; set; }
 
     // Resolved (live) walk speed and sprint multiplier, so presentation can
     // normalize CurrentSpeed into a 0..1 walk / 1..2 sprint blend value.

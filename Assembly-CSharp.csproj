@@ -78,6 +78,7 @@
     <Compile Include="Assets\Objects\Enemies\Kevin Iglesias\Human Animations\Scripts\SpineProxy.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\PlayerVisible.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\FireBehaviorSO.cs" />
+    <Compile Include="Assets\Scripts\UI\CrosshairAdsFade.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\VfxReference.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\EnemyMemory.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\Accumulator\DamageAccumulatorRegistry.cs" />
@@ -170,6 +171,7 @@
     <Compile Include="Assets\Scripts\Combat\Stats\Buckets\StatResolver.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualButton.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
+    <Compile Include="Assets\Scripts\PlayerScripts\PlayerAim.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Weapon\WeaponStatBuilder.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\IDelivery.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\StatDerivationTest.cs" />
@@ -183,6 +185,7 @@
     <Compile Include="Assets\StarterAssets\FirstPersonController\Scripts\BasicRigidBodyPush.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\MouseLook.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\CombatantHealth.cs" />
+    <Compile Include="Assets\Scripts\Weapons\GunModel.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StatusManager.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\DamageNumber.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StatusSOFiles\SlowStatusSO.cs" />
@@ -203,6 +206,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\Actions\WanderAction.cs" />
     <Compile Include="Assets\Scripts\UI\AmmoDisplay.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\HitscanDelivery.cs" />
+    <Compile Include="Assets\Scripts\PlayerScripts\PlayerCrouch.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\PlayerTargetSensor.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\Shields\ParticleSystemShield.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponDamageSource.cs" />
@@ -230,6 +234,7 @@
     <Compile Include="Assets\Animations\Enemies\Mixamo\Imports\Alien_Zombie\AlienZombieBaseLocomotionAnimator.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\FireMode.cs" />
     <Compile Include="Assets\Scripts\AI\HelperScripts\Enemyfovvisualizer.cs" />
+    <Compile Include="Assets\Scripts\PlayerScripts\GameSettingsSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\WeaponTypeSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Core\StatDefinitionSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Keys\CombatStatKeys.cs" />

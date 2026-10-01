@@ -20,7 +20,7 @@ public class HitmarkerUI : MonoBehaviour
         if (hitmarkerImage != null)
         {
             originalScale = hitmarkerImage.rectTransform.localScale;
-            originalRotation = hitmarkerImage.rectTransform.eulerAngles.z;
+            originalRotation = hitmarkerImage.rectTransform.localEulerAngles.z;
         }
     }
     
@@ -45,7 +45,7 @@ public class HitmarkerUI : MonoBehaviour
 
         // Add slight random rotation for normal hits
         float rotation = isKill ? 0f : Random.Range(-maxRotation, maxRotation);
-        hitmarkerImage.rectTransform.eulerAngles = new Vector3(0f, 0f, originalRotation + rotation);
+        hitmarkerImage.rectTransform.localEulerAngles = new Vector3(0f, 0f, originalRotation + rotation);
 
         // Animate back to normal scale/rotation
         float timer = 0f;
@@ -53,7 +53,7 @@ public class HitmarkerUI : MonoBehaviour
         {
             timer += Time.deltaTime;
             hitmarkerImage.rectTransform.localScale = Vector3.Lerp(hitmarkerImage.rectTransform.localScale, originalScale, timer / scaleDuration);
-            hitmarkerImage.rectTransform.eulerAngles = new Vector3(0f, 0f, Mathf.LerpAngle(hitmarkerImage.rectTransform.eulerAngles.z, originalRotation, timer / scaleDuration));
+            hitmarkerImage.rectTransform.localEulerAngles = new Vector3(0f, 0f, Mathf.LerpAngle(hitmarkerImage.rectTransform.localEulerAngles.z, originalRotation, timer / scaleDuration));
             yield return null;
         }
 
@@ -66,6 +66,6 @@ public class HitmarkerUI : MonoBehaviour
 
         // Reset
         hitmarkerImage.rectTransform.localScale = originalScale;
-        hitmarkerImage.rectTransform.eulerAngles = new Vector3(0f, 0f, originalRotation);
+        hitmarkerImage.rectTransform.localEulerAngles = new Vector3(0f, 0f, originalRotation);
     }
 }
