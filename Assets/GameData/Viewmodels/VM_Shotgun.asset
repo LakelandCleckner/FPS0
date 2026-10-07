@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22618263453b96f40b9747b925f01b3b, type: 3}
+  m_Name: VM_Shotgun
+  m_EditorClassIdentifier: 
+  armsController: {fileID: 22100000, guid: 8bba39383f9f0d343ab873a68f02cec9, type: 2}
+  gunPrefab: {fileID: 3905000152106404112, guid: eae47670249eb1243a35c01b07db18f1, type: 3}

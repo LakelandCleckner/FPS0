@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1beabed67d81c843a00ec904d9d8961, type: 3}
-  m_Name: DuelingBurstRifle
+  m_Name: SingleSlugSemiShotgun
   m_EditorClassIdentifier: 
-  weaponType: {fileID: 11400000, guid: 20f04e02e595b0347bac6a3f73768bd7, type: 2}
-  id: dueling_br
-  displayName: Dueling Burst Rifle
+  weaponType: {fileID: 11400000, guid: e71ec1fc466957844bec5b520a2097f6, type: 2}
+  id: singleslugsemi
+  displayName: Single Slug Semi Shotgun
   baseAdsTime: 0.3
   adsZoom: 1.15
   adsCurve:
@@ -43,21 +43,21 @@ MonoBehaviour:
     m_RotationOrder: 4
   adsExitFraction: 1
   adsMoveSpeedMultiplier: 0.8
-  weaponDamage: 20
-  roundsPerMinute: 390
-  reloadStyle: 0
+  weaponDamage: 50
+  roundsPerMinute: 120
+  reloadStyle: 1
   shellStartFraction: 0.15
   shellEndFraction: 0.2
   interruptReadyFraction: 0.3
-  magazineSize: 30
-  reloadTime: 2.3
+  magazineSize: 10
+  reloadTime: 1.5
   infiniteReserves: 0
-  handling: 45
-  baseEquipTime: 0.6
-  baseStowTime: 0.5
+  handling: 25
+  baseEquipTime: 0.5
+  baseStowTime: 0.4
   primaryFire:
-    displayName: Burst
-    behavior: {fileID: 11400000, guid: 37003e9df8d84844b9f369e9b64d5c0b, type: 2}
+    displayName: Single Fire
+    behavior: {fileID: 11400000, guid: e994552d4c33e474fbaf1138181dc5b5, type: 2}
     delivery: {fileID: 11400000, guid: b38b61e8f021d194e886619c1acbd934, type: 2}
     deliveryOverrides: []
   crosshairPrefab: {fileID: 6358792504129393579, guid: f65e2aca27d6353489d3b57cde01da47, type: 3}
