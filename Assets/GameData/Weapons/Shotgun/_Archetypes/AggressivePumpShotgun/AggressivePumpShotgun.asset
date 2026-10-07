@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1beabed67d81c843a00ec904d9d8961, type: 3}
-  m_Name: SingleSlugSemiShotgun
+  m_Name: AggressivePumpShotgun
   m_EditorClassIdentifier: 
   weaponType: {fileID: 11400000, guid: e71ec1fc466957844bec5b520a2097f6, type: 2}
-  id: singleslugsemi
-  displayName: Single Slug Semi Shotgun
+  id: aggressive_pump_shotgun
+  displayName: Aggresive Pump Shotgun
   baseAdsTime: 0.3
   adsZoom: 1.15
   adsCurve:
@@ -43,21 +43,21 @@ MonoBehaviour:
     m_RotationOrder: 4
   adsExitFraction: 1
   adsMoveSpeedMultiplier: 0.8
-  weaponDamage: 50
-  roundsPerMinute: 120
+  weaponDamage: 60
+  roundsPerMinute: 90
   reloadStyle: 1
   shellStartFraction: 0
   shellEndFraction: 0.1
   interruptReadyFraction: 0.3
   magazineSize: 10
-  reloadTime: 8
+  reloadTime: 7
   infiniteReserves: 0
-  handling: 25
+  handling: 50
   baseEquipTime: 0.5
   baseStowTime: 0.4
   primaryFire:
-    displayName: Single Fire
+    displayName: Pellet Pump
     behavior: {fileID: 11400000, guid: e994552d4c33e474fbaf1138181dc5b5, type: 2}
-    delivery: {fileID: 11400000, guid: b38b61e8f021d194e886619c1acbd934, type: 2}
+    delivery: {fileID: 11400000, guid: cc05ba97f640a37468ef92b9d00ed2e9, type: 2}
     deliveryOverrides: []
   crosshairPrefab: {fileID: 6358792504129393579, guid: f65e2aca27d6353489d3b57cde01da47, type: 3}

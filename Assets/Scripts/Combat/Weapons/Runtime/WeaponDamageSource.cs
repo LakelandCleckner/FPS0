@@ -77,6 +77,8 @@ namespace Combat.Sources
 
         public float ResolvedAdsTime => container != null && statKeys != null && statKeys.adsTime != null ? container.Resolve(statKeys.adsTime) : 0.25f;
         public float ResolvedAdsZoom => container != null && statKeys != null && statKeys.adsZoom != null ? container.Resolve(statKeys.adsZoom) : 1.2f;
+        public float ResolvedPelletSpread => container != null && statKeys != null && statKeys.pelletSpread != null ? container.Resolve(statKeys.pelletSpread) : 1f;
+
         public WeaponSO Weapon => weapon;
         public AudioClip FireClip => weapon != null ? weapon.fireClip : null;
         public AudioClip EmptyClip => weapon != null ? weapon.emptyClip : null;

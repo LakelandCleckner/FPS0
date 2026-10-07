@@ -24,3 +24,4 @@ MonoBehaviour:
   stowTime: {fileID: 11400000, guid: 5889f82832948474b99d61d146958608, type: 2}
   adsTime: {fileID: 11400000, guid: 8bfa09f2bfdd9604dbce2ec910ad6465, type: 2}
   adsZoom: {fileID: 11400000, guid: 0f6ea00aeb275924c92aab3a8ecbfb93, type: 2}
+  pelletSpread: {fileID: 11400000, guid: 3c80678360177584ba55d0a5e246744b, type: 2}

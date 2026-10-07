@@ -23,6 +23,12 @@ namespace Combat.Effects
             float final = raw * ctx.HitboxMultiplier;   // precision
             final *= ctx.CritMultiplier;                 // crit (rolled at resolver)
 
+            // Pellet split: DIRECT hits only. A pellet carries 1/N of the shot; an
+            // explosion or chain spawned off that pellet is its own hit at full value,
+            // not a fraction of a fraction.
+            if (ctx.Source == HitSource.Direct)
+                final *= ctx.Shot.DamageScale;
+
             if (spec.AffectedByChainFalloff)
                 final *= ctx.ChainMultiplier;
 

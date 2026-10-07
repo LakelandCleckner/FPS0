@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 6462041372fef864ca3ad9d4a4bb6e2d
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - pelletDelivery: {fileID: 11400000, guid: cc05ba97f640a37468ef92b9d00ed2e9, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

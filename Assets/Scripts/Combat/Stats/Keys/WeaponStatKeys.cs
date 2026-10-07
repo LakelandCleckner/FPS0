@@ -28,6 +28,8 @@ namespace Combat.Weapons
         [Header("Aim")]
         public StatDefinitionSO adsTime;     // "ads_time"  seconds hip -> fully aimed
         public StatDefinitionSO adsZoom;     // "ads_zoom"  magnification (1.25 = 1.25x)
+        [Header("Spread")]
+        public StatDefinitionSO pelletSpread; // "pellet_spread"  pellet pattern size multiplier (1 = authored)
 
 
         // NOTE (global_damage representation): the legacy StatBlock stores this as a
