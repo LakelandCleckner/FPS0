@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1beabed67d81c843a00ec904d9d8961, type: 3}
+  m_Name: SprayingSMG
+  m_EditorClassIdentifier: 
+  weaponType: {fileID: 11400000, guid: da0d96b685ab47c42b674412116a8621, type: 2}
+  id: spraying_smg
+  displayName: Spraying Submachinegun
+  baseAdsTime: 0.3
+  adsZoom: 1.15
+  adsCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  adsExitFraction: 1
+  adsMoveSpeedMultiplier: 0.8
+  weaponDamage: 12
+  roundsPerMinute: 600
+  reloadStyle: 0
+  shellStartFraction: 0.15
+  shellEndFraction: 0.2
+  interruptReadyFraction: 0.3
+  magazineSize: 35
+  reloadTime: 1.3
+  infiniteReserves: 0
+  handling: 26
+  baseEquipTime: 0.5
+  baseStowTime: 0.4
+  primaryFire:
+    displayName: Auto
+    behavior: {fileID: 11400000, guid: 18ecd96ed19c8e04386c78f5434b2d0d, type: 2}
+    delivery: {fileID: 11400000, guid: b38b61e8f021d194e886619c1acbd934, type: 2}
+    deliveryOverrides: []
+  crosshairPrefab: {fileID: 6358792504129393579, guid: f65e2aca27d6353489d3b57cde01da47, type: 3}

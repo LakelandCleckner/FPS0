@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1beabed67d81c843a00ec904d9d8961, type: 3}
-  m_Name: Plinking Sidearm
+  m_Name: DuelingBurstRifle
   m_EditorClassIdentifier: 
-  weaponType: {fileID: 11400000, guid: 478ca46d3d8c5f84b8e85cfe255d8678, type: 2}
-  id: sidearm_plink
-  displayName: Plinking Sidearm
-  baseAdsTime: 0.2
+  weaponType: {fileID: 0}
+  id: 
+  displayName: 
+  baseAdsTime: 0.3
   adsZoom: 1.15
   adsCurve:
     serializedVersion: 2
@@ -41,23 +41,23 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  adsExitFraction: 0.5
+  adsExitFraction: 1
   adsMoveSpeedMultiplier: 0.8
-  weaponDamage: 5
-  roundsPerMinute: 300
+  weaponDamage: 20
+  roundsPerMinute: 390
   reloadStyle: 0
   shellStartFraction: 0.15
   shellEndFraction: 0.2
   interruptReadyFraction: 0.3
-  magazineSize: 20
-  reloadTime: 1.5
+  magazineSize: 30
+  reloadTime: 2.3
   infiniteReserves: 0
-  handling: 0
-  baseEquipTime: 0.5
-  baseStowTime: 0.4
+  handling: 45
+  baseEquipTime: 0.6
+  baseStowTime: 0.5
   primaryFire:
-    displayName: Full Auto Projectile
-    behavior: {fileID: 11400000, guid: 18ecd96ed19c8e04386c78f5434b2d0d, type: 2}
+    displayName: Burst
+    behavior: {fileID: 11400000, guid: 37003e9df8d84844b9f369e9b64d5c0b, type: 2}
     delivery: {fileID: 11400000, guid: b38b61e8f021d194e886619c1acbd934, type: 2}
     deliveryOverrides: []
   crosshairPrefab: {fileID: 6358792504129393579, guid: f65e2aca27d6353489d3b57cde01da47, type: 3}
