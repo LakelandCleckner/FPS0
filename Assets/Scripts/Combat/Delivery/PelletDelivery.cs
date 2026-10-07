@@ -13,20 +13,17 @@ namespace Combat.Delivery
     // tighten it through the ordinary stat pipeline.
     //
     // All pellets share the shot's ShotId and each carries 1/N of the base damage.
-    // Hitscan pellets resolve synchronously inside a resolver shot group, so the whole
-    // blast produces one hitmarker, one hit sound and one damage number per target.
+    // The resolver merges presentation by ShotId, so a blast reads as one hitmarker,
+    // one hit sound and one damage number per target — hitscan or projectile pellets.
     public class PelletDelivery : IDelivery
     {
         private readonly IDelivery inner;
-        private readonly WeaponHitResolver resolver;
         private readonly Vector2[] pattern;
         private readonly float spreadAngle;
 
-        public PelletDelivery(IDelivery inner, WeaponHitResolver resolver,
-                              Vector2[] pattern, float spreadAngle)
+        public PelletDelivery(IDelivery inner, Vector2[] pattern, float spreadAngle)
         {
             this.inner = inner;
-            this.resolver = resolver;
             this.pattern = pattern;
             this.spreadAngle = spreadAngle;
         }
@@ -46,19 +43,11 @@ namespace Combat.Delivery
             Vector3 up = Vector3.Cross(direction, right);
 
             int n = pattern.Length;
-            resolver?.BeginShotGroup();
-            try
+            for (int i = 0; i < n; i++)
             {
-                for (int i = 0; i < n; i++)
-                {
-                    Vector2 p = pattern[i];
-                    Vector3 d = (direction + (right * p.x + up * p.y) * tanRadius).normalized;
-                    inner.Fire(origin, d, source, shot.ForPellet(i, n));
-                }
-            }
-            finally
-            {
-                resolver?.EndShotGroup();
+                Vector2 p = pattern[i];
+                Vector3 d = (direction + (right * p.x + up * p.y) * tanRadius).normalized;
+                inner.Fire(origin, d, source, shot.ForPellet(i, n));
             }
         }
     }

@@ -48,20 +48,21 @@ namespace Combat.Core
         private readonly List<List<IHitEffect>> bufferPool = new List<List<IHitEffect>>(4);
         private int resolveDepth;
 
-        // ------------------------------------------------------------ shot groups
+        // ------------------------------------------------------------ pellet merge
         //
-        // A multi-pellet shot resolves N direct hits back to back. Without grouping
-        // that's N hitmarkers, N hit sounds and N damage numbers per target in one
-        // frame. Inside a group, DIRECT-hit feedback is collected instead and emitted
-        // once at EndShotGroup: one hitmarker (kill wins), one sound (headshot wins),
-        // one summed number per target. Gameplay — damage, events, kills — is
-        // untouched; only presentation is merged. Ticks and splash stay immediate.
-        private int shotGroupDepth;
-        private bool groupAnyHit;
-        private bool groupAnyKill;
-        private bool groupAnyHeadshot;
-        private Color groupColor;
-        private AudioClip groupClip;
+        // One multi-pellet shot produces N direct hits — at once for hitscan, spread
+        // over a few frames for projectiles. Presentation is merged PER SHOT
+        // (DamageSource + ShotId), not per call, so both cases behave the same:
+        //   - hitmarker + hit sound fire on the FIRST pellet that lands; later pellets
+        //     stay quiet, except a kill, which upgrades the marker and plays the kill
+        //     sound when it happens;
+        //   - damage numbers are summed per target and shown once, pelletMergeWindow
+        //     after the shot's first hit.
+        // Gameplay (damage, events, kills, riders) is untouched — only presentation.
+        [Header("Pellet Feedback")]
+        [Tooltip("Seconds after a pellet shot's first hit before its merged damage " +
+                 "numbers appear. Long enough to catch every projectile pellet.")]
+        [SerializeField] private float pelletMergeWindow = 0.1f;
 
         private struct GroupNumber
         {
@@ -71,75 +72,81 @@ namespace Combat.Core
             public bool Highlight;
             public bool Debuffed;
         }
-        private readonly Dictionary<ICombatant, GroupNumber> groupNumbers
-            = new Dictionary<ICombatant, GroupNumber>();
-        private readonly List<ICombatant> groupOrder = new List<ICombatant>(8);
 
-        public void BeginShotGroup()
+        private sealed class PendingShot
         {
-            if (shotGroupDepth++ > 0) return;
-            groupAnyHit = groupAnyKill = groupAnyHeadshot = false;
-            groupColor = Color.white;
-            groupClip = null;
-            groupNumbers.Clear();
-            groupOrder.Clear();
+            public float FirstHitTime;
+            public bool Killed;
+            public readonly Dictionary<ICombatant, GroupNumber> Numbers = new Dictionary<ICombatant, GroupNumber>();
+            public readonly List<ICombatant> Order = new List<ICombatant>(4);
+            public void Clear() { Killed = false; Numbers.Clear(); Order.Clear(); }
         }
 
-        public void EndShotGroup()
+        private readonly Dictionary<(IDamageSource, int), PendingShot> pendingShots
+            = new Dictionary<(IDamageSource, int), PendingShot>();
+        private readonly Stack<PendingShot> pendingPool = new Stack<PendingShot>();
+        private readonly List<(IDamageSource, int)> flushKeys = new List<(IDamageSource, int)>(4);
+
+        private void HandlePelletFeedback(HitContext ctx)
         {
-            if (shotGroupDepth == 0 || --shotGroupDepth > 0) return;
-            if (!groupAnyHit) return;
+            var key = (ctx.DamageSource, ctx.Shot.ShotId);
 
-            if (hitmarkerUI != null)
-                hitmarkerUI.ShowHitmarker(groupAnyKill ? Color.green : groupColor, groupAnyKill);
-
-            if (playerAudio != null)
+            if (!pendingShots.TryGetValue(key, out var shot))
             {
-                if (groupClip != null)
-                    playerAudio.Play2D(groupClip, groupAnyHeadshot ? 1f : 0.5f, groupAnyHeadshot ? 1.25f : 1f);
-                if (groupAnyKill && killClip != null)
-                    playerAudio.Play2D(killClip);
-            }
+                shot = pendingPool.Count > 0 ? pendingPool.Pop() : new PendingShot();
+                shot.FirstHitTime = Time.time;
+                pendingShots[key] = shot;
 
-            if (DamageNumberPool.Instance != null)
+                PlayHitPresentation(ctx);              // first pellet: marker + sound now
+                shot.Killed = ctx.WasKill;
+            }
+            else if (ctx.WasKill && !shot.Killed)
             {
-                for (int i = 0; i < groupOrder.Count; i++)
-                {
-                    var n = groupNumbers[groupOrder[i]];
-                    DamageNumberPool.Instance.Spawn(n.Position, n.Damage, n.Type, n.Highlight, n.Debuffed);
-                }
+                shot.Killed = true;                    // later pellet killed: upgrade
+                if (hitmarkerUI != null) hitmarkerUI.ShowHitmarker(Color.green, true);
+                if (playerAudio != null && killClip != null) playerAudio.Play2D(killClip);
             }
-
-            groupNumbers.Clear();
-            groupOrder.Clear();
-        }
-
-        private void CollectGroupFeedback(HitContext ctx)
-        {
-            if (!groupAnyHit)
-            {
-                groupAnyHit = true;
-                groupColor = ctx.DamageType != null ? ctx.DamageType.normalGradient.topLeft : Color.white;
-                groupClip = (ctx.DamageType != null && ctx.DamageType.hitSound != null)
-                    ? ctx.DamageType.hitSound : hitmarkerClip;
-            }
-            groupAnyKill |= ctx.WasKill;
-            groupAnyHeadshot |= ctx.WasHeadshot;
 
             if (!ctx.ShowFloatingNumber || ctx.DamageDealt <= 0f) return;
 
-            if (!groupNumbers.TryGetValue(ctx.Target, out var n))
+            if (!shot.Numbers.TryGetValue(ctx.Target, out var n))
             {
                 n.Position = (ctx.Target as MonoBehaviour) != null
                     ? ((MonoBehaviour)ctx.Target).transform.position + Vector3.up * 2f
                     : ctx.HitPoint;
                 n.Type = ctx.DamageType;
-                groupOrder.Add(ctx.Target);
+                shot.Order.Add(ctx.Target);
             }
             n.Damage += ctx.DamageDealt;
             n.Highlight |= ctx.WasCrit || ctx.WasHeadshot;
             n.Debuffed |= ctx.WasDebuffed;
-            groupNumbers[ctx.Target] = n;
+            shot.Numbers[ctx.Target] = n;
+        }
+
+        private void LateUpdate()
+        {
+            if (pendingShots.Count == 0) return;
+
+            flushKeys.Clear();
+            foreach (var kv in pendingShots)
+                if (Time.time - kv.Value.FirstHitTime >= pelletMergeWindow)
+                    flushKeys.Add(kv.Key);
+
+            for (int i = 0; i < flushKeys.Count; i++)
+            {
+                var shot = pendingShots[flushKeys[i]];
+                pendingShots.Remove(flushKeys[i]);
+
+                if (DamageNumberPool.Instance != null)
+                    for (int t = 0; t < shot.Order.Count; t++)
+                    {
+                        var n = shot.Numbers[shot.Order[t]];
+                        DamageNumberPool.Instance.Spawn(n.Position, n.Damage, n.Type, n.Highlight, n.Debuffed);
+                    }
+
+                shot.Clear();
+                pendingPool.Push(shot);
+            }
         }
 
         private void Awake()
@@ -419,14 +426,9 @@ namespace Combat.Core
 
         // ----------------------------------------------------------------- feedback
 
-        private void ShowFeedback(HitContext ctx)
+        // Hitmarker, hit sound and kill sound for one hit.
+        private void PlayHitPresentation(HitContext ctx)
         {
-            if (shotGroupDepth > 0 && ctx.Source == HitSource.Direct)
-            {
-                CollectGroupFeedback(ctx);
-                return;
-            }
-
             bool isTick = ctx.Source == HitSource.StatusTick;
 
             bool showMarker = !isTick || showTickHitmarkers;
@@ -458,6 +460,17 @@ namespace Combat.Core
 
             if (ctx.WasKill && playerAudio != null && killClip != null)
                 playerAudio.Play2D(killClip);
+        }
+
+        private void ShowFeedback(HitContext ctx)
+        {
+            if (ctx.Source == HitSource.Direct && ctx.Shot.IsPellet)
+            {
+                HandlePelletFeedback(ctx);
+                return;
+            }
+
+            PlayHitPresentation(ctx);
 
             // floating damage number.
             // isCrit styling: a REAL crit OR a headshot lights it up (per current

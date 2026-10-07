@@ -171,6 +171,10 @@ PrefabInstance:
       propertyPath: combatant
       value: 
       objectReference: {fileID: 108623951137932325}
+    - target: {fileID: 6071516034448652591, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6785571487446830750, guid: 8af66ca19791f9f4892dfb2a9a52088f, type: 3}
       propertyPath: combatant
       value: 

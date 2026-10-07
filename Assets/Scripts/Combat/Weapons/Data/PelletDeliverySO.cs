@@ -31,7 +31,7 @@ namespace Combat.Weapons
             var inner = pelletDelivery.CreateDelivery(ctx);
             if (inner == null) return null;
 
-            return new PelletDelivery(inner, ctx.Resolver, pattern.ToArray(), spreadAngle);
+            return new PelletDelivery(inner, pattern.ToArray(), spreadAngle);
         }
 
         private void Reset() => GenerateCenterRing8();
