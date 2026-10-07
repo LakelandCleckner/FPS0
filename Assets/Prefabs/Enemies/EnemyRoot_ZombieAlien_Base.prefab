@@ -14,7 +14,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3623431239706443026, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: baseStats.Array.data[0].baseValue
-      value: 500
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6612740343518719550, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       propertyPath: m_LocalPosition.x
