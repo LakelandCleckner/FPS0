@@ -16,7 +16,7 @@ MonoBehaviour:
   id: dueling_br
   displayName: Dueling Burst Rifle
   baseAdsTime: 0.3
-  adsZoom: 1.15
+  adsZoom: 3
   adsCurve:
     serializedVersion: 2
     m_Curve:
