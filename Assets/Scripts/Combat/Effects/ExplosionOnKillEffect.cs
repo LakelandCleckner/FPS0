@@ -86,7 +86,7 @@ namespace Combat.Effects
         public void Apply(HitContext ctx, IHitResolver resolver)
         {
             if (!ctx.WasKill) return;
-            Debug.Log($"[Transfer] explosion Apply, WasKill=true, transferable count={transferableStatuses?.Count ?? -1}");
+            StatusLog.Log($"[Transfer] explosion Apply, WasKill=true, transferable count={transferableStatuses?.Count ?? -1}");
 
             var whr = resolver as WeaponHitResolver;
             if (whr == null) return;
@@ -131,7 +131,7 @@ namespace Combat.Effects
             var alreadyHit = new HashSet<ICombatant> { ctx.Target };
 
             finder.FindInRadius(center, radius, ctx.SourceFaction, alreadyHit, found);
-            Debug.Log($"[Transfer] found {found.Count} targets, radius={radius}");
+            StatusLog.Log($"[Transfer] found {found.Count} targets, radius={radius}");
             if (found.Count == 0) return;
 
             // STATUS TRANSFER: carry the victim's authored-transferable stacks onto everyone

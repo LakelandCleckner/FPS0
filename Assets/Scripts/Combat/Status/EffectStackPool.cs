@@ -24,6 +24,10 @@ namespace Combat.Status
     //    defined in Player Settings > Scripting Define Symbols.
     public class EffectStackPool
     {
+        // Safety cap when a status leaves maxEntries at 0
+        public const int HardEntryCap = 256;
+        private static readonly HashSet<StatusSO> warnedUncapped = new HashSet<StatusSO>();
+
         public ICombatant Target { get; private set; }
         public StatusSO Status { get; private set; }
         public IHitResolver Resolver { get; private set; }
@@ -55,10 +59,18 @@ namespace Combat.Status
         private readonly List<IHitEffect> tickEffects = new List<IHitEffect>(1);
         private StatusSummedTickEffect tickEffect;
 
+        // Main-thread scratch for trim/export
+        private static readonly List<int> scratchOrder = new List<int>(64);
+        private static float[] scratchKeys = new float[64];
+        private static bool[] scratchMarks = new bool[64];
+
         public bool Empty => entries.Count == 0;
         public bool Expired { get; private set; }
 
         public int EntryCount => entries.Count;
+
+        // Effective cap: authored maxEntries, else HardEntryCap
+        public int EntryCap => Status != null && Status.maxEntries > 0 ? Status.maxEntries : HardEntryCap;
 
         public float SummedWeight
         {
@@ -89,6 +101,10 @@ namespace Combat.Status
 
             activeModifier = null;
             modifierHandle = ModifierHandle.None;
+
+            if (status.maxEntries <= 0 && warnedUncapped.Add(status))
+                Debug.LogWarning($"[StackPool] Status '{status.name}' has maxEntries = 0 (unlimited). " +
+                                 $"Capping at {HardEntryCap} as a safety net - set a real maxEntries on it.", status);
 
             BuildReusableTickPayload();
         }
@@ -170,10 +186,10 @@ namespace Combat.Status
                     break;
             }
 
-            if (Status.maxEntries > 0 && entries.Count > Status.maxEntries)
+            if (entries.Count > EntryCap)
                 EvictOne();
 
-            StatusLog.Log($"[StackPool] +entry {Status.name} | weight {e.Weight:F1} | now {entries.Count}/{(Status.maxEntries > 0 ? Status.maxEntries.ToString() : "inf")}" + (wasEmpty ? " (first)" : ""));
+            StatusLog.Log($"[StackPool] +entry {Status.name} | weight {e.Weight:F1} | now {entries.Count}/{EntryCap}" + (wasEmpty ? " (first)" : ""));
 
             if (wasEmpty)
             {
@@ -212,6 +228,59 @@ namespace Combat.Status
 
             StatusLog.Log($"[StackPool] EVICT {Status.name} | strategy {Status.evictionStrategy} | removed weight {entries[idx].Weight:F1} (rem {entries[idx].RemainingDuration:F1})");
             entries.RemoveAt(idx);
+        }
+
+        // Lower key evicts first; mirrors EvictOne
+        private float EvictionKey(int i)
+        {
+            switch (Status.evictionStrategy)
+            {
+                case StatusEvictionStrategy.LowestWeight:
+                    return entries[i].Weight;
+                case StatusEvictionStrategy.ShortestRemaining:
+                    return Status.durationMode == StatusDurationMode.ExtendShared
+                        ? i                                   // shared timer: oldest first
+                        : entries[i].RemainingDuration;
+                default:
+                    return i;                                 // oldest first
+            }
+        }
+
+        // One-pass evict to cap; keeps order (Rate reads the last entry)
+        private void TrimToCap()
+        {
+            int excess = entries.Count - EntryCap;
+            if (excess <= 0) return;
+            if (excess == 1) { EvictOne(); return; }
+
+            int n = entries.Count;
+            EnsureScratch(n);
+            scratchOrder.Clear();
+            for (int i = 0; i < n; i++)
+            {
+                scratchOrder.Add(i);
+                scratchKeys[i] = EvictionKey(i);
+                scratchMarks[i] = false;
+            }
+            scratchOrder.Sort((a, b) => scratchKeys[a].CompareTo(scratchKeys[b]));
+            for (int k = 0; k < excess; k++) scratchMarks[scratchOrder[k]] = true;
+
+            int write = 0;
+            for (int read = 0; read < n; read++)
+                if (!scratchMarks[read]) entries[write++] = entries[read];
+            entries.RemoveRange(write, n - write);
+
+            StatusLog.Log($"[StackPool] TRIM {Status.name} | evicted {excess} | now {entries.Count}/{EntryCap}");
+        }
+
+        private static void EnsureScratch(int n)
+        {
+            if (scratchKeys.Length < n)
+            {
+                int size = Mathf.NextPowerOfTwo(n);
+                scratchKeys = new float[size];
+                scratchMarks = new bool[size];
+            }
         }
 
         public void Tick(float scaledDelta)
@@ -432,41 +501,70 @@ namespace Combat.Status
             }
         }
 
-        public void ExportEntries(List<TransferEntry> outList)
+        // Exports up to maxCount, strongest by weight, order kept
+        public void ExportEntries(List<TransferEntry> outList, int maxCount = int.MaxValue)
         {
-            for (int i = 0; i < entries.Count; i++)
-                outList.Add(new TransferEntry(entries[i]));
+            int n = entries.Count;
+            if (n <= maxCount)
+            {
+                for (int i = 0; i < n; i++)
+                    outList.Add(new TransferEntry(entries[i]));
+                return;
+            }
+
+            EnsureScratch(n);
+            scratchOrder.Clear();
+            for (int i = 0; i < n; i++)
+            {
+                scratchOrder.Add(i);
+                scratchKeys[i] = entries[i].Weight;
+                scratchMarks[i] = false;
+            }
+            scratchOrder.Sort((a, b) => scratchKeys[b].CompareTo(scratchKeys[a]));   // strongest first
+            for (int k = 0; k < maxCount; k++) scratchMarks[scratchOrder[k]] = true;
+
+            for (int i = 0; i < n; i++)
+                if (scratchMarks[i]) outList.Add(new TransferEntry(entries[i]));
         }
 
-
+        // Single import; prefer ImportEntries for batches
         public void ImportEntry(in TransferEntry t, bool resetTickCadence)
+        {
+            AppendImported(in t, resetTickCadence);
+            TrimToCap();
+            SyncStatModifier();
+        }
+
+        // Batch import: append all, trim once, sync once; no instant first tick
+        public void ImportEntries(
+            List<(StatusSO status, TransferEntry entry)> records, int start, int count,
+            bool resetTickCadence)
+        {
+            int end = Mathf.Min(records.Count, start + count);
+            for (int i = start; i < end; i++)
+            {
+                var t = records[i].entry;
+                AppendImported(in t, resetTickCadence);
+            }
+
+            TrimToCap();
+            SyncStatModifier();
+        }
+
+        private void AppendImported(in TransferEntry t, bool resetTickCadence)
         {
             var e = new StackEntry();
 
-            // Set with this pool's Target (the NEW enemy) so weight derives against it and
-            // the dead-source fallback tracks the right target. Source/Attacker stay the
-            // ORIGINAL (from the record) — attribution and source-scoped derivations keep
-            // the burn's identity. Duration placeholder is overwritten below.
+            // New target, original source/attacker
             e.Set(t.Source, t.Attacker, Target, t.TickSpec,
                   t.ChainMultiplier, t.DamageType, t.SourceFaction, t.ChainDepth,
                   t.RemainingDuration);
 
-            // Set() zeroes TickAccumulator; restore it unless we're resetting cadence.
+            // Set() zeroes the accumulator
             if (!resetTickCadence)
                 e.TickAccumulator = t.TickAccumulator;
 
             entries.Add(e);
-
-            if (Status.maxEntries > 0 && entries.Count > Status.maxEntries)
-                EvictOne();
-
-            SyncStatModifier();
-
-            // NOTE: no wasEmpty instant-tick here (unlike AddEntry). A transferred DOT
-            // waits its normal cadence. The pool is already registered with StatusManager
-            // (existing pool) or will be by ImportTransferred (new pool), so it ticks.
         }
-
-
     }
 }

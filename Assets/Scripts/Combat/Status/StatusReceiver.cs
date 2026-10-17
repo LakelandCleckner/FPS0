@@ -78,22 +78,19 @@ namespace Combat.Status
             pools.Clear();
         }
 
-        // Export every entry of each active pool whose Status is in `filter`, as transfer
-        // records. Read-only — doesn't touch this receiver's pools (the victim is about to
-        // despawn). Caller supplies the outList (reused per kill).
+        // Read-only export, capped per pool; records stay grouped by status
         public void ExportTransferable(
             System.Collections.Generic.List<StatusSO> filter,
             System.Collections.Generic.List<(StatusSO status, EffectStackPool.TransferEntry entry)> outList)
         {
             if (filter == null || filter.Count == 0) return;
-            Debug.Log($"[Transfer] ExportTransferable: victim has {pools.Count} pools, filter has {filter.Count}");
+            StatusLog.Log($"[Transfer] ExportTransferable: victim has {pools.Count} pools, filter has {filter.Count}");
             foreach (var kv in pools)
             {
-                Debug.Log($"[Transfer] victim has pool for {kv.Key.name}, in filter={filter.Contains(kv.Key)}");
                 if (!filter.Contains(kv.Key)) continue;
                 tmpEntries.Clear();
-                kv.Value.ExportEntries(tmpEntries);
-                Debug.Log($"[Transfer] exported {tmpEntries.Count} entries from {kv.Key.name}");
+                kv.Value.ExportEntries(tmpEntries, kv.Value.EntryCap);
+                StatusLog.Log($"[Transfer] exported {tmpEntries.Count}/{kv.Value.EntryCount} entries from {kv.Key.name}");
                 for (int i = 0; i < tmpEntries.Count; i++)
                     outList.Add((kv.Key, tmpEntries[i]));
             }
@@ -103,11 +100,7 @@ namespace Combat.Status
         private readonly System.Collections.Generic.List<EffectStackPool.TransferEntry> tmpEntries
             = new System.Collections.Generic.List<EffectStackPool.TransferEntry>();
 
-        // Import transfer records onto THIS receiver. Ensures a pool per status (creating +
-        // registering like Apply), then inserts each entry preserving remaining duration.
-        // Builds the tick delegate bound to THIS target with the record's DamageType, so
-        // transferred ticks damage the right enemy with the right type — same pattern and
-        // lifetime safety as ApplyStatusHitEffect.
+        // Imports each status run as one batch onto this target
         public void ImportTransferred(
             System.Collections.Generic.List<(StatusSO status, EffectStackPool.TransferEntry entry)> records,
             IHitResolver resolver)
@@ -115,9 +108,13 @@ namespace Combat.Status
             if (target == null || target.IsDying) return;
             if (records == null) return;
 
-            for (int i = 0; i < records.Count; i++)
+            int i = 0;
+            while (i < records.Count)
             {
                 var status = records[i].status;
+                int runEnd = i + 1;
+                while (runEnd < records.Count && records[runEnd].status == status) runEnd++;
+
                 var rec = records[i].entry;
                 var tickType = rec.DamageType;
 
@@ -137,7 +134,8 @@ namespace Combat.Status
                     StatusManager.Instance.Register(pool);
                 }
 
-                pool.ImportEntry(rec, status.transferResetsTickCadence);
+                pool.ImportEntries(records, i, runEnd - i, status.transferResetsTickCadence);
+                i = runEnd;
             }
         }
 
