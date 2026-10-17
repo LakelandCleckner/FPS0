@@ -26,3 +26,4 @@ MonoBehaviour:
   adsZoom: {fileID: 11400000, guid: 0f6ea00aeb275924c92aab3a8ecbfb93, type: 2}
   pelletSpread: {fileID: 11400000, guid: 3c80678360177584ba55d0a5e246744b, type: 2}
   range: {fileID: 11400000, guid: e37ddad112c495a4494c657a8ab019f0, type: 2}
+  aimAssist: {fileID: 11400000, guid: c7a4bb871b6f29f4bbf9c509365f5b26, type: 2}

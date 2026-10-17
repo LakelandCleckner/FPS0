@@ -91,34 +91,40 @@ namespace Combat.Sources
             }
         }
 
-        // Falloff start (m): range maps into the archetype band, scaled hip -> ADS
-        public float FalloffStart(float aimBlend)
+        // Aim assist stat, hard-capped 0-100
+        public float ResolvedAimAssist
+        {
+            get
+            {
+                float v = container != null && statKeys != null && statKeys.aimAssist != null
+                    ? container.Resolve(statKeys.aimAssist)
+                    : (weapon != null && weapon.archetype != null ? weapon.archetype.aimAssist + weapon.aimAssistDelta : 0f);
+                return Mathf.Clamp(v, 0f, 100f);
+            }
+        }
+
+        // Magnetism cone half-angle (deg), hip -> ADS
+        public float AssistAngle(float aimBlend)
         {
             var a = weapon != null ? weapon.archetype : null;
-            if (a == null) return float.MaxValue;
-
-            float ads = Mathf.Lerp(a.falloffStartAtMinRange, a.falloffStartAtMaxRange, ResolvedRange / 100f);
-            return ads * Mathf.Lerp(a.hipFalloffMultiplier, 1f, aimBlend);
+            if (a == null) return 0f;
+            float ads = Mathf.Lerp(a.assistAngleAtMin, a.assistAngleAtMax, ResolvedAimAssist / 100f);
+            return ads * Mathf.Lerp(a.assistHipMultiplier, 1f, Mathf.Clamp01(aimBlend));
         }
+
+        // Magnetism reach, tied to falloff end
+        public float AssistMaxDistance(float aimBlend)
+        {
+            var a = weapon != null ? weapon.archetype : null;
+            if (a == null) return 0f;
+            return WeaponFalloff.End(a, ResolvedRange, aimBlend) * a.assistDistanceMultiplier;
+        }
+
+        public float FalloffStart(float aimBlend)
+            => WeaponFalloff.Start(weapon != null ? weapon.archetype : null, ResolvedRange, aimBlend);
 
         public float FalloffMultiplier(float distance, float aimBlend)
-        {
-            var a = weapon != null ? weapon.archetype : null;
-            if (a == null) return 1f;
-
-            float start = FalloffStart(aimBlend);
-            if (distance <= start) return 1f;
-
-            float end = start * Mathf.Max(1f, a.falloffEndMultiplier);
-            if (distance >= end || end <= start) return a.minDamagePercent;
-
-            float t = (distance - start) / (end - start);
-            float shape = a.falloffCurve != null && a.falloffCurve.length > 0
-                ? Mathf.Clamp01(a.falloffCurve.Evaluate(t))
-                : 1f - t;
-
-            return Mathf.Lerp(a.minDamagePercent, 1f, shape);
-        }
+            => WeaponFalloff.Multiplier(weapon != null ? weapon.archetype : null, ResolvedRange, distance, aimBlend);
 
         public WeaponSO Weapon => weapon;
         public AudioClip FireClip => weapon != null ? weapon.fireClip : null;

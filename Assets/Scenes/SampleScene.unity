@@ -228,17 +228,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &159547106 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8039843502208385141, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
-  m_PrefabInstance: {fileID: 842777205}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0584d62c09554b048957cade7a58fda3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &178924664
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -829,17 +818,6 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
---- !u!114 &469177441 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3838225208056287688, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
-  m_PrefabInstance: {fileID: 842777205}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0584d62c09554b048957cade7a58fda3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &536751131
 GameObject:
   m_ObjectHideFlags: 0
@@ -1625,14 +1603,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3516509819376779916, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
-      propertyPath: slots.Array.data[3].controller
-      value: 
-      objectReference: {fileID: 469177441}
-    - target: {fileID: 3516509819376779916, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
-      propertyPath: slots.Array.data[4].controller
-      value: 
-      objectReference: {fileID: 159547106}
     - target: {fileID: 3648353931482492443, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
       propertyPath: hitmarkerUI
       value: 
@@ -2065,6 +2035,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0f6ea00aeb275924c92aab3a8ecbfb93, type: 2}
   - {fileID: 11400000, guid: 3c80678360177584ba55d0a5e246744b, type: 2}
   - {fileID: 11400000, guid: e37ddad112c495a4494c657a8ab019f0, type: 2}
+  - {fileID: 11400000, guid: c7a4bb871b6f29f4bbf9c509365f5b26, type: 2}
 --- !u!4 &1041933018
 Transform:
   m_ObjectHideFlags: 0

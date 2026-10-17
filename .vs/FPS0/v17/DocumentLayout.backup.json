@@ -3,8 +3,12 @@
   "WorkspaceRootPath": "F:\\Game Dev\\FPS0\\FPS0\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\stats\\weapon\\irangefalloffsource.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\stats\\weapon\\irangefalloffsource.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\stats\\weapon\\range\\irangefalloffsource.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\stats\\weapon\\range\\irangefalloffsource.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9FD9ECDD-2094-710C-0065-D19C266CB085}|CrashKonijn.Goap.Runtime.csproj|F:\\Game Dev\\FPS0\\FPS0\\packages\\com.crashkonijn.goap\\runtime\\crashkonijn.goap.runtime\\classes\\builders\\agenttypebuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9FD9ECDD-2094-710C-0065-D19C266CB085}|CrashKonijn.Goap.Runtime.csproj|solutionrelative:packages\\com.crashkonijn.goap\\runtime\\crashkonijn.goap.runtime\\classes\\builders\\agenttypebuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\stats\\keys\\weaponstatkeys.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -31,7 +35,7 @@
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\delivery\\damagehiteffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\core\\ihiteffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\core\\ihiteffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\core\\ihiteffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -155,10 +159,6 @@
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\status\\statussofiles\\slowstatusso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\BurnStatusSO.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\Combat\\Status\\BurnStatusSO.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\status\\statusso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\status\\statusso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -251,10 +251,6 @@
       "RelativeMoniker": "D:0:0:{9FD9ECDD-2094-710C-0065-D19C266CB085}|CrashKonijn.Goap.Runtime.csproj|solutionrelative:packages\\com.crashkonijn.goap\\runtime\\crashkonijn.goap.runtime\\behaviours\\agenttypefactorybase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9FD9ECDD-2094-710C-0065-D19C266CB085}|CrashKonijn.Goap.Runtime.csproj|F:\\Game Dev\\FPS0\\FPS0\\packages\\com.crashkonijn.goap\\runtime\\crashkonijn.goap.runtime\\classes\\builders\\agenttypebuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9FD9ECDD-2094-710C-0065-D19C266CB085}|CrashKonijn.Goap.Runtime.csproj|solutionrelative:packages\\com.crashkonijn.goap\\runtime\\crashkonijn.goap.runtime\\classes\\builders\\agenttypebuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\spawning\\testing\\spawntestprobe.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\spawning\\testing\\spawntestprobe.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -298,11 +294,97 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 0,
+              "Title": "IRangeFalloffSource.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Stats\\Weapon\\Range\\IRangeFalloffSource.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Stats\\Weapon\\Range\\IRangeFalloffSource.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Stats\\Weapon\\Range\\IRangeFalloffSource.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\Stats\\Weapon\\Range\\IRangeFalloffSource.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-17T19:12:28.351Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AgentTypeBuilder.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Classes\\Builders\\AgentTypeBuilder.cs",
+              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Classes\\Builders\\AgentTypeBuilder.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Classes\\Builders\\AgentTypeBuilder.cs",
+              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Classes\\Builders\\AgentTypeBuilder.cs",
+              "ViewState": "AgIAAGMAAAAAAAAAAAAEwHsAAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-14T20:57:01.498Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 65,
+              "Title": "GoapActionProviderEditor.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Editor\\CrashKonijn.Goap.Editor\\TypeDrawers\\GoapActionProviderEditor.cs",
+              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Editor\\CrashKonijn.Goap.Editor\\TypeDrawers\\GoapActionProviderEditor.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Editor\\CrashKonijn.Goap.Editor\\TypeDrawers\\GoapActionProviderEditor.cs",
+              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Editor\\CrashKonijn.Goap.Editor\\TypeDrawers\\GoapActionProviderEditor.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-14T20:31:40.663Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 66,
+              "Title": "IMonoGoapActionProvider.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IMonoGoapActionProvider.cs",
+              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IMonoGoapActionProvider.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IMonoGoapActionProvider.cs",
+              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IMonoGoapActionProvider.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-14T20:31:37.487Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 60,
+              "Title": "IAgentTypeFactory.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IAgentTypeFactory.cs",
+              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IAgentTypeFactory.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IAgentTypeFactory.cs",
+              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IAgentTypeFactory.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-14T21:03:46.759Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 67,
+              "Title": "AgentTypeBehaviour.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeBehaviour.cs",
+              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeBehaviour.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeBehaviour.cs",
+              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeBehaviour.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-14T20:27:48.965Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 64,
+              "Title": "GoapActionProvider.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\GoapActionProvider.cs",
+              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\GoapActionProvider.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\GoapActionProvider.cs",
+              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\GoapActionProvider.cs",
+              "ViewState": "AgIAAFsAAAAAAAAAAAA5wDgAAAA8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-14T20:17:53.826Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "IHitEffect.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Core\\IHitEffect.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Core\\IHitEffect.cs",
@@ -310,25 +392,35 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Core\\IHitEffect.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-17T18:56:46.579Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-17T18:56:46.579Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "IRangeFalloffSource.cs",
-              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Stats\\Weapon\\IRangeFalloffSource.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Stats\\Weapon\\IRangeFalloffSource.cs",
-              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Stats\\Weapon\\IRangeFalloffSource.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Combat\\Stats\\Weapon\\IRangeFalloffSource.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 61,
+              "Title": "AgentTypeFactoryBase.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeFactoryBase.cs",
+              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeFactoryBase.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeFactoryBase.cs",
+              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeFactoryBase.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-17T18:55:23.31Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-08-14T20:57:17.041Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 59,
+              "Title": "AgentTypeScriptable.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Scriptables\\AgentTypeScriptable.cs",
+              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Scriptables\\AgentTypeScriptable.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Scriptables\\AgentTypeScriptable.cs",
+              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Scriptables\\AgentTypeScriptable.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAuwA8AAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-14T21:03:42.473Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "WeaponFireController.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponFireController.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponFireController.cs",
@@ -336,12 +428,11 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponFireController.cs",
               "ViewState": "AgIAAMIAAAAAAAAAAAAAwPMAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-28T04:25:07.148Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-28T04:25:07.148Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "WeaponArchetypeSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Data\\WeaponArchetypeSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Data\\WeaponArchetypeSO.cs",
@@ -349,12 +440,11 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Weapons\\Data\\WeaponArchetypeSO.cs",
               "ViewState": "AgIAAC0AAAAAAAAAAAAAwEgAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-29T23:16:56.258Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-29T23:16:56.258Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "WeaponDamageSource.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponDamageSource.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponDamageSource.cs",
@@ -362,12 +452,11 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponDamageSource.cs",
               "ViewState": "AgIAAEcAAAAAAAAAAAA6wGYAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-10T20:16:56.795Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-08-10T20:16:56.795Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "HitscanDelivery.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Delivery\\HitscanDelivery.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Delivery\\HitscanDelivery.cs",
@@ -379,7 +468,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "DamageHitEffect.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Delivery\\DamageHitEffect.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Delivery\\DamageHitEffect.cs",
@@ -387,12 +476,11 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Delivery\\DamageHitEffect.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAwBMAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-07T21:49:11.351Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-07T21:49:11.351Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "WeaponSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Data\\WeaponSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Data\\WeaponSO.cs",
@@ -400,12 +488,11 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Weapons\\Data\\WeaponSO.cs",
               "ViewState": "AgIAABsAAAAAAAAAAAAAwDkAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-29T23:19:19.996Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-29T23:19:19.996Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "WeaponStatBuilder.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Stats\\Weapon\\WeaponStatBuilder.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Stats\\Weapon\\WeaponStatBuilder.cs",
@@ -413,12 +500,11 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Stats\\Weapon\\WeaponStatBuilder.cs",
               "ViewState": "AgIAAD8AAAAAAAAAAAAAwFsAAABVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-30T21:47:25.398Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-30T21:47:25.398Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "WeaponStatKeys.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Stats\\Keys\\WeaponStatKeys.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Stats\\Keys\\WeaponStatKeys.cs",
@@ -426,12 +512,11 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Stats\\Keys\\WeaponStatKeys.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAABYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-30T21:32:31.929Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-30T21:32:31.929Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 15,
               "Title": "ExplosionOnKillEffect.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillEffect.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillEffect.cs",
@@ -443,7 +528,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "StatusReceiver.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\StatusReceiver.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Status\\StatusReceiver.cs",
@@ -455,7 +540,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 14,
               "Title": "EffectStackPool.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\EffectStackPool.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Status\\EffectStackPool.cs",
@@ -467,7 +552,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 22,
               "Title": "ProjectileDelivery.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Delivery\\ProjectileDelivery.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Delivery\\ProjectileDelivery.cs",
@@ -479,7 +564,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "ShotInfo.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Core\\ShotInfo.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Core\\ShotInfo.cs",
@@ -487,12 +572,11 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Core\\ShotInfo.cs",
               "ViewState": "AgIAAC4AAAAAAAAAAAAAwEIAAABNAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-07T21:47:34.582Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-07T21:47:34.582Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 16,
               "Title": "WeaponAnimator.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponAnimator.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponAnimator.cs",
@@ -504,7 +588,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "Projectile.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Delivery\\Projectile.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Delivery\\Projectile.cs",
@@ -516,7 +600,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 26,
               "Title": "HitmarkerUI.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Weapons\\HitmarkerUI.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Weapons\\HitmarkerUI.cs",
@@ -528,7 +612,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 18,
               "Title": "PelletDeliverySO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Data\\PelletDeliverySO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Data\\PelletDeliverySO.cs",
@@ -540,7 +624,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 19,
               "Title": "PelletDelivery.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Delivery\\PelletDelivery.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Delivery\\PelletDelivery.cs",
@@ -552,7 +636,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 17,
               "Title": "PelletDeliverySOEditor.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Data\\PelletDeliverySOEditor.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Data\\PelletDeliverySOEditor.cs",
@@ -564,7 +648,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 20,
               "Title": "WeaponHitResolver.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Core\\WeaponHitResolver.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Core\\WeaponHitResolver.cs",
@@ -576,7 +660,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 25,
               "Title": "DeliverySO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Data\\DeliverySO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Data\\DeliverySO.cs",
@@ -588,7 +672,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 24,
               "Title": "IDelivery.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Delivery\\IDelivery.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Delivery\\IDelivery.cs",
@@ -600,7 +684,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 23,
               "Title": "ProjectileDeliverySO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Data\\ProjectileDeliverySO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Data\\ProjectileDeliverySO.cs",
@@ -612,7 +696,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 31,
               "Title": "PlayerMovement.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\PlayerScripts\\PlayerMovement.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\PlayerScripts\\PlayerMovement.cs",
@@ -624,7 +708,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 21,
               "Title": "HitContext.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Core\\HitContext.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Core\\HitContext.cs",
@@ -636,7 +720,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 33,
               "Title": "playerInputs.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\PlayerScripts\\playerInputs.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\PlayerScripts\\playerInputs.cs",
@@ -648,7 +732,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 29,
               "Title": "ViewmodelRig.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Weapons\\ViewmodelRig.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Weapons\\ViewmodelRig.cs",
@@ -660,7 +744,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 28,
               "Title": "GunModel.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Weapons\\GunModel.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Weapons\\GunModel.cs",
@@ -672,7 +756,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 27,
               "Title": "WeaponLoadout.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponLoadout.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponLoadout.cs",
@@ -684,7 +768,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 32,
               "Title": "MouseLook.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\PlayerScripts\\MouseLook.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\PlayerScripts\\MouseLook.cs",
@@ -696,7 +780,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 30,
               "Title": "PlayerAim.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\PlayerScripts\\PlayerAim.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\PlayerScripts\\PlayerAim.cs",
@@ -708,7 +792,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 34,
               "Title": "WeaponAmmo.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponAmmo.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponAmmo.cs",
@@ -720,7 +804,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
+              "DocumentIndex": 35,
               "Title": "HitLog.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Debugging\\Combat\\HitLog.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Debugging\\Combat\\HitLog.cs",
@@ -732,7 +816,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 35,
+              "DocumentIndex": 36,
               "Title": "EnemyHitbox.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Enemies\\DamageAndHealth\\EnemyHitbox.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Enemies\\DamageAndHealth\\EnemyHitbox.cs",
@@ -816,7 +900,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 36,
+              "DocumentIndex": 37,
               "Title": "EnemySpawner.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Spawning\\EnemySpawner.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Spawning\\EnemySpawner.cs",
@@ -829,18 +913,6 @@
             {
               "$type": "Document",
               "DocumentIndex": 38,
-              "Title": "BurnStatusSO.cs",
-              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\BurnStatusSO.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Status\\BurnStatusSO.cs",
-              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\BurnStatusSO.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Combat\\Status\\BurnStatusSO.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-15T19:07:39.315Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 37,
               "Title": "SlowStatusSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\StatusSOFiles\\SlowStatusSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Status\\StatusSOFiles\\SlowStatusSO.cs",
@@ -996,19 +1068,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 59,
-              "Title": "AgentTypeScriptable.cs",
-              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Scriptables\\AgentTypeScriptable.cs",
-              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Scriptables\\AgentTypeScriptable.cs",
-              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Scriptables\\AgentTypeScriptable.cs",
-              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Scriptables\\AgentTypeScriptable.cs",
-              "ViewState": "AgIAAA8AAAAAAAAAAAAuwA8AAAAmAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-14T21:03:42.473Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 63,
+              "DocumentIndex": 62,
               "Title": "SpawnTestProbe.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Spawning\\Testing\\SpawnTestProbe.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Spawning\\Testing\\SpawnTestProbe.cs",
@@ -1032,54 +1092,6 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 61,
-              "Title": "AgentTypeFactoryBase.cs",
-              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeFactoryBase.cs",
-              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeFactoryBase.cs",
-              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeFactoryBase.cs",
-              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeFactoryBase.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAvAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-14T20:57:17.041Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 62,
-              "Title": "AgentTypeBuilder.cs",
-              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Classes\\Builders\\AgentTypeBuilder.cs",
-              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Classes\\Builders\\AgentTypeBuilder.cs",
-              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Classes\\Builders\\AgentTypeBuilder.cs",
-              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Classes\\Builders\\AgentTypeBuilder.cs",
-              "ViewState": "AgIAAGMAAAAAAAAAAAAEwHsAAAA5AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-14T20:57:01.498Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 66,
-              "Title": "GoapActionProviderEditor.cs",
-              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Editor\\CrashKonijn.Goap.Editor\\TypeDrawers\\GoapActionProviderEditor.cs",
-              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Editor\\CrashKonijn.Goap.Editor\\TypeDrawers\\GoapActionProviderEditor.cs",
-              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Editor\\CrashKonijn.Goap.Editor\\TypeDrawers\\GoapActionProviderEditor.cs",
-              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Editor\\CrashKonijn.Goap.Editor\\TypeDrawers\\GoapActionProviderEditor.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-14T20:31:40.663Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 67,
-              "Title": "IMonoGoapActionProvider.cs",
-              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IMonoGoapActionProvider.cs",
-              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IMonoGoapActionProvider.cs",
-              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IMonoGoapActionProvider.cs",
-              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IMonoGoapActionProvider.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-14T20:31:37.487Z"
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 58,
               "Title": "CombatantHealth.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Core\\CombatantHealth.cs",
@@ -1092,43 +1104,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 60,
-              "Title": "IAgentTypeFactory.cs",
-              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IAgentTypeFactory.cs",
-              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IAgentTypeFactory.cs",
-              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IAgentTypeFactory.cs",
-              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IAgentTypeFactory.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAfAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-14T21:03:46.759Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 68,
-              "Title": "AgentTypeBehaviour.cs",
-              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeBehaviour.cs",
-              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeBehaviour.cs",
-              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeBehaviour.cs",
-              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeBehaviour.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-14T20:27:48.965Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 65,
-              "Title": "GoapActionProvider.cs",
-              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\GoapActionProvider.cs",
-              "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\GoapActionProvider.cs",
-              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\GoapActionProvider.cs",
-              "RelativeToolTip": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\GoapActionProvider.cs",
-              "ViewState": "AgIAAFsAAAAAAAAAAAA5wDgAAAA8AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-14T20:17:53.826Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 64,
+              "DocumentIndex": 63,
               "Title": "EnemyPool.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Spawning\\EnemyPool.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Spawning\\EnemyPool.cs",
@@ -1140,7 +1116,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 69,
+              "DocumentIndex": 68,
               "Title": "EnemyPoolHandle.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Spawning\\EnemyPoolHandle.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Spawning\\EnemyPoolHandle.cs",
@@ -1152,7 +1128,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 70,
+              "DocumentIndex": 69,
               "Title": "HitEffectSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\HitEffectSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Effects\\HitEffectSO.cs",
@@ -1164,7 +1140,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 71,
+              "DocumentIndex": 70,
               "Title": "TestExplodeOnKill.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Debugging\\Combat\\TestExplodeOnKill.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Debugging\\Combat\\TestExplodeOnKill.cs",

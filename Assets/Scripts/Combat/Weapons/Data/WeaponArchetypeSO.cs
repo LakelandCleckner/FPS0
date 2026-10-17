@@ -44,6 +44,18 @@ namespace Combat.Weapons
         [Tooltip("Optional drop shape over start->end: x 0..1, y 1 (full) to 0 (floor). Empty = linear.")]
         public AnimationCurve falloffCurve = new AnimationCurve();
 
+        [Header("Aim Assist (bullet magnetism)")]
+        [Tooltip("Base aim assist stat, 0-100. A per-weapon delta layers on top.")]
+        [Range(0f, 100f)] public float aimAssist = 50f;
+        [Tooltip("ADS magnetism cone half-angle (deg) at 0 aim assist.")]
+        public float assistAngleAtMin = 0.5f;
+        [Tooltip("ADS magnetism cone half-angle (deg) at 100 aim assist.")]
+        public float assistAngleAtMax = 1.5f;
+        [Tooltip("Hip-fire cone multiplier vs ADS. Can exceed 1.")]
+        [Min(0f)] public float assistHipMultiplier = 0.8f;
+        [Tooltip("Max magnetism distance = falloff end x this.")]
+        [Min(0f)] public float assistDistanceMultiplier = 1f;
+
         [Header("Base Stats (the frame profile)")]
         public float weaponDamage = 0f;
 

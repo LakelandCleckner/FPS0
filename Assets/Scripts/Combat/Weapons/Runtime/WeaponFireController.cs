@@ -36,8 +36,15 @@ namespace Combat.Weapons
         [Header("Input")]
         [SerializeField] private Key reloadKey = Key.R;
 
+        [Header("Aim Assist")]
+        [Tooltip("Layers holding enemy hitbox colliders.")]
+        [SerializeField] private LayerMask magnetismMask;
+        [Tooltip("Layers that block line of sight to a magnetism target.")]
+        [SerializeField] private LayerMask lineOfSightMask = ~0;
+
         private PlayerAudio playerAudio;
         private PlayerAim playerAim;
+        private readonly Collider[] assistHits = new Collider[32];
 
         public event Action OnFired;
         public event Action OnReloadStarted;
@@ -205,17 +212,78 @@ namespace Combat.Weapons
             // The behaviour doesn't know the id — the controller owns the counter, so
             // the behaviour stays a pure timing machine.
             Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+            float aimBlend = playerAim != null ? playerAim.Blend : 0f;
 
             // Origin and aim blend stamped for range falloff
             var stamped = new ShotInfo(nextShotId++, shot.BurstIndex, shot.BurstCount, shot.ChargeLevel)
-                .WithOrigin(ray.origin, playerAim != null ? playerAim.Blend : 0f);
+                .WithOrigin(ray.origin, aimBlend);
+
+            // Pellet patterns recentre on the bent direction
+            Vector3 direction = ApplyMagnetism(ray, aimBlend);
 
             var fire = damageSource.FireClip;
             if (fire != null && playerAudio != null) playerAudio.Play3D(fire);
 
-            SelectDelivery(in stamped).Fire(ray.origin, ray.direction, damageSource, in stamped);
+            SelectDelivery(in stamped).Fire(ray.origin, direction, damageSource, in stamped);
 
             OnFired?.Invoke();
+        }
+
+        // Bends a near-miss toward the hitbox point closest to the ray
+        private Vector3 ApplyMagnetism(Ray ray, float aimBlend)
+        {
+            if (damageSource == null || magnetismMask.value == 0) return ray.direction;
+
+            float angle = damageSource.AssistAngle(aimBlend);
+            float maxDist = damageSource.AssistMaxDistance(aimBlend);
+            if (angle <= 0f || maxDist <= 0f) return ray.direction;
+
+            // Direct hit already: no assist
+            if (Physics.Raycast(ray, out var direct, maxDist, lineOfSightMask, QueryTriggerInteraction.Ignore)
+                && direct.collider.GetComponentInParent<EnemyHitbox>() != null)
+                return ray.direction;
+
+            float tan = Mathf.Tan(angle * Mathf.Deg2Rad);
+            Vector3 end = ray.origin + ray.direction * maxDist;
+            int count = Physics.OverlapCapsuleNonAlloc(ray.origin, end, maxDist * tan,
+                assistHits, magnetismMask, QueryTriggerInteraction.Ignore);
+
+            var owner = damageSource.Attacker as Component;
+            float bestAngle = angle;
+            Vector3 best = ray.direction;
+
+            for (int i = 0; i < count; i++)
+            {
+                var col = assistHits[i];
+                var hitbox = col.GetComponentInParent<EnemyHitbox>();
+                if (hitbox == null) continue;
+                if (owner != null && col.transform.IsChildOf(owner.transform)) continue;
+
+                // Point on the hitbox nearest the ray
+                Vector3 c = col.bounds.center;
+                float along = Mathf.Clamp(Vector3.Dot(c - ray.origin, ray.direction), 0f, maxDist);
+                Vector3 p = col.ClosestPoint(ray.origin + ray.direction * along);
+                p = Vector3.MoveTowards(p, c, 0.02f);   // aim just inside the surface
+
+                Vector3 to = p - ray.origin;
+                float dist = to.magnitude;
+                if (dist <= 0.01f || dist > maxDist) continue;
+
+                float a = Vector3.Angle(ray.direction, to);
+                if (a >= bestAngle) continue;
+
+                // Line of sight: first thing hit must be this target
+                if (Physics.Raycast(ray.origin, to / dist, out var los, dist + 0.1f, lineOfSightMask, QueryTriggerInteraction.Ignore))
+                {
+                    var losBox = los.collider.GetComponentInParent<EnemyHitbox>();
+                    if (losBox == null || losBox.combatant != hitbox.combatant) continue;
+                }
+
+                bestAngle = a;
+                best = to / dist;
+            }
+
+            return best;
         }
 
         // Exact index first, then -1 meaning "the final shot" — so an override stays

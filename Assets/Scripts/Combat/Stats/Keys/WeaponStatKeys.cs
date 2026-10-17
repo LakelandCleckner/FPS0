@@ -32,6 +32,8 @@ namespace Combat.Weapons
         public StatDefinitionSO pelletSpread; // "pellet_spread"  pellet pattern size multiplier (1 = authored)
         [Header("Range")]
         public StatDefinitionSO range;        // "range"  0-100, maps into the archetype's falloff band
+        [Header("Aim Assist")]
+        public StatDefinitionSO aimAssist;    // "aim_assist"  0-100, maps into the archetype's magnetism cone
 
 
         // NOTE (global_damage representation): the legacy StatBlock stores this as a

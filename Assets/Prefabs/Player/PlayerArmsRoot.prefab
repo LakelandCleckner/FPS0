@@ -84,6 +84,12 @@ MonoBehaviour:
   resolver: {fileID: 3759290854749867375}
   muzzle: {fileID: 0}
   reloadKey: 32
+  magnetismMask:
+    serializedVersion: 2
+    m_Bits: 128
+  lineOfSightMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &247791711554930688
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -126,6 +132,7 @@ MonoBehaviour:
   playTickAudio: 1
   fireHitEventsOnZeroDamage: 1
   logHits: 1
+  pelletMergeWindow: 0.1
 --- !u!114 &7342544605003687262
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,6 +231,12 @@ MonoBehaviour:
   resolver: {fileID: 2582470596276988336}
   muzzle: {fileID: 0}
   reloadKey: 32
+  magnetismMask:
+    serializedVersion: 2
+    m_Bits: 128
+  lineOfSightMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &4188456757274381078
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -266,6 +279,7 @@ MonoBehaviour:
   playTickAudio: 1
   fireHitEventsOnZeroDamage: 1
   logHits: 1
+  pelletMergeWindow: 0.1
 --- !u!114 &2052418250483809060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -556,6 +570,12 @@ MonoBehaviour:
   resolver: {fileID: 2966727429773895722}
   muzzle: {fileID: 0}
   reloadKey: 32
+  magnetismMask:
+    serializedVersion: 2
+    m_Bits: 128
+  lineOfSightMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &137244485053875608
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -598,6 +618,7 @@ MonoBehaviour:
   playTickAudio: 1
   fireHitEventsOnZeroDamage: 1
   logHits: 1
+  pelletMergeWindow: 0.1
 --- !u!114 &4104865267483415541
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1030,9 +1051,9 @@ MonoBehaviour:
     modelRoot: {fileID: 0}
   - controller: {fileID: 4393028023324138117}
     modelRoot: {fileID: 0}
-  - controller: {fileID: 8039843502208385141}
-    modelRoot: {fileID: 0}
   - controller: {fileID: 3838225208056287688}
+    modelRoot: {fileID: 0}
+  - controller: {fileID: 8039843502208385141}
     modelRoot: {fileID: 0}
   rig: {fileID: 7669667991982255898}
   statKeys: {fileID: 11400000, guid: 09a13dc11d493ca499a3955b5ee02738, type: 2}
@@ -1333,6 +1354,12 @@ MonoBehaviour:
   resolver: {fileID: 1044963169048992265}
   muzzle: {fileID: 0}
   reloadKey: 32
+  magnetismMask:
+    serializedVersion: 2
+    m_Bits: 128
+  lineOfSightMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &790196463197716544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1375,6 +1402,7 @@ MonoBehaviour:
   playTickAudio: 1
   fireHitEventsOnZeroDamage: 1
   logHits: 1
+  pelletMergeWindow: 0.1
 --- !u!114 &1041736728196597254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1602,6 +1630,12 @@ MonoBehaviour:
   resolver: {fileID: 3648353931482492443}
   muzzle: {fileID: 0}
   reloadKey: 32
+  magnetismMask:
+    serializedVersion: 2
+    m_Bits: 128
+  lineOfSightMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &8963329547296560803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1644,6 +1678,7 @@ MonoBehaviour:
   playTickAudio: 1
   fireHitEventsOnZeroDamage: 1
   logHits: 1
+  pelletMergeWindow: 0.1
 --- !u!114 &8751997940536863874
 MonoBehaviour:
   m_ObjectHideFlags: 0
