@@ -10,9 +10,9 @@ namespace Combat.Weapons
 {
     // Owns the player's weapons and the swap between them.
     //
-    // STOWED WEAPONS STAY ALIVE. Not SetActive(false) — WeaponEventBridge subscribes
+    // STOWED WEAPONS STAY ALIVE. Not SetActive(false) -- WeaponEventBridge subscribes
     // in OnEnable and unsubscribes in OnDisable, so a deactivated weapon goes deaf and
-    // the Always perk scope (doc 07 §9) stops working, which is exactly what a
+    // the Always perk scope (doc 07 sec 9) stops working, which is exactly what a
     // Bait-and-Switch-style perk needs. A stowed weapon also has to keep running its
     // own Update so an Auto-Loading-Holster-style perk can reload it.
     //
@@ -23,14 +23,14 @@ namespace Combat.Weapons
     //   IsActive  the weapon is in hand and may take input   -> reload
     //   CanFire   ...and is settled enough to shoot          -> trigger
     // Currently both are suppressed by the same conditions, but they mean different
-    // things and cost one line to keep apart — the moment a perk wants
+    // things and cost one line to keep apart -- the moment a perk wants
     // reload-on-the-move, the mechanism is already here.
     //
     // A RELOAD IS CANCELLED BY exactly two things, both "the weapon left the ready
     // position": stowing it, and starting a sprint. Firing does not. See WeaponAmmo.
     //
-    // The loadout is also the authoritative origin for Equip and Stow (doc 07 §2),
-    // and the natural registry for anything player-side that modifies weapons —
+    // The loadout is also the authoritative origin for Equip and Stow (doc 07 sec 2),
+    // and the natural registry for anything player-side that modifies weapons --
     // armour granting handling or magazine size registers onto each weapon's
     // container from here, keyed by the armour piece as modifier Owner.
     public class WeaponLoadout : MonoBehaviour
@@ -47,7 +47,7 @@ namespace Combat.Weapons
 
             // Captured once at startup: the renderers that were visible then. Toggled
             // by enabled rather than by deactivating a GameObject, because the scripts
-            // and the mesh are typically on the SAME object — SetActive(false) there
+            // and the mesh are typically on the SAME object -- SetActive(false) there
             // would unsubscribe WeaponEventBridge and StatusReceiver in OnDisable and
             // the stowed weapon would go deaf.
             //
@@ -55,7 +55,7 @@ namespace Combat.Weapons
             // deliberately hidden by the artist stays hidden on equip.
             [NonSerialized] public Renderer[] renderers;
 
-            // Disabled while stowed so an invisible weapon isn't evaluating clips —
+            // Disabled while stowed so an invisible weapon isn't evaluating clips --
             // and so it can't come back up frozen mid-reload. The COMPONENT is
             // disabled, never the GameObject, for the same subscription reason.
             [NonSerialized] public Animator animator;
@@ -126,7 +126,7 @@ namespace Combat.Weapons
         private bool wasSprinting;
         private float sprintExitTimer;
 
-        // Presentation hook. Fired when a weapon becomes the held one — on startup and
+        // Presentation hook. Fired when a weapon becomes the held one -- on startup and
         // at the end of every equip. Direct C# event rather than the bus for the same
         // reason WeaponAnimator uses one: local, immediate, allocation-free, and a HUD
         // re-target isn't the owner-scoped view perks need.
@@ -180,6 +180,7 @@ namespace Combat.Weapons
             if (vm.gunPrefab != null)
             {
                 slot.gunInstance = Instantiate(vm.gunPrefab, rig.GunSocket, false);
+                ApplySkin(slot.gunInstance, source.Weapon.viewmodelSkin);
                 slot.gunAnimator = slot.gunInstance.GetComponentInChildren<Animator>(true);
                 slot.modelRoot = slot.gunInstance.transform;
 
@@ -189,6 +190,33 @@ namespace Combat.Weapons
                     slot.controller.SetMuzzle(model.Muzzle);
                 else
                     Debug.LogWarning($"[Loadout] Gun prefab '{vm.gunPrefab.name}' has no GunModel muzzle.");
+            }
+        }
+
+        // Replaces matching materials on every renderer of the spawned gun.
+        private static void ApplySkin(GameObject gun, List<MaterialSwap> skin)
+        {
+            if (gun == null || skin == null || skin.Count == 0) return;
+
+            var renderers = gun.GetComponentsInChildren<Renderer>(true);
+            for (int r = 0; r < renderers.Length; r++)
+            {
+                var mats = renderers[r].sharedMaterials;
+                bool changed = false;
+
+                for (int m = 0; m < mats.Length; m++)
+                {
+                    for (int s = 0; s < skin.Count; s++)
+                    {
+                        var swap = skin[s];
+                        if (swap.from == null || swap.to == null || mats[m] != swap.from) continue;
+                        mats[m] = swap.to;
+                        changed = true;
+                        break;
+                    }
+                }
+
+                if (changed) renderers[r].sharedMaterials = mats;
             }
         }
 
@@ -216,7 +244,7 @@ namespace Combat.Weapons
             }
 
             if (slots.Count < 2)
-                Debug.LogWarning("[Loadout] Fewer than 2 slots — swapping is disabled.");
+                Debug.LogWarning("[Loadout] Fewer than 2 slots -- swapping is disabled.");
 
             // Everything starts stowed except slot 0, which starts ready. Doing this
             // in Start (not Awake) lets each weapon's own Awake/Start run first, so
@@ -262,7 +290,7 @@ namespace Combat.Weapons
 
         // Sprinting lowers the weapon; coming out of it raises the weapon again. The
         // same transition as an equip triggered by a different cause, so it reads the
-        // same stat — which is why equip_time exists once rather than twice.
+        // same stat -- which is why equip_time exists once rather than twice.
         private void TickSprint()
         {
             if (sprintExitTimer > 0f) sprintExitTimer -= Time.deltaTime;
@@ -284,7 +312,7 @@ namespace Combat.Weapons
                 }
             }
 
-            // Starting a sprint cancels an in-progress reload — the weapon leaves the
+            // Starting a sprint cancels an in-progress reload -- the weapon leaves the
             // ready position, the same reason a stow cancels one. Keyed on RESOLVED
             // sprint, not the key, so holding sprint while strafing or walking
             // backwards isn't sprinting and doesn't cost you the reload.
@@ -305,8 +333,8 @@ namespace Combat.Weapons
         }
 
         // One place decides what the held weapon may do. Several independent things
-        // can suppress it — a swap in progress, sprinting, and the recovery after a
-        // sprint — and evaluating them together avoids the usual bug where one clears
+        // can suppress it -- a swap in progress, sprinting, and the recovery after a
+        // sprint -- and evaluating them together avoids the usual bug where one clears
         // the flag while another still wants it held.
         private void ApplyReadiness()
         {
@@ -326,7 +354,7 @@ namespace Combat.Weapons
         // ------------------------------------------------------------------ swap
 
         // What the swap key means: "the weapon I was last holding". At startup there
-        // isn't one — previousIndex and activeIndex both start at 0 — so fall back to
+        // isn't one -- previousIndex and activeIndex both start at 0 -- so fall back to
         // the next valid slot in order. Without this the first press asks to swap to
         // the weapon already in hand and is silently ignored.
         private int SwapTarget()
@@ -416,7 +444,7 @@ namespace Combat.Weapons
 
             OnStowStarted?.Invoke(Active, duration);
 
-            // Gate input the instant the swap starts — the weapon is on its way down.
+            // Gate input the instant the swap starts -- the weapon is on its way down.
             SetActive(activeIndex, false, false);
 
             // Stowing cancels an in-progress reload. This is a ONE-OFF on the
@@ -453,7 +481,7 @@ namespace Combat.Weapons
 
                 // After ApplyHeldState, which re-enables the animator and rebinds it.
                 // Rebind clears queued triggers, so the equip trigger must be set
-                // after — which is what this ordering guarantees.
+                // after -- which is what this ordering guarantees.
                 OnEquipStarted?.Invoke(Active, duration);
                 return;
             }

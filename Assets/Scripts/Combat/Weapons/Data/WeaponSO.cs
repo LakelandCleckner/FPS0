@@ -8,6 +8,14 @@ namespace Combat.Weapons
     // How a specific weapon overrides its archetype's infinite-reserves default.
     public enum InfiniteReservesOverride { UseArchetype, ForceOn, ForceOff }
 
+    // One material replacement on the spawned gun model.
+    [System.Serializable]
+    public struct MaterialSwap
+    {
+        public Material from;
+        public Material to;
+    }
+
     // A NAMED WEAPON definition: archetype ref + intrinsic stat deltas + per-weapon
     // damage type + audio + riders + ammo overrides. Base damage is generated, not
     // listed. Perk pool is a placeholder.
@@ -22,6 +30,8 @@ namespace Combat.Weapons
 
         [Header("Presentation")]
         public WeaponViewmodelSO viewmodel;
+        [Tooltip("Material swaps applied to the gun model on spawn. Empty = prefab defaults.")]
+        public List<MaterialSwap> viewmodelSkin = new List<MaterialSwap>();
 
         [Header("Element (per-weapon damage type)")]
         public DamageTypeSO baseDamageType;
@@ -53,7 +63,7 @@ namespace Combat.Weapons
         [Header("Rider Effects (base damage is generated, NOT listed here)")]
         public List<HitEffectSO> riderEffects = new List<HitEffectSO>();
 
-        [Header("Perk Pool (placeholder — perk system is a later phase)")]
+        [Header("Perk Pool (placeholder -- perk system is a later phase)")]
         public List<ScriptableObject> perkPool = new List<ScriptableObject>();
 
         [Header("Identity / Chain")]
