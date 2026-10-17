@@ -43,6 +43,18 @@ MonoBehaviour:
     m_RotationOrder: 4
   adsExitFraction: 1
   adsMoveSpeedMultiplier: 0.8
+  range: 50
+  falloffStartAtMinRange: 20
+  falloffStartAtMaxRange: 40
+  falloffEndMultiplier: 1.8
+  minDamagePercent: 0.6
+  hipFalloffMultiplier: 0.85
+  falloffCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   weaponDamage: 20
   roundsPerMinute: 390
   reloadStyle: 0

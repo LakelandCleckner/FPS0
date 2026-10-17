@@ -28,6 +28,22 @@ namespace Combat.Weapons
         [Tooltip("move_speed multiplier while aiming.")]
         public float adsMoveSpeedMultiplier = 0.8f;
 
+        [Header("Range Falloff")]
+        [Tooltip("Base range stat, 0-100. A per-weapon delta layers on top.")]
+        [Range(0f, 100f)] public float range = 50f;
+        [Tooltip("ADS falloff start distance (m) at 0 range.")]
+        public float falloffStartAtMinRange = 10f;
+        [Tooltip("ADS falloff start distance (m) at 100 range. Equal to min for a fixed band.")]
+        public float falloffStartAtMaxRange = 20f;
+        [Tooltip("Falloff end = start x this. Higher = more gradual drop.")]
+        [Min(1f)] public float falloffEndMultiplier = 1.6f;
+        [Tooltip("Damage multiplier at and beyond falloff end.")]
+        [Range(0f, 1f)] public float minDamagePercent = 0.5f;
+        [Tooltip("Hip-fire distance multiplier vs ADS. Can exceed 1.")]
+        [Min(0f)] public float hipFalloffMultiplier = 0.85f;
+        [Tooltip("Optional drop shape over start->end: x 0..1, y 1 (full) to 0 (floor). Empty = linear.")]
+        public AnimationCurve falloffCurve = new AnimationCurve();
+
         [Header("Base Stats (the frame profile)")]
         public float weaponDamage = 0f;
 

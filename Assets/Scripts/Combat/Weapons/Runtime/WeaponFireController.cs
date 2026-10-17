@@ -37,6 +37,7 @@ namespace Combat.Weapons
         [SerializeField] private Key reloadKey = Key.R;
 
         private PlayerAudio playerAudio;
+        private PlayerAim playerAim;
 
         public event Action OnFired;
         public event Action OnReloadStarted;
@@ -81,6 +82,7 @@ namespace Combat.Weapons
         private void Awake()
         {
             playerAudio = GetComponentInParent<PlayerAudio>();
+            playerAim = GetComponentInParent<PlayerAim>();
         }
 
         private void Start()
@@ -202,12 +204,15 @@ namespace Combat.Weapons
 
             // The behaviour doesn't know the id — the controller owns the counter, so
             // the behaviour stays a pure timing machine.
-            var stamped = new ShotInfo(nextShotId++, shot.BurstIndex, shot.BurstCount, shot.ChargeLevel);
+            Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+
+            // Origin and aim blend stamped for range falloff
+            var stamped = new ShotInfo(nextShotId++, shot.BurstIndex, shot.BurstCount, shot.ChargeLevel)
+                .WithOrigin(ray.origin, playerAim != null ? playerAim.Blend : 0f);
 
             var fire = damageSource.FireClip;
             if (fire != null && playerAudio != null) playerAudio.Play3D(fire);
 
-            Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
             SelectDelivery(in stamped).Fire(ray.origin, ray.direction, damageSource, in stamped);
 
             OnFired?.Invoke();

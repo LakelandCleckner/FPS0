@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Combat.Core
 {
     // What the fire behaviour knows about a shot at the moment it authorises it.
@@ -21,8 +23,6 @@ namespace Combat.Core
         // Deliberately not enforced anywhere. A perk that genuinely wants to stack off
         // every bolt simply doesn't dedup. The system supplies identity; the perk
         // decides whether identity means anything to it.
-        //
-        // Every pellet of a shotgun blast shares its shot's id.
         public readonly int ShotId;
 
         // Position within a burst, 0-based. 0 for non-burst fire.
@@ -35,20 +35,25 @@ namespace Combat.Core
         // it needs no special case.
         public readonly float ChargeLevel;
 
-        // Pellet position within one shot, 0-based. 0 for single-projectile fire.
+        // Pellet index within the shot, 0 for single-projectile fire
         public readonly int PelletIndex;
 
-        // Raw storage for PelletCount / DamageScale. Zero in a default-constructed
-        // ShotInfo (status ticks carry one), which must still read as "one pellet,
-        // full damage" — hence the accessors below rather than public fields.
+        // Camera ray origin at fire time, for range falloff
+        public readonly Vector3 Origin;
+
+        // ADS blend at fire time (0 hip, 1 aimed)
+        public readonly float AimBlend;
+
+        // False on default ShotInfo (ticks, probes): skips falloff
+        public readonly bool HasOrigin;
+
+        // Zero on default ShotInfo, so read through the accessors
         private readonly int pelletCount;
         private readonly float damageScale;
 
-        // Pellets in this shot. 1 for single-projectile fire.
         public int PelletCount => pelletCount > 0 ? pelletCount : 1;
 
-        // Multiplier on the BASE damage of a direct hit. Pellets split weapon_damage
-        // evenly, so a full-pellet hit deals exactly weapon_damage.
+        // Base damage share per pellet
         public float DamageScale => damageScale > 0f ? damageScale : 1f;
 
         public bool IsPellet => PelletCount > 1;
@@ -56,10 +61,11 @@ namespace Combat.Core
         public bool IsFirstInBurst => BurstIndex == 0;
 
         public ShotInfo(int shotId, int burstIndex = 0, int burstCount = 1, float chargeLevel = 1f)
-            : this(shotId, burstIndex, burstCount, chargeLevel, 0, 1, 1f) { }
+            : this(shotId, burstIndex, burstCount, chargeLevel, 0, 1, 1f, Vector3.zero, 0f, false) { }
 
         private ShotInfo(int shotId, int burstIndex, int burstCount, float chargeLevel,
-                         int pelletIndex, int pelletCount, float damageScale)
+                         int pelletIndex, int pelletCount, float damageScale,
+                         Vector3 origin, float aimBlend, bool hasOrigin)
         {
             ShotId = shotId;
             BurstIndex = burstIndex;
@@ -68,14 +74,23 @@ namespace Combat.Core
             PelletIndex = pelletIndex;
             this.pelletCount = pelletCount;
             this.damageScale = damageScale;
+            Origin = origin;
+            AimBlend = aimBlend;
+            HasOrigin = hasOrigin;
         }
 
-        // This shot, as pellet `index` of `count`, each carrying an even share of the
-        // base damage.
+        // Pellet `index` of `count`, each with an even base damage share
         public ShotInfo ForPellet(int index, int count)
         {
             int n = count > 0 ? count : 1;
-            return new ShotInfo(ShotId, BurstIndex, BurstCount, ChargeLevel, index, n, 1f / n);
+            return new ShotInfo(ShotId, BurstIndex, BurstCount, ChargeLevel,
+                                index, n, 1f / n, Origin, AimBlend, HasOrigin);
         }
+
+        // Stamps the fire-time origin and aim blend
+        public ShotInfo WithOrigin(Vector3 origin, float aimBlend)
+            => new ShotInfo(ShotId, BurstIndex, BurstCount, ChargeLevel,
+                            PelletIndex, pelletCount, damageScale,
+                            origin, Mathf.Clamp01(aimBlend), true);
     }
 }

@@ -55,6 +55,9 @@ namespace Combat.Weapons
             // Zoom is optics, not handling: archetype base plus a per-weapon delta.
             if (keys.adsZoom != null) container.SetBase(keys.adsZoom, a.adsZoom + weapon.adsZoomDelta);
 
+            // Range: archetype base + weapon delta; clamped 0-100 at resolve
+            if (keys.range != null) container.SetBase(keys.range, a.range + weapon.rangeDelta);
+
             RegisterHandlingDerivations(container, weapon, keys);
         }
 

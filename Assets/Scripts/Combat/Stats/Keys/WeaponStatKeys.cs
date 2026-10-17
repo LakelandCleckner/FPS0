@@ -30,6 +30,8 @@ namespace Combat.Weapons
         public StatDefinitionSO adsZoom;     // "ads_zoom"  magnification (1.25 = 1.25x)
         [Header("Spread")]
         public StatDefinitionSO pelletSpread; // "pellet_spread"  pellet pattern size multiplier (1 = authored)
+        [Header("Range")]
+        public StatDefinitionSO range;        // "range"  0-100, maps into the archetype's falloff band
 
 
         // NOTE (global_damage representation): the legacy StatBlock stores this as a

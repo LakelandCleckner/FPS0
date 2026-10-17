@@ -69,6 +69,7 @@
     <Compile Include="Assets\Scripts\DamageNumbers\DamageMagnitudeReference.cs" />
     <Compile Include="Assets\Scripts\Combat\Events\WeaponEventBridge.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\IHitEffect.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Weapon\Range\IRangeFalloffSource.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\playerInputs.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\BlastPlaceholderVfx.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\NeighbourFinder.cs" />
@@ -134,6 +135,7 @@
     <Compile Include="Assets\Scripts\Debugging\Performance\ContextResetAudit.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\LocationVfx.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\PlayerVisibleSensor.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Weapon\Range\FalloffTestRange.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StatusSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Events\WeaponEventBus.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\Utilities\MobileDisableAutoSwitchControls.cs" />
@@ -158,6 +160,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\LocationInvestigated.cs" />
     <Compile Include="Assets\Scripts\Debugging\Combat\HitLog.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxAddons\TrailScaleWithHierarchy.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Weapon\Range\WeaponFalloff.cs" />
     <Compile Include="Assets\Scripts\Debugging\Combat\TestExplodeOnKill.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\Beams\BeamVfx.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\ParticleSystemVfx.cs" />

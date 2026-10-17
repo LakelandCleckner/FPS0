@@ -11,7 +11,7 @@ namespace Combat.Sources
     // live from the container. Exposes the wielder as an ICombatant (now CombatantStats,
     // so crit reads go straight to the stat container — no health coupling) and its
     // own SourceStats.
-    public class WeaponDamageSource : MonoBehaviour, IDamageSource
+    public class WeaponDamageSource : MonoBehaviour, IDamageSource, IRangeFalloffSource
     {
         [Header("Weapon Definition")]
         [SerializeField] private WeaponSO weapon;
@@ -78,6 +78,47 @@ namespace Combat.Sources
         public float ResolvedAdsTime => container != null && statKeys != null && statKeys.adsTime != null ? container.Resolve(statKeys.adsTime) : 0.25f;
         public float ResolvedAdsZoom => container != null && statKeys != null && statKeys.adsZoom != null ? container.Resolve(statKeys.adsZoom) : 1.2f;
         public float ResolvedPelletSpread => container != null && statKeys != null && statKeys.pelletSpread != null ? container.Resolve(statKeys.pelletSpread) : 1f;
+
+        // Range stat, hard-capped 0-100
+        public float ResolvedRange
+        {
+            get
+            {
+                float r = container != null && statKeys != null && statKeys.range != null
+                    ? container.Resolve(statKeys.range)
+                    : (weapon != null && weapon.archetype != null ? weapon.archetype.range + weapon.rangeDelta : 50f);
+                return Mathf.Clamp(r, 0f, 100f);
+            }
+        }
+
+        // Falloff start (m): range maps into the archetype band, scaled hip -> ADS
+        public float FalloffStart(float aimBlend)
+        {
+            var a = weapon != null ? weapon.archetype : null;
+            if (a == null) return float.MaxValue;
+
+            float ads = Mathf.Lerp(a.falloffStartAtMinRange, a.falloffStartAtMaxRange, ResolvedRange / 100f);
+            return ads * Mathf.Lerp(a.hipFalloffMultiplier, 1f, aimBlend);
+        }
+
+        public float FalloffMultiplier(float distance, float aimBlend)
+        {
+            var a = weapon != null ? weapon.archetype : null;
+            if (a == null) return 1f;
+
+            float start = FalloffStart(aimBlend);
+            if (distance <= start) return 1f;
+
+            float end = start * Mathf.Max(1f, a.falloffEndMultiplier);
+            if (distance >= end || end <= start) return a.minDamagePercent;
+
+            float t = (distance - start) / (end - start);
+            float shape = a.falloffCurve != null && a.falloffCurve.length > 0
+                ? Mathf.Clamp01(a.falloffCurve.Evaluate(t))
+                : 1f - t;
+
+            return Mathf.Lerp(a.minDamagePercent, 1f, shape);
+        }
 
         public WeaponSO Weapon => weapon;
         public AudioClip FireClip => weapon != null ? weapon.fireClip : null;

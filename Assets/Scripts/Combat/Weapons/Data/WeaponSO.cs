@@ -32,8 +32,10 @@ namespace Combat.Weapons
         public float magazineSizeDelta = 0f;
         public float reloadTimeDelta = 0f;
         public float handlingDelta = 0f;
-        [Tooltip("ADS magnification delta. ADS TIME has no delta — it follows handling.")]
+        [Tooltip("ADS magnification delta. ADS time has no delta; it follows handling.")]
         public float adsZoomDelta = 0f;
+        [Tooltip("Range stat delta (stat caps at 100).")]
+        public float rangeDelta = 0f;
 
         [Header("Ammo")]
         [Tooltip("Starting reserve ammo (outside the magazine).")]

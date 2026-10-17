@@ -1,3 +1,4 @@
+using UnityEngine;
 using Combat.Core;
 
 namespace Combat.Effects
@@ -23,11 +24,15 @@ namespace Combat.Effects
             float final = raw * ctx.HitboxMultiplier;   // precision
             final *= ctx.CritMultiplier;                 // crit (rolled at resolver)
 
-            // Pellet split: DIRECT hits only. A pellet carries 1/N of the shot; an
-            // explosion or chain spawned off that pellet is its own hit at full value,
-            // not a fraction of a fraction.
+            // Pellet split and range falloff: direct hits only
             if (ctx.Source == HitSource.Direct)
+            {
                 final *= ctx.Shot.DamageScale;
+
+                if (ctx.Shot.HasOrigin && ctx.DamageSource is IRangeFalloffSource falloff)
+                    final *= falloff.FalloffMultiplier(
+                        Vector3.Distance(ctx.HitPoint, ctx.Shot.Origin), ctx.Shot.AimBlend);
+            }
 
             if (spec.AffectedByChainFalloff)
                 final *= ctx.ChainMultiplier;
