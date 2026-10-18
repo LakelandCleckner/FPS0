@@ -61,6 +61,7 @@
     <Analyzer Include="H:\SCHOOL\Unity Hub\6000.0.84f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Editor\WeaponZoneEditor.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Editor\ReadmeEditor.cs" />
     <Compile Include="Assets\Editor\UVIslandFinder.cs" />
     <Compile Include="Assets\Editor\RetroWeaponClipRenamer.cs" />

@@ -3,7 +3,7 @@
   "WorkspaceRootPath": "F:\\Game Dev\\FPS0\\FPS0\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\weapons\\runtime\\weaponloadout.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\weapons\\runtime\\weaponloadout.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\weapons\\runtime\\weaponloadout.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -35,11 +35,11 @@
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\weapons\\runtime\\weaponfirecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\stats\\weapon\\range\\fallofftestrange.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\stats\\weapon\\range\\fallofftestrange.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\stats\\weapon\\range\\fallofftestrange.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\stats\\weapon\\range\\irangefalloffsource.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\stats\\weapon\\range\\irangefalloffsource.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\stats\\weapon\\range\\irangefalloffsource.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -327,8 +327,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Stats\\Weapon\\Range\\FalloffTestRange.cs",
               "ViewState": "AgIAAIsBAAAAAAAAAAAAwKwBAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-17T19:22:52.347Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-17T19:22:52.347Z"
             },
             {
               "$type": "Document",
@@ -340,8 +339,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Stats\\Weapon\\Range\\IRangeFalloffSource.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-17T19:12:28.351Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-17T19:12:28.351Z"
             },
             {
               "$type": "Document",
@@ -365,8 +363,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponFireController.cs",
               "ViewState": "AgIAAAYBAAAAAAAAAAAAwCgBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-28T04:25:07.148Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-28T04:25:07.148Z"
             },
             {
               "$type": "Document",
@@ -378,8 +375,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponDamageSource.cs",
               "ViewState": "AgIAAFMAAAAAAAAAAAAAwGkAAAA2AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-10T20:16:56.795Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-08-10T20:16:56.795Z"
             },
             {
               "$type": "Document",
@@ -391,8 +387,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Weapons\\Data\\WeaponArchetypeSO.cs",
               "ViewState": "AgIAADkAAAAAAAAAAAAAwFEAAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-29T23:16:56.258Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-29T23:16:56.258Z"
             },
             {
               "$type": "Document",
@@ -404,8 +399,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Weapons\\Data\\WeaponSO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAD0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-29T23:19:19.996Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-29T23:19:19.996Z"
             },
             {
               "$type": "Document",
@@ -417,8 +411,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Stats\\Weapon\\WeaponStatBuilder.cs",
               "ViewState": "AgIAAEAAAAAAAAAAAAAAwFgAAAA9AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-30T21:47:25.398Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-30T21:47:25.398Z"
             },
             {
               "$type": "Document",
@@ -455,8 +448,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Stats\\Keys\\WeaponStatKeys.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAAABYAAABTAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-30T21:32:31.929Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-30T21:32:31.929Z"
             },
             {
               "$type": "Document",
