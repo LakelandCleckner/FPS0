@@ -82,7 +82,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ZoneMask:
-        m_Texture: {fileID: 2800000, guid: 74be9f103fdb15743a01946b80165719, type: 3}
+        m_Texture: {fileID: 2800000, guid: 793f996a2ef0a4d49990b30b262c6d5f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -130,22 +130,22 @@ Material:
     - _Surface: 0
     - _UseNormalMap: 0
     - _WorkflowMode: 1
-    - _Z1Brightness: 4
-    - _Z1Metallic: 0.869
-    - _Z1Smoothness: 0.582
+    - _Z1Brightness: 2.5
+    - _Z1Metallic: 1
+    - _Z1Smoothness: 0.6
     - _Z1Strength: 1
-    - _Z2Brightness: 1
+    - _Z2Brightness: 3.64
     - _Z2Metallic: 0
     - _Z2Smoothness: 0
-    - _Z2Strength: 0
+    - _Z2Strength: 0.442
     - _Z3Brightness: 1
-    - _Z3Metallic: 0
+    - _Z3Metallic: 0.781
     - _Z3Smoothness: 0
-    - _Z3Strength: 0
-    - _Z4Brightness: 1
-    - _Z4Metallic: 0
-    - _Z4Smoothness: 0
-    - _Z4Strength: 0
+    - _Z3Strength: 0.98
+    - _Z4Brightness: 3.77
+    - _Z4Metallic: 0.411
+    - _Z4Smoothness: 0.758
+    - _Z4Strength: 1
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
@@ -154,11 +154,11 @@ Material:
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _Z1Color: {r: 1, g: 0.7607843, b: 0.22745098, a: 1}
     - _Z1Emission: {r: 0, g: 0, b: 0, a: 1}
-    - _Z2Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Z2Color: {r: 0.33737972, g: 0.9169811, b: 0.3889489, a: 1}
     - _Z2Emission: {r: 0, g: 0, b: 0, a: 1}
-    - _Z3Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Z3Color: {r: 1, g: 0.93518555, b: 0.26274514, a: 1}
     - _Z3Emission: {r: 0, g: 0, b: 0, a: 1}
-    - _Z4Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Z4Color: {r: 0.8415094, g: 0.7627545, b: 0, a: 1}
     - _Z4Emission: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

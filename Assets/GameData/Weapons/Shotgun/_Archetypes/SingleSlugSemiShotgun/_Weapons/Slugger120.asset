@@ -16,6 +16,8 @@ MonoBehaviour:
   id: slugger120
   displayName: Slugger 120
   viewmodel: {fileID: 11400000, guid: 409e69fdfa7817a45b80198dfa6325bf, type: 2}
+  viewmodelSkin: []
+  defaultShader: {fileID: 11400000, guid: 6afe353b48cc3a646bf6665295d7e8a2, type: 2}
   baseDamageType: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
   weaponDamageDelta: 0
   roundsPerMinuteDelta: 0
@@ -23,6 +25,8 @@ MonoBehaviour:
   reloadTimeDelta: 0
   handlingDelta: 0
   adsZoomDelta: 0
+  rangeDelta: 0
+  aimAssistDelta: 0
   startingReserves: 100
   infiniteReservesOverride: 0
   fireClip: {fileID: 8300000, guid: a02ac01715490c646a720c0bcc70ec7a, type: 3}

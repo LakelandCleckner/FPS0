@@ -21,13 +21,13 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_Rifle_01
-  m_Shader: {fileID: 4800000, guid: ad154176a85b07f4590f5cc954bb6f84, type: 3}
+  m_Shader: {fileID: 4800000, guid: 28c2f0843d0f68b4fb7efc6e24a5df2d, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
+  m_ValidKeywords: []
+  m_InvalidKeywords:
   - _ENVIRONMENTREFLECTIONS_OFF
   - _SPECULARHIGHLIGHTS_OFF
-  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -84,7 +84,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ZoneMask:
-        m_Texture: {fileID: 2800000, guid: 74be9f103fdb15743a01946b80165719, type: 3}
+        m_Texture: {fileID: 2800000, guid: d80b8dfde8019fa44a576d00cc985712, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:

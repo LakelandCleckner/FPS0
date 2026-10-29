@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f698762bb98ebc4f84664f2035b49b7, type: 3}
+  m_Name: Shader1
+  m_EditorClassIdentifier: 
+  zoneSet: {fileID: 11400000, guid: 7891cbe045c89844fb53fb97d5017f88, type: 2}
+  zones:
+  - zoneId: 1
+    color: {r: 1, g: 1, b: 1, a: 1}
+    recolor: 0.7
+    brightness: 2.65
+    metallic: 0.708
+    smoothness: 0.754
+    emission: {r: 0.43527526, g: 0.43527526, b: 0.43527526, a: 1}
+  - zoneId: 2
+    color: {r: 0.4188679, g: 0.4188679, b: 0.4188679, a: 1}
+    recolor: 1
+    brightness: 1
+    metallic: 0.368
+    smoothness: 0.245
+    emission: {r: 0, g: 0, b: 0, a: 1}
+  - zoneId: 3
+    color: {r: 0.22334634, g: 0.42765555, b: 0.93207544, a: 1}
+    recolor: 1
+    brightness: 2.89
+    metallic: 0.959
+    smoothness: 0.463
+    emission: {r: 0, g: 0, b: 0, a: 1}
+  - zoneId: 4
+    color: {r: 1, g: 0, b: 0, a: 1}
+    recolor: 1
+    brightness: 1.93
+    metallic: 0.436
+    smoothness: 0.253
+    emission: {r: 0.056839623, g: 0, b: 0, a: 1}

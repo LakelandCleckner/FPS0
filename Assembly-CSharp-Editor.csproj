@@ -63,7 +63,7 @@
   <ItemGroup>
     <Compile Include="Assets\Editor\WeaponZoneEditor.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Editor\ReadmeEditor.cs" />
-    <Compile Include="Assets\Editor\UVIslandFinder.cs" />
+    <Compile Include="Assets\Editor\WeaponShaderSOEditor.cs" />
     <Compile Include="Assets\Editor\RetroWeaponClipRenamer.cs" />
   </ItemGroup>
   <ItemGroup>

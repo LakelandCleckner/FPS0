@@ -214,6 +214,7 @@
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerCrouch.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\PlayerTargetSensor.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\Shields\ParticleSystemShield.cs" />
+    <Compile Include="Assets\Scripts\Weapons\Skins\WeaponShaderSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponDamageSource.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\InvestigateGoal.cs" />
     <Compile Include="Assets\Scripts\Weapons\ViewmodelRig.cs" />
@@ -235,6 +236,7 @@
     <Compile Include="Assets\Scripts\Weapons\WeaponViewmodelSO.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\GoapControllerMono.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\Shields\WaterShield.cs" />
+    <Compile Include="Assets\Scripts\Weapons\Skins\WeaponZoneSetSO.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\LocationInvestigatedSensor.cs" />
     <Compile Include="Assets\Scripts\Weapons\HitmarkerUI.cs" />
     <Compile Include="Assets\Animations\Enemies\Mixamo\Imports\Alien_Zombie\AlienZombieBaseLocomotionAnimator.cs" />
@@ -264,6 +266,7 @@
     <None Include="Assets\TextMesh Pro\Shaders\SDFFunctions.hlsl" />
     <None Include="Assets\TextMesh Pro\Fonts\DamageNumbers\Physical\Nunito\OFL.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader" />
+    <None Include="Assets\Shaders\WeaponZones.shader" />
     <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF.shader" />
@@ -276,7 +279,6 @@
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
     <None Include="Assets\OccaSoftware\Crosshairs\Readme.txt" />
-    <None Include="Assets\Shaders\WeaponZones.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />

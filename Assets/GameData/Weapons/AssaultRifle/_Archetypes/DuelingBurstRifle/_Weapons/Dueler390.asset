@@ -16,9 +16,8 @@ MonoBehaviour:
   id: dueler390
   displayName: Dueler 390
   viewmodel: {fileID: 11400000, guid: d4f46df13b99803418d5c2dac5d10c04, type: 2}
-  viewmodelSkin:
-  - from: {fileID: 2100000, guid: 68b3140eeaee6a7449bd7b5c1a61bafa, type: 2}
-    to: {fileID: 2100000, guid: b5b0fbcbcb6402948a0d36c3b44b8f31, type: 2}
+  viewmodelSkin: []
+  defaultShader: {fileID: 11400000, guid: 6afe353b48cc3a646bf6665295d7e8a2, type: 2}
   baseDamageType: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
   weaponDamageDelta: 0
   roundsPerMinuteDelta: 0

@@ -9,44 +9,10 @@ Shader "FPS0/WeaponZones"
         [Toggle(_NORMALMAP)] _UseNormalMap("Use Normal Map", Float) = 0
         [Normal][NoScaleOffset] _BumpMap("Normal Map", 2D) = "bump" {}
         _BumpScale("Normal Scale", Float) = 1
-        [ToggleOff] _SpecularHighlights("Specular Highlights", Float) = 1
-        [ToggleOff] _EnvironmentReflections("Environment Reflections", Float) = 1
         [Enum(UnityEngine.Rendering.CullMode)] _Cull("Cull", Float) = 2
 
         [Header(Zones)]
-        [NoScaleOffset] _ZoneMask("Zone Mask (RGBA = zones 1-4)", 2D) = "black" {}
-
-        [Header(Zone 1 Red)]
-        _Z1Color("Zone 1 Color", Color) = (1, 1, 1, 1)
-        _Z1Strength("Zone 1 Recolor", Range(0, 1)) = 0
-        _Z1Brightness("Zone 1 Brightness", Range(0, 4)) = 1
-        _Z1Metallic("Zone 1 Metallic", Range(0, 1)) = 0
-        _Z1Smoothness("Zone 1 Smoothness", Range(0, 1)) = 0
-        [HDR] _Z1Emission("Zone 1 Emission", Color) = (0, 0, 0, 1)
-
-        [Header(Zone 2 Green)]
-        _Z2Color("Zone 2 Color", Color) = (1, 1, 1, 1)
-        _Z2Strength("Zone 2 Recolor", Range(0, 1)) = 0
-        _Z2Brightness("Zone 2 Brightness", Range(0, 4)) = 1
-        _Z2Metallic("Zone 2 Metallic", Range(0, 1)) = 0
-        _Z2Smoothness("Zone 2 Smoothness", Range(0, 1)) = 0
-        [HDR] _Z2Emission("Zone 2 Emission", Color) = (0, 0, 0, 1)
-
-        [Header(Zone 3 Blue)]
-        _Z3Color("Zone 3 Color", Color) = (1, 1, 1, 1)
-        _Z3Strength("Zone 3 Recolor", Range(0, 1)) = 0
-        _Z3Brightness("Zone 3 Brightness", Range(0, 4)) = 1
-        _Z3Metallic("Zone 3 Metallic", Range(0, 1)) = 0
-        _Z3Smoothness("Zone 3 Smoothness", Range(0, 1)) = 0
-        [HDR] _Z3Emission("Zone 3 Emission", Color) = (0, 0, 0, 1)
-
-        [Header(Zone 4 Alpha)]
-        _Z4Color("Zone 4 Color", Color) = (1, 1, 1, 1)
-        _Z4Strength("Zone 4 Recolor", Range(0, 1)) = 0
-        _Z4Brightness("Zone 4 Brightness", Range(0, 4)) = 1
-        _Z4Metallic("Zone 4 Metallic", Range(0, 1)) = 0
-        _Z4Smoothness("Zone 4 Smoothness", Range(0, 1)) = 0
-        [HDR] _Z4Emission("Zone 4 Emission", Color) = (0, 0, 0, 1)
+        [NoScaleOffset] _ZoneMask("Zone Mask (zone id in R)", 2D) = "black" {}
     }
 
     SubShader
@@ -69,12 +35,6 @@ Shader "FPS0/WeaponZones"
             half _Metallic;
             half _Smoothness;
             half _BumpScale;
-            half4 _Z1Color, _Z2Color, _Z3Color, _Z4Color;
-            half4 _Z1Emission, _Z2Emission, _Z3Emission, _Z4Emission;
-            half _Z1Strength, _Z2Strength, _Z3Strength, _Z4Strength;
-            half _Z1Brightness, _Z2Brightness, _Z3Brightness, _Z4Brightness;
-            half _Z1Metallic, _Z2Metallic, _Z3Metallic, _Z4Metallic;
-            half _Z1Smoothness, _Z2Smoothness, _Z3Smoothness, _Z4Smoothness;
         CBUFFER_END
         ENDHLSL
 
@@ -91,8 +51,6 @@ Shader "FPS0/WeaponZones"
             #pragma fragment Frag
 
             #pragma shader_feature_local _NORMALMAP
-            #pragma shader_feature_local_fragment _SPECULARHIGHLIGHTS_OFF
-            #pragma shader_feature_local_fragment _ENVIRONMENTREFLECTIONS_OFF
 
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
             #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
@@ -108,6 +66,11 @@ Shader "FPS0/WeaponZones"
             #pragma multi_compile_instancing
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+
+            // Per-zone table, index = zone id - 1. Set per renderer by WeaponShaderSO.
+            float4 _ZoneColor[16];      // rgb colour, a recolor
+            float4 _ZoneSurface[16];    // x metallic, y smoothness, z brightness, w 1 = zone in use
+            float4 _ZoneEmission[16];   // rgb emission
 
             struct Attributes
             {
@@ -152,22 +115,12 @@ Shader "FPS0/WeaponZones"
                 return o;
             }
 
-            void ApplyZone(half w, half4 color, half strength, half brightness, half metal, half smooth,
-                           half4 emis, half lum, inout half3 albedo, inout half metallic,
-                           inout half smoothness, inout half3 emission)
-            {
-                albedo = lerp(albedo, color.rgb * lum * brightness, w * strength);
-                metallic = lerp(metallic, metal, w);
-                smoothness = lerp(smoothness, smooth, w);
-                emission += emis.rgb * w;
-            }
-
             half4 Frag(Varyings input) : SV_Target
             {
                 UNITY_SETUP_INSTANCE_ID(input);
 
                 half4 baseCol = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv.xy) * _BaseColor;
-                half4 mask = SAMPLE_TEXTURE2D(_ZoneMask, sampler_ZonePointClamp, input.uv.zw);
+                float4 mask = SAMPLE_TEXTURE2D(_ZoneMask, sampler_ZonePointClamp, input.uv.zw);
                 half lum = dot(baseCol.rgb, half3(0.299h, 0.587h, 0.114h));
 
                 half3 albedo = baseCol.rgb;
@@ -175,10 +128,19 @@ Shader "FPS0/WeaponZones"
                 half smoothness = _Smoothness;
                 half3 emission = 0;
 
-                ApplyZone(mask.r, _Z1Color, _Z1Strength, _Z1Brightness, _Z1Metallic, _Z1Smoothness, _Z1Emission, lum, albedo, metallic, smoothness, emission);
-                ApplyZone(mask.g, _Z2Color, _Z2Strength, _Z2Brightness, _Z2Metallic, _Z2Smoothness, _Z2Emission, lum, albedo, metallic, smoothness, emission);
-                ApplyZone(mask.b, _Z3Color, _Z3Strength, _Z3Brightness, _Z3Metallic, _Z3Smoothness, _Z3Emission, lum, albedo, metallic, smoothness, emission);
-                ApplyZone(mask.a, _Z4Color, _Z4Strength, _Z4Brightness, _Z4Metallic, _Z4Smoothness, _Z4Emission, lum, albedo, metallic, smoothness, emission);
+                int id = (int)round(mask.r * 255.0);
+                if (id >= 1 && id <= 16)
+                {
+                    float4 zc = _ZoneColor[id - 1];
+                    float4 zs = _ZoneSurface[id - 1];
+                    if (zs.w > 0.5)
+                    {
+                        albedo = lerp(albedo, zc.rgb * lum * zs.z, zc.a);
+                        metallic = zs.x;
+                        smoothness = zs.y;
+                        emission = _ZoneEmission[id - 1].rgb;
+                    }
+                }
 
                 float3 normalWS = input.normalWS;
                 #ifdef _NORMALMAP

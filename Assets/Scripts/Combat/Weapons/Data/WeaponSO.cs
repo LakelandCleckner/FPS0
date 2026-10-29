@@ -32,6 +32,8 @@ namespace Combat.Weapons
         public WeaponViewmodelSO viewmodel;
         [Tooltip("Material swaps applied to the gun model on spawn. Empty = prefab defaults.")]
         public List<MaterialSwap> viewmodelSkin = new List<MaterialSwap>();
+        [Tooltip("Zone shader preset applied to the gun model on spawn. Empty = original look.")]
+        public WeaponShaderSO defaultShader;
 
         [Header("Element (per-weapon damage type)")]
         public DamageTypeSO baseDamageType;

@@ -1,24 +1,15 @@
 using System.Collections.Generic;
 using System.IO;
+using Combat.Weapons;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-// Paints FPS0/WeaponZones masks by clicking UV islands on the model.
+// Paints FPS0/WeaponZones id masks by clicking UV islands on the model.
 public class WeaponZoneEditor : EditorWindow
 {
-    private const string ShaderName = "FPS0/WeaponZones";
     private const string MaskFolder = "Assets/Art/WeaponMasks";
-
-    private static readonly string[] ZoneLabels = { "Erase", "Zone 1 (R)", "Zone 2 (G)", "Zone 3 (B)", "Zone 4 (A)" };
-    private static readonly Color[] ZoneColors =
-    {
-        Color.white,
-        new Color(1f, 0.15f, 0.15f),
-        new Color(0.15f, 1f, 0.15f),
-        new Color(0.2f, 0.4f, 1f),
-        new Color(1f, 0.9f, 0.1f)
-    };
+    private const int MaxZones = WeaponZoneSetSO.MaxZones;
 
     private class MeshInfo
     {
@@ -33,31 +24,35 @@ public class WeaponZoneEditor : EditorWindow
         public Vector3[] world;   // 3 per triangle
     }
 
+    [SerializeField] private WeaponZoneSetSO zoneSet;
     [SerializeField] private Texture2D maskAsset;
-    [SerializeField] private byte[] zones;      // one zone index (0-4) per pixel
+    [SerializeField] private byte[] zones;      // zone id (0 = none) per pixel
     [SerializeField] private int width;
     [SerializeField] private int height;
     [SerializeField] private bool dirty;
     [SerializeField] private int activeZone = 1;
     [SerializeField] private bool pickMode;
     [SerializeField] private bool preview = true;
-    [SerializeField] private Material previewSkin;
+    [SerializeField] private WeaponShaderSO previewShader;
     [SerializeField] private int grow;
 
     private readonly Dictionary<Mesh, MeshInfo> meshCache = new Dictionary<Mesh, MeshInfo>();
     private readonly HashSet<Renderer> touched = new HashSet<Renderer>();
-    private readonly int[] counts = new int[5];
+    private readonly int[] counts = new int[256];
+    private readonly List<WeaponShaderSO.ZoneLook> flatLooks = new List<WeaponShaderSO.ZoneLook>();
     private MaterialPropertyBlock mpb;
     private Texture2D previewTex;
     private Mesh bakeMesh;
     private Island hover;
-    private int skinSignature;
+    private int shaderDirtyCount = -1;
+    private int setDirtyCount = -1;
 
     [MenuItem("Tools/Weapon Zone Editor")]
     private static void Open() => GetWindow<WeaponZoneEditor>("Weapon Zones");
 
     private void OnEnable()
     {
+        if (zoneSet == null) zoneSet = FindDefaultZoneSet();
         SceneView.duringSceneGui += OnSceneGUI;
         Undo.undoRedoPerformed += OnUndoRedo;
         Selection.selectionChanged += OnContextChanged;
@@ -85,36 +80,16 @@ public class WeaponZoneEditor : EditorWindow
             Save(false);
     }
 
-    // Polls the preview skin so material edits show without re-dragging it.
+    // Picks up edits to the preview preset or zone set without re-assigning them.
     private void OnInspectorUpdate()
     {
-        if (!preview || previewTex == null || previewSkin == null) return;
-        if (previewSkin.shader == null || previewSkin.shader.name != ShaderName) return;
-        int sig = SkinSignature(previewSkin);
-        if (sig == skinSignature) return;
-        skinSignature = sig;
+        int s = previewShader != null ? EditorUtility.GetDirtyCount(previewShader) : -1;
+        int z = zoneSet != null ? EditorUtility.GetDirtyCount(zoneSet) : -1;
+        if (s == shaderDirtyCount && z == setDirtyCount) return;
+        shaderDirtyCount = s;
+        setDirtyCount = z;
         ApplyPreview();
-    }
-
-    private static int SkinSignature(Material m)
-    {
-        unchecked
-        {
-            int h = m.shader != null ? m.shader.GetInstanceID() : 0;
-            h = h * 31 + m.GetColor("_BaseColor").GetHashCode();
-            h = h * 31 + m.GetFloat("_Metallic").GetHashCode();
-            h = h * 31 + m.GetFloat("_Smoothness").GetHashCode();
-            for (int z = 1; z <= 4; z++)
-            {
-                h = h * 31 + m.GetColor($"_Z{z}Color").GetHashCode();
-                h = h * 31 + m.GetColor($"_Z{z}Emission").GetHashCode();
-                h = h * 31 + m.GetFloat($"_Z{z}Strength").GetHashCode();
-                h = h * 31 + m.GetFloat($"_Z{z}Brightness").GetHashCode();
-                h = h * 31 + m.GetFloat($"_Z{z}Metallic").GetHashCode();
-                h = h * 31 + m.GetFloat($"_Z{z}Smoothness").GetHashCode();
-            }
-            return h;
-        }
+        Repaint();
     }
 
     private void OnUndoRedo()
@@ -138,10 +113,28 @@ public class WeaponZoneEditor : EditorWindow
         Repaint();
     }
 
+    private static WeaponZoneSetSO FindDefaultZoneSet()
+    {
+        var guids = AssetDatabase.FindAssets("t:WeaponZoneSetSO");
+        return guids.Length > 0
+            ? AssetDatabase.LoadAssetAtPath<WeaponZoneSetSO>(AssetDatabase.GUIDToAssetPath(guids[0]))
+            : null;
+    }
+
     // ------------------------------------------------------------------ window
 
     private void OnGUI()
     {
+        EditorGUI.BeginChangeCheck();
+        zoneSet = (WeaponZoneSetSO)EditorGUILayout.ObjectField("Zone Set", zoneSet, typeof(WeaponZoneSetSO), false);
+        if (EditorGUI.EndChangeCheck()) ApplyPreview();
+
+        if (zoneSet == null)
+        {
+            EditorGUILayout.HelpBox("Create one with Assets > Create > Combat > Weapons > Weapon Zone Set.", MessageType.Info);
+            return;
+        }
+
         EditorGUI.BeginChangeCheck();
         var picked = (Texture2D)EditorGUILayout.ObjectField("Mask", maskAsset, typeof(Texture2D), false);
         if (EditorGUI.EndChangeCheck() && picked != maskAsset && ConfirmDiscard())
@@ -175,7 +168,7 @@ public class WeaponZoneEditor : EditorWindow
         if (CandidateRenderers().Length == 0)
             EditorGUILayout.HelpBox("Open the gun prefab (or select it in the scene) to pick parts.", MessageType.Warning);
         else if (!AnyZoneRenderer())
-            EditorGUILayout.HelpBox($"No gun material uses {ShaderName}, so nothing previews.", MessageType.Warning);
+            EditorGUILayout.HelpBox($"No gun material uses {WeaponShaderSO.ShaderName}, so nothing previews.", MessageType.Warning);
 
         EditorGUILayout.LabelField("Size", $"{width}x{height}");
         var baseMap = BaseMapTexture();
@@ -183,7 +176,7 @@ public class WeaponZoneEditor : EditorWindow
             EditorGUILayout.HelpBox($"Mask size differs from the base map ({baseMap.width}x{baseMap.height}).", MessageType.Warning);
 
         EditorGUILayout.Space();
-        activeZone = GUILayout.Toolbar(activeZone, ZoneLabels);
+        DrawZonePicker();
         pickMode = GUILayout.Toggle(pickMode,
             pickMode ? "Picking (click: assign, Shift+click: erase)" : "Pick",
             "Button", GUILayout.Height(24));
@@ -192,14 +185,13 @@ public class WeaponZoneEditor : EditorWindow
         EditorGUILayout.Space();
         EditorGUI.BeginChangeCheck();
         preview = EditorGUILayout.Toggle("Preview", preview);
-        previewSkin = (Material)EditorGUILayout.ObjectField("Preview Skin", previewSkin, typeof(Material), false);
+        previewShader = (WeaponShaderSO)EditorGUILayout.ObjectField("Preview Shader", previewShader, typeof(WeaponShaderSO), false);
         if (EditorGUI.EndChangeCheck()) ApplyPreview();
-        if (previewSkin == null)
-            EditorGUILayout.HelpBox("No preview skin: zones glow in flat colours.", MessageType.None);
+        if (previewShader == null)
+            EditorGUILayout.HelpBox("No preview shader: zones glow in their editor colours.", MessageType.None);
 
         EditorGUILayout.Space();
-        for (int z = 1; z <= 4; z++)
-            EditorGUILayout.LabelField(ZoneLabels[z], counts[z] + " px");
+        DrawCounts();
 
         EditorGUILayout.Space();
         GUI.enabled = maskAsset != null && !dirty;
@@ -207,8 +199,57 @@ public class WeaponZoneEditor : EditorWindow
         GUI.enabled = true;
     }
 
+    private void DrawZonePicker()
+    {
+        var labels = new List<string> { "Erase" };
+        var ids = new List<int> { 0 };
+        foreach (var z in zoneSet.zones)
+        {
+            if (z == null || z.id == 0) continue;
+            labels.Add(z.name);
+            ids.Add(z.id);
+        }
+
+        int index = Mathf.Max(0, ids.IndexOf(activeZone));
+        index = GUILayout.SelectionGrid(index, labels.ToArray(), 3);
+        activeZone = ids[index];
+    }
+
+    private void DrawCounts()
+    {
+        foreach (var z in zoneSet.zones)
+            if (z != null && z.id > 0) EditorGUILayout.LabelField(z.name, counts[z.id] + " px");
+
+        int orphan = 0;
+        for (int id = 1; id < counts.Length; id++)
+            if (counts[id] > 0 && zoneSet.Find(id) == null) orphan += counts[id];
+        if (orphan == 0) return;
+
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            EditorGUILayout.HelpBox($"{orphan} px use zone ids not in this set (removed zones).", MessageType.Warning);
+            if (GUILayout.Button("Clear", GUILayout.Width(60), GUILayout.Height(38))) ClearOrphans();
+        }
+    }
+
+    private void ClearOrphans()
+    {
+        Undo.RecordObject(this, "Clear Removed Zones");
+        for (int i = 0; i < zones.Length; i++)
+            if (zones[i] != 0 && zoneSet.Find(zones[i]) == null) zones[i] = 0;
+        dirty = true;
+        RebuildPreview();
+    }
+
     private bool ConfirmDiscard() =>
         !dirty || EditorUtility.DisplayDialog("Weapon Zones", "Discard unsaved mask changes?", "Discard", "Cancel");
+
+    private Color ZoneColor(int id)
+    {
+        if (id == 0) return Color.white;
+        var z = zoneSet != null ? zoneSet.Find(id) : null;
+        return z != null ? z.editorColor : Color.gray;
+    }
 
     // ------------------------------------------------------------------ mask io
 
@@ -241,17 +282,31 @@ public class WeaponZoneEditor : EditorWindow
         width = tmp.width;
         height = tmp.height;
         var px = tmp.GetPixels32();
+        DestroyImmediate(tmp);
+
+        bool legacy = IsLegacyMask(px);
         zones = new byte[px.Length];
         for (int i = 0; i < px.Length; i++)
         {
             var c = px[i];
-            zones[i] = c.r > 127 ? (byte)1 : c.g > 127 ? (byte)2 : c.b > 127 ? (byte)3 : c.a > 127 ? (byte)4 : (byte)0;
+            if (legacy)
+                zones[i] = c.r > 127 ? (byte)1 : c.g > 127 ? (byte)2 : c.b > 127 ? (byte)3 : c.a > 127 ? (byte)4 : (byte)0;
+            else
+                zones[i] = c.r <= MaxZones ? c.r : (byte)0;
         }
-        DestroyImmediate(tmp);
 
         maskAsset = tex;
-        dirty = false;
+        dirty = legacy;
+        if (legacy) Debug.Log("[WeaponZones] Converted an RGBA mask to zone ids 1-4. Save to keep the new format.");
         RebuildPreview();
+    }
+
+    // Id masks are opaque with ids <= 16; old RGBA masks have transparent or full-channel pixels.
+    private static bool IsLegacyMask(Color32[] px)
+    {
+        foreach (var c in px)
+            if (c.a == 0 || c.r > MaxZones || c.g > MaxZones || c.b > MaxZones) return true;
+        return false;
     }
 
     private void Save(bool saveAs)
@@ -307,18 +362,14 @@ public class WeaponZoneEditor : EditorWindow
         return (baseMap != null ? baseMap.name : "Weapon") + "_Zones";
     }
 
+    // Zone id in RGB, opaque alpha.
     private Color32[] BuildPixels()
     {
         var px = new Color32[zones.Length];
         for (int i = 0; i < zones.Length; i++)
         {
-            switch (zones[i])
-            {
-                case 1: px[i] = new Color32(255, 0, 0, 0); break;
-                case 2: px[i] = new Color32(0, 255, 0, 0); break;
-                case 3: px[i] = new Color32(0, 0, 255, 0); break;
-                case 4: px[i] = new Color32(0, 0, 0, 255); break;
-            }
+            byte id = zones[i];
+            px[i] = new Color32(id, id, id, 255);
         }
         return px;
     }
@@ -330,7 +381,7 @@ public class WeaponZoneEditor : EditorWindow
         {
             foreach (var m in r.sharedMaterials)
             {
-                if (m == null || m.shader == null || m.shader.name != ShaderName || !done.Add(m)) continue;
+                if (m == null || m.shader == null || m.shader.name != WeaponShaderSO.ShaderName || !done.Add(m)) continue;
                 Undo.RecordObject(m, "Assign Zone Mask");
                 m.SetTexture("_ZoneMask", maskAsset);
                 EditorUtility.SetDirty(m);
@@ -343,7 +394,7 @@ public class WeaponZoneEditor : EditorWindow
 
     private void RebuildPreview()
     {
-        for (int z = 0; z < counts.Length; z++) counts[z] = 0;
+        System.Array.Clear(counts, 0, counts.Length);
 
         if (zones == null || zones.Length != width * height)
         {
@@ -381,21 +432,39 @@ public class WeaponZoneEditor : EditorWindow
         if (preview && previewTex != null)
         {
             if (mpb == null) mpb = new MaterialPropertyBlock();
-            bool skin = previewSkin != null && previewSkin.shader != null && previewSkin.shader.name == ShaderName;
+            mpb.Clear();
+            mpb.SetTexture("_ZoneMask", previewTex);
+            if (previewShader != null) previewShader.WriteTo(mpb);
+            else WeaponShaderSO.WriteZones(mpb, FlatLooks());
 
             foreach (var r in CandidateRenderers())
             {
-                if (!UsesZoneShader(r)) continue;
-                mpb.Clear();
-                mpb.SetTexture("_ZoneMask", previewTex);
-                if (skin) CopySkin(previewSkin, mpb);
-                else FlatZones(mpb);
+                if (!WeaponShaderSO.UsesZoneShader(r)) continue;
                 r.SetPropertyBlock(mpb);
                 touched.Add(r);
             }
         }
 
         SceneView.RepaintAll();
+    }
+
+    // Each zone glows its editor colour so missed islands stand out.
+    private List<WeaponShaderSO.ZoneLook> FlatLooks()
+    {
+        flatLooks.Clear();
+        if (zoneSet == null) return flatLooks;
+        foreach (var z in zoneSet.zones)
+        {
+            if (z == null || z.id == 0) continue;
+            flatLooks.Add(new WeaponShaderSO.ZoneLook
+            {
+                zoneId = z.id,
+                recolor = 0f,
+                brightness = 1f,
+                emission = z.editorColor * 0.75f
+            });
+        }
+        return flatLooks;
     }
 
     private void ClearPreview()
@@ -405,36 +474,11 @@ public class WeaponZoneEditor : EditorWindow
         touched.Clear();
     }
 
-    private static void FlatZones(MaterialPropertyBlock b)
-    {
-        for (int z = 1; z <= 4; z++)
-        {
-            b.SetFloat($"_Z{z}Strength", 0f);
-            b.SetColor($"_Z{z}Emission", ZoneColors[z] * 0.75f);
-        }
-    }
-
-    private static void CopySkin(Material m, MaterialPropertyBlock b)
-    {
-        b.SetColor("_BaseColor", m.GetColor("_BaseColor"));
-        b.SetFloat("_Metallic", m.GetFloat("_Metallic"));
-        b.SetFloat("_Smoothness", m.GetFloat("_Smoothness"));
-        for (int z = 1; z <= 4; z++)
-        {
-            b.SetColor($"_Z{z}Color", m.GetColor($"_Z{z}Color"));
-            b.SetColor($"_Z{z}Emission", m.GetColor($"_Z{z}Emission"));
-            b.SetFloat($"_Z{z}Strength", m.GetFloat($"_Z{z}Strength"));
-            b.SetFloat($"_Z{z}Brightness", m.GetFloat($"_Z{z}Brightness"));
-            b.SetFloat($"_Z{z}Metallic", m.GetFloat($"_Z{z}Metallic"));
-            b.SetFloat($"_Z{z}Smoothness", m.GetFloat($"_Z{z}Smoothness"));
-        }
-    }
-
     // ------------------------------------------------------------------ scene
 
     private void OnSceneGUI(SceneView view)
     {
-        if (!pickMode || zones == null)
+        if (!pickMode || zones == null || zoneSet == null)
         {
             hover = null;
             return;
@@ -459,7 +503,7 @@ public class WeaponZoneEditor : EditorWindow
                 break;
 
             case EventType.Repaint:
-                if (hover != null) DrawOutline(hover, ZoneColors[e.shift ? 0 : activeZone]);
+                if (hover != null) DrawOutline(hover, ZoneColor(e.shift ? 0 : activeZone));
                 break;
         }
     }
@@ -640,17 +684,10 @@ public class WeaponZoneEditor : EditorWindow
         return list.ToArray();
     }
 
-    private static bool UsesZoneShader(Renderer r)
-    {
-        foreach (var m in r.sharedMaterials)
-            if (m != null && m.shader != null && m.shader.name == ShaderName) return true;
-        return false;
-    }
-
     private static bool AnyZoneRenderer()
     {
         foreach (var r in CandidateRenderers())
-            if (UsesZoneShader(r)) return true;
+            if (WeaponShaderSO.UsesZoneShader(r)) return true;
         return false;
     }
 
@@ -664,7 +701,7 @@ public class WeaponZoneEditor : EditorWindow
                 if (m == null || !m.HasProperty("_BaseMap")) continue;
                 var t = m.GetTexture("_BaseMap");
                 if (t == null) continue;
-                if (m.shader != null && m.shader.name == ShaderName) return t;
+                if (m.shader != null && m.shader.name == WeaponShaderSO.ShaderName) return t;
                 if (fallback == null) fallback = t;
             }
         }

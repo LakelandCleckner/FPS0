@@ -19,6 +19,7 @@ MonoBehaviour:
   viewmodelSkin:
   - from: {fileID: 2100000, guid: 9c7bfa686b7240b4cb4080e75cf560e9, type: 2}
     to: {fileID: 2100000, guid: cad9535406a37b742900b0ee8c478de3, type: 2}
+  defaultShader: {fileID: 11400000, guid: 6afe353b48cc3a646bf6665295d7e8a2, type: 2}
   baseDamageType: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
   weaponDamageDelta: 0
   roundsPerMinuteDelta: 0
