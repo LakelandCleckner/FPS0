@@ -21,3 +21,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c9e5e1a2491c21147b72983e01bef33e, type: 2}
   - {fileID: 11400000, guid: 52688e945c4f6e740b34a2bd067db409, type: 2}
   ammoPools: []
+  equippedArmor:
+  - {fileID: 11400000, guid: 27babd391377d89438656f816f4ba8f4, type: 2}
+  - {fileID: 11400000, guid: a9e0afab78ffb97458e873aee55c2460, type: 2}
+  carriedArmor:
+  - {fileID: 11400000, guid: f475134a5f88cec40b4ea079697365b0, type: 2}

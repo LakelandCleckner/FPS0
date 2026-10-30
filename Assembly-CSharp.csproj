@@ -65,6 +65,7 @@
     <Compile Include="Assets\Scripts\Combat\Stats\Keys\WeaponStatKeys.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\MaxHealthChangeTest.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\AutoFireBehaviorSO.cs" />
+    <Compile Include="Assets\Scripts\Combat\Armor\ArmorSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\DeliverySO.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\DamageMagnitudeReference.cs" />
     <Compile Include="Assets\Scripts\Combat\Events\WeaponEventBridge.cs" />
@@ -108,6 +109,7 @@
     <Compile Include="Assets\Scripts\Combat\Stats\Modifiers\StatModifier.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\Character.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StackEntry.cs" />
+    <Compile Include="Assets\Scripts\Combat\Loadout\LoadoutModifierApplier.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\InvestigateTargetSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\WeaponArchetypeSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\ExplosionOnKillSO.cs" />
@@ -130,6 +132,7 @@
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\ProjectileDeliverySO.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StatusSummedTickEffect.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\BindingPointType.cs" />
+    <Compile Include="Assets\Scripts\Combat\Armor\ArmorInstance.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\BurstFireBehavior.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\DebugLogEffectSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Spawning\EnemyPoolAdapter.cs" />
@@ -189,6 +192,7 @@
     <Compile Include="Assets\PixPlays\Components\Scripts\BindingPoints.cs" />
     <Compile Include="Assets\Scripts\Combat\Spawning\Testing\SpawnTestProbe.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\PlayerEngagedSensor.cs" />
+    <Compile Include="Assets\Scripts\Combat\Armor\ArmorSlotSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Sources\IDamageSource.cs" />
     <Compile Include="Assets\Scripts\Combat\Spawning\EnemyPoolHandle.cs" />
     <Compile Include="Assets\StarterAssets\FirstPersonController\Scripts\BasicRigidBodyPush.cs" />
@@ -252,6 +256,7 @@
     <Compile Include="Assets\Scripts\Combat\Stats\Core\StatDefinitionSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Keys\CombatStatKeys.cs" />
     <Compile Include="Assets\StarterAssets\InputSystem\StarterAssetsInputs.cs" />
+    <Compile Include="Assets\Scripts\Combat\Loadout\ModifierGrant.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StatusSOFiles\BurnStatusSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\AutoFireBehavior.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Markers\WanderMarker.cs" />

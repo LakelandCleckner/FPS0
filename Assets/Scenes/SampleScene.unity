@@ -1604,7 +1604,7 @@ PrefabInstance:
     - target: {fileID: 3516509819376779916, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
       propertyPath: model
       value: 
-      objectReference: {fileID: 1551917948}
+      objectReference: {fileID: 0}
     - target: {fileID: 3516509819376779916, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
       propertyPath: runtimeParent
       value: 
@@ -1625,6 +1625,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerArmsRoot
       objectReference: {fileID: 0}
+    - target: {fileID: 6450774073341179235, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
+      propertyPath: maxHealthChangeMode
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6633584322727871009, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
       propertyPath: spawner
       value: 
@@ -1643,10 +1647,13 @@ PrefabInstance:
       addedObject: {fileID: 1551917949}
     - targetCorrespondingSourceObject: {fileID: 6041466214417116510, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1551917948}
+      addedObject: {fileID: 1551917947}
     - targetCorrespondingSourceObject: {fileID: 6041466214417116510, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1551917947}
+      addedObject: {fileID: 1551917951}
+    - targetCorrespondingSourceObject: {fileID: 6041466214417116510, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1551917950}
   m_SourcePrefab: {fileID: 100100000, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
 --- !u!1 &867851612
 GameObject:
@@ -2574,6 +2581,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 191d41ccd1d98e848aa0bea0a862c7fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1551917939 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3694005707256881966, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
+  m_PrefabInstance: {fileID: 842777205}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 191204803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdf4ae702aea108449104d23d3b24ade, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1551917947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2586,21 +2604,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4c9f66c2e0b6714a96ba0ee4738455a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loadout: {fileID: 1551917948}
---- !u!114 &1551917948
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 191204803}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c4e023f8cddf5648b67907c38c4d354, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inventory: {fileID: 1551917949}
-  startingLoadout: {fileID: 11400000, guid: b853a08c49775734ab264b37c3e190a9, type: 2}
+  loadout: {fileID: 0}
+  player: {fileID: 1551917939}
+  weapons: {fileID: 1551917934}
 --- !u!114 &1551917949
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2614,6 +2620,43 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   carriedWeaponCap: 9
+  carriedArmorCapPerSlot: 9
+--- !u!114 &1551917950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 191204803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa7293113c1f3f24cae8499042329544, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  model: {fileID: 0}
+  weapons: {fileID: 0}
+  player: {fileID: 0}
+  debugLog: 0
+--- !u!114 &1551917951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 191204803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c4e023f8cddf5648b67907c38c4d354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inventory: {fileID: 1551917949}
+  startingLoadout: {fileID: 11400000, guid: b853a08c49775734ab264b37c3e190a9, type: 2}
+  armorSlots:
+  - {fileID: 11400000, guid: 890c67e511025fb4a8f6c2caa4797487, type: 2}
+  - {fileID: 11400000, guid: 14f7571ee2d33b0458da741d0eeef45d, type: 2}
+  - {fileID: 11400000, guid: 773fdea7bf7d89b40825fb161780dac0, type: 2}
+  - {fileID: 11400000, guid: e841247d07beb6c42adf025a93df5811, type: 2}
+  - {fileID: 11400000, guid: cfe06c603d75ffd498447bacd900f441, type: 2}
 --- !u!1 &1564625771
 GameObject:
   m_ObjectHideFlags: 0

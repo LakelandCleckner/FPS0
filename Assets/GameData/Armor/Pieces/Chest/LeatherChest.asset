@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad76d8e697dd64b45806e9c6a2372cfc, type: 3}
+  m_Name: LeatherChest
+  m_EditorClassIdentifier: 
+  id: leather_chest
+  displayName: Leather Chest
+  slot: {fileID: 11400000, guid: 773fdea7bf7d89b40825fb161780dac0, type: 2}
+  modifiers:
+  - stat: {fileID: 11400000, guid: fc43bc424a3cd7241a8d86e29f7b33b5, type: 2}
+    bucket: 2
+    value: 0.1
+    target: 1
+    weaponTypes: []
+    scope: 0
