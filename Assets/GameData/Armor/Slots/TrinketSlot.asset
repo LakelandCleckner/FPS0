@@ -14,3 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: trinket
   displayName: Trinket Slot
+  perkColumns:
+  - label: Stat
+    source: {fileID: 11400000, guid: f9ef6742ad4eb0b40b8761933d0b3b3d, type: 2}
+    extraPerks: []
+  - label: Stat
+    source: {fileID: 11400000, guid: d7009f9307c0981409cd49f6d1167b61, type: 2}
+    extraPerks: []
+  - label: Trait
+    source: {fileID: 11400000, guid: 203632eff8623844e963ae4e464fe63a, type: 2}
+    extraPerks: []
+  - label: Trait
+    source: {fileID: 11400000, guid: 203632eff8623844e963ae4e464fe63a, type: 2}
+    extraPerks: []

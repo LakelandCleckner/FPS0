@@ -22,3 +22,6 @@ MonoBehaviour:
     target: 1
     weaponTypes: []
     scope: 0
+  intrinsicPerks: []
+  perkColumns: []
+  curatedRoll: []

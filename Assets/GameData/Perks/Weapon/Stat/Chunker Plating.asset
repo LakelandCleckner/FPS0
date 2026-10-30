@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd56c19941fb6964294e4e861f6ec0a1, type: 3}
+  m_Name: Chunker Plating
+  m_EditorClassIdentifier: 
+  id: chunker_plating
+  displayName: Chunker Plating
+  description: Double health. 20% slower movement.
+  listenScope: 0
+  modifiers:
+  - stat: {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
+    bucket: 2
+    value: 1
+    target: 1
+    weaponTypes: []
+    scope: 1
+  - stat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
+    bucket: 2
+    value: -0.2
+    target: 1
+    weaponTypes: []
+    scope: 1

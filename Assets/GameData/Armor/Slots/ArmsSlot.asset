@@ -14,3 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: arms
   displayName: Arms Slot
+  perkColumns:
+  - label: Stat
+    source: {fileID: 11400000, guid: bbb8892f834514b4b988f66733bd34c8, type: 2}
+    extraPerks: []
+  - label: Stat
+    source: {fileID: 11400000, guid: bbb8892f834514b4b988f66733bd34c8, type: 2}
+    extraPerks: []
+  - label: Trait
+    source: {fileID: 11400000, guid: 203632eff8623844e963ae4e464fe63a, type: 2}
+    extraPerks: []
+  - label: Trait
+    source: {fileID: 11400000, guid: 203632eff8623844e963ae4e464fe63a, type: 2}
+    extraPerks: []

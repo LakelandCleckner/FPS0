@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Combat.Loadout;
 using Combat.Perks;
 
 namespace Combat.Armor
 {
-    // An armour definition: its slot, the modifiers it always grants, and its perks.
+    // An armour definition: its slot and its perks. Fixed bonuses are intrinsic Stat Perks.
     [CreateAssetMenu(fileName = "Armor", menuName = "Combat/Armor/Armor")]
     public class ArmorSO : ScriptableObject
     {
@@ -14,10 +13,6 @@ namespace Combat.Armor
         public string displayName = "";
 
         public ArmorSlotSO slot;
-
-        [Tooltip("Weapons target applies to every loadout weapon matching the type filter. " +
-                 "InHands scope only matters for the Weapons target.")]
-        public List<ModifierEntry> modifiers = new List<ModifierEntry>();
 
         [Header("Perks")]
         [Tooltip("Always present on every copy.")]

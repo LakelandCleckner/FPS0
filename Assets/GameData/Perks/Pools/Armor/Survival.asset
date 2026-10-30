@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4d1da4720f2c694786e3c4a0bbe5be0, type: 3}
+  m_Name: Survival
+  m_EditorClassIdentifier: 
+  perks:
+  - {fileID: 11400000, guid: e0220d74656754c4fac4819d9bed529e, type: 2}
+  - {fileID: 11400000, guid: 4c341a0b9db000543a09d111628b4e84, type: 2}
+  - {fileID: 11400000, guid: 10d795ed5c2c5f7418e4386eaa78589c, type: 2}
+  - {fileID: 11400000, guid: e536dcca8be19aa4496ab31eca0bf77f, type: 2}
+  - {fileID: 11400000, guid: 5ca34ca10ac9ca44cb574eae7892692e, type: 2}
+  includes: []
+  authoredAs: Sturdy *, Tough *

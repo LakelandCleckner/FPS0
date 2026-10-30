@@ -14,3 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: legs
   displayName: Legs Slot
+  perkColumns:
+  - label: Stat
+    source: {fileID: 11400000, guid: d7009f9307c0981409cd49f6d1167b61, type: 2}
+    extraPerks: []
+  - label: Stat
+    source: {fileID: 11400000, guid: d7009f9307c0981409cd49f6d1167b61, type: 2}
+    extraPerks: []
+  - label: Trait
+    source: {fileID: 11400000, guid: 203632eff8623844e963ae4e464fe63a, type: 2}
+    extraPerks: []
+  - label: Trait
+    source: {fileID: 11400000, guid: 203632eff8623844e963ae4e464fe63a, type: 2}
+    extraPerks: []

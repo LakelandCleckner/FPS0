@@ -15,20 +15,29 @@ MonoBehaviour:
   archetype: {fileID: 11400000, guid: 46e6b4025aafbfd46872417326676d04, type: 2}
   id: burster390sidearm
   displayName: Burster 389
+  viewmodel: {fileID: 11400000, guid: a57c3dcab586db94e9a2916da06e2ebb, type: 2}
+  viewmodelSkin: []
+  defaultShader: {fileID: 11400000, guid: 6afe353b48cc3a646bf6665295d7e8a2, type: 2}
+  overrideSlots: 0
+  allowedSlotsOverride: -1
   baseDamageType: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
   weaponDamageDelta: 0
   roundsPerMinuteDelta: 0
   magazineSizeDelta: 0
   reloadTimeDelta: 0
   handlingDelta: 0
+  adsZoomDelta: 0
+  rangeDelta: 0
+  aimAssistDelta: 0
   startingReserves: 100
   infiniteReservesOverride: 0
   fireClip: {fileID: 8300000, guid: a02ac01715490c646a720c0bcc70ec7a, type: 3}
   emptyClip: {fileID: 8300000, guid: 08eb29cab0988c349bc1c4de52aaf72c, type: 3}
   reloadClip: {fileID: 8300000, guid: 49af6209dec94aa4a9216b5a301d0a88, type: 3}
-  riderEffects:
-  - {fileID: 11400000, guid: c33308b766c09af46b5364eaf38cb9a8, type: 2}
-  perkPool: []
+  riderEffects: []
+  intrinsicPerks: []
+  perkColumns: []
+  curatedRoll: []
   faction: 0
   maxChainDepth: 0
   chainFalloff: 1

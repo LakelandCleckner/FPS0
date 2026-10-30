@@ -128,7 +128,6 @@ namespace Combat.Loadout
                     if (loadout.TryEquipArmor(a, out var reason))
                     {
                         Debug.Log($"[LoadoutDebug] {slot.name} <- {a.Definition.name}{PerkList(a.AllPerks())}");
-                        LogStats(a.Definition);
                     }
                     else Debug.Log($"[LoadoutDebug] {slot.name}: {reason}");
                     return;
@@ -140,37 +139,13 @@ namespace Combat.Loadout
 
         private void ClearArmor(int index)
         {
-            var old = loadout.GetArmor(index);
             var name = index < loadout.ArmorSlotCount ? loadout.ArmorSlots[index].name : $"armour slot {index + 1}";
 
             if (loadout.TryClearArmor(index, out var reason))
             {
                 Debug.Log($"[LoadoutDebug] {name} cleared.");
-                if (old != null) LogStats(old.Definition);
             }
             else Debug.Log($"[LoadoutDebug] {name}: {reason}");
-        }
-
-        // Resolved values of every stat this armour touches, after the change.
-        private void LogStats(ArmorSO def)
-        {
-            if (def == null) return;
-
-            var held = weapons != null ? weapons.Active : null;
-            var heldStats = held != null && held.DamageSource != null ? held.DamageSource.SourceStats : null;
-            var playerStats = player != null ? player.Container : null;
-
-            foreach (var e in def.modifiers)
-            {
-                if (e == null || e.stat == null) continue;
-
-                bool onPlayer = e.target == ModifierTarget.Player;
-                var c = onPlayer ? playerStats : heldStats;
-                string where = onPlayer ? "player" : "held weapon";
-
-                if (c == null) Debug.Log($"[LoadoutDebug]   {e.stat.name} ({where}): no container");
-                else Debug.Log($"[LoadoutDebug]   {e.stat.name} ({where}) = {c.Resolve(e.stat):0.###}");
-            }
         }
 
         // ------------------------------------------------------------------ perks

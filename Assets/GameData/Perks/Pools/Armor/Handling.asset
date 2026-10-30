@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4d1da4720f2c694786e3c4a0bbe5be0, type: 3}
+  m_Name: Handling
+  m_EditorClassIdentifier: 
+  perks:
+  - {fileID: 11400000, guid: 3d4d592b6cabc174d9caeb76318967a7, type: 2}
+  - {fileID: 11400000, guid: 22d420654367201419bdf3d390931e90, type: 2}
+  - {fileID: 11400000, guid: 2defa108faa885541be5c65ec6cb1f8b, type: 2}
+  - {fileID: 11400000, guid: b7c8a1ca62678c941becefd4dec6fae4, type: 2}
+  - {fileID: 11400000, guid: 93d2c88713e26604e91a58de204d2f35, type: 2}
+  includes: []
+  authoredAs: Steady Hands *, Fast Hands *, Shotgun Loader
