@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fc4868a939c53943b121918de7da8a5, type: 3}
+  m_Name: StartingLoadout1
+  m_EditorClassIdentifier: 
+  equipped:
+  - {fileID: 11400000, guid: e12df4051163b664ea4e285983b94015, type: 2}
+  - {fileID: 11400000, guid: d3924d4d97123f64abdced4856c5c9fc, type: 2}
+  - {fileID: 11400000, guid: ca8c41789cda7ad4cbec9e16728a6c2c, type: 2}
+  carried:
+  - {fileID: 11400000, guid: a722148e22a40e5469d1da761614c6c2, type: 2}
+  - {fileID: 11400000, guid: c9e5e1a2491c21147b72983e01bef33e, type: 2}
+  - {fileID: 11400000, guid: 52688e945c4f6e740b34a2bd067db409, type: 2}
+  ammoPools: []

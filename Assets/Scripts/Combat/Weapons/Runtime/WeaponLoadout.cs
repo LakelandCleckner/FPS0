@@ -3,40 +3,45 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Combat.Events;
+using Combat.Loadout;
 using Combat.Sources;
 using Combat.Stats;
 
 namespace Combat.Weapons
 {
-    // Owns the player's weapons and swapping between them; origin of Equip/Stow events.
-    // Stowed weapons stay enabled (renderers/animator off) so perks and reloads keep running.
+    // Presents PlayerLoadout's weapons: spawns, shows and swaps them; origin of Equip/Stow events.
+    // Stowed weapons stay enabled so perks and reloads run; removed ones are deactivated, never destroyed.
     public class WeaponLoadout : MonoBehaviour
     {
-        [Serializable]
-        public class Slot
+        // One spawned weapon, cached per owned instance.
+        private sealed class Runtime
         {
+            public WeaponInstance instance;
+            public GameObject root;
             public WeaponFireController controller;
+            public WeaponAmmo ammo;
 
-            [Tooltip("Optional. Where to look for renderers to hide while stowed. " +
-                     "Leave empty to use the controller's own object and its children, " +
-                     "which is right when the scripts and the mesh live together.")]
-            public Transform modelRoot;
+            public GameObject gunInstance;
+            public Animator gunAnimator;
+            public RuntimeAnimatorController armsController;
+            public Transform sight;
 
-            // Renderers visible at startup; toggled via enabled so the weapon stays subscribed.
-            [NonSerialized] public Renderer[] renderers;
+            // Renderers visible at spawn; toggled via enabled so the weapon stays subscribed.
+            public Renderer[] renderers;
 
             // Disabled while stowed so it can't resume mid-reload (component, not GameObject).
-            [NonSerialized] public Animator animator;
-
-            // Spawned gun model; set in Awake so WeaponAnimator can read it in Start.
-            [NonSerialized] public GameObject gunInstance;
-            [NonSerialized] public Animator gunAnimator;
-            [NonSerialized] public RuntimeAnimatorController armsController;
-            [NonSerialized] public Transform sight;
+            public Animator animator;
         }
 
+        [Header("Model")]
+        [Tooltip("Found in parents if empty.")]
+        [SerializeField] private PlayerLoadout model;
+
         [Header("Weapons")]
-        [SerializeField] private List<Slot> slots = new List<Slot>();
+        [Tooltip("Weapon component stack without a model. One is spawned per owned weapon.")]
+        [SerializeField] private GameObject runtimePrefab;
+        [Tooltip("Parent for spawned weapons; must sit under this object. Empty = this transform.")]
+        [SerializeField] private Transform runtimeParent;
 
         [Header("Viewmodel")]
         [Tooltip("The shared first-person arms. Required for weapons with a WeaponViewmodelSO.")]
@@ -52,7 +57,7 @@ namespace Combat.Weapons
 
         [Header("Input")]
         [SerializeField] private Key swapKey = Key.Q;
-        [Tooltip("Digit keys select a slot directly. 1 selects slot 0, and so on.")]
+        [Tooltip("Digit keys select a slot directly. 1 selects slot 1, and so on.")]
         [SerializeField] private bool enableDigitSelect = true;
 
         [Tooltip("Should match WeaponFireController's reload key. Reloading cancels a " +
@@ -93,7 +98,12 @@ namespace Combat.Weapons
         private bool wasSprinting;
         private float sprintExitTimer;
 
-        // Fired when a weapon becomes the held one (startup and end of each equip).
+        private readonly Runtime[] presented = new Runtime[LoadoutSlots.Count];
+        private readonly Dictionary<WeaponInstance, Runtime> cache = new Dictionary<WeaponInstance, Runtime>();
+        private Transform staging;
+        private bool started;
+
+        // Fired when a weapon becomes the held one (startup and end of each equip); null when empty-handed.
         public event Action<WeaponFireController> OnWeaponEquipped;
 
         // Fired when a transition begins, with its stat-driven duration for clip scaling.
@@ -101,56 +111,161 @@ namespace Combat.Weapons
         public event Action<WeaponFireController, float> OnEquipStarted;
         public event Action<WeaponFireController, float> OnSprintExitStarted;
 
+        // A weapon entered or left the loadout (slot, source); modifier registration hooks here.
+        public event Action<int, WeaponDamageSource> WeaponBound;
+        public event Action<int, WeaponDamageSource> WeaponUnbound;
+
         public int ActiveIndex => activeIndex;
         public bool IsSwapping => state != SwapState.Ready;
 
-        /// The weapon currently held. Null only if the loadout is empty.
+        /// The weapon currently held. Null when empty-handed.
         public WeaponFireController Active =>
-            IsValid(activeIndex) ? slots[activeIndex].controller : null;
+            IsValid(activeIndex) ? presented[activeIndex].controller : null;
 
         public ViewmodelRig Rig => rig;
+        public PlayerLoadout Model => model;
+
+        public WeaponFireController ControllerIn(int slot) =>
+            IsValid(slot) ? presented[slot].controller : null;
 
         private void Awake()
         {
             bus = WeaponEventBus.FindFor(this);
+            if (model == null) model = GetComponentInParent<PlayerLoadout>();
 
-            for (int i = 0; i < slots.Count; i++)
-                SpawnViewmodel(i);
+            // Spawned weapons wait here so Initialize runs before their Awake.
+            var go = new GameObject("WeaponStaging");
+            go.SetActive(false);
+            staging = go.transform;
+            staging.SetParent(transform, false);
         }
 
-        // Spawns the gun model onto the hand socket and uses it as the slot's modelRoot.
-        private void SpawnViewmodel(int index)
+        private void OnEnable()
         {
-            if (!IsValid(index)) return;
-            var slot = slots[index];
+            if (model != null) model.WeaponSlotChanged += HandleSlotChanged;
+        }
 
-            var source = slot.controller.DamageSource;
-            var vm = source != null && source.Weapon != null ? source.Weapon.viewmodel : null;
+        private void OnDisable()
+        {
+            if (model != null) model.WeaponSlotChanged -= HandleSlotChanged;
+        }
+
+        // In Start so every scene Awake (stat registry, bus, combatant) has run first.
+        private void Start()
+        {
+            if (model == null)
+            {
+                Debug.LogError("[Loadout] No PlayerLoadout found.");
+                return;
+            }
+
+            model.EnsureInitialized();
+
+            for (int i = 0; i < presented.Length; i++)
+                Bind(i, model.GetWeapon(i));
+
+            activeIndex = FirstValid();
+            if (activeIndex < 0) activeIndex = 0;
+            previousIndex = activeIndex;
+
+            // All slots start stowed except the first filled one, which starts ready.
+            for (int i = 0; i < presented.Length; i++)
+                ApplyHeldState(i, held: i == activeIndex, ready: i == activeIndex);
+
+            started = true;
+
+            if (Active != null) PublishFor(activeIndex, WeaponEventType.Equip);
+            OnWeaponEquipped?.Invoke(Active);
+        }
+
+        private void Update()
+        {
+            ReadInput();
+            TickSwap();
+            TickSprint();
+            ApplyReadiness();
+        }
+
+        // ------------------------------------------------------------------ spawning
+
+        // Returns the cached runtime for an owned weapon, spawning it on first use.
+        private Runtime Acquire(WeaponInstance instance)
+        {
+            if (instance == null || instance.Definition == null) return null;
+
+            if (cache.TryGetValue(instance, out var cached))
+            {
+                if (!cached.root.activeSelf) cached.root.SetActive(true);
+                return cached;
+            }
+
+            if (runtimePrefab == null)
+            {
+                Debug.LogError("[Loadout] No runtime prefab assigned.");
+                return null;
+            }
+
+            var go = Instantiate(runtimePrefab, staging, false);
+            go.name = "Weapon_" + instance.Definition.name;
+
+            var controller = go.GetComponentInChildren<WeaponFireController>(true);
+            var source = controller != null ? controller.DamageSource : null;
+            if (source == null)
+            {
+                Debug.LogError("[Loadout] Runtime prefab needs a WeaponFireController with a WeaponDamageSource.");
+                Destroy(go);
+                return null;
+            }
+
+            source.Initialize(instance);
+
+            var rt = new Runtime
+            {
+                instance = instance,
+                root = go,
+                controller = controller,
+                ammo = controller.GetComponent<WeaponAmmo>()
+            };
+
+            SpawnViewmodel(rt);
+            CacheVisuals(rt);
+            cache[instance] = rt;
+
+            // Leaving staging runs Awake/OnEnable with the instance already injected.
+            go.transform.SetParent(runtimeParent != null ? runtimeParent : transform, false);
+
+            if (debugLog) Debug.Log($"[Loadout] Spawned {go.name}");
+            return rt;
+        }
+
+        // Spawns the gun model onto the hand socket and uses it as the runtime's model root.
+        private void SpawnViewmodel(Runtime rt)
+        {
+            var weapon = rt.controller.DamageSource.Weapon;
+            var vm = weapon != null ? weapon.viewmodel : null;
             if (vm == null) return;
 
             if (rig == null)
             {
-                Debug.LogError($"[Loadout] Slot {index} has a viewmodel but no ViewmodelRig is assigned.");
+                Debug.LogError($"[Loadout] '{weapon.name}' has a viewmodel but no ViewmodelRig is assigned.");
                 return;
             }
 
-            slot.armsController = vm.armsController;
+            rt.armsController = vm.armsController;
 
-            if (vm.gunPrefab != null)
-            {
-                slot.gunInstance = Instantiate(vm.gunPrefab, rig.GunSocket, false);
-                ApplySkin(slot.gunInstance, source.Weapon.viewmodelSkin);
-                if (source.Weapon.defaultShader != null) source.Weapon.defaultShader.ApplyTo(slot.gunInstance);
-                slot.gunAnimator = slot.gunInstance.GetComponentInChildren<Animator>(true);
-                slot.modelRoot = slot.gunInstance.transform;
+            if (vm.gunPrefab == null) return;
 
-                var model = slot.gunInstance.GetComponent<GunModel>();
-                if (model != null) slot.sight = model.Sight;
-                if (model != null && model.Muzzle != null)
-                    slot.controller.SetMuzzle(model.Muzzle);
-                else
-                    Debug.LogWarning($"[Loadout] Gun prefab '{vm.gunPrefab.name}' has no GunModel muzzle.");
-            }
+            rt.gunInstance = Instantiate(vm.gunPrefab, rig.GunSocket, false);
+            ApplySkin(rt.gunInstance, weapon.viewmodelSkin);
+            if (weapon.defaultShader != null) weapon.defaultShader.ApplyTo(rt.gunInstance);
+            rt.gunAnimator = rt.gunInstance.GetComponentInChildren<Animator>(true);
+
+            var gunModel = rt.gunInstance.GetComponent<GunModel>();
+            if (gunModel != null) rt.sight = gunModel.Sight;
+            if (gunModel != null && gunModel.Muzzle != null)
+                rt.controller.SetMuzzle(gunModel.Muzzle);
+            else
+                Debug.LogWarning($"[Loadout] Gun prefab '{vm.gunPrefab.name}' has no GunModel muzzle.");
         }
 
         // Replaces matching materials on every renderer of the spawned gun.
@@ -180,49 +295,144 @@ namespace Combat.Weapons
             }
         }
 
+        private void CacheVisuals(Runtime rt)
+        {
+            var root = rt.gunInstance != null ? rt.gunInstance.transform : rt.controller.transform;
+
+            var all = root.GetComponentsInChildren<Renderer>(includeInactive: true);
+            var visible = new List<Renderer>(all.Length);
+            for (int i = 0; i < all.Length; i++)
+                if (all[i].enabled) visible.Add(all[i]);
+
+            rt.renderers = visible.ToArray();
+            rt.animator = root.GetComponentInChildren<Animator>(includeInactive: true);
+        }
+
         public Animator GunAnimatorOf(WeaponFireController controller)
         {
-            for (int i = 0; i < slots.Count; i++)
-                if (IsValid(i) && slots[i].controller == controller)
-                    return slots[i].gunAnimator;
+            foreach (var rt in cache.Values)
+                if (rt.controller == controller) return rt.gunAnimator;
             return null;
         }
 
-        private void Start()
+        // ------------------------------------------------------------------ binding
+
+        // Puts an owned weapon into a slot, hidden. Never touches the hand.
+        private void Bind(int slot, WeaponInstance instance)
         {
-            for (int i = 0; i < slots.Count; i++)
-                CacheVisuals(i);
+            var rt = Acquire(instance);
+            presented[slot] = rt;
+            if (rt == null) return;
 
-            for (int i = 0; i < slots.Count; i++)
+            ApplyHeldState(slot, held: false, ready: false);
+            WeaponBound?.Invoke(slot, rt.controller.DamageSource);
+
+            if (debugLog) Debug.Log($"[Loadout] BIND slot {slot} -> {rt.root.name}");
+        }
+
+        // Takes a weapon out of the loadout and deactivates it.
+        private void Unbind(int slot)
+        {
+            var rt = presented[slot];
+            if (rt == null) return;
+
+            ApplyHeldState(slot, held: false, ready: false);
+            if (rt.ammo != null) rt.ammo.CancelReload();
+
+            presented[slot] = null;
+            WeaponUnbound?.Invoke(slot, rt.controller.DamageSource);
+            rt.root.SetActive(false);
+
+            if (debugLog) Debug.Log($"[Loadout] UNBIND slot {slot} <- {rt.root.name}");
+        }
+
+        private bool NeedsSync(int slot)
+        {
+            var want = model != null ? model.GetWeapon(slot) : null;
+            var have = presented[slot];
+            return (have != null ? have.instance : null) != want;
+        }
+
+        private int SlotPresenting(Runtime rt)
+        {
+            if (rt == null) return -1;
+            for (int i = 0; i < presented.Length; i++)
+                if (presented[i] == rt) return i;
+            return -1;
+        }
+
+        private int SlotPresenting(WeaponInstance instance)
+        {
+            if (instance == null) return -1;
+            for (int i = 0; i < presented.Length; i++)
+                if (presented[i] != null && presented[i].instance == instance) return i;
+            return -1;
+        }
+
+        // Syncs every slot but `skip`; a weapon still shown elsewhere waits for that slot to release it.
+        private void SyncSlots(int skip)
+        {
+            bool changed = true;
+            for (int pass = 0; changed && pass < presented.Length; pass++)
             {
-                if (!IsValid(i))
-                    Debug.LogError($"[Loadout] Slot {i} has no WeaponFireController assigned.");
-                else if (debugLog)
-                    Debug.Log($"[Loadout] Slot {i}: {slots[i].controller.name} " +
-                              $"equip={EquipTime(i):F2}s stow={StowTime(i):F2}s " +
-                              $"renderers={(slots[i].renderers != null ? slots[i].renderers.Length : 0)}");
-            }
+                changed = false;
+                for (int i = 0; i < presented.Length; i++)
+                {
+                    if (i == skip || !NeedsSync(i)) continue;
 
-            if (slots.Count < 2)
-                Debug.LogWarning("[Loadout] Fewer than 2 slots -- swapping is disabled.");
+                    var want = model.GetWeapon(i);
+                    int shownIn = SlotPresenting(want);
+                    if (shownIn >= 0 && shownIn != i && NeedsSync(shownIn) && shownIn != skip)
+                        Unbind(shownIn);
+                    else if (shownIn >= 0 && shownIn != i)
+                        continue;
 
-            // All slots start stowed except slot 0; in Start so weapon containers exist first.
-            for (int i = 0; i < slots.Count; i++)
-                ApplyHeldState(i, held: i == activeIndex, ready: i == activeIndex);
-
-            if (Active != null)
-            {
-                PublishFor(activeIndex, WeaponEventType.Equip);
-                OnWeaponEquipped?.Invoke(Active);
+                    Unbind(i);
+                    Bind(i, want);
+                    changed = true;
+                }
             }
         }
 
-        private void Update()
+        private void HandleSlotChanged(int slot, WeaponInstance oldWeapon, WeaponInstance newWeapon)
         {
-            ReadInput();
-            TickSwap();
-            TickSprint();
-            ApplyReadiness();
+            if (!started || slot < 0 || slot >= presented.Length) return;
+
+            bool holding = IsValid(activeIndex);
+
+            // In hand: put it away first; TickSwap swaps the contents once it's down.
+            if (holding && slot == activeIndex)
+            {
+                if (NeedsSync(slot)) ReplaceHeld();
+                return;
+            }
+
+            SyncSlots(holding ? activeIndex : -1);
+
+            // Empty-handed: bring the new weapon straight up.
+            if (!IsValid(activeIndex) && state == SwapState.Ready && IsValid(slot))
+                BeginEquip(slot);
+        }
+
+        private void ReplaceHeld()
+        {
+            switch (state)
+            {
+                case SwapState.Ready:
+                    BeginStow(activeIndex);
+                    break;
+
+                case SwapState.Equipping:
+                    {
+                        // Reverse the raise, carrying progress.
+                        float equipProgress = Progress();
+                        BeginStow(activeIndex);
+                        timer = (1f - equipProgress) * duration;
+                        break;
+                    }
+
+                    // Stowing: already on its way down; TickSwap syncs it.
+            }
         }
 
         // ------------------------------------------------------------------ input
@@ -237,11 +447,9 @@ namespace Combat.Weapons
 
             if (!enableDigitSelect) return;
 
-            // digit1..digit4 -> slots 0..3
             if (kb.digit1Key.wasPressedThisFrame) RequestSwap(0);
             else if (kb.digit2Key.wasPressedThisFrame) RequestSwap(1);
             else if (kb.digit3Key.wasPressedThisFrame) RequestSwap(2);
-            else if (kb.digit4Key.wasPressedThisFrame) RequestSwap(3);
         }
 
         // ------------------------------------------------------------------ sprint
@@ -269,9 +477,12 @@ namespace Combat.Weapons
 
             // Starting a sprint cancels a reload; keyed on resolved sprint, not the key.
             if (!wasSprinting && sprinting)
-                AmmoOf(activeIndex)?.CancelReload();
+            {
+                var ammo = AmmoOf(activeIndex);
+                if (ammo != null) ammo.CancelReload();
+            }
 
-            if (wasSprinting && !sprinting)
+            if (wasSprinting && !sprinting && IsValid(activeIndex))
             {
                 float d = EquipTime(activeIndex) * sprintExitFraction;
                 if (d > 0f)
@@ -302,15 +513,15 @@ namespace Combat.Weapons
 
         // ------------------------------------------------------------------ swap
 
-        // Swap target is the last held weapon, or the next valid slot at startup.
+        // Swap target is the last held weapon, or the next filled slot.
         private int SwapTarget()
         {
             if (previousIndex != activeIndex && IsValid(previousIndex))
                 return previousIndex;
 
-            for (int i = 1; i <= slots.Count; i++)
+            for (int i = 1; i <= presented.Length; i++)
             {
-                int idx = (activeIndex + i) % slots.Count;
+                int idx = (activeIndex + i) % presented.Length;
                 if (IsValid(idx)) return idx;
             }
             return activeIndex;
@@ -320,16 +531,18 @@ namespace Combat.Weapons
         {
             if (debugLog)
                 Debug.Log($"[Loadout] RequestSwap target={targetIndex} active={activeIndex} " +
-                          $"prev={previousIndex} state={state} slots={slots.Count}");
+                          $"prev={previousIndex} state={state}");
 
             if (!IsValid(targetIndex))
             {
-                if (debugLog) Debug.Log($"[Loadout]   rejected: slot {targetIndex} invalid");
+                if (debugLog) Debug.Log($"[Loadout]   rejected: slot {targetIndex} empty");
                 return;
             }
-            if (slots.Count < 2)
+
+            // Empty-handed: just raise the target.
+            if (!IsValid(activeIndex))
             {
-                if (debugLog) Debug.Log("[Loadout]   rejected: need 2+ slots");
+                if (state == SwapState.Ready) BeginEquip(targetIndex);
                 return;
             }
 
@@ -345,9 +558,16 @@ namespace Combat.Weapons
                     break;
 
                 case SwapState.Stowing:
-                    // Re-selecting the weapon being stowed reverses the swap, carrying progress.
                     if (targetIndex == activeIndex)
                     {
+                        // Contents are being replaced: keep stowing and come back up with the new one.
+                        if (NeedsSync(activeIndex))
+                        {
+                            pendingIndex = activeIndex;
+                            return;
+                        }
+
+                        // Re-selecting the weapon being stowed reverses the swap, carrying progress.
                         float stowProgress = Progress();
                         state = SwapState.Equipping;
                         duration = EquipTime(activeIndex);
@@ -390,7 +610,24 @@ namespace Combat.Weapons
             SetActive(activeIndex, false, false);
 
             // One-off reload cancel on stow; stowed weapons can still reload.
-            AmmoOf(activeIndex)?.CancelReload();
+            var ammo = AmmoOf(activeIndex);
+            if (ammo != null) ammo.CancelReload();
+        }
+
+        // Raises a weapon with nothing in hand.
+        private void BeginEquip(int slot)
+        {
+            activeIndex = slot;
+            ApplyHeldState(slot, held: true, ready: false);
+
+            state = SwapState.Equipping;
+            duration = EquipTime(slot);
+            timer = 0f;
+
+            if (debugLog) Debug.Log($"[Loadout] EQUIP {slot} from empty over {duration:F2}s");
+
+            // After ApplyHeldState: its Rebind clears triggers, so Equip must fire after.
+            OnEquipStarted?.Invoke(Active, duration);
         }
 
         private void TickSwap()
@@ -403,14 +640,31 @@ namespace Combat.Weapons
             if (state == SwapState.Stowing)
             {
                 int outgoing = activeIndex;
-                int incoming = IsValid(pendingIndex) ? pendingIndex : activeIndex;
+                var outgoingRt = presented[outgoing];
 
                 ApplyHeldState(outgoing, held: false, ready: false);
                 PublishFor(outgoing, WeaponEventType.Stow);
 
-                previousIndex = outgoing;
-                activeIndex = incoming;
+                // Contents changed while it was in hand: swap now that it's down.
+                SyncSlots(-1);
+
+                int incoming = IsValid(pendingIndex) ? pendingIndex : FallbackFrom(outgoing, outgoingRt);
                 pendingIndex = -1;
+
+                if (incoming < 0)
+                {
+                    // Nothing left to hold.
+                    state = SwapState.Ready;
+                    timer = 0f;
+                    previousIndex = outgoing;
+                    OnWeaponEquipped?.Invoke(null);
+                    if (debugLog) Debug.Log("[Loadout] EMPTY-HANDED");
+                    return;
+                }
+
+                // A same-slot replacement keeps the real previous weapon for the swap key.
+                if (incoming != outgoing) previousIndex = outgoing;
+                activeIndex = incoming;
 
                 // Show the incoming model immediately; it's coming up now.
                 ApplyHeldState(activeIndex, held: true, ready: false);
@@ -434,6 +688,23 @@ namespace Combat.Weapons
             if (debugLog) Debug.Log($"[Loadout] READY {activeIndex}");
         }
 
+        // Stow target vanished: back up, follow the weapon to its new slot, the previous weapon, or any filled slot.
+        private int FallbackFrom(int outgoing, Runtime outgoingRt)
+        {
+            if (IsValid(outgoing)) return outgoing;
+            int moved = SlotPresenting(outgoingRt);
+            if (moved >= 0) return moved;
+            if (IsValid(previousIndex)) return previousIndex;
+            return FirstValid();
+        }
+
+        private int FirstValid()
+        {
+            for (int i = 0; i < presented.Length; i++)
+                if (IsValid(i)) return i;
+            return -1;
+        }
+
         private float Progress() => duration > 0f ? Mathf.Clamp01(timer / duration) : 1f;
 
         // ------------------------------------------------------------------ state
@@ -442,65 +713,47 @@ namespace Combat.Weapons
         private void ApplyHeldState(int index, bool held, bool ready)
         {
             if (!IsValid(index)) return;
-            var slot = slots[index];
+            var rt = presented[index];
 
             // Arms swap first: rebinding clears triggers, so Equip must be set after.
-            if (held && rig != null && slot.armsController != null)
-                rig.SetWeapon(slot.controller, slot.armsController, slot.sight);
+            if (held && rig != null && rt.armsController != null)
+                rig.SetWeapon(rt.controller, rt.armsController, rt.sight);
 
-            SetVisible(slot, held);
+            SetVisible(rt, held);
             SetActive(index, ready, ready);
 
-            var ammo = AmmoOf(index);
-            if (ammo != null) ammo.IsHeld = held;
+            if (rt.ammo != null) rt.ammo.IsHeld = held;
         }
 
-        private void CacheVisuals(int index)
+        private static void SetVisible(Runtime rt, bool visible)
         {
-            if (!IsValid(index)) return;
-            var slot = slots[index];
-
-            var root = slot.modelRoot != null ? slot.modelRoot : slot.controller.transform;
-
-            var all = root.GetComponentsInChildren<Renderer>(includeInactive: true);
-            var visible = new List<Renderer>(all.Length);
-            for (int i = 0; i < all.Length; i++)
-                if (all[i].enabled) visible.Add(all[i]);
-
-            slot.renderers = visible.ToArray();
-            slot.animator = root.GetComponentInChildren<Animator>(includeInactive: true);
-        }
-
-        private static void SetVisible(Slot slot, bool visible)
-        {
-            if (slot.renderers != null)
+            if (rt.renderers != null)
             {
-                for (int i = 0; i < slot.renderers.Length; i++)
+                for (int i = 0; i < rt.renderers.Length; i++)
                 {
-                    var r = slot.renderers[i];
+                    var r = rt.renderers[i];
                     if (r != null) r.enabled = visible;
                 }
             }
 
-            if (slot.animator == null) return;
+            if (rt.animator == null) return;
 
             if (!visible)
             {
-                slot.animator.enabled = false;
+                rt.animator.enabled = false;
                 return;
             }
 
             // Rebind on show so a weapon stowed mid-reload doesn't reappear frozen in that pose.
-            slot.animator.enabled = true;
-            slot.animator.Rebind();
-            slot.animator.Update(0f);
+            rt.animator.enabled = true;
+            rt.animator.Rebind();
+            rt.animator.Update(0f);
         }
 
         private void SetActive(int index, bool active, bool canFire)
         {
             if (!IsValid(index)) return;
-            var c = slots[index].controller;
-            if (c == null) return;
+            var c = presented[index].controller;
             c.IsActive = active;
             c.CanFire = canFire && active;
         }
@@ -518,8 +771,7 @@ namespace Combat.Weapons
         {
             if (!IsValid(index) || def == null) return fallback;
 
-            var source = slots[index].controller != null
-                ? slots[index].controller.DamageSource : null;
+            var source = presented[index].controller.DamageSource;
             var container = source != null ? source.SourceStats : null;
             if (container == null) return fallback;
 
@@ -529,19 +781,15 @@ namespace Combat.Weapons
 
         // ------------------------------------------------------------------ misc
 
-        private bool IsValid(int i) => i >= 0 && i < slots.Count && slots[i] != null
-                                       && slots[i].controller != null;
+        private bool IsValid(int i) => i >= 0 && i < presented.Length && presented[i] != null
+                                       && presented[i].controller != null;
 
-        private WeaponAmmo AmmoOf(int index)
-        {
-            if (!IsValid(index)) return null;
-            return slots[index].controller.GetComponent<WeaponAmmo>();
-        }
+        private WeaponAmmo AmmoOf(int index) => IsValid(index) ? presented[index].ammo : null;
 
         private void PublishFor(int index, WeaponEventType type)
         {
             if (bus == null || !IsValid(index)) return;
-            var source = slots[index].controller.DamageSource;
+            var source = presented[index].controller.DamageSource;
             if (source == null) return;
             bus.Publish(WeaponEvent.ForWeapon(type, source));
         }

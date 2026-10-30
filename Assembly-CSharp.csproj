@@ -68,6 +68,7 @@
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\DeliverySO.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\DamageMagnitudeReference.cs" />
     <Compile Include="Assets\Scripts\Combat\Events\WeaponEventBridge.cs" />
+    <Compile Include="Assets\Scripts\Combat\Loadout\StartingLoadoutSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\IHitEffect.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Weapon\Range\IRangeFalloffSource.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\playerInputs.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponAnimator.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\TriggerState.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\ShotInfo.cs" />
+    <Compile Include="Assets\Scripts\Combat\Weapons\Data\WeaponInstance.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\ICombatant.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\ProjectileVfx.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\WanderGoal.cs" />
@@ -117,6 +119,7 @@
     <Compile Include="Assets\Scripts\Combat\Stats\Keys\MovementStatKeys.cs" />
     <Compile Include="Assets\Scripts\Enemies\DamageAndHealth\BodyPart.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Actions\InvestigateAction.cs" />
+    <Compile Include="Assets\Scripts\Combat\Loadout\PlayerInventory.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Buckets\StatBucketSO.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\DamageNumberPool.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\HitscanDeliverySO.cs" />
@@ -161,6 +164,7 @@
     <Compile Include="Assets\Scripts\Debugging\Combat\HitLog.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxAddons\TrailScaleWithHierarchy.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Weapon\Range\WeaponFalloff.cs" />
+    <Compile Include="Assets\Scripts\Combat\Weapons\Data\LoadoutSlots.cs" />
     <Compile Include="Assets\Scripts\Debugging\Combat\TestExplodeOnKill.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\Beams\BeamVfx.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\ParticleSystemVfx.cs" />
@@ -214,6 +218,7 @@
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerCrouch.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\PlayerTargetSensor.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\Shields\ParticleSystemShield.cs" />
+    <Compile Include="Assets\Scripts\Combat\Weapons\Data\AmmoPoolSO.cs" />
     <Compile Include="Assets\Scripts\Weapons\Skins\WeaponShaderSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponDamageSource.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\InvestigateGoal.cs" />
@@ -250,7 +255,9 @@
     <Compile Include="Assets\Scripts\Combat\Status\StatusSOFiles\BurnStatusSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\AutoFireBehavior.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Markers\WanderMarker.cs" />
+    <Compile Include="Assets\Scripts\Combat\Loadout\LoadoutDebugKeys.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\AgentMoveBehaviour.cs" />
+    <Compile Include="Assets\Scripts\Combat\Loadout\PlayerLoadout.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\EffectStackPool.cs" />
   </ItemGroup>
   <ItemGroup>

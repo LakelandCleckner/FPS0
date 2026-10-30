@@ -59,7 +59,7 @@ namespace Combat.Weapons
         [Header("Base Stats (the frame profile)")]
         public float weaponDamage = 0f;
 
-        [Tooltip("Fire rate in ROUNDS per minute — the same meaning for every fire " +
+        [Tooltip("Fire rate in ROUNDS per minute -- the same meaning for every fire " +
                  "behaviour. A burst weapon at 390 fires 390 rounds per minute; its " +
                  "burst-to-burst pause is derived from this and the burst size, so " +
                  "the number is directly comparable across weapons.")]
@@ -84,12 +84,15 @@ namespace Combat.Weapons
         [Tooltip("If true, reserves never deplete (primaries). A weapon can override.")]
         public bool infiniteReserves = false;
 
+        [Tooltip("Shared reserve pool on the player. Empty = reserves live on each weapon.")]
+        public AmmoPoolSO ammoPool;
+
         [Header("Handling")]
         [Tooltip("Base handling for this frame. A per-weapon delta layers on top. " +
          "Reduces equip, stow and ADS time proportionally.")]
         public float handling = 0f;
 
-        [Tooltip("Seconds to bring this weapon up at ZERO handling. Frame identity — a " +
+        [Tooltip("Seconds to bring this weapon up at ZERO handling. Frame identity -- a " +
                  "rocket launcher is slower than a sidearm no matter how it rolls.")]
         public float baseEquipTime = 0.5f;
 
@@ -97,7 +100,7 @@ namespace Combat.Weapons
         public float baseStowTime = 0.4f;
 
 
-        // Inline rather than a FireModeSO reference — see FireMode.cs for why.
+        // Inline rather than a FireModeSO reference -- see FireMode.cs for why.
         [Header("Fire Mode (primary)")]
         public FireMode primaryFire = new FireMode();
 

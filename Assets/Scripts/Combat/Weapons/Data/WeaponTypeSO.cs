@@ -2,9 +2,7 @@ using UnityEngine;
 
 namespace Combat.Weapons
 {
-    // Top of the weapon hierarchy: the FAMILY (Sidearm, Auto Rifle, ...).
-    // Minimal for now — identity/display + an optional loadout slot category as
-    // inert data (no enforcement yet; a future loadout system may read it).
+    // Top of the weapon hierarchy: the family (Sidearm, Auto Rifle, ...).
     [CreateAssetMenu(fileName = "WeaponType", menuName = "Combat/Weapons/Weapon Type")]
     public class WeaponTypeSO : ScriptableObject
     {
@@ -13,8 +11,8 @@ namespace Combat.Weapons
         [Tooltip("Display name (safe to rename).")]
         public string displayName = "";
 
-        [Header("Loadout (data only — no enforcement yet)")]
-        [Tooltip("Optional slot category for a future loadout system. Unused for now.")]
-        public string slotCategory = "";
+        [Header("Loadout")]
+        [Tooltip("Slots weapons of this type may be equipped in. A weapon can override this.")]
+        public LoadoutSlotMask allowedSlots = LoadoutSlotMask.All;
     }
 }

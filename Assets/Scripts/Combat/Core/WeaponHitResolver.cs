@@ -50,7 +50,7 @@ namespace Combat.Core
 
         // ------------------------------------------------------------ pellet merge
         //
-        // One multi-pellet shot produces N direct hits — at once for hitscan, spread
+        // One multi-pellet shot produces N direct hits -- at once for hitscan, spread
         // over a few frames for projectiles. Presentation is merged PER SHOT
         // (DamageSource + ShotId), not per call, so both cases behave the same:
         //   - hitmarker + hit sound fire on the FIRST pellet that lands; later pellets
@@ -58,7 +58,7 @@ namespace Combat.Core
         //     sound when it happens;
         //   - damage numbers are summed per target and shown once, pelletMergeWindow
         //     after the shot's first hit.
-        // Gameplay (damage, events, kills, riders) is untouched — only presentation.
+        // Gameplay (damage, events, kills, riders) is untouched -- only presentation.
         [Header("Pellet Feedback")]
         [Tooltip("Seconds after a pellet shot's first hit before its merged damage " +
                  "numbers appear. Long enough to catch every projectile pellet.")]
@@ -153,6 +153,10 @@ namespace Combat.Core
         {
             bus = WeaponEventBus.FindFor(this);
             chain = new ChainResolver(this);
+
+            // A resolver spawned from a prefab can't hold scene refs.
+            if (playerAudio == null) playerAudio = GetComponentInParent<PlayerAudio>();
+            if (hitmarkerUI == null) hitmarkerUI = FindFirstObjectByType<HitmarkerUI>();
             HitLog.Enabled = logHits;
         }
 
@@ -348,7 +352,7 @@ namespace Combat.Core
         // --------------------------------------------------------------------- crit
 
         // Roll crit from the ATTACKER's resolved crit_chance; on success set the crit
-        // multiplier (1 + resolved crit_damage  the D4 model, base 0.5 => x1.5) and
+        // multiplier (1 + resolved crit_damage, base 0.5 => x1.5) and
         // WasCrit. Null-safe: no attacker stats (sourceless hazard) => no crit.
         //
         // Crit is INDEPENDENT of precision (hitbox multiplier): a precision hit that

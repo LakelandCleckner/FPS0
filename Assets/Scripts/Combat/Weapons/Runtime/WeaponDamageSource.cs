@@ -9,7 +9,7 @@ namespace Combat.Sources
 {
     // Runtime weapon. Base damage is PercentOfStat(weapon_damage, Source) resolved
     // live from the container. Exposes the wielder as an ICombatant (now CombatantStats,
-    // so crit reads go straight to the stat container — no health coupling) and its
+    // so crit reads go straight to the stat container -- no health coupling) and its
     // own SourceStats.
     public class WeaponDamageSource : MonoBehaviour, IDamageSource, IRangeFalloffSource
     {
@@ -20,16 +20,25 @@ namespace Combat.Sources
         [SerializeField] private WeaponStatKeys statKeys;
 
         [Header("Wielder (the combatant: CombatantStats)")]
-        [Tooltip("The combatant wielding this weapon — assign the player's CombatantStats. " +
+        [Tooltip("The combatant wielding this weapon -- assign the player's CombatantStats. " +
                  "Optional; a sourceless weapon leaves it null.")]
         [SerializeField] private CombatantStats wielder;
 
         private StatContainer container;
         private List<IHitEffect> cachedEffects;
+        private WeaponInstance instance;
 
         public StatContainer Container => container;
         public StatContainer SourceStats => container;
         public ICombatant Attacker => wielder;   // CombatantStats implements ICombatant
+        public WeaponInstance Instance => instance;
+
+        // Binds this runtime to an owned weapon. Call while inactive, before Awake.
+        public void Initialize(WeaponInstance owned)
+        {
+            instance = owned;
+            weapon = owned != null ? owned.Definition : null;
+        }
 
         private void Awake()
         {

@@ -35,6 +35,11 @@ namespace Combat.Weapons
         [Tooltip("Zone shader preset applied to the gun model on spawn. Empty = original look.")]
         public WeaponShaderSO defaultShader;
 
+        [Header("Loadout")]
+        [Tooltip("Use the slot rule below instead of the weapon type's.")]
+        public bool overrideSlots = false;
+        public LoadoutSlotMask allowedSlotsOverride = LoadoutSlotMask.All;
+
         [Header("Element (per-weapon damage type)")]
         public DamageTypeSO baseDamageType;
 
@@ -85,6 +90,17 @@ namespace Combat.Weapons
                 case InfiniteReservesOverride.ForceOn: return true;
                 case InfiniteReservesOverride.ForceOff: return false;
                 default: return archetype.infiniteReserves;
+            }
+        }
+
+        // Slots this weapon may occupy: the override, else its type's rule.
+        public LoadoutSlotMask AllowedSlots
+        {
+            get
+            {
+                if (overrideSlots) return allowedSlotsOverride;
+                var type = archetype != null ? archetype.weaponType : null;
+                return type != null ? type.allowedSlots : LoadoutSlotMask.All;
             }
         }
     }
