@@ -3,6 +3,7 @@ using UnityEngine;
 using Combat.Sources;
 using Combat.Weapons;
 using Combat.Events;
+using Combat.Loadout;
 
 namespace Combat.Weapons
 {
@@ -13,9 +14,9 @@ namespace Combat.Weapons
     // stat accessors (StatContainer) instead of the retired StatBlock.
     //
     // EVENT SURFACE: this component is the authoritative origin for every ammo and
-    // reload event (doc 07 §2). It already funnelled every state transition through
+    // reload event (doc 07 s2). It already funnelled every state transition through
     // a named method, so each publish below is a single line at a point that was
-    // already the one place that transition could happen — no new state, no new
+    // already the one place that transition could happen -- no new state, no new
     // branching. Nothing else may announce these; WeaponFireController's
     // OnReloadStarted is a REQUEST, this is the decision (see WeaponEventBridge).
     //
@@ -23,7 +24,7 @@ namespace Combat.Weapons
     // stays ungated so a stowed weapon can be reloaded by a perk; only the AUTOMATIC
     // reload-on-empty is held to the weapon in hand.
     //
-    // A RELOAD IS COMMITTED once it starts. Firing cannot cancel it — the Destiny
+    // A RELOAD IS COMMITTED once it starts. Firing cannot cancel it, the
     // model for magazine-fed weapons. Only two things cancel a reload, and both are
     // the weapon leaving the ready position: stowing it, and starting a sprint.
     // Both call CancelReload from WeaponLoadout.
@@ -43,8 +44,41 @@ namespace Combat.Weapons
         [SerializeField] private float refillPoint = 1f;
         [SerializeField] private bool autoReloadOnEmpty = false;
 
-        private int magazine;
-        private int reserves;
+        private WeaponInstance instance;
+        private AmmoPoolSO pool;
+        private PlayerInventory inventory;
+        private int localMagazine;
+        private int localReserves;
+        private bool writingPool;
+
+        // Backed by the owned instance so the magazine survives leaving the loadout.
+        private int magazine
+        {
+            get => instance != null ? instance.magazine : localMagazine;
+            set { if (instance != null) instance.magazine = value; else localMagazine = value; }
+        }
+
+        // The shared pool when the archetype names one, otherwise the owned instance.
+        private int reserves
+        {
+            get
+            {
+                if (pool != null) return inventory.GetAmmo(pool);
+                return instance != null ? instance.reserves : localReserves;
+            }
+            set
+            {
+                if (pool != null)
+                {
+                    writingPool = true;
+                    inventory.SetAmmo(pool, value);
+                    writingPool = false;
+                }
+                else if (instance != null) instance.reserves = value;
+                else localReserves = value;
+            }
+        }
+
         private bool infiniteReserves;
         private int magSize;
 
@@ -66,7 +100,7 @@ namespace Combat.Weapons
         private float readyDuration;
         private bool interruptRequested;
 
-        // Presentation hooks — direct C# events, same convention as the controller's
+        // Presentation hooks -- direct C# events, same convention as the controller's
         // OnFired. ReloadStarted is the DECISION (fires for auto-reload-on-empty too,
         // which the controller's OnReloadStarted request never announced).
         public event Action ReloadStarted;
@@ -75,7 +109,7 @@ namespace Combat.Weapons
 
         private WeaponEventBus bus;
 
-        // Set by WeaponLoadout. Gates the CONVENIENCE auto-reload only — a weapon you
+        // Set by WeaponLoadout. Gates the CONVENIENCE auto-reload only -- a weapon you
         // aren't holding shouldn't quietly reload itself the instant it empties.
         //
         // It deliberately does NOT gate BeginReload: an Auto-Loading-Holster-style
@@ -84,7 +118,7 @@ namespace Combat.Weapons
         public bool IsHeld { get; set; } = true;
 
         // Exposed so a subscriber can filter bus events to THIS weapon (per-weapon
-        // routing, doc 07 §2) without needing a separate inspector reference.
+        // routing, doc 07 s2) without needing a separate inspector reference.
         public WeaponDamageSource Source => damageSource;
 
         public int Magazine => magazine;
@@ -100,7 +134,7 @@ namespace Combat.Weapons
         public float ShellEndDuration => shellEndDuration;
 
         // True while another shell will follow the one currently loading. Drives the
-        // animator's ReloadStep -> ReloadEnd exit. An interrupt does NOT clear this —
+        // animator's ReloadStep -> ReloadEnd exit. An interrupt does NOT clear this --
         // interrupts skip End and cross-fade out instead.
         public bool ShellWillContinue
         {
@@ -116,6 +150,37 @@ namespace Combat.Weapons
         private void Awake()
         {
             bus = WeaponEventBus.FindFor(this);
+
+            instance = damageSource != null ? damageSource.Instance : null;
+            var weapon = damageSource != null ? damageSource.Weapon : null;
+            pool = weapon != null && weapon.archetype != null ? weapon.archetype.ammoPool : null;
+
+            if (pool != null)
+            {
+                inventory = GetComponentInParent<PlayerInventory>();
+                if (inventory == null)
+                {
+                    Debug.LogWarning($"[WeaponAmmo] '{name}' uses ammo pool '{pool.name}' but has no " +
+                                     "PlayerInventory above it; using its own reserves.");
+                    pool = null;
+                }
+            }
+        }
+
+        private void OnEnable()
+        {
+            if (inventory != null) inventory.PoolChanged += HandlePoolChanged;
+        }
+
+        private void OnDisable()
+        {
+            if (inventory != null) inventory.PoolChanged -= HandlePoolChanged;
+        }
+
+        // Another weapon drew from the shared pool.
+        private void HandlePoolChanged(AmmoPoolSO changed)
+        {
+            if (changed == pool && !writingPool) Publish(WeaponEventType.AmmoChanged);
         }
 
         private void Start()
@@ -130,8 +195,11 @@ namespace Combat.Weapons
             magSize = ResolveMagSize();
             infiniteReserves = weapon.ResolveInfiniteReserves();
 
-            magazine = magSize;
-            reserves = weapon.startingReserves;
+            // A fresh instance fills up; a returning one keeps what it had.
+            magazine = instance == null || magazine < 0 ? magSize : Mathf.Min(magazine, magSize);
+
+            if (pool == null && (instance == null || reserves < 0))
+                reserves = weapon.startingReserves;
 
             // Seed subscribers with the opening state so a display doesn't have to
             // poll once before the first real transition.
@@ -144,7 +212,7 @@ namespace Combat.Weapons
                 : 1;
 
         // magSize used to be cached once in Start and never re-read, so a runtime
-        // magazine_size modifier — armour, a perk, an upgrade — silently did nothing.
+        // magazine_size modifier -- armour, a perk, an upgrade -- silently did nothing.
         // Re-resolved on access instead. ResolvedMagazineSize is already a cached
         // container read, so this is a version compare in the steady state.
         //
@@ -177,7 +245,7 @@ namespace Combat.Weapons
             }
 
             // NOTE: firing during a reload used to CancelReload() here. It doesn't any
-            // more — a reload is committed. The controller refuses to fire while
+            // more -- a reload is committed. The controller refuses to fire while
             // IsReloading, so this is never reached mid-reload; if something ever
             // bypassed that gate, silently eating the reload would be the wrong answer.
 
@@ -215,7 +283,7 @@ namespace Combat.Weapons
             return true;
         }
 
-        // Called on stow and on sprint start — the two cases where the weapon leaves
+        // Called on stow and on sprint start -- the two cases where the weapon leaves
         // the ready position. Firing does NOT call this.
         public void CancelReload()
         {
@@ -225,7 +293,7 @@ namespace Combat.Weapons
             ReloadCancelled?.Invoke();
 
             // Not in doc 07's table, but this is a real transition perks care about
-            // (Destiny-style "cancel the reload to keep the buff" play patterns) and
+            // ("cancel the reload to keep the buff" play patterns) and
             // it costs nothing to expose now.
             Publish(WeaponEventType.ReloadCancelled);
         }
@@ -345,8 +413,8 @@ namespace Combat.Weapons
                 if (!refilledThisReload) DoRefill();
                 state = ReloadState.Ready;
 
-                // Doc 03 §8 claims the animator is driven by "fire, reload start,
-                // reload end", but no reload-end event existed anywhere — the state
+                // Doc 03 s8 claims the animator is driven by "fire, reload start,
+                // reload end", but no reload-end event existed anywhere -- the state
                 // machine completed here and told nobody. This is that event.
                 Publish(WeaponEventType.ReloadComplete);
             }
