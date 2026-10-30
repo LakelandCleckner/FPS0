@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 3212447187690546530}
   - component: {fileID: 3453457144703185622}
   - component: {fileID: 6787969938133163104}
+  - component: {fileID: 6049778358444667140}
   m_Layer: 8
   m_Name: WeaponRuntime
   m_TagString: Untagged
@@ -147,3 +148,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   controller: {fileID: 5301291725571648903}
   damageSource: {fileID: 8227570402401183518}
+--- !u!114 &6049778358444667140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7626848357005247009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3724a1627dbeb1b479a65a741ca95468, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugLog: 1

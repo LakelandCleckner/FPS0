@@ -26,6 +26,7 @@ namespace Combat.Sources
 
         private StatContainer container;
         private List<IHitEffect> cachedEffects;
+        private readonly List<IHitEffect> perkEffects = new List<IHitEffect>();
         private WeaponInstance instance;
 
         public StatContainer Container => container;
@@ -68,6 +69,23 @@ namespace Combat.Sources
             foreach (var def in weapon.riderEffects)
                 if (def != null)
                     cachedEffects.Add(def.GetInstance());
+
+            cachedEffects.AddRange(perkEffects);
+        }
+
+        // On-hit effects added by perks. Deliveries read the list each shot, so changes apply next shot.
+        public void AddEffect(IHitEffect effect)
+        {
+            if (effect == null) return;
+            perkEffects.Add(effect);
+            if (cachedEffects != null) cachedEffects.Add(effect);
+        }
+
+        public void RemoveEffect(IHitEffect effect)
+        {
+            if (effect == null) return;
+            perkEffects.Remove(effect);
+            if (cachedEffects != null) cachedEffects.Remove(effect);
         }
 
         public List<IHitEffect> GetEffects() => cachedEffects;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Combat.Armor;
+using Combat.Perks;
 using Combat.Weapons;
 
 namespace Combat.Loadout
@@ -93,7 +94,7 @@ namespace Combat.Loadout
                         continue;
                     }
 
-                    weapons[i] = new WeaponInstance(def);
+                    weapons[i] = new WeaponInstance(def, StartRoll());
                 }
             }
 
@@ -111,22 +112,24 @@ namespace Combat.Loadout
                     AddCarriedArmor(def);
                 }
                 else if (armor[idx] != null) AddCarriedArmor(def);
-                else armor[idx] = new ArmorInstance(def);
+                else armor[idx] = new ArmorInstance(def, StartRoll());
             }
 
             foreach (var def in startingLoadout.carriedArmor)
                 if (def != null) AddCarriedArmor(def);
         }
 
+        private RollMode StartRoll() => startingLoadout != null ? startingLoadout.rollMode : RollMode.Random;
+
         private void AddCarried(WeaponSO def)
         {
-            if (inventory == null || !inventory.TryAddWeapon(new WeaponInstance(def)))
+            if (inventory == null || !inventory.TryAddWeapon(new WeaponInstance(def, StartRoll())))
                 Debug.LogWarning($"[PlayerLoadout] No carried space for starting weapon '{def.name}'.");
         }
 
         private void AddCarriedArmor(ArmorSO def)
         {
-            if (inventory == null || !inventory.TryAddArmor(new ArmorInstance(def)))
+            if (inventory == null || !inventory.TryAddArmor(new ArmorInstance(def, StartRoll())))
                 Debug.LogWarning($"[PlayerLoadout] No carried space for starting armour '{def.name}'.");
         }
 

@@ -1,35 +1,11 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Combat.Loadout;
-using Combat.Stats;
-using Combat.Weapons;
+using Combat.Perks;
 
 namespace Combat.Armor
 {
-    // One stat change an armour piece grants while equipped.
-    [Serializable]
-    public class ArmorModifierEntry
-    {
-        public StatDefinitionSO stat;
-
-        [Tooltip("Flat adds to the base. Additive: percent on ScaledBase stats (0.1 = +10%), " +
-                 "a straight add on Pool stats. Multiplicative: its own x(1 + value).")]
-        public ModifierBucket bucket = ModifierBucket.Flat;
-
-        public float value;
-
-        [Tooltip("Player stats, or the stats of each loadout weapon.")]
-        public ModifierTarget target = ModifierTarget.Player;
-
-        [Tooltip("Weapons target only. Empty = every weapon type.")]
-        public List<WeaponTypeSO> weaponTypes = new List<WeaponTypeSO>();
-
-        [Tooltip("Weapons target only. InLoadout = every slotted weapon; InHands = only the held one.")]
-        public ActivityScope scope = ActivityScope.InLoadout;
-    }
-
-    // An armour definition: its slot and the modifiers it grants.
+    // An armour definition: its slot, the modifiers it always grants, and its perks.
     [CreateAssetMenu(fileName = "Armor", menuName = "Combat/Armor/Armor")]
     public class ArmorSO : ScriptableObject
     {
@@ -39,6 +15,21 @@ namespace Combat.Armor
 
         public ArmorSlotSO slot;
 
-        public List<ArmorModifierEntry> modifiers = new List<ArmorModifierEntry>();
+        [Tooltip("Weapons target applies to every loadout weapon matching the type filter. " +
+                 "InHands scope only matters for the Weapons target.")]
+        public List<ModifierEntry> modifiers = new List<ModifierEntry>();
+
+        [Header("Perks")]
+        [Tooltip("Always present on every copy.")]
+        public List<PerkSO> intrinsicPerks = new List<PerkSO>();
+        [Tooltip("One perk is rolled from each column. Empty = use the slot's columns.")]
+        public List<PerkColumn> perkColumns = new List<PerkColumn>();
+        [Tooltip("Fixed pick per column for curated rolls. Empty entry = random for that column.")]
+        public List<PerkSO> curatedRoll = new List<PerkSO>();
+
+        // Own columns, else the slot's.
+        public List<PerkColumn> ResolvedPerkColumns
+            => perkColumns != null && perkColumns.Count > 0 ? perkColumns
+             : slot != null ? slot.perkColumns : perkColumns;
     }
 }

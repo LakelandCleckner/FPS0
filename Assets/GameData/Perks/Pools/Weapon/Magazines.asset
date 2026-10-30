@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4d1da4720f2c694786e3c4a0bbe5be0, type: 3}
+  m_Name: Magazines
+  m_EditorClassIdentifier: 
+  perks:
+  - {fileID: 11400000, guid: 545c07def1bc9dc40b4b7053daeb62fb, type: 2}
+  - {fileID: 11400000, guid: a2fd0c39bc0b9554ca8d51d582bbefc1, type: 2}
+  - {fileID: 11400000, guid: 4e5344d961dc38b4385084e1e2bae28f, type: 2}
+  - {fileID: 11400000, guid: a3c922a64fb334d449bca579779f7263, type: 2}
+  - {fileID: 11400000, guid: f42f278239655df469774db7ce756fcd, type: 2}
+  - {fileID: 11400000, guid: e8f0b691b2aa59047abc09839406ee7a, type: 2}
+  - {fileID: 11400000, guid: 9038596e80798e7408476a3c7c19bc66, type: 2}
+  includes: []
+  authoredAs: Extended Mag *, Quick Reload *, Light Frame *

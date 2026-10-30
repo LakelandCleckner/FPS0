@@ -15,3 +15,19 @@ MonoBehaviour:
   id: shotgun
   displayName: Shotgun
   allowedSlots: -1
+  perkColumns:
+  - label: Barrel
+    source: {fileID: 11400000, guid: ba61f02bd0074af4b9a0416032fcb3f0, type: 2}
+    pool: []
+  - label: Magazine
+    source: {fileID: 11400000, guid: 60b8bace3a39d8e41a85d04b2245084e, type: 2}
+    pool: []
+  - label: Trait
+    source: {fileID: 11400000, guid: fee7a54fc72d9a9498b3d9c9b0ed2ec0, type: 2}
+    pool: []
+  - label: Trait
+    source: {fileID: 11400000, guid: 256cc2e72b7a4b548b19a0abe02b12b0, type: 2}
+    pool: []
+  - label: Trait
+    source: {fileID: 11400000, guid: fae4edf3285885c47836f2bd0e0ca6d4, type: 2}
+    pool: []

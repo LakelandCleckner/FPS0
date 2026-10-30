@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Combat.Armor;
+using Combat.Perks;
 using Combat.Weapons;
 
 namespace Combat.Loadout
@@ -16,6 +17,9 @@ namespace Combat.Loadout
             public AmmoPoolSO pool;
             public int amount;
         }
+
+        [Tooltip("How every item created from this loadout rolls its perks.")]
+        public RollMode rollMode = RollMode.Random;
 
         [Header("Weapons")]
         [Tooltip("Weapons in slots 1-3. Empty entry = empty slot.")]

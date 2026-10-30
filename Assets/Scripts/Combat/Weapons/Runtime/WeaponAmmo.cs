@@ -444,6 +444,35 @@ namespace Combat.Weapons
                 Publish(WeaponEventType.MagFull);
         }
 
+        // Puts rounds straight into the magazine (perk refunds). Returns how many went in.
+        public int AddToMagazine(int rounds, bool fromReserves)
+        {
+            RefreshMagSize();
+
+            int n = Mathf.Min(rounds, magSize - magazine);
+            if (fromReserves && !infiniteReserves) n = Mathf.Min(n, reserves);
+            if (n <= 0) return 0;
+
+            magazine += n;
+            if (fromReserves && !infiniteReserves) reserves -= n;
+
+            Publish(WeaponEventType.AmmoChanged);
+            if (magazine >= magSize) Publish(WeaponEventType.MagFull);
+            return n;
+        }
+
+        // Fills the magazine from reserves with no reload time (holster reload).
+        public bool RefillInstant()
+        {
+            RefreshMagSize();
+            if (magazine >= magSize) return false;
+            if (!infiniteReserves && reserves <= 0) return false;
+
+            if (state == ReloadState.Reloading) CancelReload();
+            DoRefill();
+            return true;
+        }
+
         public void AddReserves(int amount)
         {
             if (infiniteReserves) return;

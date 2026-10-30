@@ -39,7 +39,7 @@ namespace Combat.Status
                 pools[status] = pool;
                 StatusManager.Instance.Register(pool);
             }
-            pool.AddEntry(chainMultiplier, tickType, sourceFaction, chainDepth);
+            pool.AddEntry(source, attacker, chainMultiplier, tickType, sourceFaction, chainDepth);
         }
         public void OnPoolExpired(EffectStackPool pool)
         {
@@ -51,7 +51,7 @@ namespace Combat.Status
         // ---- IPoolable ----
 
         // Explicit clear on reuse. OnDisable already clears on deactivate, so a
-        // respawned enemy is normally unburned without this — but relying on OnDisable
+        // respawned enemy is normally unburned without this -- but relying on OnDisable
         // ties the clear to deactivation timing, which a future death animation
         // (deferring deactivation) would loosen. Clearing on spawn guarantees a reused
         // receiver starts empty regardless of when OnDisable ran.

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Combat.Core;
 using Combat.Effects;
+using Combat.Perks;
 
 namespace Combat.Weapons
 {
@@ -67,11 +68,16 @@ namespace Combat.Weapons
         public AudioClip emptyClip;
         public AudioClip reloadClip;
 
-        [Header("Rider Effects (base damage is generated, NOT listed here)")]
+        [Header("Rider Effects (deprecated: move to an intrinsic Effect Perk)")]
         public List<HitEffectSO> riderEffects = new List<HitEffectSO>();
 
-        [Header("Perk Pool (placeholder -- perk system is a later phase)")]
-        public List<ScriptableObject> perkPool = new List<ScriptableObject>();
+        [Header("Perks")]
+        [Tooltip("Always present on every copy.")]
+        public List<PerkSO> intrinsicPerks = new List<PerkSO>();
+        [Tooltip("One perk is rolled from each column. Empty = use the weapon type's columns.")]
+        public List<PerkColumn> perkColumns = new List<PerkColumn>();
+        [Tooltip("Fixed pick per column for curated rolls. Empty entry = random for that column.")]
+        public List<PerkSO> curatedRoll = new List<PerkSO>();
 
         [Header("Identity / Chain")]
         public int faction = 0;
@@ -90,6 +96,17 @@ namespace Combat.Weapons
                 case InfiniteReservesOverride.ForceOn: return true;
                 case InfiniteReservesOverride.ForceOff: return false;
                 default: return archetype.infiniteReserves;
+            }
+        }
+
+        // Own columns, else the weapon type's.
+        public List<PerkColumn> ResolvedPerkColumns
+        {
+            get
+            {
+                if (perkColumns != null && perkColumns.Count > 0) return perkColumns;
+                var type = archetype != null ? archetype.weaponType : null;
+                return type != null ? type.perkColumns : perkColumns;
             }
         }
 

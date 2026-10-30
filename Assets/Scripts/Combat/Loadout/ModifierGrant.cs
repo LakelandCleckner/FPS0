@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 using Combat.Sources;
 using Combat.Stats;
 using Combat.Weapons;
@@ -9,13 +11,36 @@ namespace Combat.Loadout
 
     public enum ModifierTarget { Player, Weapons }
 
+    // One authored stat change, used by armour and perks.
+    [Serializable]
+    public class ModifierEntry
+    {
+        public StatDefinitionSO stat;
+
+        [Tooltip("Flat adds to the base. Additive: percent on ScaledBase stats (0.1 = +10%), " +
+                 "a straight add on Pool stats. Multiplicative: its own x(1 + value).")]
+        public ModifierBucket bucket = ModifierBucket.Flat;
+
+        public float value;
+
+        [Tooltip("Player stats, or weapon stats.")]
+        public ModifierTarget target = ModifierTarget.Player;
+
+        [Tooltip("Armour, Weapons target only. Empty = every weapon type.")]
+        public List<WeaponTypeSO> weaponTypes = new List<WeaponTypeSO>();
+
+        [Tooltip("InLoadout = while slotted; InHands = only while held.")]
+        public ActivityScope scope = ActivityScope.InLoadout;
+    }
+
     // One modifier a loadout source (armour, later perks) wants applied while its conditions hold.
     public sealed class ModifierGrant
     {
         public readonly object Owner;
         public readonly StatDefinitionSO Stat;
         public readonly string BucketId;
-        public readonly float Value;
+        // Changed through LoadoutModifierApplier.SetValue so containers refresh.
+        public float Value { get; internal set; }
         public readonly ModifierTarget Target;
         public readonly ActivityScope Scope;
 
@@ -68,6 +93,8 @@ namespace Combat.Loadout
                 if (WeaponTypes[i] == type) return true;
             return false;
         }
+
+        public override string ToString() => Owner != null ? Owner.ToString() : "grant";
 
         // A fresh modifier per container: StatModifier stores its handle.
         public StatModifier CreateModifier() => new StatModifier(Stat, BucketId, Value, Scope);

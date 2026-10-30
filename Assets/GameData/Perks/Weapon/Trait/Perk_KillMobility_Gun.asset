@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f488871374fb1014ba6535628d40da6a, type: 3}
+  m_Name: Perk_KillMobility_Gun
+  m_EditorClassIdentifier: 
+  id: kill_mobility_gun
+  displayName: Kill Mobility
+  description: Kills grant 15% increased move speed for 4 seconds.
+  listenScope: 1
+  trigger: 2
+  sources: 3
+  anyWeapon: 0
+  oncePerShot: 0
+  everyN: 1
+  window: 0
+  duration: 4
+  maxStacks: 1
+  endOnStow: 0
+  modifiers:
+  - stat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
+    bucket: 2
+    value: 0.15
+    target: 0
+    weaponTypes: []
+    scope: 0

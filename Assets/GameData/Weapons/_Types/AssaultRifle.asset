@@ -15,3 +15,19 @@ MonoBehaviour:
   id: assault_rifle
   displayName: Assault Rifle
   allowedSlots: -1
+  perkColumns:
+  - label: Barrel
+    source: {fileID: 11400000, guid: 50372d5fa2c8b4a46bc859fb62a988e0, type: 2}
+    pool: []
+  - label: Magazine
+    source: {fileID: 11400000, guid: 268034a300785e04daddcbd879b3fd1a, type: 2}
+    pool: []
+  - label: Trait
+    source: {fileID: 11400000, guid: f6ca8791d3915d440b637ddf629daddc, type: 2}
+    pool: []
+  - label: Trait
+    source: {fileID: 11400000, guid: 256cc2e72b7a4b548b19a0abe02b12b0, type: 2}
+    pool: []
+  - label: Trait
+    source: {fileID: 11400000, guid: bae76d937fc6aab459e354ed6991f942, type: 2}
+    pool: []

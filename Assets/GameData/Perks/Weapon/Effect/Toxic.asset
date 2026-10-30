@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9e5c4e214e465c44adf8c290f474f40, type: 3}
+  m_Name: Toxic
+  m_EditorClassIdentifier: 
+  id: toxic
+  displayName: Toxic
+  description: Hits poison targets.
+  listenScope: 0
+  effects:
+  - {fileID: 11400000, guid: 7876f6e7b2073c64eaa30f9c0cb49185, type: 2}

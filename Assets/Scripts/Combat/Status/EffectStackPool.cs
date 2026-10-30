@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Combat.Core;
+using Combat.Events;
 using Combat.Sources;
 using Combat.Stats;
 
@@ -54,7 +55,7 @@ namespace Combat.Status
         private float tickAccumulator;
         private float sharedTimer;
 
-        // reused per-tick resolution payload — see PERF NOTES
+        // reused per-tick resolution payload -- see PERF NOTES
         private HitContext tickContext;
         private readonly List<IHitEffect> tickEffects = new List<IHitEffect>(1);
         private StatusSummedTickEffect tickEffect;
@@ -119,7 +120,7 @@ namespace Combat.Status
             tickEffects.Clear();
             tickEffects.Add(tickEffect);
 
-            // On-kill reactions authored on the status. Appended ONCE — they're
+            // On-kill reactions authored on the status. Appended ONCE -- they're
             // stateless recipes, they only act when WasKill is true (which they check
             // themselves), and they run in this tick's Reaction phase. So a burn tick
             // that kills fires the status's explosion, exactly like a shot kill fires
@@ -160,12 +161,16 @@ namespace Combat.Status
             };
         }
 
-        public void AddEntry(float chainMultiplier, DamageTypeSO type, int sourceFaction, int chainDepth)
+        // entrySource/entryAttacker: whoever applied THIS entry, so a shared pool credits every weapon.
+        public void AddEntry(IDamageSource entrySource, ICombatant entryAttacker,
+                             float chainMultiplier, DamageTypeSO type, int sourceFaction, int chainDepth)
         {
             bool wasEmpty = entries.Count == 0;
 
             var e = new StackEntry();
-            e.Set(source, attacker, Target, Status.BuildTickSpec(),
+            e.Set(entrySource != null ? entrySource : source,
+                  entryAttacker != null ? entryAttacker : attacker,
+                  Target, Status.BuildTickSpec(),
                   chainMultiplier, type, sourceFaction, chainDepth, Status.duration);
             entries.Add(e);
 
@@ -344,7 +349,7 @@ namespace Combat.Status
 
             StatusLog.Log($"[StackPool] TICK(shared) {Status.name} | entries: {entries.Count} | dmg: {damage:F1} | interval: {CurrentInterval():F2} | {Status.intensityMode}/{Status.durationMode}");
 
-            Resolver.ResolveHit(BuildTickContext(damage));
+            ResolveTick(damage, source, attacker);
         }
 
         private void FireEntryTick(StackEntry entry)
@@ -357,7 +362,39 @@ namespace Combat.Status
 
             StatusLog.Log($"[StackPool] TICK(per-entry) {Status.name} | weight: {weight:F1} | entries: {entries.Count}");
 
-            Resolver.ResolveHit(BuildTickContext(weight));
+            ResolveTick(weight, entry.Source, entry.Attacker);
+        }
+
+        // Other sources with a live entry; they get Kill credit if this tick kills.
+        private readonly List<IDamageSource> credit = new List<IDamageSource>(2);
+
+        private void ResolveTick(float damage, IDamageSource tickSource, ICombatant tickAttacker)
+        {
+            var ctx = BuildTickContext(damage);
+            ctx.DamageSource = tickSource;
+            ctx.Attacker = tickAttacker;
+
+            // Gathered before the hit: a kill clears the target's pools mid-resolve.
+            GatherCredit(tickSource);
+
+            Resolver.ResolveHit(ctx);
+
+            if (ctx.WasKill && credit.Count > 0) KillCredit.Publish(credit, ctx);
+            credit.Clear();
+        }
+
+        private void GatherCredit(IDamageSource except)
+        {
+            credit.Clear();
+            if (entries.Count < 2) return;
+
+            for (int i = 0; i < entries.Count; i++)
+            {
+                var s = entries[i].Source;
+                if (s == null || ReferenceEquals(s, except) || credit.Contains(s)) continue;
+                if (s is UnityEngine.Object o && o == null) continue;   // destroyed source
+                credit.Add(s);
+            }
         }
 
         // Refills the reusable context. Every field an effect or the resolver WRITES
@@ -414,7 +451,7 @@ namespace Combat.Status
 
         // Apply / update / remove the status's stat modifier to match current intensity.
         // Called whenever entries change (add, expire, import) and on teardown. Mutates
-        // the modifier value in place + invalidates — the established cache pattern, no
+        // the modifier value in place + invalidates -- the established cache pattern, no
         // remove/re-add churn.
         private void SyncStatModifier()
         {

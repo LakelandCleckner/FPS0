@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
+using System.Text;
 using Combat.Armor;
+using Combat.Perks;
 using Combat.Stats;
 using Combat.Weapons;
 
@@ -9,6 +12,9 @@ namespace Combat.Loadout
     // Test harness until there's UI.
     // F1-F3 cycle carried weapons into a slot, F5-F7 clear it, F4 toggles a lock.
     // Shift+F1-F5 cycle carried armour into an armour slot, Ctrl+F1-F5 clear it.
+    // F8 rerolls the held weapon's perks, Shift+F8 rerolls every equipped armour piece.
+    // F9 takes 10% of max health (never lethal), Shift+F9 heals 10%.
+    // F10 logs the held weapon's stats with every modifier and its source, Shift+F10 the player's.
     public class LoadoutDebugKeys : MonoBehaviour
     {
         [Tooltip("Found in parents if empty.")]
@@ -33,6 +39,10 @@ namespace Combat.Loadout
         {
             var kb = Keyboard.current;
             if (kb == null || loadout == null) return;
+
+            if (kb.f8Key.wasPressedThisFrame) { if (kb.shiftKey.isPressed) RerollArmor(); else RerollHeld(); return; }
+            if (kb.f9Key.wasPressedThisFrame) { ChangeHealth(kb.shiftKey.isPressed ? 0.1f : -0.1f); return; }
+            if (kb.f10Key.wasPressedThisFrame) { DumpStats(kb.shiftKey.isPressed); return; }
 
             int f = PressedFKey(kb);
             if (f < 0) return;
@@ -77,7 +87,7 @@ namespace Combat.Loadout
                 if (!LoadoutSlots.Allows(w.Definition.AllowedSlots, slot)) continue;
 
                 if (loadout.TryEquip(slot, w, out var reason))
-                    Debug.Log($"[LoadoutDebug] Slot {slot + 1} <- {w.Definition.name}");
+                    Debug.Log($"[LoadoutDebug] Slot {slot + 1} <- {w.Definition.name}{PerkList(w.AllPerks())}");
                 else
                     Debug.Log($"[LoadoutDebug] Slot {slot + 1}: {reason}");
                 return;
@@ -117,7 +127,7 @@ namespace Combat.Loadout
 
                     if (loadout.TryEquipArmor(a, out var reason))
                     {
-                        Debug.Log($"[LoadoutDebug] {slot.name} <- {a.Definition.name}");
+                        Debug.Log($"[LoadoutDebug] {slot.name} <- {a.Definition.name}{PerkList(a.AllPerks())}");
                         LogStats(a.Definition);
                     }
                     else Debug.Log($"[LoadoutDebug] {slot.name}: {reason}");
@@ -161,6 +171,90 @@ namespace Combat.Loadout
                 if (c == null) Debug.Log($"[LoadoutDebug]   {e.stat.name} ({where}): no container");
                 else Debug.Log($"[LoadoutDebug]   {e.stat.name} ({where}) = {c.Resolve(e.stat):0.###}");
             }
+        }
+
+        // ------------------------------------------------------------------ perks
+
+        private void RerollHeld()
+        {
+            var held = weapons != null ? weapons.Active : null;
+            var instance = held != null && held.DamageSource != null ? held.DamageSource.Instance : null;
+            if (instance == null) { Debug.Log("[LoadoutDebug] Nothing held to reroll."); return; }
+
+            instance.Reroll();
+            var perks = held.GetComponent<WeaponPerks>();
+            if (perks != null) perks.Reattach();
+            else Debug.LogWarning("[LoadoutDebug] Held weapon has no WeaponPerks component.");
+
+            Debug.Log($"[LoadoutDebug] Rerolled {instance.Definition.name}{PerkList(instance.AllPerks())}");
+        }
+
+        private void RerollArmor()
+        {
+            var host = loadout.GetComponent<ArmorPerks>();
+            for (int i = 0; i < loadout.ArmorSlotCount; i++)
+            {
+                var a = loadout.GetArmor(i);
+                if (a == null) continue;
+
+                a.Reroll();
+                if (host != null) host.Reattach(a);
+                Debug.Log($"[LoadoutDebug] Rerolled {a.Definition.name}{PerkList(a.AllPerks())}");
+            }
+            if (host == null) Debug.LogWarning("[LoadoutDebug] No ArmorPerks on the player.");
+        }
+
+        private static string PerkList(IEnumerable<PerkSO> perks)
+        {
+            var sb = new StringBuilder();
+            foreach (var p in perks)
+                sb.Append(sb.Length == 0 ? " [" : ", ").Append(p.name);
+            return sb.Length == 0 ? " [no perks]" : sb.Append(']').ToString();
+        }
+
+        // ------------------------------------------------------------------ stat dump
+
+        private void DumpStats(bool playerStats)
+        {
+            StatContainer c;
+            string who;
+
+            if (playerStats)
+            {
+                c = player != null ? player.Container : null;
+                who = "Player";
+            }
+            else
+            {
+                var held = weapons != null ? weapons.Active : null;
+                c = held != null && held.DamageSource != null ? held.DamageSource.SourceStats : null;
+                who = held != null ? held.name : "No weapon";
+            }
+
+            if (c == null) { Debug.Log($"[LoadoutDebug] {who}: no stat container."); return; }
+
+            var sb = new StringBuilder();
+            sb.Append("[LoadoutDebug] ").Append(who).Append(" stats\n");
+            for (int i = 0; i < StatRegistry.Count; i++)
+            {
+                var stat = StatRegistry.GetByIndex(i);
+                if (stat != null) c.DebugDescribe(stat, sb);
+            }
+            Debug.Log(sb.ToString());
+        }
+
+        // ------------------------------------------------------------------ health
+
+        private void ChangeHealth(float fraction)
+        {
+            var health = player != null ? player.GetComponent<CombatantHealth>() : null;
+            if (health == null) { Debug.Log("[LoadoutDebug] No CombatantHealth on the player."); return; }
+
+            float amount = health.MaxHealth * Mathf.Abs(fraction);
+            if (fraction > 0f) health.Heal(amount);
+            else health.TakeDamage(Mathf.Min(amount, health.CurrentHealth - 1f), BodyPart.Torso, null);
+
+            Debug.Log($"[LoadoutDebug] Health {health.CurrentHealth:0}/{health.MaxHealth:0}");
         }
 
         // ------------------------------------------------------------------ lock

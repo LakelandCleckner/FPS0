@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd56c19941fb6964294e4e861f6ec0a1, type: 3}
+  m_Name: Light Frame I
+  m_EditorClassIdentifier: 
+  id: light_frame_i
+  displayName: Light Frame I
+  description: Increases handling.
+  listenScope: 0
+  modifiers:
+  - stat: {fileID: 11400000, guid: 1af39531c4c9d474f810115fd25ae295, type: 2}
+    bucket: 0
+    value: 10
+    target: 1
+    weaponTypes: []
+    scope: 1

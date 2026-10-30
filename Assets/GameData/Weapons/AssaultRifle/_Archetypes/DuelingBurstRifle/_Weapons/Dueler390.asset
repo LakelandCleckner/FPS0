@@ -18,6 +18,8 @@ MonoBehaviour:
   viewmodel: {fileID: 11400000, guid: d4f46df13b99803418d5c2dac5d10c04, type: 2}
   viewmodelSkin: []
   defaultShader: {fileID: 11400000, guid: 6afe353b48cc3a646bf6665295d7e8a2, type: 2}
+  overrideSlots: 0
+  allowedSlotsOverride: -1
   baseDamageType: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
   weaponDamageDelta: 0
   roundsPerMinuteDelta: 0
@@ -33,7 +35,9 @@ MonoBehaviour:
   emptyClip: {fileID: 8300000, guid: 08eb29cab0988c349bc1c4de52aaf72c, type: 3}
   reloadClip: {fileID: 8300000, guid: 49af6209dec94aa4a9216b5a301d0a88, type: 3}
   riderEffects: []
-  perkPool: []
+  intrinsicPerks: []
+  perkColumns: []
+  curatedRoll: []
   faction: 0
   maxChainDepth: 0
   chainFalloff: 1

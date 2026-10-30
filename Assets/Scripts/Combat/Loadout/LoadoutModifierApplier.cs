@@ -73,6 +73,21 @@ namespace Combat.Loadout
             Apply(grant);
         }
 
+        // Changes a registered grant's value and reapplies it.
+        public void SetValue(ModifierGrant grant, float value)
+        {
+            if (grant == null || grant.Value == value) return;
+            grant.Value = value;
+            if (grants.Contains(grant)) Apply(grant);
+        }
+
+        // Removes one grant from every container.
+        public void Remove(ModifierGrant grant)
+        {
+            if (grant == null || !grants.Remove(grant)) return;
+            Strip(grant);
+        }
+
         // Removes every grant this owner registered, from every container.
         public void Unregister(object owner)
         {
@@ -82,15 +97,19 @@ namespace Combat.Loadout
             {
                 var g = grants[i];
                 if (!ReferenceEquals(g.Owner, owner)) continue;
-
-                var ps = PlayerStats;
-                if (ps != null) ps.RemoveAllFromOwner(g);
-                foreach (var w in bound)
-                {
-                    var c = w.SourceStats;
-                    if (c != null) c.RemoveAllFromOwner(g);
-                }
+                Strip(g);
                 grants.RemoveAt(i);
+            }
+        }
+
+        private void Strip(ModifierGrant g)
+        {
+            var ps = PlayerStats;
+            if (ps != null) ps.RemoveAllFromOwner(g);
+            foreach (var w in bound)
+            {
+                var c = w.SourceStats;
+                if (c != null) c.RemoveAllFromOwner(g);
             }
         }
 

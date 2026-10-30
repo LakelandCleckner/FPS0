@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Handling
   resolutionMode: 0
   defaultValue: 0
-  useMin: 0
+  useMin: 1
   minValue: 0
   useMax: 0
   maxValue: 0

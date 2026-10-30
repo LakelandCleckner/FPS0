@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd56c19941fb6964294e4e861f6ec0a1, type: 3}
+  m_Name: Steady Assist II
+  m_EditorClassIdentifier: 
+  id: steady_assist_ii
+  displayName: Steady Assist II
+  description: Increases aim assist.
+  listenScope: 0
+  modifiers:
+  - stat: {fileID: 11400000, guid: c7a4bb871b6f29f4bbf9c509365f5b26, type: 2}
+    bucket: 0
+    value: 20
+    target: 1
+    weaponTypes: []
+    scope: 1

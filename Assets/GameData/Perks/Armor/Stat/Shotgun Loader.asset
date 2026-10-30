@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd56c19941fb6964294e4e861f6ec0a1, type: 3}
+  m_Name: Shotgun Loader
+  m_EditorClassIdentifier: 
+  id: shotgun_loader
+  displayName: Shotgun Loader
+  description: Shotguns reload faster.
+  listenScope: 0
+  modifiers:
+  - stat: {fileID: 11400000, guid: 7579532ea69da3744ab17777fafe21c6, type: 2}
+    bucket: 2
+    value: -0.15
+    target: 1
+    weaponTypes:
+    - {fileID: 11400000, guid: e71ec1fc466957844bec5b520a2097f6, type: 2}
+    scope: 1

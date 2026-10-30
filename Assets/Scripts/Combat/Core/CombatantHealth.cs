@@ -8,7 +8,7 @@ using Combat.Spawning;
 // Pooling: fires OnDeath instead of destroying, so a PooledEnemy can decide when/how
 // the instance returns to its pool (immediately now; deferred for a death animation or
 // a status-transfer read later). Implements IPoolable so a reused instance resets its
-// health and clears IsDying — neither of which happens on their own, since currentHealth
+// health and clears IsDying -- neither of which happens on their own, since currentHealth
 // is set in Start (once per instance) and IsDying is a one-way latch.
 public class CombatantHealth : MonoBehaviour, IPoolable
 {
@@ -34,10 +34,15 @@ public class CombatantHealth : MonoBehaviour, IPoolable
 
     // Fired when this combatant dies (health hits 0). A PooledEnemy subscribes to
     // return the instance to its pool; anything else (score, loot, VFX) can too. Death
-    // no longer destroys the object itself — the handler decides its fate. If NOTHING
+    // no longer destroys the object itself -- the handler decides its fate. If NOTHING
     // handles this, the object simply persists dying; PooledEnemy's fallback destroys
     // a non-pooled one.
     public event System.Action OnDeath;
+
+    // (current, max). Fired on damage, heal, spawn and max-health changes.
+    public event System.Action<float, float> HealthChanged;
+
+    private void NotifyHealth() => HealthChanged?.Invoke(currentHealth, cachedMax);
 
     public float MaxHealth { get { RefreshMax(); return cachedMax; } }
     public float CurrentHealth => currentHealth;
@@ -60,12 +65,13 @@ public class CombatantHealth : MonoBehaviour, IPoolable
         RefreshMax();
         currentHealth = cachedMax;
         started = true;
+        NotifyHealth();
     }
 
     // ---- IPoolable ----
 
     // Reused instance: refill to full and clear the dying latch. Without this a
-    // respawned enemy keeps its last life's currentHealth (0 — dead) and its latched
+    // respawned enemy keeps its last life's currentHealth (0 -- dead) and its latched
     // IsDying, i.e. it spawns dead. Start does NOT run on reuse, so this is the only
     // reset path.
     public void OnSpawn()
@@ -75,6 +81,7 @@ public class CombatantHealth : MonoBehaviour, IPoolable
         RefreshMax();
         currentHealth = cachedMax;
         started = true;                    // in case OnSpawn beats Start on first life
+        NotifyHealth();
     }
 
     public void OnDespawn()
@@ -102,7 +109,7 @@ public class CombatantHealth : MonoBehaviour, IPoolable
         cachedMaxVersion = v;
 
         if (!started) return;
-        if (oldMax <= 0f) { currentHealth = Mathf.Min(currentHealth, newMax); return; }
+        if (oldMax <= 0f) { currentHealth = Mathf.Min(currentHealth, newMax); NotifyHealth(); return; }
         if (Mathf.Approximately(oldMax, newMax)) return;
 
         switch (maxHealthChangeMode)
@@ -118,6 +125,8 @@ public class CombatantHealth : MonoBehaviour, IPoolable
                 currentHealth = Mathf.Clamp(currentHealth, 0f, newMax);
                 break;
         }
+
+        NotifyHealth();
     }
 
     private float GetTypeMultiplier(DamageTypeSO type)
@@ -165,6 +174,7 @@ public class CombatantHealth : MonoBehaviour, IPoolable
         if (IsDying) return;
         RefreshMax();
         currentHealth = Mathf.Clamp(currentHealth - damage, 0f, cachedMax);
+        NotifyHealth();
         if (currentHealth == 0f)
         {
             IsDying = true;
@@ -177,11 +187,12 @@ public class CombatantHealth : MonoBehaviour, IPoolable
         if (IsDying) return;
         RefreshMax();
         currentHealth = Mathf.Clamp(currentHealth + amount, 0f, cachedMax);
+        NotifyHealth();
     }
 
     // Death no longer destroys directly. It fires OnDeath; a PooledEnemy returns the
     // instance to its pool (or a fallback destroys a non-pooled one). This is what lets
-    // the return be DEFERRED — for a death animation, or so a status transfer can read
+    // the return be DEFERRED -- for a death animation, or so a status transfer can read
     // this corpse's still-alive status pools before anything resets or deactivates.
     private void Die()
     {

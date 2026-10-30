@@ -15,3 +15,19 @@ MonoBehaviour:
   id: sidearm
   displayName: Sidearm
   allowedSlots: -1
+  perkColumns:
+  - label: Barrel
+    source: {fileID: 11400000, guid: e14613e9698a19e4e9ce80dceacd6a88, type: 2}
+    pool: []
+  - label: Magazine
+    source: {fileID: 11400000, guid: 268034a300785e04daddcbd879b3fd1a, type: 2}
+    pool: []
+  - label: Trait
+    source: {fileID: 11400000, guid: 256cc2e72b7a4b548b19a0abe02b12b0, type: 2}
+    pool: []
+  - label: Trait
+    source: {fileID: 11400000, guid: fae4edf3285885c47836f2bd0e0ca6d4, type: 2}
+    pool: []
+  - label: Trait
+    source: {fileID: 11400000, guid: bae76d937fc6aab459e354ed6991f942, type: 2}
+    pool: []

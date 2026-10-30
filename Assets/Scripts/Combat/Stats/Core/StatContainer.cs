@@ -3,15 +3,15 @@ using UnityEngine;
 
 namespace Combat.Stats
 {
-    // Per-entity stat storage + resolution (GDD 14 §3, §6, §7). Phase 2d adds:
-    //   - DERIVED modifiers (value = coeff × resolved(sourceStat), optionally capped)
+    // Per-entity stat storage + resolution (GDD 14 s3, s6, s7). Phase 2d adds:
+    //   - DERIVED modifiers (value = coeff x resolved(sourceStat), optionally capped)
     //   - lazy-recursive resolution with a CYCLE GUARD
     //   - CROSS-STAT invalidation via version stamps: a cached value records the
     //     versions of the source stats it depended on and invalidates if any moved
     //     (local + lazy; no reverse-dependency graph)
     //
     // Derived modifiers may read stats in THIS container. (Cross-CONTAINER derivation
-    // — e.g. a stack reading its source's stats — is handled at the tick/consumer
+    // -- e.g. a stack reading its source's stats -- is handled at the tick/consumer
     // level in later phases; the container-local case is the engine core.)
     public class StatContainer
     {
@@ -33,7 +33,10 @@ namespace Combat.Stats
         // cycle guard: stats currently mid-resolution
         private readonly bool[] resolving;
 
-        private readonly List<StatModifierValue> scratch = new List<StatModifierValue>(16);
+        // One scratch list per nesting level: resolving a derived modifier resolves its source stat
+        // mid-loop, and a shared list let the source's modifiers leak into this stat's buckets.
+        private readonly List<List<StatModifierValue>> scratchPool = new List<List<StatModifierValue>>(4);
+        private int resolveDepth;
         private static long nextHandleId = 1;
 
         public StatContainer()
@@ -171,51 +174,62 @@ namespace Combat.Stats
 
             resolving[i] = true;
 
+            if (resolveDepth >= scratchPool.Count) scratchPool.Add(new List<StatModifierValue>(16));
+            var scratch = scratchPool[resolveDepth++];
             scratch.Clear();
-            var deps = cacheDeps[i];
-            if (deps == null) { deps = new List<(int, int)>(); cacheDeps[i] = deps; }
-            deps.Clear();
 
-            var list = modifiers[i];
-            if (list != null)
+            try
             {
-                for (int j = 0; j < list.Count; j++)
+                var deps = cacheDeps[i];
+                if (deps == null) { deps = new List<(int, int)>(); cacheDeps[i] = deps; }
+                deps.Clear();
+
+                var list = modifiers[i];
+                if (list != null)
                 {
-                    var m = list[j];
-                    float val;
-                    if (!m.IsDerived)
+                    for (int j = 0; j < list.Count; j++)
                     {
-                        val = m.Value;
-                    }
-                    else
-                    {
-                        // derived: coeff × resolved(sourceStat), optionally capped.
-                        int si = StatRegistry.IndexOf(m.SourceStat);
-                        if (si < 0)
+                        var m = list[j];
+                        float val;
+                        if (!m.IsDerived)
                         {
-                            val = 0f;
+                            val = m.Value;
                         }
                         else
                         {
-                            float sourceVal = ResolveIndex(si, m.SourceStat);
-                            val = m.Coefficient * sourceVal;
-                            if (m.UseCap && val > m.Cap) val = m.Cap;
-                            // record the dependency (source index + its version at read)
-                            deps.Add((si, version[si]));
+                            // derived: coeff x resolved(sourceStat), optionally capped.
+                            int si = StatRegistry.IndexOf(m.SourceStat);
+                            if (si < 0)
+                            {
+                                val = 0f;
+                            }
+                            else
+                            {
+                                float sourceVal = ResolveIndex(si, m.SourceStat);
+                                val = m.Coefficient * sourceVal;
+                                if (m.UseCap && val > m.Cap) val = m.Cap;
+                                // record the dependency (source index + its version at read)
+                                deps.Add((si, version[si]));
+                            }
                         }
+                        scratch.Add(new StatModifierValue(m.BucketId, val));
                     }
-                    scratch.Add(new StatModifierValue(m.BucketId, val));
                 }
+
+                float baseValue = hasBase[i] ? bases[i] : stat.defaultValue;
+                float resolved = StatResolver.Resolve(stat, baseValue, scratch, customTree[i]);
+
+                cachedValue[i] = resolved;
+                cachedVersion[i] = version[i];
+                hasCache[i] = true;
+                return resolved;
             }
-
-            float baseValue = hasBase[i] ? bases[i] : stat.defaultValue;
-            float resolved = StatResolver.Resolve(stat, baseValue, scratch, customTree[i]);
-
-            cachedValue[i] = resolved;
-            cachedVersion[i] = version[i];
-            hasCache[i] = true;
-            resolving[i] = false;
-            return resolved;
+            finally
+            {
+                scratch.Clear();
+                resolveDepth--;
+                resolving[i] = false;
+            }
         }
 
         // Are all recorded dependency versions still current?
@@ -249,13 +263,46 @@ namespace Combat.Stats
         // Force a re-resolve of a stat after a modifier's value was mutated in place.
         // Modifier value changes normally go through Add/RemoveModifier, but an
         // intensity-scaled modifier (e.g. a slow that deepens with stacks) mutates its
-        // Value and needs to invalidate the cache the same way — version bump + drop cache.
+        // Value and needs to invalidate the cache the same way -- version bump + drop cache.
         public void NotifyModifierChanged(StatDefinitionSO stat)
         {
             int i = Idx(stat);
             if (i >= 0) Invalidate(i);
         }
 
+
+        // Debug: base and every modifier on a stat, with its owner. False if the stat has neither.
+        public bool DebugDescribe(StatDefinitionSO stat, System.Text.StringBuilder sb)
+        {
+            int i = StatRegistry.IndexOf(stat);
+            if (i < 0 || i >= bases.Length) return false;
+
+            var list = modifiers[i];
+            bool hasMods = list != null && list.Count > 0;
+            if (!hasBase[i] && !hasMods) return false;
+
+            sb.Append(stat.id).Append(" = ").Append(Resolve(stat).ToString("0.###"))
+              .Append("   (base ").Append((hasBase[i] ? bases[i] : stat.defaultValue).ToString("0.###")).Append(")\n");
+
+            if (!hasMods) return true;
+            for (int j = 0; j < list.Count; j++)
+            {
+                var m = list[j];
+                sb.Append("    ").Append(m.BucketId).Append(' ');
+                if (m.IsDerived)
+                {
+                    float src = m.SourceStat != null ? Resolve(m.SourceStat) : 0f;
+                    sb.Append(m.Coefficient.ToString("0.####")).Append(" x ")
+                      .Append(m.SourceStat != null ? m.SourceStat.id : "?").Append('(').Append(src.ToString("0.###"))
+                      .Append(") = ").Append((m.Coefficient * src).ToString("0.###"));
+                }
+                else sb.Append(m.Value.ToString("0.###"));
+
+                var owner = m.Handle.Owner;
+                sb.Append("   <- ").Append(owner != null ? owner.ToString() : "no owner").Append('\n');
+            }
+            return true;
+        }
 
         private int Idx(StatDefinitionSO stat)
         {
