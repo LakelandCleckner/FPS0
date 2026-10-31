@@ -31,6 +31,11 @@ MonoBehaviour:
       <Path>k__BackingField: Assets/Scripts/AI/GOAP/Goals/WanderGoal.cs
       <Id>k__BackingField: 79aae223-acda-44d2-a71e-5d97be79fb35
     actions:
+    - <Name>k__BackingField: AttackAction
+      fullName: GOAPGettingStarted.Actions.AttackAction, Assembly-CSharp, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      <Path>k__BackingField: Assets/Scripts/AI/GOAP/Actions/AttackAction.cs
+      <Id>k__BackingField: c5bdff00-d286-42e6-89c5-ffcdd0586aad
     - <Name>k__BackingField: ChaseAction
       fullName: GOAPGettingStarted.Actions.ChaseAction, Assembly-CSharp, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
@@ -57,6 +62,11 @@ MonoBehaviour:
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
       <Path>k__BackingField: Assets/Scripts/AI/GOAP/Sensors/PlayerEngagedSensor.cs
       <Id>k__BackingField: e8f9a0b1-c2d3-4567-bcde-678901234567
+    - <Name>k__BackingField: PlayerInAttackRangeSensor
+      fullName: GOAPGettingStarted.Sensors.PlayerInAttackRangeSensor, Assembly-CSharp,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      <Path>k__BackingField: Assets/Scripts/AI/GOAP/Sensors/PlayerInAttackRangeSensor.cs
+      <Id>k__BackingField: cddae3fd-9c23-4103-8920-0eb8333acd8f
     - <Name>k__BackingField: PlayerVisibleSensor
       fullName: GOAPGettingStarted.Sensors.PlayerVisibleSensor, Assembly-CSharp,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
@@ -83,6 +93,11 @@ MonoBehaviour:
         Culture=neutral, PublicKeyToken=null
       <Path>k__BackingField: Assets/Scripts/AI/GOAP/WorldKeys/PlayerEngaged.cs
       <Id>k__BackingField: f7a8b9c0-d1e2-3456-abcd-567890123456
+    - <Name>k__BackingField: PlayerInAttackRange
+      fullName: GOAPGettingStarted.WorldKeys.PlayerInAttackRange, Assembly-CSharp,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      <Path>k__BackingField: Assets/Scripts/AI/GOAP/WorldKeys/PlayerInAttackRange.cs
+      <Id>k__BackingField: 2fa20466-64be-44cb-aaef-744016e0126e
     - <Name>k__BackingField: PlayerVisible
       fullName: GOAPGettingStarted.WorldKeys.PlayerVisible, Assembly-CSharp, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null

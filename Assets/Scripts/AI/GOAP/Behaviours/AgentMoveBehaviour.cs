@@ -3,6 +3,7 @@ using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Goap.Runtime;
 using UnityEngine;
 using UnityEngine.AI;
+using Combat.Enemies;
 
 namespace GOAPGettingStarted.Behaviours
 {
@@ -16,6 +17,8 @@ namespace GOAPGettingStarted.Behaviours
         private AgentBehaviour agent;
         private NavMeshAgent nav;
         private AgentBrain brain;
+        private EnemyMeleeAttack melee;
+        private bool holding;
         private ITarget currentTarget;
         private bool shouldMove;
         private float lastAppliedSpeed = -1f;
@@ -25,6 +28,7 @@ namespace GOAPGettingStarted.Behaviours
             agent = GetComponent<AgentBehaviour>();
             nav = GetComponent<NavMeshAgent>();
             brain = GetComponent<AgentBrain>();
+            melee = GetComponent<EnemyMeleeAttack>();
 
             nav.stoppingDistance = StoppingDistance;
         }
@@ -89,6 +93,17 @@ namespace GOAPGettingStarted.Behaviours
                 return;
             }
 
+            // Plant feet for the whole swing; EnemyMeleeAttack handles turning.
+            if (melee != null && melee.IsSwinging)
+            {
+                if (!holding && nav.isActiveAndEnabled && nav.isOnNavMesh)
+                    nav.velocity = Vector3.zero;
+                holding = true;
+                nav.isStopped = true;
+                return;
+            }
+            holding = false;
+
             // Continuously update destination for live targets like the player
             if (shouldMove && currentTarget is TransformTarget && nav.isActiveAndEnabled && nav.isOnNavMesh)
             {
@@ -96,7 +111,7 @@ namespace GOAPGettingStarted.Behaviours
                 nav.isStopped = false;
 
                 // Inside stopping distance the agent halts, and NavMesh rotation only turns it
-                // while moving — so face the target ourselves or it freezes staring one way.
+                // while moving -- so face the target ourselves or it freezes staring one way.
                 Vector3 toTarget = currentTarget.Position - transform.position;
                 toTarget.y = 0f;
                 if (toTarget.sqrMagnitude > 0.01f && nav.velocity.sqrMagnitude < 0.01f)

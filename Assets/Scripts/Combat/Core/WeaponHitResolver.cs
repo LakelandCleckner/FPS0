@@ -1,4 +1,4 @@
-﻿using Combat.Feedback;
+using Combat.Feedback;
 using Combat.Events;
 using Combat.Sources;
 using System.Collections.Generic;
@@ -22,6 +22,8 @@ namespace Combat.Core
         [SerializeField] private bool showTickHitmarkers = true;
         [Tooltip("Play hit audio on every status tick (can get noisy).")]
         [SerializeField] private bool playTickAudio = true;
+        [Tooltip("Off for non-player resolvers (enemies): no hitmarkers, hit audio or damage numbers.")]
+        [SerializeField] private bool playFeedback = true;
 
         [Header("Events")]
         [Tooltip("Fire Hit/PrecisionHit even when the hit dealt no damage (fully " +
@@ -156,7 +158,7 @@ namespace Combat.Core
 
             // A resolver spawned from a prefab can't hold scene refs.
             if (playerAudio == null) playerAudio = GetComponentInParent<PlayerAudio>();
-            if (hitmarkerUI == null) hitmarkerUI = FindFirstObjectByType<HitmarkerUI>();
+            if (playFeedback && hitmarkerUI == null) hitmarkerUI = FindFirstObjectByType<HitmarkerUI>();
             HitLog.Enabled = logHits;
         }
 
@@ -236,7 +238,7 @@ namespace Combat.Core
             // (e.g. a burn's instant first tick, which logs before its parent shot).
             LogResolved(ctx);
 
-            if (ctx.DamageDealt > 0f)
+            if (playFeedback && ctx.DamageDealt > 0f)
                 ShowFeedback(ctx);
 
             // AFTER feedback: this hit's presentation completes before any perk

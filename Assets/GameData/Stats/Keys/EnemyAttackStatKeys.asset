@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0bcf3eed11cc6c4684344afc9e62628, type: 3}
+  m_Name: EnemyAttackStatKeys
+  m_EditorClassIdentifier: 
+  attackDamage: {fileID: 11400000, guid: 4b85464f9cc196e40ba282e7b615bfbc, type: 2}
+  attackRange: {fileID: 11400000, guid: 291e4f778c7bb4f4db6637ab9782efe8, type: 2}
+  attackCooldown: {fileID: 11400000, guid: c3d2d2cbbdc53884c8451c90c7b0666e, type: 2}
+  attackSpeed: {fileID: 11400000, guid: 7e32b5788ffa76848ab50a28814e8e89, type: 2}

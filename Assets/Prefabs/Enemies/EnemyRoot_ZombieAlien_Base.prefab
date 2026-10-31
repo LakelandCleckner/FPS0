@@ -67,6 +67,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2780478270126569151, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1861118611952990833}
+    - targetCorrespondingSourceObject: {fileID: 2780478270126569151, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 88895757113526059}
+    - targetCorrespondingSourceObject: {fileID: 2780478270126569151, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1628824228363736567}
+    - targetCorrespondingSourceObject: {fileID: 2780478270126569151, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2512483541684652759}
   m_SourcePrefab: {fileID: 100100000, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
 --- !u!114 &108623951137932325 stripped
 MonoBehaviour:
@@ -106,6 +115,85 @@ MonoBehaviour:
   speedParam: Speed
   dampTime: 0.1
   stopThreshold: 0.05
+--- !u!114 &88895757113526059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539902503267225480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45f0caebb377b0d479709028e694df00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logDispatch: 0
+--- !u!114 &1628824228363736567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539902503267225480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27c46d4a207d4a742ab354ef299d0b34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitmarkerUI: {fileID: 0}
+  playerAudio: {fileID: 0}
+  hitmarkerClip: {fileID: 0}
+  killClip: {fileID: 0}
+  statKeys: {fileID: 11400000, guid: d08ea03d7f569de4ea98d55cfd34a719, type: 2}
+  showTickHitmarkers: 0
+  playTickAudio: 0
+  playFeedback: 0
+  fireHitEventsOnZeroDamage: 0
+  logHits: 0
+  pelletMergeWindow: 0.1
+--- !u!114 &2512483541684652759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539902503267225480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3662598d76807194884cd4b2edb784ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  combatantStats: {fileID: 108623951137932325}
+  resolver: {fileID: 1628824228363736567}
+  animator: {fileID: 2825080124066039189}
+  statKeys: {fileID: 11400000, guid: 8ab0d4a3ca950c040b9b9404da3d81b2, type: 2}
+  damageType: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
+  baseDamage: 80
+  baseRange: 2.5
+  baseCooldown: 1.5
+  baseAttackSpeed: 1
+  moves:
+  - label: Attack
+    weight: 1
+    damageMultiplier: 1
+    clipFrameRate: 60
+    hitStartFrame: 69
+    hitEndFrame: 90
+    recoveryEndFrame: 130
+    hitParts: 02000000
+  avoidRepeat: 1
+  playerMask:
+    serializedVersion: 2
+    m_Bits: 256
+  hitPadding: 0.1
+  maxStartAngle: 40
+  swingTurnSpeed: 90
+  attackingBool: Attacking
+  attackSpeedFloat: AttackSpeed
+  attackIndexInt: AttackIndex
+  armsLayerName: Arms
+  armsLayerFade: 0.15
+  logHits: 0
 --- !u!4 &7497867919796180745 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6612740343518719550, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}

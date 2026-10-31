@@ -7,13 +7,13 @@ using Combat.Sources;
 
 namespace Combat.Events
 {
-    // Every event the surface carries. Doc 07 §2 assigns each to ONE authoritative
-    // producer — the system that actually knows the thing happened:
+    // Every event the surface carries. Doc 07 s2 assigns each to ONE authoritative
+    // producer -- the system that actually knows the thing happened:
     //
     //   Resolver : Hit, PrecisionHit, Kill, PrecisionKill
     //   Weapon   : ShotFired, DryFire, ReloadStart, ReloadComplete, ReloadCancelled,
     //              MagEmpty, MagFull, AmmoChanged, Equip, Stow
-    //   Player   : (Dodge, AbilityUsed, DamageTaken — not yet produced)
+    //   Player   : DamageTaken (PlayerHurtbox); Dodge, AbilityUsed not yet produced
     //
     // NOTE: there is deliberately NO per-frame / OnUpdate event. Timed perks check
     // their own timers on whatever event they already care about. This is the
@@ -40,12 +40,15 @@ namespace Combat.Events
 
         // --- weapon: lifecycle ---
         Equip,
-        Stow
+        Stow,
+
+        // --- player (hit family: Hit is the attacker's context, Target is the player) ---
+        DamageTaken
     }
 
     // The event payload.
     //
-    // Doc 07 wants the context "queryable and lazy — cheap to assemble (references
+    // Doc 07 wants the context "queryable and lazy -- cheap to assemble (references
     // only)". So this is a readonly struct carrying REFERENCES, and hit events carry
     // the live HitContext rather than re-declaring its fields. Target identity,
     // damage dealt, was-crit, body part, damage type and causing source are all
@@ -56,12 +59,12 @@ namespace Combat.Events
     // the resolver. READ it, never mutate it. Mutating after resolution breaks doc
     // 02's correctness rule (every multiplier applied before DamageDealt is written,
     // so the floating number can't diverge from real HP loss). Perks that want to
-    // change a shot do it by contributing an effect — see IHitEffectContributor.
+    // change a shot do it by contributing an effect -- see IHitEffectContributor.
     //
     // AND DO NOT RETAIN IT. The reference is valid only for the duration of the
     // handler call. EffectStackPool reuses ONE HitContext per status across all its
     // ticks, so a subscriber that stashes evt.Hit to inspect next frame will find it
-    // silently overwritten by the next tick — with plausible-looking data from a
+    // silently overwritten by the next tick -- with plausible-looking data from a
     // different hit, which is the worst kind of wrong.
     //
     // If a perk needs hit state later, COPY THE VALUES it cares about (target,
@@ -99,7 +102,7 @@ namespace Combat.Events
                     Debug.LogError(
                         "[WeaponEvent] Stale HitContext read. A subscriber retained " +
                         "the context past its handler and it has since been refilled " +
-                        "for a different resolution — the values returned belong to " +
+                        "for a different resolution -- the values returned belong to " +
                         "another hit. Copy the fields you need during the handler " +
                         "instead of holding the context.");
                 }
@@ -149,7 +152,7 @@ namespace Combat.Events
     // and subscribed without filtering would ramp continuously off a single burn.
     //
     // Hence the DEFAULT IS Direct ONLY. Forgetting to widen the mask gives you too
-    // FEW events, which surfaces as "my perk isn't firing" — visible, and fixed in
+    // FEW events, which surfaces as "my perk isn't firing" -- visible, and fixed in
     // seconds. Defaulting to All would give too MANY, which surfaces as a balance
     // number being quietly wrong weeks later. Wrong-but-loud beats wrong-but-quiet.
     [Flags]
@@ -181,19 +184,19 @@ namespace Combat.Events
 
     // THE INTERCEPTION SEAM.
     //
-    // A perk that must alter the shot currently resolving can't do it from an event —
+    // A perk that must alter the shot currently resolving can't do it from an event --
     // events fire after resolution. It contributes an IHitEffect into the list the
     // resolver is about to run, which then goes through the normal phase order and
     // the normal damage formula. Nothing bypasses DamageHitEffect's arithmetic, so
     // the correctness rule survives.
     //
-    // HARD CONSTRAINT — CRIT IS ALREADY DECIDED. RollCrit runs at the top of
+    // HARD CONSTRAINT -- CRIT IS ALREADY DECIDED. RollCrit runs at the top of
     // ResolveHit, BEFORE the effect loop. A contributed effect therefore CANNOT
     // influence crit chance or crit damage for the hit it is contributing to; the die
     // is already cast. "Guaranteed crit on your next precision hit" must be a
     // StatModifier on the player's container applied before the shot (the reactive
     // path), never a contributed effect. A contributed effect can reach damage values,
-    // HitboxMultiplier, chain multiplier and status application — not crit.
+    // HitboxMultiplier, chain multiplier and status application -- not crit.
     public interface IHitEffectContributor
     {
         // Called once per resolution, before phase sorting. Adding nothing is the

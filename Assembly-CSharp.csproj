@@ -110,6 +110,7 @@
     <Compile Include="Assets\Scripts\Combat\Stats\Keys\DefenseStatKeys.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\StatSystemTest.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Modifiers\StatModifier.cs" />
+    <Compile Include="Assets\Scripts\UI\DamageIndicatorRing.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\Character.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StackEntry.cs" />
     <Compile Include="Assets\Scripts\Combat\Loadout\LoadoutModifierApplier.cs" />
@@ -133,6 +134,7 @@
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponLoadout.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\Wandering\IsWanderingSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\DamageEffectSO.cs" />
+    <Compile Include="Assets\Scripts\PlayerScripts\CameraBump.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\ProjectileDeliverySO.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StatusSummedTickEffect.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\BindingPointType.cs" />
@@ -164,6 +166,7 @@
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\Shields\Shield.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\ProjectileDelivery.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\ChainContextPool.cs" />
+    <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\PlayerInAttackRange.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\ApplyStatusHitEffect.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponAmmo.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponFireController.cs" />
@@ -174,6 +177,7 @@
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxAddons\TrailScaleWithHierarchy.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Weapon\Range\WeaponFalloff.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\LoadoutSlots.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Keys\EnemyAttackStatKeys.cs" />
     <Compile Include="Assets\Scripts\Debugging\Combat\TestExplodeOnKill.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\Beams\BeamVfx.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\ParticleSystemVfx.cs" />
@@ -188,6 +192,7 @@
     <Compile Include="Assets\Scripts\DamageNumbers\DamageNumberFormatter.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Buckets\StatModifierValue.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Buckets\StatResolver.cs" />
+    <Compile Include="Assets\Scripts\AI\GOAP\Actions\AttackAction.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualButton.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerAim.cs" />
@@ -250,6 +255,7 @@
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\HitContext.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\BaseVfx.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Combat\EnemyMeleeAttack.cs" />
     <Compile Include="Assets\Scripts\Combat\Perks\Types\HolsterReloadPerkSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\IFireBehavior.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\DefenseDebuffTest.cs" />
@@ -270,7 +276,9 @@
     <Compile Include="Assets\Scripts\PlayerScripts\GameSettingsSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\WeaponTypeSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Core\StatDefinitionSO.cs" />
+    <Compile Include="Assets\Scripts\AI\GOAP\Sensors\PlayerInAttackRangeSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Keys\CombatStatKeys.cs" />
+    <Compile Include="Assets\Scripts\Combat\Core\PlayerHurtbox.cs" />
     <Compile Include="Assets\StarterAssets\InputSystem\StarterAssetsInputs.cs" />
     <Compile Include="Assets\Scripts\Combat\Perks\Types\HealOnKillPerkSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Loadout\ModifierGrant.cs" />

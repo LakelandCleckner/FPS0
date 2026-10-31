@@ -65,6 +65,7 @@
     <Compile Include="Assets\Editor\EffectPerkBatchWindow.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Editor\ReadmeEditor.cs" />
     <Compile Include="Assets\Editor\StatPerkBatchWindow.cs" />
+    <Compile Include="Assets\Editor\EnemyAttackAnimatorSetup.cs" />
     <Compile Include="Assets\Editor\PerkPoolBatchWindow.cs" />
     <Compile Include="Assets\Editor\WeaponShaderSOEditor.cs" />
     <Compile Include="Assets\Editor\RetroWeaponClipRenamer.cs" />
