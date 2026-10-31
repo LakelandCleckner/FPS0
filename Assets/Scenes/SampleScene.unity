@@ -228,12 +228,13 @@ MonoBehaviour:
   chipSpeed: 0.8
   damageChipColor: {r: 0.9245283, g: 0.24247056, b: 0.24247056, a: 0.85}
   healChipColor: {r: 0.45, g: 1, b: 0.55, a: 0.9}
-  healDelay: 0.15
+  healDelay: 0.4
   damageColor: {r: 1, g: 0.35, b: 0.3, a: 1}
   healColor: {r: 0.45, g: 1, b: 0.55, a: 1}
   popupRise: 40
   popupLife: 0.8
   popupMin: 0.5
+  mergeWindow: 0.3
 --- !u!1001 &72044587
 PrefabInstance:
   m_ObjectHideFlags: 0

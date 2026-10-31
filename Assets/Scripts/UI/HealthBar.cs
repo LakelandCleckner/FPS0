@@ -65,13 +65,19 @@ namespace Combat.UI
         [SerializeField] private float popupLife = 0.8f;
         [Tooltip("Changes smaller than this don't spawn a number.")]
         [SerializeField] private float popupMin = 0.5f;
+        [Tooltip("Changes this close together add into one rolling number (heal or damage over time). 0 = one number per change.")]
+        [Min(0f)][SerializeField] private float mergeWindow = 0.3f;
 
         private sealed class Popup
         {
             public TMP_Text Text;
             public float Age;
             public Vector2 Start;
+            public float Amount;
+            public float HoldUntil;   // stays put while still being added to
         }
+
+        private Popup rollingHeal, rollingDamage;
 
         private readonly List<Popup> live = new List<Popup>();
         private readonly Stack<Popup> pool = new Stack<Popup>();
@@ -80,6 +86,7 @@ namespace Combat.UI
         private float target;      // real health fraction
         private float chipValue;
         private Graphic chipGraphic;
+        private bool healing;      // green chip ahead, fill climbing
         private float chipWait;
         private float lastHealth = -1f;
         private float tickedMax = -1f;
@@ -183,13 +190,16 @@ namespace Combat.UI
                 chipValue = Mathf.Max(chipValue, shown);
                 shown = pct;
                 chipWait = chipDelay;
+                healing = false;
                 SetChipColor(damageChipColor);
             }
             else if (pct > shown)
             {
                 // Heal: chip jumps ahead in green; fill rises to meet it.
+                // Only the first tick waits; later ticks keep the fill climbing so it rolls.
                 chipValue = pct;
-                chipWait = healDelay;
+                if (!healing) chipWait = healDelay;
+                healing = true;
                 SetChipColor(healChipColor);
             }
 
@@ -221,7 +231,7 @@ namespace Combat.UI
                     shown = Mathf.MoveTowards(shown, target, chipSpeed * dt);
                     if (fill != null) fill.SetValueWithoutNotify(shown);
                     ShowTicks();
-                    if (Mathf.Approximately(shown, target)) chipValue = shown;
+                    if (Mathf.Approximately(shown, target)) { chipValue = shown; healing = false; }
                 }
                 else
                 {
@@ -240,6 +250,7 @@ namespace Combat.UI
             for (int i = live.Count - 1; i >= 0; i--)
             {
                 var p = live[i];
+                if (Time.unscaledTime < p.HoldUntil) continue;
                 p.Age += dt;
                 float t = p.Age / popupLife;
                 if (t >= 1f)
@@ -247,6 +258,8 @@ namespace Combat.UI
                     p.Text.gameObject.SetActive(false);
                     live.RemoveAt(i);
                     pool.Push(p);
+                    if (p == rollingHeal) rollingHeal = null;
+                    if (p == rollingDamage) rollingDamage = null;
                     continue;
                 }
                 p.Text.rectTransform.anchoredPosition = p.Start + Vector2.up * popupRise * t;
@@ -263,15 +276,34 @@ namespace Combat.UI
 
         private void SpawnPopup(float delta)
         {
+            bool heal = delta > 0f;
+            var rolling = heal ? rollingHeal : rollingDamage;
+
+            // Still being fed: add to it instead of stacking a new number.
+            if (mergeWindow > 0f && rolling != null && Time.unscaledTime < rolling.HoldUntil)
+            {
+                rolling.Amount += delta;
+                rolling.HoldUntil = Time.unscaledTime + mergeWindow;
+                SetPopupText(rolling);
+                return;
+            }
+
             var p = pool.Count > 0 ? pool.Pop() : CreatePopup();
             p.Age = 0f;
+            p.Amount = delta;
+            p.HoldUntil = mergeWindow > 0f ? Time.unscaledTime + mergeWindow : 0f;
             p.Start = new Vector2(Random.Range(-8f, 8f), 0f);
-            p.Text.text = delta < 0f ? $"-{Mathf.CeilToInt(-delta)}" : $"+{Mathf.CeilToInt(delta)}";
-            p.Text.color = delta < 0f ? damageColor : healColor;
+            SetPopupText(p);
+            p.Text.color = heal ? healColor : damageColor;
             p.Text.rectTransform.anchoredPosition = p.Start;
             p.Text.gameObject.SetActive(true);
             live.Add(p);
+
+            if (heal) rollingHeal = p; else rollingDamage = p;
         }
+
+        private static void SetPopupText(Popup p)
+            => p.Text.text = p.Amount < 0f ? $"-{Mathf.CeilToInt(-p.Amount)}" : $"+{Mathf.CeilToInt(p.Amount)}";
 
         private Popup CreatePopup()
         {
