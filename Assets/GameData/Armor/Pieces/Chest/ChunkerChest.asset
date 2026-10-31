@@ -15,19 +15,7 @@ MonoBehaviour:
   id: chunker_chest
   displayName: Chunker Chest
   slot: {fileID: 11400000, guid: 773fdea7bf7d89b40825fb161780dac0, type: 2}
-  modifiers:
-  - stat: {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
-    bucket: 2
-    value: 1
-    target: 0
-    weaponTypes: []
-    scope: 0
-  - stat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
-    bucket: 2
-    value: -0.2
-    target: 0
-    weaponTypes: []
-    scope: 0
-  intrinsicPerks: []
+  intrinsicPerks:
+  - {fileID: 11400000, guid: 2728a8a8c6176134290102d0a59c246b, type: 2}
   perkColumns: []
   curatedRoll: []

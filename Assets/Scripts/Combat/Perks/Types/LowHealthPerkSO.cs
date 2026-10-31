@@ -21,6 +21,13 @@ namespace Combat.Perks
 
             private LowHealthPerkSO Def => (LowHealthPerkSO)Definition;
 
+            public override bool TryGetStatus(out PerkStatus s)
+            {
+                s = default;
+                s.Active = grants.Count > 0;
+                return s.Active;
+            }
+
             protected override void OnAttach()
             {
                 if (Ctx.Health == null) return;
@@ -45,11 +52,13 @@ namespace Combat.Perks
                         var g = Grant(e, e != null ? e.value : 0f);
                         if (g != null) grants.Add(g);
                     }
+                    NotifyStatus();
                 }
                 else if (!low && grants.Count > 0)
                 {
                     for (int i = 0; i < grants.Count; i++) Remove(grants[i]);
                     grants.Clear();
+                    NotifyStatus();
                 }
             }
         }

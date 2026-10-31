@@ -26,9 +26,38 @@ namespace Combat.Perks
         public bool IsArmor => Weapon == null;
     }
 
+    // What the HUD shows for a perk right now.
+    public struct PerkStatus
+    {
+        public bool Active;        // show the tile
+        public int Stacks;         // shown when above 1
+        public float ExpiresAt;    // Time.time the effect ends; 0 = no timer
+        public float Duration;     // full length of that timer
+        public int Count;          // progress toward a trigger, e.g. 2 of 3
+        public int CountMax;       // 0 = no counter
+    }
+
     // Per-item perk instance: holds state, hooks events, timers and modifiers. Detach cleans everything up.
     public abstract class PerkRuntime
     {
+        // Raised when any perk's HUD status changes, including on detach.
+        public static event Action<PerkRuntime> AnyStatusChanged;
+
+        public PerkSO Perk => Definition;
+        public bool Detached { get; private set; }
+
+        // Armour perks, or a weapon perk whose weapon is in hand. The HUD dims the rest.
+        public bool InHand => Ctx != null && (Ctx.IsArmor || Ctx.IsHeld);
+
+        // False = nothing to show. Perks with HUD state override this.
+        public virtual bool TryGetStatus(out PerkStatus status)
+        {
+            status = default;
+            return false;
+        }
+
+        protected void NotifyStatus() => AnyStatusChanged?.Invoke(this);
+
         protected PerkSO Definition { get; private set; }
         protected PerkContext Ctx { get; private set; }
 
@@ -53,7 +82,9 @@ namespace Combat.Perks
         {
             Definition = definition;
             Ctx = ctx;
+            Detached = false;
             OnAttach();
+            NotifyStatus();
         }
 
         internal void Detach()
@@ -64,10 +95,17 @@ namespace Combat.Perks
             if (Ctx.Bus != null) Ctx.Bus.UnsubscribeAll(this);
             if (Ctx.Applier != null) Ctx.Applier.Unregister(this);
             if (Ctx.Clock != null) Ctx.Clock.CancelAll(this);
+
+            Detached = true;
+            NotifyStatus();
         }
 
         // The host updates Ctx.IsHeld first, then notifies each runtime.
-        internal void NotifyHeld(bool held) => OnHeldChanged(held);
+        internal void NotifyHeld(bool held)
+        {
+            OnHeldChanged(held);
+            NotifyStatus();
+        }
 
         public override string ToString() => Definition != null ? "perk " + Definition.name : base.ToString();
 
@@ -151,6 +189,17 @@ namespace Combat.Perks
             private long timer;
 
             public int Stacks { get; private set; }
+            public float ExpiresAt { get; private set; }
+            public float Duration => duration;
+
+            // Fills the timer and stack fields of a HUD status.
+            public void Describe(ref PerkStatus s)
+            {
+                s.Active |= Stacks > 0;
+                s.Stacks = Stacks;
+                s.ExpiresAt = Stacks > 0 ? ExpiresAt : 0f;
+                s.Duration = duration;
+            }
 
             public TimedBuff(PerkRuntime owner, List<ModifierEntry> entries, float duration, int maxStacks)
             {
@@ -183,7 +232,12 @@ namespace Combat.Perks
                 }
 
                 owner.CancelTimer(ref timer);
-                if (duration > 0f) timer = owner.After(duration, Clear);
+                if (duration > 0f)
+                {
+                    timer = owner.After(duration, Clear);
+                    ExpiresAt = Time.time + duration;
+                }
+                owner.NotifyStatus();
             }
 
             public void Clear()
@@ -191,7 +245,11 @@ namespace Combat.Perks
                 owner.CancelTimer(ref timer);
                 for (int i = 0; i < grants.Count; i++) owner.Remove(grants[i]);
                 grants.Clear();
+
+                bool changed = Stacks > 0;
                 Stacks = 0;
+                ExpiresAt = 0f;
+                if (changed) owner.NotifyStatus();
             }
         }
     }

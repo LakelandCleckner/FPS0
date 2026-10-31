@@ -21,6 +21,15 @@ namespace Combat.Perks
 
             private PrecisionRefundPerkSO Def => (PrecisionRefundPerkSO)Definition;
 
+            public override bool TryGetStatus(out PerkStatus s)
+            {
+                s = default;
+                s.Count = count;
+                s.CountMax = Def.everyN;
+                s.Active = count > 0;
+                return s.Active;
+            }
+
             protected override void OnAttach() => Listen(WeaponEventType.PrecisionHit, HitSourceMask.Direct);
 
             protected override void OnEvent(in WeaponEvent evt)
@@ -31,9 +40,10 @@ namespace Combat.Perks
                 if (shot != 0 && shot == lastShot) return;
                 lastShot = shot;
 
-                if (++count < Def.everyN) return;
+                if (++count < Def.everyN) { NotifyStatus(); return; }
                 count = 0;
                 Ctx.Ammo.AddToMagazine(Def.rounds, Def.fromReserves);
+                NotifyStatus();
             }
         }
     }

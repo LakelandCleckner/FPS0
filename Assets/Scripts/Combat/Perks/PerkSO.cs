@@ -23,10 +23,29 @@ namespace Combat.Perks
         public string displayName = "";
         [TextArea] public string description = "";
 
+        [Header("HUD")]
+        [Tooltip("Shown on the HUD tile. Empty = Short Name.")]
+        public Sprite icon;
+        [Tooltip("2-3 letters for the HUD tile when there's no icon. Empty = initials of the display name.")]
+        public string shortName = "";
+
         [Tooltip("Weapon perks only. When this perk hears events from the bus.")]
         public PerkListenScope listenScope = PerkListenScope.Active;
 
         public abstract PerkRuntime CreateRuntime();
+
+        public string ShortLabel
+        {
+            get
+            {
+                if (!string.IsNullOrWhiteSpace(shortName)) return shortName.Trim();
+                string n = string.IsNullOrWhiteSpace(displayName) ? name : displayName;
+                var sb = new System.Text.StringBuilder(3);
+                foreach (var word in n.Split(' ', '_'))
+                    if (word.Length > 0 && sb.Length < 3) sb.Append(char.ToUpperInvariant(word[0]));
+                return sb.ToString();
+            }
+        }
     }
 
     // One roll column: a shared pool plus optional one-off perks, one picked per roll.

@@ -45,6 +45,19 @@ namespace Combat.Perks
 
             private TriggeredBuffPerkSO Def => (TriggeredBuffPerkSO)Definition;
 
+            public override bool TryGetStatus(out PerkStatus s)
+            {
+                s = default;
+                buff.Describe(ref s);
+                if (Def.everyN > 1)
+                {
+                    s.Count = Def.window > 0f ? times.Count : count;
+                    s.CountMax = Def.everyN;
+                    s.Active |= s.Count > 0;
+                }
+                return s.Active;
+            }
+
             protected override void OnAttach()
             {
                 buff = new TimedBuff(this, Def.modifiers, Def.duration, Def.maxStacks);
@@ -69,7 +82,7 @@ namespace Combat.Perks
                     lastShotSource = hit.DamageSource;
                 }
 
-                if (!Counted()) return;
+                if (!Counted()) { NotifyStatus(); return; }
                 buff.AddStack();
             }
 

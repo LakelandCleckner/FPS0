@@ -149,6 +149,7 @@
     <Compile Include="Assets\Scripts\Combat\Status\StatusSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Events\WeaponEventBus.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\Utilities\MobileDisableAutoSwitchControls.cs" />
+    <Compile Include="Assets\Scripts\UI\HealthBar.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Core\DerivationContext.cs" />
     <Compile Include="Assets\Scripts\Combat\Spawning\NavMeshAgentPoolReset.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VFXTester.cs" />
@@ -242,6 +243,7 @@
     <Compile Include="Assets\Scripts\Weapons\ViewmodelRig.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\TargetKeys\PlayerTarget.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\ChaseGoal.cs" />
+    <Compile Include="Assets\Scripts\UI\PerkTracker.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Bootstrap\StatBootstrap.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\ProjectileSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Spawning\PooledEnemy.cs" />

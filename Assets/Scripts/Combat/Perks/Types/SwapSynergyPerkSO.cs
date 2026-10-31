@@ -27,6 +27,13 @@ namespace Combat.Perks
 
             private SwapSynergyPerkSO Def => (SwapSynergyPerkSO)Definition;
 
+            public override bool TryGetStatus(out PerkStatus s)
+            {
+                s = default;
+                buff.Describe(ref s);
+                return s.Active;
+            }
+
             protected override void OnAttach()
             {
                 buff = new TimedBuff(this, Def.modifiers, Def.duration, 1);
