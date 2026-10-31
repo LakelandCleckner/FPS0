@@ -3,7 +3,7 @@
   "WorkspaceRootPath": "F:\\Game Dev\\FPS0\\FPS0\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\loadout\\loadoutdebugkeys.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\loadout\\loadoutdebugkeys.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\loadout\\loadoutdebugkeys.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -15,15 +15,15 @@
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\armor\\armorso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\perks\\perkso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\perks\\perkso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\perks\\perkso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{FDE65C6B-CE96-5276-40C9-8BA52662CE47}|Assembly-CSharp-Editor.csproj|f:\\game dev\\fps0\\fps0\\assets\\editor\\perkpoolbatchwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{FDE65C6B-CE96-5276-40C9-8BA52662CE47}|Assembly-CSharp-Editor.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\editor\\perkpoolbatchwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{FDE65C6B-CE96-5276-40C9-8BA52662CE47}|Assembly-CSharp-Editor.csproj|solutionrelative:assets\\editor\\perkpoolbatchwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\perks\\perkpoolso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\perks\\perkpoolso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\perks\\perkpoolso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -35,7 +35,7 @@
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\armor\\armorinstance.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\perks\\perkruntime.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\perks\\perkruntime.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\perks\\perkruntime.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -51,7 +51,7 @@
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\weapons\\data\\weaponso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\armor\\armorslotso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\armor\\armorslotso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\armor\\armorslotso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -59,7 +59,7 @@
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\weapons\\data\\weapontypeso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{FDE65C6B-CE96-5276-40C9-8BA52662CE47}|Assembly-CSharp-Editor.csproj|f:\\game dev\\fps0\\fps0\\assets\\editor\\effectperkbatchwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{FDE65C6B-CE96-5276-40C9-8BA52662CE47}|Assembly-CSharp-Editor.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\editor\\effectperkbatchwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{FDE65C6B-CE96-5276-40C9-8BA52662CE47}|Assembly-CSharp-Editor.csproj|solutionrelative:assets\\editor\\effectperkbatchwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -378,21 +378,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 9,
+          "SelectedChildIndex": 7,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "PerkPoolSO.cs",
-              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Perks\\PerkPoolSO.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Perks\\PerkPoolSO.cs",
-              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Perks\\PerkPoolSO.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Combat\\Perks\\PerkPoolSO.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAowB0AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-30T21:01:02.542Z",
-              "EditorCaption": ""
-            },
             {
               "$type": "Document",
               "DocumentIndex": 8,
@@ -403,8 +390,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Perks\\PerkRuntime.cs",
               "ViewState": "AgIAAIkAAAAAAAAAAAAmwLMAAABCAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-30T20:42:26.396Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-30T20:42:26.396Z"
             },
             {
               "$type": "Document",
@@ -416,8 +402,7 @@
               "RelativeToolTip": "Assets\\Editor\\PerkPoolBatchWindow.cs",
               "ViewState": "AgIAAMsBAAAAAAAAAAAmwOYBAAA7AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-30T20:20:30.677Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-30T20:20:30.677Z"
             },
             {
               "$type": "Document",
@@ -429,8 +414,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Armor\\ArmorSlotSO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAABTAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-30T20:06:10.369Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-30T20:06:10.369Z"
             },
             {
               "$type": "Document",
@@ -442,8 +426,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Perks\\PerkSO.cs",
               "ViewState": "AgIAABUAAAAAAAAAAAAmwDUAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-30T20:05:34.537Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-30T20:05:34.537Z"
             },
             {
               "$type": "Document",
@@ -455,8 +438,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Weapons\\Data\\WeaponInstance.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-30T18:43:18.477Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-30T18:43:18.477Z"
             },
             {
               "$type": "Document",
@@ -468,8 +450,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Armor\\ArmorSO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-30T18:41:57.127Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-30T18:41:57.127Z"
             },
             {
               "$type": "Document",
@@ -481,8 +462,32 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Weapons\\Data\\WeaponSO.cs",
               "ViewState": "AgIAAEsAAAAAAAAAAAAAwGQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-29T23:19:19.996Z",
+              "WhenOpened": "2026-09-29T23:19:19.996Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "LoadoutDebugKeys.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Loadout\\LoadoutDebugKeys.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Loadout\\LoadoutDebugKeys.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Loadout\\LoadoutDebugKeys.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\Loadout\\LoadoutDebugKeys.cs",
+              "ViewState": "AgIAAL8AAAAAAAAAAAAswN0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-30T01:58:59.653Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "PerkPoolSO.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Perks\\PerkPoolSO.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Perks\\PerkPoolSO.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Perks\\PerkPoolSO.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\Perks\\PerkPoolSO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAowB0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-30T21:01:02.542Z"
             },
             {
               "$type": "Document",
@@ -494,21 +499,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Stats\\Core\\StatContainer.cs",
               "ViewState": "AgIAAO0AAAAAAAAAAAAcwAYBAABWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-23T19:19:20.434Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "LoadoutDebugKeys.cs",
-              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Loadout\\LoadoutDebugKeys.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Loadout\\LoadoutDebugKeys.cs",
-              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Loadout\\LoadoutDebugKeys.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Combat\\Loadout\\LoadoutDebugKeys.cs",
-              "ViewState": "AgIAALcAAAAAAAAAAAAmwN0AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-30T01:58:59.653Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-08-23T19:19:20.434Z"
             },
             {
               "$type": "Document",
@@ -520,8 +511,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Loadout\\LoadoutModifierApplier.cs",
               "ViewState": "AgIAAJQAAAAAAAAAAAAmwLMAAAAyAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-30T18:40:26.689Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-30T18:40:26.689Z"
             },
             {
               "$type": "Document",
@@ -533,8 +523,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Weapons\\Data\\WeaponTypeSO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-30T00:49:41.649Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-30T00:49:41.649Z"
             },
             {
               "$type": "Document",
@@ -546,8 +535,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Armor\\ArmorInstance.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAA7AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-30T18:46:15.735Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-30T18:46:15.735Z"
             },
             {
               "$type": "Document",
@@ -559,8 +547,7 @@
               "RelativeToolTip": "Assets\\Editor\\EffectPerkBatchWindow.cs",
               "ViewState": "AgIAAJAAAAAAAAAAAIAwwKsAAABYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-30T19:33:47.807Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-30T19:33:47.807Z"
             },
             {
               "$type": "Document",
@@ -572,8 +559,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Loadout\\ModifierGrant.cs",
               "ViewState": "AgIAACkAAAAAAAAAAAAmwE4AAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-30T18:39:34.153Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-30T18:39:34.153Z"
             },
             {
               "$type": "Document",

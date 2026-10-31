@@ -3,6 +3,34 @@
   "WorkspaceRootPath": "F:\\Game Dev\\FPS0\\FPS0\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\ui\\healthbar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\ui\\healthbar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\perks\\types\\precisionrefundperkso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\perks\\types\\precisionrefundperkso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\perks\\types\\lowhealthperkso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\perks\\types\\lowhealthperkso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\perks\\types\\swapsynergyperkso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\perks\\types\\swapsynergyperkso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\perks\\types\\triggeredbuffperkso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\perks\\types\\triggeredbuffperkso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\perks\\perkso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\perks\\perkso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\perks\\perkruntime.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\perks\\perkruntime.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|f:\\game dev\\fps0\\fps0\\assets\\scripts\\combat\\loadout\\loadoutdebugkeys.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\loadout\\loadoutdebugkeys.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -13,10 +41,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\armor\\armorso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\armor\\armorso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\perks\\perkso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\perks\\perkso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{FDE65C6B-CE96-5276-40C9-8BA52662CE47}|Assembly-CSharp-Editor.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\editor\\perkpoolbatchwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -33,10 +57,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\armor\\armorinstance.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\armor\\armorinstance.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\perks\\perkruntime.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\combat\\perks\\perkruntime.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8873B007-98BD-379D-81AB-ACF6023FBF02}|Assembly-CSharp.csproj|F:\\Game Dev\\FPS0\\FPS0\\assets\\scripts\\combat\\loadout\\modifiergrant.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -378,23 +398,89 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 0,
+              "Title": "HealthBar.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\UI\\HealthBar.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\UI\\HealthBar.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\UI\\HealthBar.cs",
+              "RelativeToolTip": "Assets\\Scripts\\UI\\HealthBar.cs",
+              "ViewState": "AgIAAGABAAAAAAAAAAAwwHMBAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-30T23:31:30.144Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "PrecisionRefundPerkSO.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Perks\\Types\\PrecisionRefundPerkSO.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Perks\\Types\\PrecisionRefundPerkSO.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Perks\\Types\\PrecisionRefundPerkSO.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\Perks\\Types\\PrecisionRefundPerkSO.cs",
+              "ViewState": "AgIAABcAAAAAAAAAAAAywCEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-30T23:09:37.707Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "LowHealthPerkSO.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Perks\\Types\\LowHealthPerkSO.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Perks\\Types\\LowHealthPerkSO.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Perks\\Types\\LowHealthPerkSO.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\Perks\\Types\\LowHealthPerkSO.cs",
+              "ViewState": "AgIAACIAAAAAAAAAAAAwwDUAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-30T23:09:23.105Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "SwapSynergyPerkSO.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Perks\\Types\\SwapSynergyPerkSO.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Perks\\Types\\SwapSynergyPerkSO.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Perks\\Types\\SwapSynergyPerkSO.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\Perks\\Types\\SwapSynergyPerkSO.cs",
+              "ViewState": "AgIAACsAAAAAAAAAAAAwwDwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-30T23:09:10.815Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "TriggeredBuffPerkSO.cs",
+              "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Perks\\Types\\TriggeredBuffPerkSO.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Perks\\Types\\TriggeredBuffPerkSO.cs",
+              "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Perks\\Types\\TriggeredBuffPerkSO.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Combat\\Perks\\Types\\TriggeredBuffPerkSO.cs",
+              "ViewState": "AgIAAE4AAAAAAAAAAAAwwF0AAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-30T23:08:58.065Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "PerkRuntime.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Perks\\PerkRuntime.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Perks\\PerkRuntime.cs",
               "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Perks\\PerkRuntime.cs",
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Perks\\PerkRuntime.cs",
-              "ViewState": "AgIAAIkAAAAAAAAAAAAmwLMAAABCAAAAAAAAAA==",
+              "ViewState": "AgIAAOAAAAAAAAAAAAAwwP8AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-30T20:42:26.396Z"
+              "WhenOpened": "2026-10-30T20:42:26.396Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 10,
               "Title": "PerkPoolBatchWindow.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Editor\\PerkPoolBatchWindow.cs",
               "RelativeDocumentMoniker": "Assets\\Editor\\PerkPoolBatchWindow.cs",
@@ -406,7 +492,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 17,
               "Title": "ArmorSlotSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Armor\\ArmorSlotSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Armor\\ArmorSlotSO.cs",
@@ -418,19 +504,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "PerkSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Perks\\PerkSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Perks\\PerkSO.cs",
               "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Perks\\PerkSO.cs",
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Perks\\PerkSO.cs",
-              "ViewState": "AgIAABUAAAAAAAAAAAAmwDUAAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAAEUAAAAAAAAAAAAwwFYAAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-30T20:05:34.537Z"
+              "WhenOpened": "2026-10-30T20:05:34.537Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 15,
               "Title": "WeaponInstance.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Data\\WeaponInstance.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Data\\WeaponInstance.cs",
@@ -442,7 +529,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 9,
               "Title": "ArmorSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Armor\\ArmorSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Armor\\ArmorSO.cs",
@@ -454,7 +541,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 16,
               "Title": "WeaponSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Data\\WeaponSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Data\\WeaponSO.cs",
@@ -466,20 +553,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 7,
               "Title": "LoadoutDebugKeys.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Loadout\\LoadoutDebugKeys.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Loadout\\LoadoutDebugKeys.cs",
               "ToolTip": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Loadout\\LoadoutDebugKeys.cs",
               "RelativeToolTip": "Assets\\Scripts\\Combat\\Loadout\\LoadoutDebugKeys.cs",
-              "ViewState": "AgIAAL8AAAAAAAAAAAAswN0AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAL8AAAAAAAAAAAA9wN0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-10-30T01:58:59.653Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 11,
               "Title": "PerkPoolSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Perks\\PerkPoolSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Perks\\PerkPoolSO.cs",
@@ -491,7 +578,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 12,
               "Title": "StatContainer.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Stats\\Core\\StatContainer.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Stats\\Core\\StatContainer.cs",
@@ -503,7 +590,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 8,
               "Title": "LoadoutModifierApplier.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Loadout\\LoadoutModifierApplier.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Loadout\\LoadoutModifierApplier.cs",
@@ -515,7 +602,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 18,
               "Title": "WeaponTypeSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Data\\WeaponTypeSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Data\\WeaponTypeSO.cs",
@@ -527,7 +614,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 13,
               "Title": "ArmorInstance.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Armor\\ArmorInstance.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Armor\\ArmorInstance.cs",
@@ -539,7 +626,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 19,
               "Title": "EffectPerkBatchWindow.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Editor\\EffectPerkBatchWindow.cs",
               "RelativeDocumentMoniker": "Assets\\Editor\\EffectPerkBatchWindow.cs",
@@ -551,7 +638,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 14,
               "Title": "ModifierGrant.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Loadout\\ModifierGrant.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Loadout\\ModifierGrant.cs",
@@ -563,7 +650,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 26,
               "Title": "WeaponDamageSource.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponDamageSource.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponDamageSource.cs",
@@ -575,7 +662,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 21,
               "Title": "PlayerLoadout.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Loadout\\PlayerLoadout.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Loadout\\PlayerLoadout.cs",
@@ -587,7 +674,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 27,
               "Title": "StartingLoadoutSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Loadout\\StartingLoadoutSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Loadout\\StartingLoadoutSO.cs",
@@ -599,7 +686,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 20,
               "Title": "StatPerkBatchWindow.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Editor\\StatPerkBatchWindow.cs",
               "RelativeDocumentMoniker": "Assets\\Editor\\StatPerkBatchWindow.cs",
@@ -611,7 +698,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 25,
               "Title": "WeaponAmmo.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponAmmo.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponAmmo.cs",
@@ -623,7 +710,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 24,
               "Title": "EffectStackPool.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\EffectStackPool.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Status\\EffectStackPool.cs",
@@ -635,7 +722,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 23,
               "Title": "StatusReceiver.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\StatusReceiver.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Status\\StatusReceiver.cs",
@@ -647,7 +734,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 22,
               "Title": "CombatantHealth.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Core\\CombatantHealth.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Core\\CombatantHealth.cs",
@@ -659,7 +746,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 37,
+              "DocumentIndex": 42,
               "Title": "IHitEffect.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Core\\IHitEffect.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Core\\IHitEffect.cs",
@@ -671,7 +758,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
+              "DocumentIndex": 39,
               "Title": "IRangeFalloffSource.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Stats\\Weapon\\Range\\IRangeFalloffSource.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Stats\\Weapon\\Range\\IRangeFalloffSource.cs",
@@ -683,7 +770,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 29,
               "Title": "AmmoPickup.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Runtime\\AmmoPickup.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Runtime\\AmmoPickup.cs",
@@ -695,7 +782,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 28,
               "Title": "PlayerInventory.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Loadout\\PlayerInventory.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Loadout\\PlayerInventory.cs",
@@ -707,7 +794,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 37,
               "Title": "WeaponFireController.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponFireController.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponFireController.cs",
@@ -719,7 +806,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 31,
               "Title": "WeaponLoadout.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponLoadout.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponLoadout.cs",
@@ -731,7 +818,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 32,
               "Title": "WeaponArchetypeSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Data\\WeaponArchetypeSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Data\\WeaponArchetypeSO.cs",
@@ -743,7 +830,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 38,
               "Title": "FalloffTestRange.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Stats\\Weapon\\Range\\FalloffTestRange.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Stats\\Weapon\\Range\\FalloffTestRange.cs",
@@ -755,7 +842,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 30,
               "Title": "WeaponHitResolver.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Core\\WeaponHitResolver.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Core\\WeaponHitResolver.cs",
@@ -767,7 +854,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 33,
               "Title": "WeaponZoneEditor.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Editor\\WeaponZoneEditor.cs",
               "RelativeDocumentMoniker": "Assets\\Editor\\WeaponZoneEditor.cs",
@@ -779,7 +866,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 36,
               "Title": "WeaponStatBuilder.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Stats\\Weapon\\WeaponStatBuilder.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Stats\\Weapon\\WeaponStatBuilder.cs",
@@ -791,7 +878,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 34,
               "Title": "Lit.shader",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Library\\PackageCache\\com.unity.render-pipelines.universal@ab605b8cbe5e\\Shaders\\Lit.shader",
               "RelativeDocumentMoniker": "Library\\PackageCache\\com.unity.render-pipelines.universal@ab605b8cbe5e\\Shaders\\Lit.shader",
@@ -804,7 +891,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 85,
+              "DocumentIndex": 90,
               "Title": "GoapActionProvider.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\GoapActionProvider.cs",
               "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\GoapActionProvider.cs",
@@ -816,7 +903,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 35,
               "Title": "WeaponStatKeys.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Stats\\Keys\\WeaponStatKeys.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Stats\\Keys\\WeaponStatKeys.cs",
@@ -828,7 +915,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 88,
+              "DocumentIndex": 93,
               "Title": "AgentTypeBehaviour.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeBehaviour.cs",
               "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeBehaviour.cs",
@@ -840,7 +927,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 81,
+              "DocumentIndex": 86,
               "Title": "IAgentTypeFactory.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IAgentTypeFactory.cs",
               "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IAgentTypeFactory.cs",
@@ -852,7 +939,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 87,
+              "DocumentIndex": 92,
               "Title": "IMonoGoapActionProvider.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IMonoGoapActionProvider.cs",
               "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Core\\Interfaces\\IMonoGoapActionProvider.cs",
@@ -864,7 +951,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 86,
+              "DocumentIndex": 91,
               "Title": "GoapActionProviderEditor.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Editor\\CrashKonijn.Goap.Editor\\TypeDrawers\\GoapActionProviderEditor.cs",
               "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Editor\\CrashKonijn.Goap.Editor\\TypeDrawers\\GoapActionProviderEditor.cs",
@@ -876,7 +963,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 35,
+              "DocumentIndex": 40,
               "Title": "AgentTypeBuilder.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Classes\\Builders\\AgentTypeBuilder.cs",
               "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Classes\\Builders\\AgentTypeBuilder.cs",
@@ -888,7 +975,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 82,
+              "DocumentIndex": 87,
               "Title": "AgentTypeFactoryBase.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeFactoryBase.cs",
               "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Behaviours\\AgentTypeFactoryBase.cs",
@@ -900,7 +987,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 80,
+              "DocumentIndex": 85,
               "Title": "AgentTypeScriptable.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Scriptables\\AgentTypeScriptable.cs",
               "RelativeDocumentMoniker": "Packages\\com.crashkonijn.goap\\Runtime\\CrashKonijn.Goap.Runtime\\Scriptables\\AgentTypeScriptable.cs",
@@ -912,7 +999,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 40,
+              "DocumentIndex": 45,
               "Title": "HitscanDelivery.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Delivery\\HitscanDelivery.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Delivery\\HitscanDelivery.cs",
@@ -924,7 +1011,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 36,
+              "DocumentIndex": 41,
               "Title": "DamageHitEffect.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Delivery\\DamageHitEffect.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Delivery\\DamageHitEffect.cs",
@@ -936,7 +1023,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 41,
+              "DocumentIndex": 46,
               "Title": "ExplosionOnKillEffect.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillEffect.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillEffect.cs",
@@ -948,7 +1035,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 47,
+              "DocumentIndex": 52,
               "Title": "ProjectileDelivery.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Delivery\\ProjectileDelivery.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Delivery\\ProjectileDelivery.cs",
@@ -960,7 +1047,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 38,
+              "DocumentIndex": 43,
               "Title": "ShotInfo.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Core\\ShotInfo.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Core\\ShotInfo.cs",
@@ -972,7 +1059,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 42,
+              "DocumentIndex": 47,
               "Title": "WeaponAnimator.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponAnimator.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Runtime\\WeaponAnimator.cs",
@@ -984,7 +1071,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 39,
+              "DocumentIndex": 44,
               "Title": "Projectile.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Delivery\\Projectile.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Delivery\\Projectile.cs",
@@ -996,7 +1083,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 51,
+              "DocumentIndex": 56,
               "Title": "HitmarkerUI.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Weapons\\HitmarkerUI.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Weapons\\HitmarkerUI.cs",
@@ -1008,7 +1095,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 44,
+              "DocumentIndex": 49,
               "Title": "PelletDeliverySO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Data\\PelletDeliverySO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Data\\PelletDeliverySO.cs",
@@ -1020,7 +1107,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 45,
+              "DocumentIndex": 50,
               "Title": "PelletDelivery.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Delivery\\PelletDelivery.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Delivery\\PelletDelivery.cs",
@@ -1032,7 +1119,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 43,
+              "DocumentIndex": 48,
               "Title": "PelletDeliverySOEditor.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Data\\PelletDeliverySOEditor.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Data\\PelletDeliverySOEditor.cs",
@@ -1044,7 +1131,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 50,
+              "DocumentIndex": 55,
               "Title": "DeliverySO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Data\\DeliverySO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Data\\DeliverySO.cs",
@@ -1056,7 +1143,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 49,
+              "DocumentIndex": 54,
               "Title": "IDelivery.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Delivery\\IDelivery.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Delivery\\IDelivery.cs",
@@ -1068,7 +1155,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 48,
+              "DocumentIndex": 53,
               "Title": "ProjectileDeliverySO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Weapons\\Data\\ProjectileDeliverySO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Weapons\\Data\\ProjectileDeliverySO.cs",
@@ -1080,7 +1167,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 55,
+              "DocumentIndex": 60,
               "Title": "PlayerMovement.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\PlayerScripts\\PlayerMovement.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\PlayerScripts\\PlayerMovement.cs",
@@ -1092,7 +1179,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 46,
+              "DocumentIndex": 51,
               "Title": "HitContext.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Core\\HitContext.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Core\\HitContext.cs",
@@ -1104,7 +1191,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 57,
+              "DocumentIndex": 62,
               "Title": "playerInputs.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\PlayerScripts\\playerInputs.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\PlayerScripts\\playerInputs.cs",
@@ -1116,7 +1203,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 53,
+              "DocumentIndex": 58,
               "Title": "ViewmodelRig.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Weapons\\ViewmodelRig.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Weapons\\ViewmodelRig.cs",
@@ -1128,7 +1215,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 52,
+              "DocumentIndex": 57,
               "Title": "GunModel.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Weapons\\GunModel.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Weapons\\GunModel.cs",
@@ -1140,7 +1227,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 56,
+              "DocumentIndex": 61,
               "Title": "MouseLook.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\PlayerScripts\\MouseLook.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\PlayerScripts\\MouseLook.cs",
@@ -1152,7 +1239,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 54,
+              "DocumentIndex": 59,
               "Title": "PlayerAim.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\PlayerScripts\\PlayerAim.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\PlayerScripts\\PlayerAim.cs",
@@ -1164,7 +1251,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 58,
+              "DocumentIndex": 63,
               "Title": "HitLog.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Debugging\\Combat\\HitLog.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Debugging\\Combat\\HitLog.cs",
@@ -1176,7 +1263,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 59,
+              "DocumentIndex": 64,
               "Title": "EnemyHitbox.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Enemies\\DamageAndHealth\\EnemyHitbox.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Enemies\\DamageAndHealth\\EnemyHitbox.cs",
@@ -1188,7 +1275,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 72,
+              "DocumentIndex": 77,
               "Title": "AccumulatorNumber.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\DamageNumbers\\Accumulator\\AccumulatorNumber.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\DamageNumbers\\Accumulator\\AccumulatorNumber.cs",
@@ -1200,7 +1287,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 65,
+              "DocumentIndex": 70,
               "Title": "AgentBrain.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\AI\\GOAP\\Behaviours\\AgentBrain.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\AI\\GOAP\\Behaviours\\AgentBrain.cs",
@@ -1212,7 +1299,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 66,
+              "DocumentIndex": 71,
               "Title": "ApplyStatusHitEffect.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ApplyStatusHitEffect.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Effects\\ApplyStatusHitEffect.cs",
@@ -1224,7 +1311,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 69,
+              "DocumentIndex": 74,
               "Title": "EnemyPoolAdapter.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Spawning\\EnemyPoolAdapter.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Spawning\\EnemyPoolAdapter.cs",
@@ -1236,7 +1323,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 63,
+              "DocumentIndex": 68,
               "Title": "StatModifier.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Stats\\Modifiers\\StatModifier.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Stats\\Modifiers\\StatModifier.cs",
@@ -1248,7 +1335,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 60,
+              "DocumentIndex": 65,
               "Title": "EnemySpawner.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Spawning\\EnemySpawner.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Spawning\\EnemySpawner.cs",
@@ -1260,7 +1347,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 61,
+              "DocumentIndex": 66,
               "Title": "SlowStatusSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\StatusSOFiles\\SlowStatusSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Status\\StatusSOFiles\\SlowStatusSO.cs",
@@ -1272,7 +1359,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 62,
+              "DocumentIndex": 67,
               "Title": "StatusSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\StatusSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Status\\StatusSO.cs",
@@ -1284,7 +1371,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 68,
+              "DocumentIndex": 73,
               "Title": "Enums.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Core\\Enums.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Core\\Enums.cs",
@@ -1296,7 +1383,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 64,
+              "DocumentIndex": 69,
               "Title": "AgentMoveBehaviour.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\AI\\GOAP\\Behaviours\\AgentMoveBehaviour.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\AI\\GOAP\\Behaviours\\AgentMoveBehaviour.cs",
@@ -1308,7 +1395,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 67,
+              "DocumentIndex": 72,
               "Title": "StatusSummedTickEffect.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Status\\StatusSummedTickEffect.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Status\\StatusSummedTickEffect.cs",
@@ -1320,7 +1407,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 79,
+              "DocumentIndex": 84,
               "Title": "EnemyMemory.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\AI\\GOAP\\Behaviours\\EnemyMemory.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\AI\\GOAP\\Behaviours\\EnemyMemory.cs",
@@ -1332,7 +1419,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 71,
+              "DocumentIndex": 76,
               "Title": "ExplosionOnKillSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Effects\\ExplosionOnKillSO.cs",
@@ -1344,7 +1431,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 70,
+              "DocumentIndex": 75,
               "Title": "GoapRuntimeInit.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\AI\\GOAP\\GoapRuntimeInit.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\AI\\GOAP\\GoapRuntimeInit.cs",
@@ -1356,7 +1443,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 77,
+              "DocumentIndex": 82,
               "Title": "WanderTargetSensor.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\AI\\GOAP\\Sensors\\Wandering\\WanderTargetSensor.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\AI\\GOAP\\Sensors\\Wandering\\WanderTargetSensor.cs",
@@ -1368,7 +1455,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 76,
+              "DocumentIndex": 81,
               "Title": "WanderMarker.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\AI\\GOAP\\Markers\\WanderMarker.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\AI\\GOAP\\Markers\\WanderMarker.cs",
@@ -1380,7 +1467,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 73,
+              "DocumentIndex": 78,
               "Title": "DamageAccumulatorRegistry.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\DamageNumbers\\Accumulator\\DamageAccumulatorRegistry.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\DamageNumbers\\Accumulator\\DamageAccumulatorRegistry.cs",
@@ -1392,7 +1479,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 75,
+              "DocumentIndex": 80,
               "Title": "CombatantStats.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Stats\\Runtime\\CombatantStats.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Stats\\Runtime\\CombatantStats.cs",
@@ -1404,7 +1491,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 74,
+              "DocumentIndex": 79,
               "Title": "AccumulatorPoolReset.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Spawning\\AccumulatorPoolReset.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Spawning\\AccumulatorPoolReset.cs",
@@ -1416,7 +1503,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 83,
+              "DocumentIndex": 88,
               "Title": "SpawnTestProbe.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Spawning\\Testing\\SpawnTestProbe.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Spawning\\Testing\\SpawnTestProbe.cs",
@@ -1428,7 +1515,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 78,
+              "DocumentIndex": 83,
               "Title": "WanderAction.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\AI\\GOAP\\Actions\\WanderAction.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\AI\\GOAP\\Actions\\WanderAction.cs",
@@ -1440,7 +1527,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 84,
+              "DocumentIndex": 89,
               "Title": "EnemyPool.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Spawning\\EnemyPool.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Spawning\\EnemyPool.cs",
@@ -1452,7 +1539,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 89,
+              "DocumentIndex": 94,
               "Title": "EnemyPoolHandle.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Spawning\\EnemyPoolHandle.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Spawning\\EnemyPoolHandle.cs",
@@ -1464,7 +1551,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 90,
+              "DocumentIndex": 95,
               "Title": "HitEffectSO.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Combat\\Effects\\HitEffectSO.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Combat\\Effects\\HitEffectSO.cs",
@@ -1476,7 +1563,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 91,
+              "DocumentIndex": 96,
               "Title": "TestExplodeOnKill.cs",
               "DocumentMoniker": "F:\\Game Dev\\FPS0\\FPS0\\Assets\\Scripts\\Debugging\\Combat\\TestExplodeOnKill.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Debugging\\Combat\\TestExplodeOnKill.cs",
