@@ -85,6 +85,7 @@
     <Compile Include="Assets\Scripts\UI\CrosshairAdsFade.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\VfxReference.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\EnemyMemory.cs" />
+    <Compile Include="Assets\Scripts\PlayerScripts\ThirdPerson\PlayerPresentation.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\Accumulator\DamageAccumulatorRegistry.cs" />
     <Compile Include="Assets\Scripts\Combat\Perks\PerkPoolSO.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\PlayableVfx.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="Assets\Scripts\Combat\Core\ICombatant.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\ProjectileVfx.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\WanderGoal.cs" />
+    <Compile Include="Assets\Scripts\PlayerScripts\ThirdPerson\ThirdPersonBodyAnimator.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Keys\DefenseStatKeys.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\StatSystemTest.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Modifiers\StatModifier.cs" />
@@ -200,6 +202,7 @@
     <Compile Include="Assets\Scripts\Combat\Delivery\IDelivery.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\StatDerivationTest.cs" />
     <Compile Include="Assets\Scripts\Combat\Perks\PerkClock.cs" />
+    <Compile Include="Assets\Scripts\PlayerScripts\ThirdPerson\BodyVisibility.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\ProjectileConfig.cs" />
     <Compile Include="Assets\Scripts\Combat\Spawning\IPoolable.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\BindingPoints.cs" />

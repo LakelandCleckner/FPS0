@@ -6,21 +6,21 @@ using Combat.Stats;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Movement (tuning — pushed into the stat container as bases at Start)")]
+    [Header("Movement (tuning - pushed into the stat container as bases at Start)")]
     [SerializeField] private float baseWalkSpeed;
     [SerializeField] private float baseSprintMultiplier;
 
-    [Header("Acceleration (tuning — pushed as bases)")]
+    [Header("Acceleration (tuning - pushed as bases)")]
     [SerializeField] private float groundAcceleration = 25f;
     [SerializeField] private float airAcceleration = 6f;
 
-    [Header("Jump / Gravity (tuning — jumpForce + gravity pushed as bases)")]
+    [Header("Jump / Gravity (tuning - jumpForce + gravity pushed as bases)")]
     [SerializeField] private float jumpForce;
     [SerializeField] private float gravity;
-    [SerializeField] private float jumpBufferTime = 0.1f;   // input feel — NOT a stat
+    [SerializeField] private float jumpBufferTime = 0.1f;   // input feel - NOT a stat
     private float jumpBufferCounter;
 
-    [Header("Sprint Rules (input feel — NOT stats)")]
+    [Header("Sprint Rules (input feel - NOT stats)")]
     [SerializeField] private float sprintTakeoffGraceTime = 0.12f;
     [SerializeField] private float sprintForwardThreshold = 0.1f;
 
@@ -81,7 +81,7 @@ public class PlayerMovement : MonoBehaviour
     {
         // Push the serialized tuning values into the container as the stat BASES.
         // (Author on this component; the container is what movement actually reads,
-        // so modifiers — slows, speed perks, low-grav — layer on top.)
+        // so modifiers - slows, speed perks, low-grav - layer on top.)
         PushBases();
     }
 
@@ -99,7 +99,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // Resolve a movement stat live (cached). Falls back to the serialized tuning
-    // value if the container isn't ready (defensive — no zero-speed race).
+    // value if the container isn't ready (defensive - no zero-speed race).
     private float Stat(StatDefinitionSO def, float fallback)
     {
         var c = combatantStats != null ? combatantStats.Container : null;
@@ -156,7 +156,7 @@ public class PlayerMovement : MonoBehaviour
         isSprinting = isSprintingNow;
 
 
-        // resolved movement stats (live — a slow/speed modifier applies immediately)
+        // resolved movement stats (live - a slow/speed modifier applies immediately)
         float moveSpeed = Stat(statKeys != null ? statKeys.moveSpeed : null, baseWalkSpeed);
         float sprintMult = Stat(statKeys != null ? statKeys.sprintMultiplier : null, baseSprintMultiplier);
 
@@ -222,7 +222,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // Called when the player tries to act while sprinting. Drops sprint intent
-    // until the key is pressed again, rather than merely ignoring the action —
+    // until the key is pressed again, rather than merely ignoring the action -
     // otherwise the fire input does nothing at all and the sprint-out never runs.
     public void CancelSprint()
     {
@@ -247,7 +247,7 @@ public class PlayerMovement : MonoBehaviour
     public float WalkSpeed => Stat(statKeys != null ? statKeys.moveSpeed : null, baseWalkSpeed);
     public float SprintMultiplier => Stat(statKeys != null ? statKeys.sprintMultiplier : null, baseSprintMultiplier);
 
-    // Sprint as the movement system actually resolved it, not the raw input —
+    // Sprint as the movement system actually resolved it, not the raw input -
     // it already accounts for the forward-input threshold and the airborne
     // takeoff rule, so a sideways "sprint" or a sprint-jump reads correctly.
     public bool IsSprinting => isSprinting;
@@ -255,4 +255,8 @@ public class PlayerMovement : MonoBehaviour
     // Actual movement rather than input, so walking into a wall doesn't animate.
     // Same threshold family as Footsteps.minSpeedToStep.
     public bool IsMoving => CurrentSpeed > 0.2f && IsGrounded;
+
+    // Horizontal velocity in local space (x strafe, z forward)
+    public Vector3 LocalVelocity => transform.InverseTransformDirection(new Vector3(currentMovement.x, 0f, currentMovement.z));
+    public float VerticalVelocity => currentMovement.y;
 }

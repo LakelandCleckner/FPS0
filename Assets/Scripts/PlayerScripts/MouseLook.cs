@@ -10,7 +10,7 @@ public class MouseLook : MonoBehaviour
     [Tooltip("Hip sensitivity comes from here when assigned.")]
     [SerializeField] private GameSettingsSO settings;
 
-    [Header("Sensitivity (degrees per mouse unit) — fallback when no settings asset")]
+    [Header("Sensitivity (degrees per mouse unit) - fallback when no settings asset")]
     [SerializeField] private float hipSensitivity = 0.1f;
 
     [Header("Pitch Clamp")]
@@ -22,6 +22,9 @@ public class MouseLook : MonoBehaviour
     // Set every frame by PlayerAim (1 at hip). Follows the live FOV, so it's
     // correct mid-transition, not just at full ADS.
     public float SensitivityScale { get; set; } = 1f;
+
+    // Camera pitch in degrees, positive looks down
+    public float Pitch => verticalRotation;
 
     /// <summary>
     /// Called by PlayerMovement when look input is received.
