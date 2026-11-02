@@ -25,6 +25,14 @@ public class ThirdPersonWeapon : MonoBehaviour
     [Range(0f, 1f)]
     [SerializeField] private float hipAimWeight = 0f;
 
+    [Header("Raise on fire")]
+    [Tooltip("Seconds to snap from low ready to shouldered when firing at hip.")]
+    [SerializeField] private float raiseTime = 0.08f;
+    [Tooltip("Seconds the gun stays shouldered after the last shot.")]
+    [SerializeField] private float holdAfterShot = 0.6f;
+    [Tooltip("Seconds to lower back to low ready.")]
+    [SerializeField] private float lowerTime = 0.25f;
+
     [Header("Fire kick")]
     [Tooltip("Upward upper-body kick per shot, in degrees.")]
     [SerializeField] private float kickDegrees = 3f;
@@ -51,6 +59,13 @@ public class ThirdPersonWeapon : MonoBehaviour
     private float layerWeight;
     private float supportWeight;
     private float kickTime = -1f;
+    private float fireRaise;
+    private float lastShotTime = float.NegativeInfinity;
+
+    private static readonly int AimBlendParam = Animator.StringToHash("AimBlend");
+
+    // Pose aim: ADS or fire raise, whichever is higher
+    public float PoseAim { get; private set; }
     private float kickDuration;
 
     private Transform rightHand, leftUpper, leftLower, leftHand;
@@ -101,6 +116,7 @@ public class ThirdPersonWeapon : MonoBehaviour
     private void HandleFired(float interval)
     {
         if (current == null) return;
+        lastShotTime = Time.time;
         kickDuration = Mathf.Max(0.01f, Mathf.Min(interval, maxKickTime));
         kickTime = 0f;
     }
@@ -112,6 +128,12 @@ public class ThirdPersonWeapon : MonoBehaviour
 
         layerWeight = Mathf.MoveTowards(layerWeight, current != null ? 1f : 0f, dt / Mathf.Max(0.01f, layerFade));
         if (layer >= 0) animator.SetLayerWeight(layer, layerWeight);
+
+        bool raised = current != null && Time.time - lastShotTime < holdAfterShot;
+        float raiseRate = 1f / Mathf.Max(0.01f, raised ? raiseTime : lowerTime);
+        fireRaise = Mathf.MoveTowards(fireRaise, raised ? 1f : 0f, raiseRate * dt);
+        PoseAim = Mathf.Max(presentation != null ? presentation.State.AimBlend : 0f, fireRaise);
+        animator.SetFloat(AimBlendParam, PoseAim);
 
         bool hasSupport = current != null && current.Gun != null && current.Gun.TpSupport != null;
         supportWeight = Mathf.MoveTowards(supportWeight, hasSupport ? 1f : 0f, dt / Mathf.Max(0.01f, supportBlend));
@@ -135,7 +157,7 @@ public class ThirdPersonWeapon : MonoBehaviour
         // Holding: aim the barrel down the camera ray. Otherwise plain spine pitch.
         if (current != null && current.Gun != null && layerWeight > 0f)
         {
-            float aimWeight = layerWeight * Mathf.Lerp(hipAimWeight, 1f, presentation.State.AimBlend);
+            float aimWeight = layerWeight * Mathf.Lerp(hipAimWeight, 1f, PoseAim);
             ApplyPitch(pitch * (1f - aimWeight));
             if (aimWeight > 0f)
             {

@@ -19,7 +19,6 @@ public class ThirdPersonBodyAnimator : MonoBehaviour
     private static readonly int CrouchParam = Animator.StringToHash("Crouch");
     private static readonly int GroundedParam = Animator.StringToHash("Grounded");
     private static readonly int VerticalSpeedParam = Animator.StringToHash("VerticalSpeed");
-    private static readonly int AimBlendParam = Animator.StringToHash("AimBlend");
 
     private float airTime;
 
@@ -47,6 +46,5 @@ public class ThirdPersonBodyAnimator : MonoBehaviour
         animator.SetFloat(CrouchParam, s.Crouch);
         animator.SetBool(GroundedParam, airTime < airDelay);
         animator.SetFloat(VerticalSpeedParam, s.VerticalSpeed);
-        animator.SetFloat(AimBlendParam, s.AimBlend);
     }
 }
