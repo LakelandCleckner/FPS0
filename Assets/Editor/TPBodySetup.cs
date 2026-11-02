@@ -479,6 +479,7 @@ public class TPBodySetup : EditorWindow
         GetOrAdd<ThirdPersonBodyAnimator>(go);
         var vis = GetOrAdd<BodyVisibility>(go);
         GetOrAdd<ThirdPersonWeapon>(go);
+        EnsureBelt(go, anim, undo);
 
         // Legs mesh by name, everything else is full body
         var smrs = go.GetComponentsInChildren<SkinnedMeshRenderer>(true);
@@ -499,6 +500,24 @@ public class TPBodySetup : EditorWindow
         Selection.activeGameObject = go;
         Debug.Log($"[TPBodySetup] Body '{go.name}' set up under '{playerRoot.name}' " +
                   $"({full.Length} full body, {legs.Length} legs renderer(s)).");
+    }
+
+    // Left-hand pickup point for mags and shells, front-left of the hips
+    private static void EnsureBelt(GameObject go, Animator anim, string undo)
+    {
+        if (go.GetComponentsInChildren<Transform>(true).Any(t => t.name == "TP_Belt")) return;
+        var hips = anim.isHuman ? anim.GetBoneTransform(HumanBodyBones.Hips) : null;
+        if (hips == null)
+        {
+            Debug.LogWarning("[TPBodySetup] No hips bone; TP_Belt not created.");
+            return;
+        }
+
+        var belt = new GameObject("TP_Belt").transform;
+        Undo.RegisterCreatedObjectUndo(belt.gameObject, undo);
+        belt.SetParent(hips, false);
+        belt.position = hips.position - go.transform.right * 0.12f + go.transform.forward * 0.1f;
+        belt.rotation = go.transform.rotation;
     }
 
     private static T GetOrAdd<T>(GameObject go) where T : Component

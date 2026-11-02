@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Combat.Weapons;
 
-// Holds the held weapon's world model on the third-person body, with aim pitch, fire kick and left-hand IK
+// Holds the held weapon's world model on the third-person body: aim, fire raise and kick,
+// procedural reload, equip/stow lowering and left-hand IK
 [DefaultExecutionOrder(120)]
 public class ThirdPersonWeapon : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class ThirdPersonWeapon : MonoBehaviour
     [SerializeField] private PlayerPresentation presentation;
     [SerializeField] private Animator animator;
     [SerializeField] private BodyVisibility visibility;
+    [Tooltip("Where the left hand fetches mags and shells. Found as TP_Belt under the body if empty.")]
+    [SerializeField] private Transform belt;
 
     [Header("Upper body layer")]
     [SerializeField] private string upperBodyLayer = "UpperBody";
@@ -39,9 +42,24 @@ public class ThirdPersonWeapon : MonoBehaviour
     [Tooltip("Kick never lasts longer than this, even on slow weapons.")]
     [SerializeField] private float maxKickTime = 0.15f;
 
+    [Header("Reload")]
+    [Tooltip("Gun roll during a reload, in degrees. Flip the sign if it rolls away from the body.")]
+    [SerializeField] private float reloadTilt = 25f;
+    [Tooltip("Seconds to roll the gun in or out.")]
+    [SerializeField] private float tiltTime = 0.15f;
+    [Tooltip("Seconds for the hand to return to the gun after a cancel.")]
+    [SerializeField] private float cancelReturnTime = 0.15f;
+
+    [Header("Equip / stow")]
+    [Tooltip("Right arm swing down when fully stowed, in degrees.")]
+    [SerializeField] private float lowerDegrees = 50f;
+
     [Header("Left hand")]
     [Tooltip("Seconds to blend the support hand on or off.")]
     [SerializeField] private float supportBlend = 0.15f;
+    [Tooltip("0 = keep the hold pose's own wrist rotation (recommended), 1 = copy the support point's rotation.")]
+    [Range(0f, 1f)]
+    [SerializeField] private float supportRotationWeight = 0f;
 
     private sealed class WorldModel
     {
@@ -49,6 +67,10 @@ public class ThirdPersonWeapon : MonoBehaviour
         public GunModel Gun;
         public Renderer[] Renderers;
     }
+
+    private enum HandState { Hold, Mag, ShellStart, ShellLoad, ShellEnd, Return }
+
+    private static readonly int AimBlendParam = Animator.StringToHash("AimBlend");
 
     private readonly Dictionary<WeaponSO, WorldModel> models = new Dictionary<WeaponSO, WorldModel>();
     private WorldModel current;
@@ -58,18 +80,29 @@ public class ThirdPersonWeapon : MonoBehaviour
     private int layer = -1;
     private float layerWeight;
     private float supportWeight;
+
     private float kickTime = -1f;
+    private float kickDuration;
     private float fireRaise;
     private float lastShotTime = float.NegativeInfinity;
 
-    private static readonly int AimBlendParam = Animator.StringToHash("AimBlend");
+    private HandState hand = HandState.Hold;
+    private float handTime;
+    private ReloadInfo reload;
+    private float returnDuration;
+    private Vector3 returnFrom;
+    private Vector3 lastTarget;
+    private float tilt;
+
+    private float lowered;
+    private float lowerTarget;
+    private float lowerRate;
+
+    private Transform rightHand, rightUpper, leftUpper, leftLower, leftHand, hips;
+    private readonly Transform[] spine = new Transform[3];
 
     // Pose aim: ADS or fire raise, whichever is higher
     public float PoseAim { get; private set; }
-    private float kickDuration;
-
-    private Transform rightHand, leftUpper, leftLower, leftHand;
-    private readonly Transform[] spine = new Transform[3];
 
     private void Awake()
     {
@@ -82,36 +115,60 @@ public class ThirdPersonWeapon : MonoBehaviour
         layer = animator.GetLayerIndex(upperBodyLayer);
 
         rightHand = animator.GetBoneTransform(HumanBodyBones.RightHand);
+        rightUpper = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
         leftUpper = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
         leftLower = animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
         leftHand = animator.GetBoneTransform(HumanBodyBones.LeftHand);
+        hips = animator.GetBoneTransform(HumanBodyBones.Hips);
         spine[0] = animator.GetBoneTransform(HumanBodyBones.Spine);
         spine[1] = animator.GetBoneTransform(HumanBodyBones.Chest);
         spine[2] = animator.GetBoneTransform(HumanBodyBones.UpperChest);
+
+        if (belt == null)
+            foreach (var t in GetComponentsInChildren<Transform>(true))
+                if (t.name == "TP_Belt") { belt = t; break; }
     }
 
     private void OnEnable()
     {
         if (presentation == null) return;
         presentation.EquipStarted += HandleEquipStarted;
+        presentation.StowStarted += HandleStowStarted;
         presentation.WeaponEquipped += Show;
         presentation.Fired += HandleFired;
+        presentation.ReloadStarted += HandleReloadStarted;
+        presentation.ReloadCancelled += HandleReloadCancelled;
+        presentation.ReloadInterrupted += HandleReloadInterrupted;
     }
 
     private void OnDisable()
     {
         if (presentation == null) return;
         presentation.EquipStarted -= HandleEquipStarted;
+        presentation.StowStarted -= HandleStowStarted;
         presentation.WeaponEquipped -= Show;
         presentation.Fired -= HandleFired;
+        presentation.ReloadStarted -= HandleReloadStarted;
+        presentation.ReloadCancelled -= HandleReloadCancelled;
+        presentation.ReloadInterrupted -= HandleReloadInterrupted;
     }
 
-    private void Start()
+    // ===== Events =====
+
+    // A new model comes up from the bottom; a reversed stow carries on from where it is
+    private void HandleEquipStarted(WeaponSO weapon, float duration)
     {
-        if (presentation != null) Show(presentation.State.HeldWeapon);
+        bool changed = weapon != currentWeapon;
+        Show(weapon);
+        if (changed) lowered = 1f;
+        SetLower(0f, duration);
     }
 
-    private void HandleEquipStarted(WeaponSO weapon, float duration) => Show(weapon);
+    private void HandleStowStarted(WeaponSO weapon, float duration)
+    {
+        SetLower(1f, duration);
+        BeginReturn(cancelReturnTime);
+    }
 
     private void HandleFired(float interval)
     {
@@ -121,10 +178,43 @@ public class ThirdPersonWeapon : MonoBehaviour
         kickTime = 0f;
     }
 
+    private void HandleReloadStarted(ReloadInfo info)
+    {
+        if (current == null) return;
+        reload = info;
+        hand = info.Shell ? HandState.ShellStart : HandState.Mag;
+        handTime = 0f;
+    }
+
+    private void HandleReloadCancelled() => BeginReturn(cancelReturnTime);
+    private void HandleReloadInterrupted(float ready) => BeginReturn(ready);
+
+    // Moves from the current lowered amount to target over duration
+    private void SetLower(float target, float duration)
+    {
+        lowerTarget = target;
+        lowerRate = Mathf.Abs(target - lowered) / Mathf.Max(0.01f, duration);
+    }
+
+    private void BeginReturn(float duration)
+    {
+        if (hand == HandState.Hold || hand == HandState.Return) return;
+        hand = HandState.Return;
+        handTime = 0f;
+        returnDuration = Mathf.Max(0.01f, duration);
+        returnFrom = lastTarget;
+    }
+
+    // ===== Frame =====
+
     private void Update()
     {
         if (animator == null) return;
         float dt = Time.deltaTime;
+
+        // Follow the held weapon; covers startup, where no equip event fires
+        if (presentation != null && presentation.State.HeldWeapon != currentWeapon)
+            Show(presentation.State.HeldWeapon);
 
         layerWeight = Mathf.MoveTowards(layerWeight, current != null ? 1f : 0f, dt / Mathf.Max(0.01f, layerFade));
         if (layer >= 0) animator.SetLayerWeight(layer, layerWeight);
@@ -137,9 +227,51 @@ public class ThirdPersonWeapon : MonoBehaviour
 
         bool hasSupport = current != null && current.Gun != null && current.Gun.TpSupport != null;
         supportWeight = Mathf.MoveTowards(supportWeight, hasSupport ? 1f : 0f, dt / Mathf.Max(0.01f, supportBlend));
+
+        lowered = Mathf.MoveTowards(lowered, lowerTarget, lowerRate * dt);
+
+        TickHand(dt);
+        bool tilted = hand == HandState.Mag ? handTime < reload.Duration * 0.75f
+                    : hand == HandState.ShellStart || hand == HandState.ShellLoad;
+        tilt = Mathf.MoveTowards(tilt, tilted ? 1f : 0f, dt / Mathf.Max(0.01f, tiltTime));
     }
 
-    // After animation: pitch and kick first, then the left hand onto the moved gun
+    // Advances the reload hand path; stops when the ammo says the reload is over
+    private void TickHand(float dt)
+    {
+        if (hand == HandState.Hold) return;
+        handTime += dt;
+        bool reloading = presentation != null && presentation.State.Reloading;
+
+        switch (hand)
+        {
+            case HandState.Mag:
+                if (handTime >= reload.Duration || !reloading) hand = HandState.Hold;
+                break;
+
+            case HandState.ShellStart:
+                if (!reloading) BeginReturn(cancelReturnTime);
+                else if (handTime >= reload.ShellStart) { hand = HandState.ShellLoad; handTime = 0f; }
+                break;
+
+            case HandState.ShellLoad:
+                if (!reloading) { BeginReturn(cancelReturnTime); break; }
+                if (handTime < reload.ShellStep) break;
+                handTime -= reload.ShellStep;
+                if (!presentation.State.ShellContinue) { hand = HandState.ShellEnd; handTime = 0f; }
+                break;
+
+            case HandState.ShellEnd:
+                if (handTime >= reload.ShellEnd) hand = HandState.Hold;
+                break;
+
+            case HandState.Return:
+                if (handTime >= returnDuration) hand = HandState.Hold;
+                break;
+        }
+    }
+
+    // After animation: aim, lower, roll, then the left hand onto the moved gun
     private void LateUpdate()
     {
         if (animator == null || presentation == null) return;
@@ -153,11 +285,11 @@ public class ThirdPersonWeapon : MonoBehaviour
         }
 
         float pitch = Mathf.Clamp(presentation.State.Pitch, -maxPitch, maxPitch) - kick;
+        bool holding = current != null && current.Gun != null && layerWeight > 0f;
 
-        // Holding: aim the barrel down the camera ray. Otherwise plain spine pitch.
-        if (current != null && current.Gun != null && layerWeight > 0f)
+        if (holding)
         {
-            float aimWeight = layerWeight * Mathf.Lerp(hipAimWeight, 1f, PoseAim);
+            float aimWeight = layerWeight * Mathf.Lerp(hipAimWeight, 1f, PoseAim) * (1f - lowered);
             ApplyPitch(pitch * (1f - aimWeight));
             if (aimWeight > 0f)
             {
@@ -170,12 +302,85 @@ public class ThirdPersonWeapon : MonoBehaviour
             ApplyPitch(pitch);
         }
 
-        if (supportWeight > 0f && current != null && current.Gun != null && current.Gun.TpSupport != null)
+        if (!holding) return;
+
+        if (lowered > 0f && rightUpper != null)
+            rightUpper.rotation = Quaternion.AngleAxis(lowerDegrees * Mathf.SmoothStep(0f, 1f, lowered), transform.right) * rightUpper.rotation;
+
+        if (tilt > 0f && rightHand != null)
         {
-            var s = current.Gun.TpSupport;
-            SolveTwoBone(leftUpper, leftLower, leftHand, s.position, s.rotation, supportWeight);
+            Vector3 barrel = current.Root.transform.TransformDirection(current.Gun.TpAimAxis);
+            rightHand.rotation = Quaternion.AngleAxis(reloadTilt * Mathf.SmoothStep(0f, 1f, tilt), barrel) * rightHand.rotation;
+        }
+
+        var support = current.Gun.TpSupport;
+        if (supportWeight > 0f && support != null)
+        {
+            Vector3 target = LeftHandTarget(support.position);
+            lastTarget = target;
+            SolveTwoBone(leftUpper, leftLower, leftHand, target, support.rotation,
+                         supportWeight, supportWeight * supportRotationWeight);
         }
     }
+
+    // ===== Reload hand path =====
+
+    // Where the left hand should be this frame, given the reload state
+    private Vector3 LeftHandTarget(Vector3 sup)
+    {
+        var gun = current.Gun;
+        Vector3 mag = gun.TpMagWell != null ? gun.TpMagWell.position : sup;
+        Vector3 port = gun.TpLoadPort != null ? gun.TpLoadPort.position : mag;
+        Vector3 pouch = BeltPosition();
+
+        switch (hand)
+        {
+            case HandState.Mag:
+                return MagPath(sup, mag, pouch, Frac(handTime, reload.Duration));
+
+            case HandState.ShellStart:
+                return Ease(sup, pouch, Frac(handTime, reload.ShellStart));
+
+            case HandState.ShellLoad:
+                return ShellPath(pouch, port, Frac(handTime, reload.ShellStep));
+
+            case HandState.ShellEnd:
+                return Ease(pouch, sup, Frac(handTime, reload.ShellEnd));
+
+            case HandState.Return:
+                return Ease(returnFrom, sup, handTime / returnDuration);
+
+            default:
+                return sup;
+        }
+    }
+
+    private Vector3 BeltPosition() => BeltPosition(belt, hips, transform);
+
+    // Belt point, or front-left of the hips when there is none
+    public static Vector3 BeltPosition(Transform belt, Transform hips, Transform body)
+    {
+        if (belt != null) return belt.position;
+        Vector3 origin = hips != null ? hips.position : body.position + Vector3.up;
+        return origin - body.right * 0.12f + body.forward * 0.1f;
+    }
+
+    // Mag reload, p 0..1: support -> mag well -> belt -> mag well (seat) -> support
+    public static Vector3 MagPath(Vector3 sup, Vector3 mag, Vector3 pouch, float p)
+    {
+        if (p < 0.15f) return Ease(sup, mag, p / 0.15f);
+        if (p < 0.35f) return Ease(mag, pouch, (p - 0.15f) / 0.2f);
+        if (p < 0.6f) return Ease(pouch, mag, (p - 0.35f) / 0.25f);
+        if (p < 0.75f) return mag;
+        return Ease(mag, sup, (p - 0.75f) / 0.25f);
+    }
+
+    // One shell, c 0..1: belt -> port -> belt
+    public static Vector3 ShellPath(Vector3 pouch, Vector3 port, float c)
+        => c < 0.6f ? Ease(pouch, port, c / 0.6f) : Ease(port, pouch, (c - 0.6f) / 0.4f);
+
+    private static Vector3 Ease(Vector3 a, Vector3 b, float t) => Vector3.Lerp(a, b, Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t)));
+    private static float Frac(float time, float duration) => duration > 0f ? Mathf.Clamp01(time / duration) : 1f;
 
     // ===== Weapon model =====
 
@@ -183,6 +388,8 @@ public class ThirdPersonWeapon : MonoBehaviour
     {
         if (weapon == currentWeapon) return;
         currentWeapon = weapon;
+        hand = HandState.Hold;
+        tilt = 0f;
 
         if (current != null) current.Root.SetActive(false);
         current = weapon != null ? Acquire(weapon) : null;
@@ -303,7 +510,8 @@ public class ThirdPersonWeapon : MonoBehaviour
     }
 
     // Analytic two-bone IK: bends the elbow to reach, then aims the shoulder
-    private static void SolveTwoBone(Transform a, Transform b, Transform c, Vector3 targetPos, Quaternion targetRot, float weight)
+    public static void SolveTwoBone(Transform a, Transform b, Transform c, Vector3 targetPos, Quaternion targetRot,
+                                    float weight, float rotationWeight)
     {
         if (a == null || b == null || c == null) return;
 
@@ -329,7 +537,7 @@ public class ThirdPersonWeapon : MonoBehaviour
         if (ac.sqrMagnitude > 1e-8f && at.sqrMagnitude > 1e-8f)
             a.rotation = Quaternion.FromToRotation(ac, at) * a.rotation;
 
-        c.rotation = Quaternion.Slerp(c.rotation, targetRot, weight);
+        if (rotationWeight > 0f) c.rotation = Quaternion.Slerp(c.rotation, targetRot, rotationWeight);
     }
 
     // Angle opposite side `opposite` in a triangle, radians

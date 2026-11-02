@@ -13,6 +13,18 @@ public struct PresentationState
     public bool Aiming;
     public float AimBlend;
     public WeaponSO HeldWeapon;   // null = empty-handed
+    public bool Reloading;
+    public bool ShellContinue;    // another shell follows the one loading
+}
+
+// Timing of a reload as it starts, for presentation to fill
+public struct ReloadInfo
+{
+    public bool Shell;
+    public float Duration;        // magazine reload
+    public float ShellStart;
+    public float ShellStep;       // one shell
+    public float ShellEnd;
 }
 
 // Samples local player systems after they update and relays weapon events
@@ -34,10 +46,15 @@ public class PlayerPresentation : MonoBehaviour
     public event Action<WeaponSO> WeaponEquipped;
     // One shot, with the shot interval in seconds
     public event Action<float> Fired;
+    // Held weapon's reload began / was cancelled / was interrupted (arg: ready time)
+    public event Action<ReloadInfo> ReloadStarted;
+    public event Action ReloadCancelled;
+    public event Action<float> ReloadInterrupted;
 
     public PresentationState State { get; private set; }
 
     private WeaponFireController firing;
+    private WeaponAmmo ammo;
 
     private void Awake()
     {
@@ -88,6 +105,8 @@ public class PlayerPresentation : MonoBehaviour
         var active = loadout != null ? loadout.Active : null;
         Track(active);
         s.HeldWeapon = WeaponOf(active);
+        s.Reloading = ammo != null && ammo.IsReloading;
+        s.ShellContinue = ammo != null && ammo.ShellWillContinue;
 
         State = s;
     }
@@ -106,14 +125,45 @@ public class PlayerPresentation : MonoBehaviour
         return flat / speed * Mathf.Clamp(value, 0f, 2f);
     }
 
-    // Follows the held weapon so only its shots are relayed
+    // Follows the held weapon so only its shots and reloads are relayed
     private void Track(WeaponFireController c)
     {
         if (c == firing) return;
+
         if (firing != null) firing.OnFired -= HandleFired;
+        if (ammo != null)
+        {
+            ammo.ReloadStarted -= HandleReloadStarted;
+            ammo.ReloadCancelled -= HandleReloadCancelled;
+            ammo.ReloadInterrupted -= HandleReloadInterrupted;
+        }
+
         firing = c;
+        ammo = c != null ? c.GetComponent<WeaponAmmo>() : null;
+
         if (firing != null) firing.OnFired += HandleFired;
+        if (ammo != null)
+        {
+            ammo.ReloadStarted += HandleReloadStarted;
+            ammo.ReloadCancelled += HandleReloadCancelled;
+            ammo.ReloadInterrupted += HandleReloadInterrupted;
+        }
     }
+
+    private void HandleReloadStarted()
+    {
+        ReloadStarted?.Invoke(new ReloadInfo
+        {
+            Shell = ammo.IsShellReload,
+            Duration = ammo.ReloadDuration,
+            ShellStart = ammo.ShellStartDuration,
+            ShellStep = ammo.ShellDuration,
+            ShellEnd = ammo.ShellEndDuration
+        });
+    }
+
+    private void HandleReloadCancelled() => ReloadCancelled?.Invoke();
+    private void HandleReloadInterrupted(float ready) => ReloadInterrupted?.Invoke(ready);
 
     private void HandleFired()
     {

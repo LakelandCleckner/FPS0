@@ -1808,7 +1808,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 8251163974255565839, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1909969097}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 5695434629316775561, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
       insertIndex: -1
@@ -2085,6 +2088,11 @@ MonoBehaviour:
   textColor: {r: 1, g: 1, b: 1, a: 1}
   timerColor: {r: 1, g: 0.82, b: 0.35, a: 1}
   stowedAlpha: 0.4
+--- !u!4 &933716032 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8251163974255565839, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
+  m_PrefabInstance: {fileID: 842777205}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &936715763
 GameObject:
   m_ObjectHideFlags: 0
@@ -3014,14 +3022,23 @@ MonoBehaviour:
   presentation: {fileID: 0}
   animator: {fileID: 0}
   visibility: {fileID: 0}
+  belt: {fileID: 0}
   upperBodyLayer: UpperBody
   layerFade: 0.15
   maxPitch: 70
   pitchWeights: {x: 0.3, y: 0.3, z: 0.4}
   hipAimWeight: 0
+  raiseTime: 0.08
+  holdAfterShot: 0.6
+  lowerTime: 0.25
   kickDegrees: 3
   maxKickTime: 0.15
+  reloadTilt: 25
+  tiltTime: 0.15
+  cancelReturnTime: 0.15
+  lowerDegrees: 50
   supportBlend: 0.15
+  supportRotationWeight: 0
 --- !u!4 &1460400607 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8966311043270599953, guid: 79e624e6a8770a946afb866fd94b394b, type: 3}
@@ -4899,6 +4916,37 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1539902503267225480, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
   m_PrefabInstance: {fileID: 1754590421}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1909969096
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1909969097}
+  m_Layer: 0
+  m_Name: TP_Belt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1909969097
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1909969096}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.00000006321421, y: -0.00000043771777, z: 0.0000097081365, w: 1}
+  m_LocalPosition: {x: -0.24, y: 0.112, z: -0.012}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 933716032}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1911722830
 GameObject:
   m_ObjectHideFlags: 0
