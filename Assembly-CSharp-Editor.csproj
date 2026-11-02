@@ -68,7 +68,9 @@
     <Compile Include="Assets\Editor\GoapCapabilityBuilder.cs" />
     <Compile Include="Assets\Editor\EnemyAttackAnimatorSetup.cs" />
     <Compile Include="Assets\Editor\PerkPoolBatchWindow.cs" />
+    <Compile Include="Assets\Editor\MixamoClipSetup.cs" />
     <Compile Include="Assets\Editor\WeaponShaderSOEditor.cs" />
+    <Compile Include="Assets\Editor\TPBodySetup.cs" />
     <Compile Include="Assets\Editor\RetroWeaponClipRenamer.cs" />
   </ItemGroup>
   <ItemGroup>

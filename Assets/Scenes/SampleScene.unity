@@ -1687,7 +1687,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 240824279214565352, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
   m_PrefabInstance: {fileID: 842777205}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2064509464}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b0776cb983f448c4ea5d80f179296e7d, type: 3}
@@ -1790,10 +1790,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3694005707256881966, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
-      propertyPath: baseStats.Array.data[3].baseValue
-      value: 2600
-      objectReference: {fileID: 0}
     - target: {fileID: 6041466214417116510, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
       propertyPath: m_Name
       value: PlayerArmsRoot
@@ -1805,13 +1801,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6041466214417116510, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2064509466}
-    - targetCorrespondingSourceObject: {fileID: 6041466214417116510, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2064509465}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
 --- !u!1 &850952879
 GameObject:
@@ -3003,7 +2993,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3516509819376779916, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
   m_PrefabInstance: {fileID: 842777205}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2064509464}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 191d41ccd1d98e848aa0bea0a862c7fd, type: 3}
@@ -3778,61 +3768,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1977380304}
   m_CullTransparentMesh: 1
---- !u!4 &2045124314 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8813181839292147455, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
-  m_PrefabInstance: {fileID: 842777205}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &2064509464 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6041466214417116510, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
-  m_PrefabInstance: {fileID: 842777205}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2064509465
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2064509464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5337a1a1d4378ae4290eccf6a0942c4b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hurtbox: {fileID: 2064509466}
-  cameraTransform: {fileID: 2045124314}
-  rollDegrees: 6
-  pitchDegrees: 4
-  fullKickDamage: 40
-  minKick: 0.5
-  riseTime: 0.04
-  decayTime: 0.3
---- !u!114 &2064509466
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2064509464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 754ea49d5d4604a4586f225e63eff305, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  combatant: {fileID: 2064509476}
-  bodyPart: 1
---- !u!114 &2064509476 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3694005707256881966, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
-  m_PrefabInstance: {fileID: 842777205}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2064509464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdf4ae702aea108449104d23d3b24ade, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2077698796
 GameObject:
   m_ObjectHideFlags: 0
