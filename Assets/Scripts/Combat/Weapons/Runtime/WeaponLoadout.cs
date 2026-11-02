@@ -269,7 +269,7 @@ namespace Combat.Weapons
         }
 
         // Replaces matching materials on every renderer of the spawned gun.
-        private static void ApplySkin(GameObject gun, List<MaterialSwap> skin)
+        public static void ApplySkin(GameObject gun, List<MaterialSwap> skin)
         {
             if (gun == null || skin == null || skin.Count == 0) return;
 

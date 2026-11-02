@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -14,21 +15,41 @@ public class BodyVisibility : MonoBehaviour
 
     public Mode Current { get; private set; }
 
+    private Renderer[] weapon = Array.Empty<Renderer>();
+
     private void Awake() => SetMode(startMode);
 
     public void SetMode(Mode mode)
     {
         Current = mode;
-        bool fp = mode == Mode.FirstPerson;
+        Apply();
+    }
 
-        foreach (var r in fullBody)
-            if (r != null) r.shadowCastingMode = fp ? ShadowCastingMode.ShadowsOnly : ShadowCastingMode.On;
+    // Held weapon's world model; follows the full body's shadow mode
+    public void SetWeaponRenderers(Renderer[] renderers)
+    {
+        weapon = renderers ?? Array.Empty<Renderer>();
+        Apply();
+    }
 
-        foreach (var r in legs)
-        {
-            if (r == null) continue;
-            r.enabled = fp;
-            r.shadowCastingMode = ShadowCastingMode.Off;   // full body already casts
-        }
+    private void Apply()
+    {
+        bool fp = Current == Mode.FirstPerson;
+        var bodyMode = fp ? ShadowCastingMode.ShadowsOnly : ShadowCastingMode.On;
+
+        if (fullBody != null)
+            foreach (var r in fullBody)
+                if (r != null) r.shadowCastingMode = bodyMode;
+
+        foreach (var r in weapon)
+            if (r != null) r.shadowCastingMode = bodyMode;
+
+        if (legs != null)
+            foreach (var r in legs)
+            {
+                if (r == null) continue;
+                r.enabled = fp;
+                r.shadowCastingMode = ShadowCastingMode.Off;   // full body already casts
+            }
     }
 }

@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using Combat.Weapons;
 
 // Per-frame snapshot the body reads; the state to replicate later
 public struct PresentationState
@@ -10,9 +12,10 @@ public struct PresentationState
     public float Pitch;           // degrees, positive looks down
     public bool Aiming;
     public float AimBlend;
+    public WeaponSO HeldWeapon;   // null = empty-handed
 }
 
-// Samples local player systems after they update
+// Samples local player systems after they update and relays weapon events
 [DefaultExecutionOrder(100)]
 public class PlayerPresentation : MonoBehaviour
 {
@@ -21,8 +24,20 @@ public class PlayerPresentation : MonoBehaviour
     [SerializeField] private PlayerCrouch crouch;
     [SerializeField] private PlayerAim aim;
     [SerializeField] private MouseLook look;
+    [SerializeField] private WeaponLoadout loadout;
+
+    // Weapon starting to come up, with the equip duration
+    public event Action<WeaponSO, float> EquipStarted;
+    // Held weapon starting to go down, with the stow duration
+    public event Action<WeaponSO, float> StowStarted;
+    // Held weapon settled (startup and end of each equip); null = empty-handed
+    public event Action<WeaponSO> WeaponEquipped;
+    // One shot, with the shot interval in seconds
+    public event Action<float> Fired;
 
     public PresentationState State { get; private set; }
+
+    private WeaponFireController firing;
 
     private void Awake()
     {
@@ -30,6 +45,26 @@ public class PlayerPresentation : MonoBehaviour
         if (crouch == null) crouch = GetComponent<PlayerCrouch>();
         if (aim == null) aim = GetComponent<PlayerAim>();
         if (look == null) look = GetComponentInChildren<MouseLook>();
+        if (loadout == null) loadout = GetComponentInChildren<WeaponLoadout>(true);
+    }
+
+    private void OnEnable()
+    {
+        if (loadout == null) return;
+        loadout.OnEquipStarted += HandleEquipStarted;
+        loadout.OnStowStarted += HandleStowStarted;
+        loadout.OnWeaponEquipped += HandleWeaponEquipped;
+    }
+
+    private void OnDisable()
+    {
+        if (loadout != null)
+        {
+            loadout.OnEquipStarted -= HandleEquipStarted;
+            loadout.OnStowStarted -= HandleStowStarted;
+            loadout.OnWeaponEquipped -= HandleWeaponEquipped;
+        }
+        Track(null);
     }
 
     private void Update()
@@ -50,6 +85,10 @@ public class PlayerPresentation : MonoBehaviour
         }
         if (look != null) s.Pitch = look.Pitch;
 
+        var active = loadout != null ? loadout.Active : null;
+        Track(active);
+        s.HeldWeapon = WeaponOf(active);
+
         State = s;
     }
 
@@ -65,5 +104,31 @@ public class PlayerPresentation : MonoBehaviour
         float value = speed <= walk ? speed / walk : 1f + (speed - walk) / sprintRange;
 
         return flat / speed * Mathf.Clamp(value, 0f, 2f);
+    }
+
+    // Follows the held weapon so only its shots are relayed
+    private void Track(WeaponFireController c)
+    {
+        if (c == firing) return;
+        if (firing != null) firing.OnFired -= HandleFired;
+        firing = c;
+        if (firing != null) firing.OnFired += HandleFired;
+    }
+
+    private void HandleFired()
+    {
+        var source = firing != null ? firing.DamageSource : null;
+        float rpm = source != null ? source.ResolvedRPM : 0f;
+        Fired?.Invoke(rpm > 0f ? 60f / rpm : 0.2f);
+    }
+
+    private void HandleEquipStarted(WeaponFireController c, float duration) => EquipStarted?.Invoke(WeaponOf(c), duration);
+    private void HandleStowStarted(WeaponFireController c, float duration) => StowStarted?.Invoke(WeaponOf(c), duration);
+    private void HandleWeaponEquipped(WeaponFireController c) => WeaponEquipped?.Invoke(WeaponOf(c));
+
+    private static WeaponSO WeaponOf(WeaponFireController c)
+    {
+        var source = c != null ? c.DamageSource : null;
+        return source != null ? source.Weapon : null;
     }
 }

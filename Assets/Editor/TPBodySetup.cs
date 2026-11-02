@@ -5,11 +5,21 @@ using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
 
-// Builds the TP_Body controller base layer and wires the body onto the player
+// Builds the TP_Body controller (base + upper body layers) and wires the body onto the player
 public class TPBodySetup : EditorWindow
 {
     private const string TreePrefix = "TPB_";
+    private const string UpperLayer = "UpperBody";
+    private const string GeneratedFolder = "TP_Generated";
     private const string DefaultClipFolder = "Assets/Animations/Player/ThirdPerson Weapon Packs/Rifle Locomotion";
+    private const string DefaultPistolFolder = "Assets/Animations/Player/ThirdPerson Weapon Packs/Pistol";
+
+    // Upper body hold poses: generated clip name and source clip
+    private const string HoldHip = "TP_Hold_Hip";
+    private const string HoldAim = "TP_Hold_Aim";
+    private const string HoldHipSource = "idle";
+    private const string HoldAimSource = "idle aiming";
+    private const string PistolHoldSource = "pistol idle";
 
     // Clip file name and blend position (1 = walk, 2 = sprint)
     private static readonly (string clip, float x, float y)[] Stand =
@@ -42,6 +52,7 @@ public class TPBodySetup : EditorWindow
     };
 
     [SerializeField] private DefaultAsset clipFolder;
+    [SerializeField] private DefaultAsset pistolFolder;
     [SerializeField] private AnimatorController controller;
     [SerializeField] private Transform playerRoot;
     [SerializeField] private GameObject body;
@@ -56,6 +67,7 @@ public class TPBodySetup : EditorWindow
     private void OnEnable()
     {
         if (clipFolder == null) clipFolder = AssetDatabase.LoadAssetAtPath<DefaultAsset>(DefaultClipFolder);
+        if (pistolFolder == null) pistolFolder = AssetDatabase.LoadAssetAtPath<DefaultAsset>(DefaultPistolFolder);
         if (playerRoot == null)
         {
             var pm = FindFirstObjectByType<PlayerMovement>();
@@ -67,6 +79,7 @@ public class TPBodySetup : EditorWindow
     {
         EditorGUILayout.LabelField("Controller", EditorStyles.boldLabel);
         clipFolder = (DefaultAsset)EditorGUILayout.ObjectField("Clip Folder", clipFolder, typeof(DefaultAsset), false);
+        pistolFolder = (DefaultAsset)EditorGUILayout.ObjectField("Pistol Clip Folder", pistolFolder, typeof(DefaultAsset), false);
         controller = (AnimatorController)EditorGUILayout.ObjectField("Controller (empty = create)", controller, typeof(AnimatorController), false);
         transitionTime = EditorGUILayout.FloatField("Transition Time (s)", transitionTime);
         jumpUpExitTime = EditorGUILayout.FloatField("Jump Up Exit Time", jumpUpExitTime);
@@ -87,9 +100,11 @@ public class TPBodySetup : EditorWindow
         {
             if (BuildController()) SetupBody();
         }
+        if (GUILayout.Button("Create Pistol Override", GUILayout.Height(24))) BuildPistolOverride();
 
-        EditorGUILayout.HelpBox("Build Controller rebuilds Base Layer only; other layers are kept. " +
-                                "Setup Body is undoable.", MessageType.None);
+        EditorGUILayout.HelpBox("Build Controller rebuilds Base Layer and UpperBody; other layers are kept. " +
+                                "Generated hold clips and the mask are kept once made (delete to regenerate). " +
+                                "Setup Body re-places the body at Back Offset and is undoable.", MessageType.None);
     }
 
     // ===== Controller =====
@@ -118,10 +133,12 @@ public class TPBodySetup : EditorWindow
         EnsureParam("Crouch", AnimatorControllerParameterType.Float);
         EnsureParam("VerticalSpeed", AnimatorControllerParameterType.Float);
         EnsureParam("Grounded", AnimatorControllerParameterType.Bool);
+        EnsureParam("AimBlend", AnimatorControllerParameterType.Float);
 
         var sm = controller.layers[0].stateMachine;
         ClearStateMachine(sm);
         RemoveOldTrees();
+        BuildUpperLayer(clips, missing);
 
         // Locomotion: 1D on Crouch over two 2D trees
         var root = NewTree("Locomotion", BlendTreeType.Simple1D, "Crouch", null);
@@ -170,8 +187,155 @@ public class TPBodySetup : EditorWindow
 
         if (missing.Count > 0)
             Debug.LogWarning($"[TPBodySetup] Missing clips (skipped): {string.Join(", ", missing)}");
-        Debug.Log($"[TPBodySetup] Built Base Layer on '{AssetDatabase.GetAssetPath(controller)}'.");
+        Debug.Log($"[TPBodySetup] Built Base Layer and {UpperLayer} on '{AssetDatabase.GetAssetPath(controller)}'.");
         return true;
+    }
+
+    // Upper body: masked layer holding the weapon pose, hip to aim on AimBlend
+    private void BuildUpperLayer(Dictionary<string, AnimationClip> clips, List<string> missing)
+    {
+        string dir = GeneratedDir();
+        var hip = HoldClip(dir, HoldHip, HoldHipSource, clips, missing);
+        var aim = HoldClip(dir, HoldAim, HoldAimSource, clips, missing);
+        var mask = UpperMask(dir);
+
+        var layers = controller.layers;
+        int i = System.Array.FindIndex(layers, l => l.name == UpperLayer);
+        if (i < 0)
+        {
+            var newSm = new AnimatorStateMachine { name = UpperLayer, hideFlags = HideFlags.HideInHierarchy };
+            AssetDatabase.AddObjectToAsset(newSm, controller);
+            controller.AddLayer(new AnimatorControllerLayer
+            {
+                name = UpperLayer,
+                stateMachine = newSm,
+                defaultWeight = 1f,
+                avatarMask = mask
+            });
+            layers = controller.layers;
+            i = layers.Length - 1;
+        }
+        else
+        {
+            layers[i].avatarMask = mask;
+            layers[i].defaultWeight = 1f;
+            controller.layers = layers;
+        }
+
+        var sm = controller.layers[i].stateMachine;
+        ClearStateMachine(sm);
+
+        var tree = NewTree("Hold", BlendTreeType.Simple1D, "AimBlend", null);
+        tree.useAutomaticThresholds = false;
+        if (hip != null) tree.AddChild(hip, 0f);
+        if (aim != null) tree.AddChild(aim, 1f);
+
+        var hold = sm.AddState("Hold", new Vector3(300f, 0f, 0f));
+        hold.motion = tree;
+        sm.defaultState = hold;
+    }
+
+    // Copies a source clip to its own asset so overrides can swap it alone
+    private static AnimationClip HoldClip(string dir, string name, string source,
+                                          Dictionary<string, AnimationClip> clips, List<string> missing)
+    {
+        string path = $"{dir}/{name}.anim";
+        var existing = AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
+        if (existing != null) return existing;
+
+        if (!clips.TryGetValue(source, out var src))
+        {
+            missing.Add(source);
+            return null;
+        }
+
+        var copy = Instantiate(src);
+        copy.name = name;
+        var settings = AnimationUtility.GetAnimationClipSettings(copy);
+        settings.loopTime = true;
+        AnimationUtility.SetAnimationClipSettings(copy, settings);
+        AssetDatabase.CreateAsset(copy, path);
+        return copy;
+    }
+
+    // Spine, head and arms; no root or legs
+    private static AvatarMask UpperMask(string dir)
+    {
+        string path = $"{dir}/TP_UpperBody.mask";
+        var mask = AssetDatabase.LoadAssetAtPath<AvatarMask>(path);
+        if (mask != null) return mask;
+
+        mask = new AvatarMask();
+        for (int p = 0; p < (int)AvatarMaskBodyPart.LastBodyPart; p++)
+        {
+            var part = (AvatarMaskBodyPart)p;
+            bool on = part == AvatarMaskBodyPart.Body || part == AvatarMaskBodyPart.Head
+                      || part == AvatarMaskBodyPart.LeftArm || part == AvatarMaskBodyPart.RightArm
+                      || part == AvatarMaskBodyPart.LeftFingers || part == AvatarMaskBodyPart.RightFingers
+                      || part == AvatarMaskBodyPart.LeftHandIK || part == AvatarMaskBodyPart.RightHandIK;
+            mask.SetHumanoidBodyPartActive(part, on);
+        }
+        AssetDatabase.CreateAsset(mask, path);
+        return mask;
+    }
+
+    // Pistol family: both hold poses become the pistol idle
+    private void BuildPistolOverride()
+    {
+        if (controller == null)
+        {
+            Debug.LogError("[TPBodySetup] Build or assign the controller first.");
+            return;
+        }
+
+        string folder = pistolFolder != null ? AssetDatabase.GetAssetPath(pistolFolder) : null;
+        if (string.IsNullOrEmpty(folder) || !AssetDatabase.IsValidFolder(folder))
+        {
+            Debug.LogError("[TPBodySetup] Assign the pistol clip folder.");
+            return;
+        }
+        if (!LoadClips(folder).TryGetValue(PistolHoldSource, out var pistol))
+        {
+            Debug.LogError($"[TPBodySetup] No '{PistolHoldSource}' clip in '{folder}'.");
+            return;
+        }
+
+        string dir = GeneratedDir();
+        var hip = AssetDatabase.LoadAssetAtPath<AnimationClip>($"{dir}/{HoldHip}.anim");
+        var aim = AssetDatabase.LoadAssetAtPath<AnimationClip>($"{dir}/{HoldAim}.anim");
+        if (hip == null || aim == null)
+        {
+            Debug.LogError("[TPBodySetup] Hold clips missing; run Build Controller first.");
+            return;
+        }
+
+        string path = $"{dir}/AOC_TP_Pistol.overrideController";
+        var aoc = AssetDatabase.LoadAssetAtPath<AnimatorOverrideController>(path);
+        if (aoc == null)
+        {
+            aoc = new AnimatorOverrideController(controller);
+            AssetDatabase.CreateAsset(aoc, path);
+        }
+        aoc.runtimeAnimatorController = controller;
+
+        var list = new List<KeyValuePair<AnimationClip, AnimationClip>>(aoc.overridesCount);
+        aoc.GetOverrides(list);
+        for (int i = 0; i < list.Count; i++)
+            if (list[i].Key == hip || list[i].Key == aim)
+                list[i] = new KeyValuePair<AnimationClip, AnimationClip>(list[i].Key, pistol);
+        aoc.ApplyOverrides(list);
+
+        EditorUtility.SetDirty(aoc);
+        AssetDatabase.SaveAssets();
+        Debug.Log($"[TPBodySetup] Pistol override at '{path}'. Assign it as Third Person Controller on pistol viewmodels.");
+    }
+
+    private string GeneratedDir()
+    {
+        string parent = Path.GetDirectoryName(AssetDatabase.GetAssetPath(controller)).Replace('\\', '/');
+        string dir = $"{parent}/{GeneratedFolder}";
+        if (!AssetDatabase.IsValidFolder(dir)) AssetDatabase.CreateFolder(parent, GeneratedFolder);
+        return dir;
     }
 
     private static Dictionary<string, AnimationClip> LoadClips(string folder)
@@ -314,6 +478,7 @@ public class TPBodySetup : EditorWindow
         GetOrAdd<PlayerPresentation>(playerRoot.gameObject);
         GetOrAdd<ThirdPersonBodyAnimator>(go);
         var vis = GetOrAdd<BodyVisibility>(go);
+        GetOrAdd<ThirdPersonWeapon>(go);
 
         // Legs mesh by name, everything else is full body
         var smrs = go.GetComponentsInChildren<SkinnedMeshRenderer>(true);

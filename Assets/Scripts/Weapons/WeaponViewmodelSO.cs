@@ -14,5 +14,8 @@ namespace Combat.Weapons
         [Tooltip("Gun model prefab. Spawned onto the rig's hand socket per loadout slot. " +
                  "Must contain its own Animator with the gun override controller.")]
         public GameObject gunPrefab;
+
+        [Tooltip("Third-person body controller: an AOC_TP_* override. Empty = the body's base controller.")]
+        public RuntimeAnimatorController thirdPersonController;
     }
 }

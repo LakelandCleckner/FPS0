@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   armsController: {fileID: 22100000, guid: 5bb7028837ceff84d9635435268491e3, type: 2}
   gunPrefab: {fileID: 7744042834940752349, guid: 2a64b5d870f29cb40867d3ce063fc0ff, type: 3}
+  thirdPersonController: {fileID: 22100000, guid: 5574988e96065e145911c66b4b685952, type: 2}

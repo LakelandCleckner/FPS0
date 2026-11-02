@@ -279,6 +279,7 @@
     <Compile Include="Assets\Scripts\PlayerScripts\GameSettingsSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\WeaponTypeSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Core\StatDefinitionSO.cs" />
+    <Compile Include="Assets\Scripts\PlayerScripts\ThirdPerson\ThirdPersonWeapon.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\PlayerInAttackRangeSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Keys\CombatStatKeys.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\PlayerHurtbox.cs" />

@@ -31,6 +31,68 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5927193153066256256}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &796979168226152931
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 253293529621873845}
+  m_Layer: 0
+  m_Name: TP_MagWell
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &253293529621873845
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 796979168226152931}
+  serializedVersion: 2
+  m_LocalRotation: {x: -1.5768668e-10, y: 5.497182e-10, z: -0.00000002998441, w: 1}
+  m_LocalPosition: {x: -0.19500002, y: -0.047100008, z: -0.004300194}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5545090617518222161}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1514412654646503019
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2672714269879012918}
+  m_Layer: 0
+  m_Name: TP_Grip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2672714269879012918
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1514412654646503019}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.5128814, y: 0.85338265, z: 0.008866171, w: -0.0928016}
+  m_LocalPosition: {x: 0.05627679, y: 0.03504745, z: 0.018897025}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5545090617518222161}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6164553652858979067
 GameObject:
   m_ObjectHideFlags: 0
@@ -61,6 +123,68 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8163167538794512251}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8448944463663002116
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3832617008567826546}
+  m_Layer: 0
+  m_Name: TP_Support
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3832617008567826546
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8448944463663002116}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.35143107, y: -0.39879656, z: 0.49036163, w: -0.69065404}
+  m_LocalPosition: {x: -0.36490026, y: 0.14750004, z: -0.024600036}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5545090617518222161}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8789065018010013764
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6835067905941556361}
+  m_Layer: 0
+  m_Name: TP_LoadPort
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6835067905941556361
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8789065018010013764}
+  serializedVersion: 2
+  m_LocalRotation: {x: -1.5768668e-10, y: 5.497182e-10, z: -0.00000002998441, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5545090617518222161}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &5439970070186626234
 PrefabInstance:
@@ -206,6 +330,18 @@ PrefabInstance:
     - {fileID: 5866666021909216657, guid: 8d97818bdbca1d8498e8fecc45bd96ad, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8d97818bdbca1d8498e8fecc45bd96ad, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2672714269879012918}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8d97818bdbca1d8498e8fecc45bd96ad, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3832617008567826546}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8d97818bdbca1d8498e8fecc45bd96ad, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 253293529621873845}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8d97818bdbca1d8498e8fecc45bd96ad, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6835067905941556361}
     - targetCorrespondingSourceObject: {fileID: 4195035246802219969, guid: 8d97818bdbca1d8498e8fecc45bd96ad, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4311741827543197662}
@@ -247,6 +383,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   muzzle: {fileID: 4311741827543197662}
   sight: {fileID: 4569523808833833245}
+  tpGrip: {fileID: 2672714269879012918}
+  tpSupport: {fileID: 3832617008567826546}
+  tpMagWell: {fileID: 253293529621873845}
+  tpLoadPort: {fileID: 6835067905941556361}
+  tpScale: 1.0191518
+  tpAimAxis: {x: -0.94946295, y: 0.004494713, z: 0.31384683}
+--- !u!4 &5545090617518222161 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8d97818bdbca1d8498e8fecc45bd96ad, type: 3}
+  m_PrefabInstance: {fileID: 5439970070186626234}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &5802801439037631285 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -7207704581901539441, guid: 8d97818bdbca1d8498e8fecc45bd96ad, type: 3}

@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2592320662458113389
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6034919747950434788}
+  m_Layer: 0
+  m_Name: TP_LoadPort
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6034919747950434788
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2592320662458113389}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6932039562382093159}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2644773915755144499
 GameObject:
   m_ObjectHideFlags: 0
@@ -26,6 +57,99 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.1927, y: 0.1254, z: -0.0029}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6932039562382093159}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4197760692800698019
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1011431308107410718}
+  m_Layer: 0
+  m_Name: TP_Support
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1011431308107410718
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4197760692800698019}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.01230278, y: -0.14803854, z: 0.528301, w: -0.8359613}
+  m_LocalPosition: {x: -0.12029995, y: 0.09419996, z: 0.002499969}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6932039562382093159}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5443509297962701729
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5786228711358876881}
+  m_Layer: 0
+  m_Name: TP_MagWell
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5786228711358876881
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5443509297962701729}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.0041999165, y: 0.0024999895, z: 0.009100056}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6932039562382093159}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5715694621436373557
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4604494239110402436}
+  m_Layer: 0
+  m_Name: TP_Grip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4604494239110402436
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5715694621436373557}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.46296573, y: -0.609086, z: 0.4926433, w: 0.41470417}
+  m_LocalPosition: {x: 0.08601321, y: 0.07438103, z: 0.06973404}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -169,6 +293,18 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 219c553586172584e9966dcb04ba5fe8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3950125909751403478}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 219c553586172584e9966dcb04ba5fe8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4604494239110402436}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 219c553586172584e9966dcb04ba5fe8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1011431308107410718}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 219c553586172584e9966dcb04ba5fe8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5786228711358876881}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 219c553586172584e9966dcb04ba5fe8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6034919747950434788}
     - targetCorrespondingSourceObject: {fileID: 8537096346959937763, guid: 219c553586172584e9966dcb04ba5fe8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7049849655353373235}
@@ -236,3 +372,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   muzzle: {fileID: 3950125909751403478}
   sight: {fileID: 7049849655353373235}
+  tpGrip: {fileID: 4604494239110402436}
+  tpSupport: {fileID: 1011431308107410718}
+  tpMagWell: {fileID: 5786228711358876881}
+  tpLoadPort: {fileID: 6034919747950434788}
+  tpScale: 1.0000002
+  tpAimAxis: {x: -0.9435651, y: 0.1477593, z: 0.29639846}
