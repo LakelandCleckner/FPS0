@@ -16,6 +16,9 @@ namespace Combat.Weapons
         [Header("Loadout")]
         [Tooltip("Slots weapons of this type may be equipped in. A weapon can override this.")]
         public LoadoutSlotMask allowedSlots = LoadoutSlotMask.All;
+        [Tooltip("Loadout slot whose carried cap these weapons count against (0 = slot 1). A weapon can override this.")]
+        [Range(0, LoadoutSlots.Count - 1)]
+        public int inventorySlot = 0;
 
         [Header("Perks")]
         [Tooltip("Default roll columns for weapons of this type. A weapon with its own columns uses those instead.")]

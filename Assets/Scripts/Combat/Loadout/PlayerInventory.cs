@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Combat.Armor;
 using Combat.Weapons;
 
@@ -9,9 +10,10 @@ namespace Combat.Loadout
     // What the player carries but has not equipped, plus shared ammo pools. Data only.
     public class PlayerInventory : MonoBehaviour
     {
-        [Tooltip("Weapons carried outside the loadout. Equipped weapons don't count.")]
+        [Tooltip("Weapons carried per loadout slot (by each weapon's inventory slot). Equipped weapons don't count.")]
         [Min(0)]
-        [SerializeField] private int carriedWeaponCap = 9;
+        [FormerlySerializedAs("carriedWeaponCap")]
+        [SerializeField] private int carriedWeaponCapPerSlot = 9;
 
         [Tooltip("Armour pieces carried per armour slot. Equipped armour doesn't count.")]
         [Min(0)]
@@ -25,8 +27,7 @@ namespace Combat.Loadout
         public event Action<AmmoPoolSO> PoolChanged;
 
         public IReadOnlyList<WeaponInstance> Weapons => weapons;
-        public int CarriedWeaponCap => carriedWeaponCap;
-        public bool HasWeaponSpace => weapons.Count < carriedWeaponCap;
+        public int CarriedWeaponCapPerSlot => carriedWeaponCapPerSlot;
 
         public IReadOnlyList<ArmorInstance> Armor => armor;
         public int CarriedArmorCapPerSlot => carriedArmorCapPerSlot;
@@ -35,10 +36,24 @@ namespace Combat.Loadout
 
         public bool Contains(WeaponInstance weapon) => weapon != null && weapons.Contains(weapon);
 
+        public int CountWeapons(int inventorySlot)
+        {
+            int n = 0;
+            for (int i = 0; i < weapons.Count; i++)
+                if (weapons[i].Definition != null && weapons[i].Definition.InventorySlot == inventorySlot) n++;
+            return n;
+        }
+
+        public bool HasWeaponSpace(int inventorySlot) => CountWeapons(inventorySlot) < carriedWeaponCapPerSlot;
+
+        // Room for this weapon in its own slot's carried cap.
+        public bool HasWeaponSpaceFor(WeaponInstance weapon)
+            => weapon != null && weapon.Definition != null && HasWeaponSpace(weapon.Definition.InventorySlot);
+
         public bool TryAddWeapon(WeaponInstance weapon)
         {
             if (weapon == null || weapon.Definition == null) return false;
-            if (weapons.Contains(weapon) || !HasWeaponSpace) return false;
+            if (weapons.Contains(weapon) || !HasWeaponSpaceFor(weapon)) return false;
 
             weapons.Add(weapon);
             Changed?.Invoke();

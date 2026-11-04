@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Combat.Loadout;
 
 namespace Combat.Perks
 {
@@ -33,6 +34,9 @@ namespace Combat.Perks
         public PerkListenScope listenScope = PerkListenScope.Active;
 
         public abstract PerkRuntime CreateRuntime();
+
+        // Unconditional modifiers, for stat previews of items not in the loadout. Conditional perks add nothing.
+        public virtual void CollectStaticModifiers(List<ModifierEntry> into) { }
 
         public string ShortLabel
         {

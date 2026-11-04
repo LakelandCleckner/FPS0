@@ -84,7 +84,6 @@ MonoBehaviour:
   ammo: {fileID: 7303718177318498795}
   resolver: {fileID: 3453457144703185622}
   muzzle: {fileID: 0}
-  reloadKey: 32
   magnetismMask:
     serializedVersion: 2
     m_Bits: 128
@@ -131,6 +130,7 @@ MonoBehaviour:
   statKeys: {fileID: 11400000, guid: d08ea03d7f569de4ea98d55cfd34a719, type: 2}
   showTickHitmarkers: 1
   playTickAudio: 1
+  playFeedback: 1
   fireHitEventsOnZeroDamage: 1
   logHits: 1
   pelletMergeWindow: 0.1
@@ -160,4 +160,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3724a1627dbeb1b479a65a741ca95468, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugLog: 1
+  debugLog: 0

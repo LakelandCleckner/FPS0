@@ -1122,7 +1122,7 @@ MonoBehaviour:
   keepVelocity: 1
   jointLimitScale: 1.5
   limbAngularDamping: 0.05
-  hullCorpses: 0
+  hullCorpses: 1
   extraDisable: []
 --- !u!4 &7497867919796180745 stripped
 Transform:

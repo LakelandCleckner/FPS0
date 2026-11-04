@@ -14,6 +14,12 @@ namespace Combat.Perks
 
         public override PerkRuntime CreateRuntime() => new StatPerkRuntime();
 
+        public override void CollectStaticModifiers(List<ModifierEntry> into)
+        {
+            foreach (var e in modifiers)
+                if (e != null && e.stat != null) into.Add(e);
+        }
+
         private sealed class StatPerkRuntime : PerkRuntime
         {
             protected override void OnAttach()

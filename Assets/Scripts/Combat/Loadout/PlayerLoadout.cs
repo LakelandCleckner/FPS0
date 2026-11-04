@@ -155,8 +155,8 @@ namespace Combat.Loadout
             var old = weapons[slot];
             bool fromInventory = inventory != null && inventory.Contains(weapon);
 
-            // Taking one out of carried frees the space the old one needs.
-            if (old != null && !fromInventory && (inventory == null || !inventory.HasWeaponSpace))
+            // Taking one out of carried frees space only in its own inventory slot.
+            if (old != null && !HasRoomForOutgoing(old, fromInventory ? weapon : null))
             {
                 reason = "Inventory is full.";
                 return false;
@@ -168,6 +168,17 @@ namespace Combat.Loadout
             weapons[slot] = weapon;
             WeaponSlotChanged?.Invoke(slot, old, weapon);
             return true;
+        }
+
+        private bool HasRoomForOutgoing(WeaponInstance outgoing, WeaponInstance leavingInventory)
+        {
+            if (inventory == null || outgoing.Definition == null) return false;
+
+            int bucket = outgoing.Definition.InventorySlot;
+            int count = inventory.CountWeapons(bucket);
+            if (leavingInventory != null && leavingInventory.Definition != null
+                && leavingInventory.Definition.InventorySlot == bucket) count--;
+            return count < inventory.CarriedWeaponCapPerSlot;
         }
 
         // Empties a slot; the weapon goes to carried inventory.

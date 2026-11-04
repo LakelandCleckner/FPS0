@@ -9,13 +9,23 @@ namespace Combat.Stats
     [DefaultExecutionOrder(-1000)]
     public class StatBootstrap : MonoBehaviour
     {
-        [Tooltip("Every StatDefinitionSO in the project. Order here doesn't matter — " +
+        [Tooltip("Every StatDefinitionSO in the project. Order here doesn't matter - " +
                  "the registry sorts by id for deterministic indices.")]
         [SerializeField] private List<StatDefinitionSO> statDefinitions = new List<StatDefinitionSO>();
 
         private void Awake()
         {
             StatRegistry.Initialize(statDefinitions);
+        }
+
+        // For edit-mode tools: initializes the registry from the scene's bootstrap if nothing has yet.
+        public static bool EnsureRegistry()
+        {
+            if (StatRegistry.IsInitialized && StatRegistry.Count > 0) return true;
+            var boot = FindFirstObjectByType<StatBootstrap>();
+            if (boot == null) return false;
+            StatRegistry.Initialize(boot.statDefinitions);
+            return StatRegistry.Count > 0;
         }
     }
 }

@@ -40,6 +40,11 @@ namespace Combat.Weapons
         [Tooltip("Use the slot rule below instead of the weapon type's.")]
         public bool overrideSlots = false;
         public LoadoutSlotMask allowedSlotsOverride = LoadoutSlotMask.All;
+        [Tooltip("Use the inventory slot below instead of the weapon type's.")]
+        public bool overrideInventorySlot = false;
+        [Tooltip("Loadout slot whose carried cap this weapon counts against (0 = slot 1).")]
+        [Range(0, LoadoutSlots.Count - 1)]
+        public int inventorySlotOverride = 0;
 
         [Header("Element (per-weapon damage type)")]
         public DamageTypeSO baseDamageType;
@@ -107,6 +112,17 @@ namespace Combat.Weapons
                 if (perkColumns != null && perkColumns.Count > 0) return perkColumns;
                 var type = archetype != null ? archetype.weaponType : null;
                 return type != null ? type.perkColumns : perkColumns;
+            }
+        }
+
+        // Carried-cap slot: the override, else its type's.
+        public int InventorySlot
+        {
+            get
+            {
+                int slot = overrideInventorySlot ? inventorySlotOverride
+                    : archetype != null && archetype.weaponType != null ? archetype.weaponType.inventorySlot : 0;
+                return UnityEngine.Mathf.Clamp(slot, 0, LoadoutSlots.Count - 1);
             }
         }
 

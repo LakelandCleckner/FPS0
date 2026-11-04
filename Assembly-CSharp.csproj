@@ -82,6 +82,7 @@
     <Compile Include="Assets\Scripts\Combat\Core\WeaponHitResolver.cs" />
     <Compile Include="Assets\Objects\Enemies\Kevin Iglesias\Human Animations\Scripts\SpineProxy.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\PlayerVisible.cs" />
+    <Compile Include="Assets\Scripts\UI\Inventory\LoadoutView.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\FireBehaviorSO.cs" />
     <Compile Include="Assets\Scripts\UI\CrosshairAdsFade.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\VfxReference.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="Assets\Scripts\Combat\Core\Enums.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\BurstFireBehaviorSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\BlastRadiusGizmo.cs" />
+    <Compile Include="Assets\Scripts\UI\Inventory\InventoryHeader.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponAnimator.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\TriggerState.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\ShotInfo.cs" />
@@ -119,8 +121,10 @@
     <Compile Include="Assets\PixPlays\Components\Scripts\Character.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StackEntry.cs" />
     <Compile Include="Assets\Scripts\Combat\Loadout\LoadoutModifierApplier.cs" />
+    <Compile Include="Assets\Scripts\UI\Inventory\ItemText.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\InvestigateTargetSensor.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\WeaponArchetypeSO.cs" />
+    <Compile Include="Assets\Scripts\UI\Inventory\InventoryPanel.cs" />
     <Compile Include="Assets\Scripts\Combat\Perks\Types\StatPerkSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\ExplosionOnKillSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Keys\EnemyMovementStatKeys.cs" />
@@ -128,6 +132,7 @@
     <Compile Include="Assets\Scripts\Combat\Core\DamageTypeSO.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\TargetKeys\WanderTarget.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Keys\MovementStatKeys.cs" />
+    <Compile Include="Assets\Scripts\UI\Kit\UIKit.cs" />
     <Compile Include="Assets\Scripts\Enemies\DamageAndHealth\BodyPart.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Actions\InvestigateAction.cs" />
     <Compile Include="Assets\Scripts\Combat\Loadout\PlayerInventory.cs" />
@@ -163,6 +168,7 @@
     <Compile Include="Assets\Scripts\Combat\Delivery\PelletDelivery.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Actions\ChaseAction.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\IsWandering.cs" />
+    <Compile Include="Assets\Scripts\UI\Inventory\InventoryFooter.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\Wandering\WanderTargetSensor.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\GoapRuntimeInit.cs" />
     <Compile Include="Assets\StarterAssets\FirstPersonController\Scripts\FirstPersonController.cs" />
@@ -207,6 +213,7 @@
     <Compile Include="Assets\Scripts\Combat\Perks\PerkClock.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\ThirdPerson\BodyVisibility.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\ProjectileConfig.cs" />
+    <Compile Include="Assets\Scripts\UI\Kit\UITile.cs" />
     <Compile Include="Assets\Scripts\Combat\Spawning\IPoolable.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\BindingPoints.cs" />
     <Compile Include="Assets\Scripts\Combat\Spawning\Testing\SpawnTestProbe.cs" />
@@ -219,6 +226,7 @@
     <Compile Include="Assets\Scripts\Debugging\Combat\EnemyDebugProbe.cs" />
     <Compile Include="Assets\Scripts\Combat\Spawning\EnemyPoolHandle.cs" />
     <Compile Include="Assets\StarterAssets\FirstPersonController\Scripts\BasicRigidBodyPush.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Weapon\WeaponStatPreview.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\MouseLook.cs" />
     <Compile Include="Assets\Scripts\Combat\Perks\Types\SwapSynergyPerkSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\CombatantHealth.cs" />
@@ -231,8 +239,10 @@
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\PlayerEngaged.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\Shields\EarthShield.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Core\StatRegistry.cs" />
+    <Compile Include="Assets\Scripts\UI\Inventory\CarriedPanel.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StatusLog.cs" />
     <Compile Include="Assets\Scripts\Combat\Events\WeaponEvents.cs" />
+    <Compile Include="Assets\Scripts\UI\Inventory\ItemDetailPanel.cs" />
     <Compile Include="Assets\Scripts\AudioScripts\Footsteps.cs" />
     <Compile Include="Assets\Scripts\Enemies\Combat\EnemyRagdoll.cs" />
     <Compile Include="Assets\Scripts\Combat\Perks\PerkRuntime.cs" />
@@ -258,6 +268,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\InvestigateGoal.cs" />
     <Compile Include="Assets\Scripts\Weapons\ViewmodelRig.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\TargetKeys\PlayerTarget.cs" />
+    <Compile Include="Assets\Scripts\UI\Data\UIStyleSO.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\ChaseGoal.cs" />
     <Compile Include="Assets\Scripts\UI\PerkTracker.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Bootstrap\StatBootstrap.cs" />
@@ -274,6 +285,7 @@
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\StatResolveTest.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\Accumulator\AccumulatorNumber.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\PelletDeliverySO.cs" />
+    <Compile Include="Assets\Scripts\UI\Inventory\InventoryScreen.cs" />
     <Compile Include="Assets\Scripts\Weapons\WeaponViewmodelSO.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\GoapControllerMono.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\Shields\WaterShield.cs" />
@@ -281,10 +293,12 @@
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\LocationInvestigatedSensor.cs" />
     <Compile Include="Assets\Scripts\Weapons\HitmarkerUI.cs" />
     <Compile Include="Assets\Animations\Enemies\Mixamo\Imports\Alien_Zombie\AlienZombieBaseLocomotionAnimator.cs" />
+    <Compile Include="Assets\Scripts\UI\Data\StatSheetSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\FireMode.cs" />
     <Compile Include="Assets\Scripts\AI\HelperScripts\Enemyfovvisualizer.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\GameSettingsSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\WeaponTypeSO.cs" />
+    <Compile Include="Assets\Scripts\UI\Inventory\LoadoutSlotsPanel.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Core\StatDefinitionSO.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\ThirdPerson\ThirdPersonWeapon.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\PlayerInAttackRangeSensor.cs" />
