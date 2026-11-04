@@ -93,6 +93,7 @@
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxAddons\ParticleSystemStartStopLifetime.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\ApplyStatusEffectSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\ExplosionOnKillEffect.cs" />
+    <Compile Include="Assets\Scripts\PlayerScripts\PlayerGunfireNoise.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Core\StatContainer.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\ChainResolver.cs" />
     <Compile Include="Assets\Scripts\Combat\Perks\Types\PrecisionRefundPerkSO.cs" />
@@ -216,6 +217,7 @@
     <Compile Include="Assets\Scripts\Combat\Armor\ArmorSlotSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Sources\IDamageSource.cs" />
     <Compile Include="Assets\Scripts\Combat\Perks\Types\LowHealthPerkSO.cs" />
+    <Compile Include="Assets\Scripts\Debugging\Combat\EnemyDebugProbe.cs" />
     <Compile Include="Assets\Scripts\Combat\Spawning\EnemyPoolHandle.cs" />
     <Compile Include="Assets\StarterAssets\FirstPersonController\Scripts\BasicRigidBodyPush.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\MouseLook.cs" />
@@ -248,6 +250,7 @@
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerCrouch.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\PlayerTargetSensor.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\Shields\ParticleSystemShield.cs" />
+    <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\AINoise.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\AmmoPoolSO.cs" />
     <Compile Include="Assets\Scripts\Weapons\Skins\WeaponShaderSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponDamageSource.cs" />

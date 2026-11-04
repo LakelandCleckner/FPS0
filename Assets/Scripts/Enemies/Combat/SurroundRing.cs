@@ -1,138 +1,123 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Combat.Enemies
 {
-    // Sits on the player. Hands nearby enemies evenly spaced slots around the player so they surround instead of piling in.
+    // Sits on the player. Tuning for how enemies close in: they rush straight at the player and stop at
+    // contact range; NavMesh avoidance spills late arrivals around the sides. An enemy held up (blocked by
+    // another enemy, or stuck short of the player) heads for the nearest open gap around the player.
     public class SurroundRing : MonoBehaviour
     {
-        [Tooltip("Slot ring radius from the player's centre (m).")]
-        [SerializeField] private float radius = 1.6f;
-        [SerializeField] private int slots = 6;
-        [Tooltip("Enemies closer than this take a slot (m).")]
-        [SerializeField] private float engageDistance = 8f;
-        [Tooltip("Ring for enemies beyond the slot count (m).")]
-        [SerializeField] private float overflowRadius = 3f;
-        [Tooltip("Seconds between slot reassignments.")]
-        [SerializeField] private float reassignInterval = 0.25f;
-        [Tooltip("Keep the current slot unless a free one is this many degrees closer to the enemy's bearing.")]
-        [SerializeField] private float stickiness = 40f;
+        [Tooltip("Enemies stop this far from the player's centre (m).")]
+        [SerializeField] private float approachDistance = 1.2f;
+        [Tooltip("Within this distance enemies turn to face the player instead of their path (m).")]
+        [SerializeField] private float faceDistance = 3f;
 
-        [SerializeField] private bool drawGizmos = true;
+        [Header("Flanking when blocked")]
+        [Tooltip("Seconds stuck short of the player (crowded out) before swinging round the side.")]
+        [SerializeField] private float flankAfter = 0.75f;
+        [Tooltip("Fallback when no gap is found: how far round toward the player's back to go (degrees).")]
+        [SerializeField] private float flankAngle = 70f;
+        [Tooltip("Smallest open arc around the player worth moving into (degrees).")]
+        [SerializeField] private float minGap = 50f;
+        [Tooltip("Seconds an enemy heads for its flank point before rushing straight again.")]
+        [SerializeField] private float flankHold = 1.5f;
+        [Tooltip("Below this speed an enemy short of the player counts as held up (m/s).")]
+        [SerializeField] private float blockedSpeed = 0.3f;
+        [Tooltip("Only enemies within this distance try to flank (m).")]
+        [SerializeField] private float flankRange = 4f;
 
-        private readonly List<Transform> members = new List<Transform>();
-        private readonly Dictionary<Transform, int> assigned = new Dictionary<Transform, int>();
-        private readonly List<Transform> order = new List<Transform>();
-        private bool[] taken = new bool[0];
-        private float nextAssign;
+        [Header("Leading")]
+        [Tooltip("Chasing enemies aim this far ahead of the player's movement, at most (s).")]
+        [SerializeField] private float maxLeadTime = 0.5f;
 
-        public float EngageDistance => engageDistance;
+        public float ApproachDistance => approachDistance;
+        public float FaceDistance => faceDistance;
+        public float FlankAfter => flankAfter;
+        public float FlankAngle => flankAngle;
+        public float FlankHold => flankHold;
+        public float BlockedSpeed => blockedSpeed;
+        public float FlankRange => flankRange;
+        public float MaxLeadTime => maxLeadTime;
 
-        public void Join(Transform enemy)
-        {
-            if (enemy == null || members.Contains(enemy)) return;
-            members.Add(enemy);
-            nextAssign = 0f;
-        }
+        // Player's flat velocity, smoothed
+        public Vector3 Velocity { get; private set; }
+        private Vector3 lastPosition;
 
-        public void Leave(Transform enemy)
-        {
-            if (enemy == null || !members.Remove(enemy)) return;
-            assigned.Remove(enemy);
-            nextAssign = 0f;
-        }
-
-        // World position of this enemy's slot on the navmesh; the player's position if it has none yet
-        public Vector3 SlotPosition(Transform enemy)
-        {
-            if (!assigned.TryGetValue(enemy, out int s)) return transform.position;
-
-            int ringCount = Mathf.Max(1, slots);
-            bool overflow = s >= ringCount;
-            int count = overflow ? ringCount * 2 : ringCount;
-            int index = overflow ? s - ringCount : s;
-            float r = overflow ? overflowRadius : radius;
-
-            float angle = index * (360f / count) * Mathf.Deg2Rad;
-            Vector3 p = transform.position + new Vector3(Mathf.Sin(angle), 0f, Mathf.Cos(angle)) * r;
-
-            return NavMesh.SamplePosition(p, out var hit, 1f, NavMesh.AllAreas) ? hit.position : transform.position;
-        }
+        private void OnEnable() => lastPosition = transform.position;
 
         private void Update()
         {
-            if (Time.time < nextAssign) return;
-            nextAssign = Time.time + reassignInterval;
-            Assign();
+            float dt = Time.deltaTime;
+            if (dt <= 0f) return;
+            Vector3 v = (transform.position - lastPosition) / dt;
+            v.y = 0f;
+            Velocity = Vector3.Lerp(Velocity, v, 1f - Mathf.Exp(-10f * dt));
+            lastPosition = transform.position;
         }
 
-        // Closest enemies first; each keeps its slot or takes the free slot nearest its bearing
-        private void Assign()
+        // Enemies currently close to the player (within face distance), for gap finding
+        private readonly List<Transform> close = new List<Transform>();
+        private readonly List<float> bearings = new List<float>();
+
+        public void SetClose(Transform enemy, bool isClose)
         {
-            members.RemoveAll(m => m == null || !m.gameObject.activeInHierarchy);
+            if (enemy == null) return;
+            bool has = close.Contains(enemy);
+            if (isClose && !has) close.Add(enemy);
+            else if (!isClose && has) close.Remove(enemy);
+        }
 
-            int ringCount = Mathf.Max(1, slots);
-            int total = ringCount * 3;            // inner ring + overflow ring (twice as many)
-            if (taken.Length != total) taken = new bool[total];
-            System.Array.Clear(taken, 0, total);
+        // Centre bearing of the open gap nearest this enemy's bearing; false when nothing is wide enough
+        public bool FindGap(Transform self, out float gapBearing)
+        {
+            gapBearing = 0f;
+            close.RemoveAll(t => t == null || !t.gameObject.activeInHierarchy);
 
-            order.Clear();
-            order.AddRange(members);
+            bearings.Clear();
             Vector3 c = transform.position;
-            order.Sort((a, b) => (a.position - c).sqrMagnitude.CompareTo((b.position - c).sqrMagnitude));
+            foreach (var t in close)
+                if (t != self) bearings.Add(Bearing(t.position - c));
 
-            var next = new Dictionary<Transform, int>(order.Count);
-            for (int i = 0; i < order.Count; i++)
+            float mine = Bearing(self.position - c);
+            if (bearings.Count == 0) { gapBearing = mine; return true; }
+
+            bearings.Sort();
+            float bestDiff = float.MaxValue;
+            bool found = false;
+            for (int i = 0; i < bearings.Count; i++)
             {
-                var m = order[i];
-                bool inner = i < ringCount;
-                int first = inner ? 0 : ringCount;
-                int count = inner ? ringCount : ringCount * 2;
-                float bearing = Bearing(m.position - c);
+                float a = bearings[i];
+                float b = i + 1 < bearings.Count ? bearings[i + 1] : bearings[0] + 360f;
+                if (b - a < minGap) continue;
 
-                int best = -1;
-                float bestDiff = float.MaxValue;
-                for (int k = 0; k < count; k++)
-                {
-                    int s = first + k;
-                    if (s >= total || taken[s]) continue;
-                    float diff = Mathf.Abs(Mathf.DeltaAngle(bearing, k * (360f / count)));
-                    if (diff < bestDiff) { bestDiff = diff; best = s; }
-                }
-
-                if (assigned.TryGetValue(m, out int prev) && prev >= first && prev < first + count && !taken[prev])
-                {
-                    float prevDiff = Mathf.Abs(Mathf.DeltaAngle(bearing, (prev - first) * (360f / count)));
-                    if (prevDiff - bestDiff < stickiness) best = prev;
-                }
-
-                if (best < 0) continue;
-                taken[best] = true;
-                next[m] = best;
+                float centre = a + (b - a) * 0.5f;
+                float diff = Mathf.Abs(Mathf.DeltaAngle(mine, centre));
+                if (diff < bestDiff) { bestDiff = diff; gapBearing = centre; found = true; }
             }
-
-            assigned.Clear();
-            foreach (var kv in next) assigned[kv.Key] = kv.Value;
+            return found;
         }
 
         private static float Bearing(Vector3 v) => Mathf.Atan2(v.x, v.z) * Mathf.Rad2Deg;
 
         private void OnDrawGizmosSelected()
         {
-            if (!drawGizmos) return;
-            int ringCount = Mathf.Max(1, slots);
-            Gizmos.color = new Color(1f, 0.6f, 0.1f, 0.8f);
-            for (int i = 0; i < ringCount; i++)
+            Gizmos.color = new Color(1f, 0.6f, 0.1f, 0.7f);
+            DrawCircle(transform.position, approachDistance);
+            Gizmos.color = new Color(1f, 0.6f, 0.1f, 0.25f);
+            DrawCircle(transform.position, faceDistance);
+        }
+
+        private static void DrawCircle(Vector3 c, float r)
+        {
+            const int segments = 48;
+            Vector3 prev = c + new Vector3(0f, 0f, r);
+            for (int i = 1; i <= segments; i++)
             {
-                float a = i * (360f / ringCount) * Mathf.Deg2Rad;
-                Gizmos.DrawWireSphere(transform.position + new Vector3(Mathf.Sin(a), 0f, Mathf.Cos(a)) * radius, 0.2f);
-            }
-            Gizmos.color = new Color(1f, 0.6f, 0.1f, 0.3f);
-            for (int i = 0; i < ringCount * 2; i++)
-            {
-                float a = i * (360f / (ringCount * 2)) * Mathf.Deg2Rad;
-                Gizmos.DrawWireSphere(transform.position + new Vector3(Mathf.Sin(a), 0f, Mathf.Cos(a)) * overflowRadius, 0.15f);
+                float a = i * Mathf.PI * 2f / segments;
+                Vector3 next = c + new Vector3(Mathf.Sin(a), 0f, Mathf.Cos(a)) * r;
+                Gizmos.DrawLine(prev, next);
+                prev = next;
             }
         }
     }

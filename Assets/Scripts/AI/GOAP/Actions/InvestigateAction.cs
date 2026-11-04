@@ -14,6 +14,8 @@ namespace GOAPGettingStarted.Actions
         public float LookRotationSpeed = 90f;
         public float LookIntervalMin = 0.8f;
         public float LookIntervalMax = 1.5f;
+        [Tooltip("Look-around stays within this many degrees either side of where the player was heading.")]
+        public float LookSpread = 90f;
 
         public override void Start(IMonoAgent agent, Data data)
         {
@@ -25,6 +27,9 @@ namespace GOAPGettingStarted.Actions
                 data.Arrived = false;
                 data.LookTimer = 0f;
                 data.TargetLookAngle = agent.Transform.eulerAngles.y;
+                data.HeadingAngle = memory.LastKnownHeading.sqrMagnitude > 0.01f
+                    ? Mathf.Atan2(memory.LastKnownHeading.x, memory.LastKnownHeading.z) * Mathf.Rad2Deg
+                    : agent.Transform.eulerAngles.y;
             }
 
             // Declare the speed multiplier; AgentMoveBehaviour applies nav.speed
@@ -57,7 +62,8 @@ namespace GOAPGettingStarted.Actions
                 {
                     data.Arrived = true;
                     data.LookAroundTimer = LookAroundDuration;
-                    data.LookTimer = 0f;
+                    data.TargetLookAngle = data.HeadingAngle;   // first look: where they were going
+                    data.LookTimer = Random.Range(LookIntervalMin, LookIntervalMax);
 
                     var nav = agent.Transform.GetComponent<NavMeshAgent>();
                     if (nav != null && nav.isActiveAndEnabled && nav.isOnNavMesh)
@@ -75,7 +81,7 @@ namespace GOAPGettingStarted.Actions
             data.LookTimer -= context.DeltaTime;
             if (data.LookTimer <= 0f)
             {
-                data.TargetLookAngle = Random.Range(0f, 360f);
+                data.TargetLookAngle = data.HeadingAngle + Random.Range(-LookSpread, LookSpread);
                 data.LookTimer = Random.Range(LookIntervalMin, LookIntervalMax);
             }
 
@@ -123,6 +129,7 @@ namespace GOAPGettingStarted.Actions
             public bool Arrived { get; set; }
             public float LookTimer { get; set; }
             public float TargetLookAngle { get; set; }
+            public float HeadingAngle { get; set; }
         }
     }
 }

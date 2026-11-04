@@ -37,7 +37,9 @@ namespace Combat.Enemies
             [Tooltip("-1 = the first damage frame.")]
             public int lungeEndFrame = -1;
             [Tooltip("On: follows the player during the wind-up. Off: aims where they stood when the swing started.")]
-            public bool lungeTracks = false;
+            public bool lungeTracks = true;
+            [Tooltip("Keep chasing during the wind-up at this fraction of chase speed (0 = plant for the whole swing). Feet plant from the first damage frame.")]
+            [Range(0f, 1f)] public float windupMoveSpeed = 0.6f;
 
             [NonSerialized] public List<Collider> Colliders;
             [NonSerialized] public List<IHitEffect> Effects;
@@ -63,7 +65,15 @@ namespace Combat.Enemies
         [Tooltip("Never pick the same move twice in a row (when there is more than one).")]
         [SerializeField] private bool avoidRepeat = true;
 
+        public enum HitMode { Reach, Physical }
+
         [Header("Hit Detection")]
+        [Tooltip("Reach: at the damage frames the player is hit if within Reach Distance and Reach Angle in front. Physical: an attacking limb collider must touch a player hitbox.")]
+        [SerializeField] private HitMode hitMode = HitMode.Reach;
+        [Tooltip("Reach mode: hit distance from this enemy's centre to the player's centre (m).")]
+        [SerializeField] private float reachDistance = 1.8f;
+        [Tooltip("Reach mode: full cone in front of the enemy (degrees).")]
+        [SerializeField] private float reachAngle = 120f;
         [SerializeField] private LayerMask playerMask = 1 << 8;
         [Tooltip("Extra radius added to each arm collider so fast swings don't skip the player.")]
         [SerializeField] private float hitPadding = 0.1f;
@@ -72,7 +82,13 @@ namespace Combat.Enemies
         [Tooltip("Max angle to the player (degrees) before a swing may start.")]
         [SerializeField] private float maxStartAngle = 40f;
         [Tooltip("Turn speed (deg/s) while swinging.")]
-        [SerializeField] private float swingTurnSpeed = 90f;
+        [SerializeField] private float swingTurnSpeed = 360f;
+        [Tooltip("Don't swing when another enemy's body blocker is between this enemy and the player.")]
+        [SerializeField] private bool requireClearLine = true;
+        [Tooltip("Width of the clear-line check (m).")]
+        [SerializeField] private float clearLineRadius = 0.25f;
+        [Tooltip("Height of the clear-line check above the root (m).")]
+        [SerializeField] private float clearLineHeight = 1.1f;
 
         [Header("Animator")]
         [SerializeField] private string attackingBool = "Attacking";
@@ -86,12 +102,23 @@ namespace Combat.Enemies
         [SerializeField] private bool logHits = false;
 
         public bool IsSwinging { get; private set; }
+
+        // Swinging but not yet at the first damage frame
+        public bool InWindup => IsSwinging && current != null
+                                && swingTime * current.clipFrameRate * swingSpeed < current.hitStartFrame;
+
+        // Chase speed fraction allowed during the wind-up (0 = planted)
+        public float WindupMoveSpeed => current != null ? current.windupMoveSpeed : 0f;
         public bool IsCoolingDown => Time.time < cooldownUntil;
         public float Range => Stat(statKeys != null ? statKeys.attackRange : null, baseRange);
         private float Cooldown => Stat(statKeys != null ? statKeys.attackCooldown : null, baseCooldown);
         private float AttackSpeed => Mathf.Max(0.05f, Stat(statKeys != null ? statKeys.attackSpeed : null, baseAttackSpeed));
 
         private readonly Collider[] overlap = new Collider[16];
+        private readonly RaycastHit[] lineHits = new RaycastHit[8];
+        private PlayerHitbox[] playerHitboxes;
+        private int lineCheckFrame = -1;
+        private bool lineBlocked;
         private AttackMove current;
         private int lastMove = -1;
         private Transform player;
@@ -160,7 +187,37 @@ namespace Combat.Enemies
             Vector3 to = player.position - transform.position;
             to.y = 0f;
             if (to.magnitude > Range) return false;
-            return Vector3.Angle(Flat(transform.forward), to) <= maxStartAngle;
+            if (Vector3.Angle(Flat(transform.forward), to) > maxStartAngle) return false;
+            return !LineBlocked();
+        }
+
+        // Another enemy's body blocker between this enemy and the player (checked once per frame)
+        public bool LineBlocked()
+        {
+            if (!requireClearLine || player == null) return false;
+            if (lineCheckFrame == Time.frameCount) return lineBlocked;
+            lineCheckFrame = Time.frameCount;
+            lineBlocked = false;
+
+            int mask = PhysicsLayers.BlockerMask;
+            if (mask == 0) return false;
+
+            Vector3 from = transform.position + Vector3.up * clearLineHeight;
+            Vector3 to = player.position; to.y = from.y;
+            Vector3 d = to - from;
+            float dist = d.magnitude;
+            if (dist < 0.01f) return false;
+
+            int n = Physics.SphereCastNonAlloc(from, clearLineRadius, d / dist, lineHits, dist,
+                                               mask, QueryTriggerInteraction.Ignore);
+            for (int i = 0; i < n; i++)
+            {
+                var col = lineHits[i].collider;
+                if (col.transform.IsChildOf(transform)) continue;   // own blocker
+                lineBlocked = true;
+                break;
+            }
+            return lineBlocked;
         }
 
         public bool TryStartAttack()
@@ -229,6 +286,12 @@ namespace Combat.Enemies
             float frame = swingTime * current.clipFrameRate * swingSpeed;
             if (frame < current.hitStartFrame || frame > current.hitEndFrame) return;
 
+            if (hitMode == HitMode.Reach)
+            {
+                ReachHit();
+                return;
+            }
+
             var cols = current.Colliders;
             for (int i = 0; i < cols.Count; i++)
             {
@@ -272,6 +335,47 @@ namespace Combat.Enemies
                     return;
                 }
             }
+        }
+
+        // In reach and in front at the damage frames: hit the player's hitbox nearest the attacking limb
+        private void ReachHit()
+        {
+            if (player == null) return;
+            Vector3 to = Flat(player.position - transform.position);
+            if (to.magnitude > reachDistance) return;
+            if (Vector3.Angle(Flat(transform.forward), to) > reachAngle * 0.5f) return;
+            if (LineBlocked()) return;
+
+            Vector3 from = transform.position + Vector3.up * clearLineHeight;
+            foreach (var col in current.Colliders)
+                if (col != null && col.enabled) { from = col.bounds.center; break; }
+
+            if (playerHitboxes == null || playerHitboxes.Length == 0)
+                playerHitboxes = player.GetComponentsInChildren<PlayerHitbox>(true);
+
+            PlayerHitbox best = null;
+            Vector3 bestPoint = player.position;
+            float bestDist = float.MaxValue;
+            foreach (var hb in playerHitboxes)
+            {
+                if (hb == null || hb.Hurtbox == null) continue;
+                var c = hb.GetComponent<Collider>();
+                if (c == null || !c.enabled || !hb.gameObject.activeInHierarchy) continue;
+                Vector3 p = c.ClosestPoint(from);
+                float d = (p - from).sqrMagnitude;
+                if (d < bestDist) { bestDist = d; best = hb; bestPoint = p; }
+            }
+
+            hitThisSwing = true;
+            if (best != null)
+            {
+                DeliverHit(best.Hurtbox, bestPoint, best.bodyPart, best.damageMultiplier, best.ApplyTickDamage);
+                return;
+            }
+
+            var hurtbox = player.GetComponentInParent<PlayerHurtbox>();
+            if (hurtbox == null) hurtbox = player.GetComponentInChildren<PlayerHurtbox>();
+            if (hurtbox != null) DeliverHit(hurtbox, player.position, hurtbox.BodyPart, 1f, hurtbox.ApplyDamage);
         }
 
         private void DeliverHit(PlayerHurtbox hurtbox, Vector3 point, BodyPart part, float multiplier,
@@ -454,6 +558,7 @@ namespace Combat.Enemies
 
         private void FindPlayer()
         {
+            playerHitboxes = null;
             var go = GameObject.FindWithTag("Player");
             player = go != null ? go.transform : null;
         }
