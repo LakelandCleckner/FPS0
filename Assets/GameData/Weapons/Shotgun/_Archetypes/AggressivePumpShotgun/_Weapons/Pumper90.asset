@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: {fileID: 11400000, guid: c959ca4e6a5e1ea44981dd5b4772da86, type: 2}
   id: pumper90
-  displayName: Pumper 90
+  displayName: Pumper
   viewmodel: {fileID: 11400000, guid: 409e69fdfa7817a45b80198dfa6325bf, type: 2}
   viewmodelSkin:
   - from: {fileID: 2100000, guid: 9c7bfa686b7240b4cb4080e75cf560e9, type: 2}
@@ -22,6 +22,8 @@ MonoBehaviour:
   defaultShader: {fileID: 11400000, guid: 6afe353b48cc3a646bf6665295d7e8a2, type: 2}
   overrideSlots: 0
   allowedSlotsOverride: -1
+  overrideInventorySlot: 0
+  inventorySlotOverride: 0
   baseDamageType: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
   weaponDamageDelta: 0
   roundsPerMinuteDelta: 0

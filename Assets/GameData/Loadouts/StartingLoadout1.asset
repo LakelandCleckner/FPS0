@@ -34,3 +34,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6056bcc68ed26c345bc091daac9ae2d0, type: 2}
   - {fileID: 11400000, guid: 11f728149b10e3848b615af796ed723d, type: 2}
   - {fileID: 11400000, guid: 5b1f3396280b76a47ac4ec7c0f3c1e46, type: 2}
+  randomize: 1
+  weaponPool: []
+  armorPool: []
+  randomCarriedWeapons: 6
+  randomCarriedArmor: 5

@@ -79,6 +79,8 @@ namespace Combat.Loadout
                 foreach (var p in startingLoadout.ammoPools)
                     inventory.SetAmmo(p.pool, p.amount);
 
+            if (startingLoadout.randomize) { RandomFill(); return; }
+
             var equipped = startingLoadout.equipped;
             if (equipped != null)
             {
@@ -117,6 +119,56 @@ namespace Combat.Loadout
 
             foreach (var def in startingLoadout.carriedArmor)
                 if (def != null) AddCarriedArmor(def);
+        }
+
+        // Testing: a random allowed weapon per slot (no repeats while possible), a random piece per armor slot, random carried extras.
+        private void RandomFill()
+        {
+            var weaponPool = startingLoadout.WeaponPool();
+            var armorPool = startingLoadout.ArmorPool();
+            weaponPool.RemoveAll(w => w.archetype == null);
+            var used = new List<WeaponSO>();
+
+            for (int i = 0; i < weapons.Length; i++)
+            {
+                int slot = i;
+                var def = Pick(weaponPool, w => LoadoutSlots.Allows(w.AllowedSlots, slot) && !used.Contains(w))
+                       ?? Pick(weaponPool, w => LoadoutSlots.Allows(w.AllowedSlots, slot));
+                if (def == null) continue;
+                used.Add(def);
+                weapons[i] = new WeaponInstance(def, StartRoll());
+            }
+
+            for (int i = 0; i < armor.Length; i++)
+            {
+                var slot = armorSlots[i];
+                var def = Pick(armorPool, a => a.slot == slot);
+                if (def != null) armor[i] = new ArmorInstance(def, StartRoll());
+            }
+
+            if (inventory == null) return;
+            for (int n = 0; n < startingLoadout.randomCarriedWeapons; n++)
+            {
+                var def = Pick(weaponPool, null);
+                if (def != null) inventory.TryAddWeapon(new WeaponInstance(def, StartRoll()));
+            }
+            for (int n = 0; n < startingLoadout.randomCarriedArmor; n++)
+            {
+                var def = Pick(armorPool, a => ArmorSlotIndex(a.slot) >= 0);
+                if (def != null) inventory.TryAddArmor(new ArmorInstance(def, StartRoll()));
+            }
+        }
+
+        private static T Pick<T>(List<T> pool, Predicate<T> ok) where T : class
+        {
+            int count = 0;
+            T chosen = null;
+            foreach (var x in pool)
+            {
+                if (ok != null && !ok(x)) continue;
+                if (UnityEngine.Random.Range(0, ++count) == 0) chosen = x;   // reservoir pick, uniform
+            }
+            return chosen;
         }
 
         private RollMode StartRoll() => startingLoadout != null ? startingLoadout.rollMode : RollMode.Random;

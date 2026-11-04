@@ -14,12 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: {fileID: 11400000, guid: 46e6b4025aafbfd46872417326676d04, type: 2}
   id: burster390sidearm
-  displayName: Burster 389
+  displayName: Burster
   viewmodel: {fileID: 11400000, guid: a57c3dcab586db94e9a2916da06e2ebb, type: 2}
   viewmodelSkin: []
   defaultShader: {fileID: 11400000, guid: 6afe353b48cc3a646bf6665295d7e8a2, type: 2}
   overrideSlots: 0
   allowedSlotsOverride: -1
+  overrideInventorySlot: 0
+  inventorySlotOverride: 0
   baseDamageType: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
   weaponDamageDelta: 0
   roundsPerMinuteDelta: 0

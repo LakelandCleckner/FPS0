@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponType: {fileID: 11400000, guid: da0d96b685ab47c42b674412116a8621, type: 2}
   id: spraying_smg
-  displayName: Spraying Submachinegun
+  displayName: SprayingSMG
   baseAdsTime: 0.3
   adsZoom: 1.15
   adsCurve:
@@ -43,6 +43,23 @@ MonoBehaviour:
     m_RotationOrder: 4
   adsExitFraction: 1
   adsMoveSpeedMultiplier: 0.8
+  range: 40
+  falloffStartAtMinRange: 10
+  falloffStartAtMaxRange: 18
+  falloffEndMultiplier: 1.6
+  minDamagePercent: 0.5
+  hipFalloffMultiplier: 0.85
+  falloffCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  aimAssist: 60
+  assistAngleAtMin: 0.5
+  assistAngleAtMax: 1.5
+  assistHipMultiplier: 0.8
+  assistDistanceMultiplier: 1
   weaponDamage: 12
   roundsPerMinute: 600
   reloadStyle: 0
@@ -52,6 +69,7 @@ MonoBehaviour:
   magazineSize: 35
   reloadTime: 1.3
   infiniteReserves: 0
+  ammoPool: {fileID: 0}
   handling: 26
   baseEquipTime: 0.5
   baseStowTime: 0.4

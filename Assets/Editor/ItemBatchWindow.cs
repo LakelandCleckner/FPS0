@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
@@ -14,7 +15,7 @@ using Combat.Weapons;
 //   Armor:     Name[, Name] | slot [| intrinsic=Perk, Perk]
 //   Weapons:    Name[, Name] | archetype [| key=value ...]
 //   Archetypes: Name[, Name] | type [| key=value ...]
-// Only fields written in a line are set, so updating an existing asset keeps everything else.
+// Any other key is a field on the asset by name (falloffStartAtMinRange=16). Only written fields are set.
 // Roll columns are assigned with Perk Pool Batch.
 public class ItemBatchWindow : EditorWindow
 {
@@ -32,6 +33,7 @@ public class ItemBatchWindow : EditorWindow
         public DeliverySO Delivery;
         public AmmoPoolSO Pool;
         public bool ClearPool;
+        public List<(string path, string value)> Fields = new List<(string, string)>();
         public string Path;
         public bool Exists;
     }
@@ -43,7 +45,11 @@ public class ItemBatchWindow : EditorWindow
     private static readonly string[] ArchNumberKeys = { "damage", "rpm", "mag", "reload", "handling", "zoom", "range", "aa", "ads", "equip", "stow" };
     private static readonly HashSet<string> ArmorKeys = new HashSet<string> { "intrinsic" };
     private static readonly HashSet<string> WeaponKeys = new HashSet<string>(DeltaKeys) { "intrinsic", "from", "element", "reserves" };
-    private static readonly HashSet<string> ArchKeys = new HashSet<string>(ArchNumberKeys) { "from", "behavior", "delivery", "reloadstyle", "infinite", "pool" };
+    private static readonly HashSet<string> ArchKeys = new HashSet<string>(ArchNumberKeys) { "from", "behavior", "delivery", "firemode", "reloadstyle", "infinite", "pool" };
+    // Fields the generic keys never touch: identity and the group column.
+    private static readonly HashSet<string> NoGeneric = new HashSet<string> { "m_Script", "id", "slot", "archetype", "weaponType" };
+    private static readonly Dictionary<Type, Dictionary<string, string>> fieldIndex = new Dictionary<Type, Dictionary<string, string>>();
+
     private static readonly Regex OptionPattern = new Regex(@"(\w+)\s*=\s*(.*?)(?=\s+\w+\s*=|$)");
 
     [SerializeField] private Kind kind = Kind.Armor;
@@ -79,7 +85,7 @@ public class ItemBatchWindow : EditorWindow
         if (EditorGUI.EndChangeCheck()) Reparse();
 
         EditorGUILayout.HelpBox(Help(), MessageType.None);
-        EditorGUILayout.LabelField("Only fields in a line are written. Lines starting with # are ignored.", EditorStyles.miniLabel);
+        EditorGUILayout.LabelField("Any other key is a field by name (falloffStartAtMinRange=16, displayName=New Name). Only written fields are set. # lines are ignored.", EditorStyles.miniLabel);
 
         using (new EditorGUILayout.HorizontalScope())
         {
@@ -116,7 +122,7 @@ public class ItemBatchWindow : EditorWindow
                        "New weapons get their type's default viewmodel and shader. from= copies viewmodel, skin, shader, element, audio and reserves instead.";
             default:
                 return "Name[, Name] | type [| key=value ...]\n" +
-                       "Keys (absolute values): damage rpm mag reload handling zoom range aa ads equip stow, behavior=, delivery=, reloadstyle=magazine|pershell, infinite=true|false, pool=Pool|none, from=Archetype\n" +
+                       "Keys (absolute values): damage rpm mag reload handling zoom range aa ads equip stow, behavior=, delivery=, firemode=Label, reloadstyle=magazine|pershell, infinite=true|false, pool=Pool|none, from=Archetype\n" +
                        "from= copies every other field (falloff, curves, fire mode, crosshair). Saved to Weapons/<Type>/_Archetypes/<Name>.";
         }
     }
@@ -200,6 +206,8 @@ public class ItemBatchWindow : EditorWindow
         var options = ParseOptions(parts.Length > 2 ? string.Join(" ", parts, 2, parts.Length - 2) : "");
         var template = new Parsed { Group = groupAsset };
         foreach (var kv in options) template.Options[kv.Key] = kv.Value;
+        template.Fields = GenericOptions(options);
+        ValidateFields(AssetType, template.Fields);
 
         if (options.TryGetValue("intrinsic", out var list))
         {
@@ -242,7 +250,8 @@ public class ItemBatchWindow : EditorWindow
             var p = new Parsed
             {
                 Name = name, Group = groupAsset, Intrinsic = template.Intrinsic, From = template.From, Element = template.Element,
-                Behavior = template.Behavior, Delivery = template.Delivery, Pool = template.Pool, ClearPool = template.ClearPool
+                Behavior = template.Behavior, Delivery = template.Delivery, Pool = template.Pool, ClearPool = template.ClearPool,
+                Fields = template.Fields
             };
             foreach (var kv in template.Options) p.Options[kv.Key] = kv.Value;
 
@@ -273,17 +282,172 @@ public class ItemBatchWindow : EditorWindow
         s = s.Trim();
         if (s.Length == 0) return result;
 
-        var allowed = kind == Kind.Armor ? ArmorKeys : kind == Kind.Weapon ? WeaponKeys : ArchKeys;
         var matches = OptionPattern.Matches(s);
         if (matches.Count == 0 || matches[0].Index != 0) throw new FormatException($"expected key=value, got '{s}'");
         foreach (Match m in matches)
         {
-            string key = m.Groups[1].Value.ToLowerInvariant();
-            if (!allowed.Contains(key)) throw new FormatException($"unknown key '{key}'");
-            if (result.ContainsKey(key)) throw new FormatException($"'{key}' given twice");
+            string key = Key(m.Groups[1].Value);
+            if (!Shorthands.Contains(key) && !Fields(AssetType).ContainsKey(key))
+                throw new FormatException($"unknown key '{m.Groups[1].Value}' (not a shorthand or a field on {AssetType.Name})");
+            if (result.ContainsKey(key)) throw new FormatException($"'{m.Groups[1].Value}' given twice");
             result[key] = m.Groups[2].Value.Trim();
         }
         return result;
+    }
+
+    private HashSet<string> Shorthands => kind == Kind.Armor ? ArmorKeys : kind == Kind.Weapon ? WeaponKeys : ArchKeys;
+    private Type AssetType => kind == Kind.Armor ? typeof(ArmorSO) : kind == Kind.Weapon ? typeof(WeaponSO) : typeof(WeaponArchetypeSO);
+
+    // ------------------------------------------------------------------ generic fields
+
+    // Top-level fields settable from text, by normalised key: numbers, bools, enums, text and asset references.
+    private static Dictionary<string, string> Fields(Type type)
+    {
+        if (fieldIndex.TryGetValue(type, out var map)) return map;
+        map = new Dictionary<string, string>();
+        var probe = CreateInstance(type);
+        try
+        {
+            var it = new SerializedObject(probe).GetIterator();
+            for (bool enter = true; it.NextVisible(enter); enter = false)
+            {
+                if (NoGeneric.Contains(it.name)) continue;
+                switch (it.propertyType)
+                {
+                    case SerializedPropertyType.Float: case SerializedPropertyType.Integer: case SerializedPropertyType.Boolean:
+                    case SerializedPropertyType.Enum: case SerializedPropertyType.String: case SerializedPropertyType.ObjectReference:
+                        map[Key(it.name)] = it.name;
+                        break;
+                }
+            }
+        }
+        finally { DestroyImmediate(probe); }
+        fieldIndex[type] = map;
+        return map;
+    }
+
+    // Keys on the line that aren't shorthands, as (property path, value).
+    private List<(string path, string value)> GenericOptions(Dictionary<string, string> options)
+    {
+        var list = new List<(string, string)>();
+        foreach (var kv in options)
+            if (!Shorthands.Contains(kv.Key)) list.Add((Fields(AssetType)[kv.Key], kv.Value));
+        return list;
+    }
+
+    // Parses without saving, so a bad value is an error before Apply.
+    private static void ValidateFields(Type type, List<(string path, string value)> fields)
+    {
+        if (fields.Count == 0) return;
+        var probe = CreateInstance(type);
+        try
+        {
+            var so = new SerializedObject(probe);
+            foreach (var f in fields) Write(so.FindProperty(f.path), FieldOf(type, f.path), f.value);
+        }
+        finally { DestroyImmediate(probe); }
+    }
+
+    private static void ApplyFields(ScriptableObject asset, List<(string path, string value)> fields)
+    {
+        if (fields.Count == 0) return;
+        var so = new SerializedObject(asset);
+        foreach (var f in fields) Write(so.FindProperty(f.path), FieldOf(asset.GetType(), f.path), f.value);
+        so.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void Write(SerializedProperty prop, FieldInfo field, string value)
+    {
+        switch (prop.propertyType)
+        {
+            case SerializedPropertyType.Float: prop.floatValue = Number(value, prop.name); break;
+            case SerializedPropertyType.Integer:
+                if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i))
+                    throw new FormatException($"{prop.name}: '{value}' is not a whole number");
+                prop.intValue = i;
+                break;
+            case SerializedPropertyType.Boolean: prop.boolValue = ParseBool(value, prop.name); break;
+            case SerializedPropertyType.String: prop.stringValue = value; break;
+            case SerializedPropertyType.Enum:
+            {
+                var t = field.FieldType;
+                bool flags = t.IsDefined(typeof(FlagsAttribute), false);
+                int result = 0;
+                foreach (var raw in value.Split(','))
+                {
+                    if (raw.Trim().Length == 0) continue;
+                    int v = EnumValue(t, raw.Trim(), prop.name);
+                    if (!flags) { result = v; break; }
+                    result |= v;
+                }
+                if (flags) prop.enumValueFlag = result;
+                else prop.enumValueIndex = Array.IndexOf(Enum.GetValues(t), Enum.ToObject(t, result));
+                break;
+            }
+            case SerializedPropertyType.ObjectReference:
+                prop.objectReferenceValue = Key(value) == "none" ? null : AssetByName(field.FieldType, value, prop.name);
+                break;
+            default: throw new FormatException($"{prop.name} can't be set from text");
+        }
+    }
+
+    private static string Read(SerializedProperty prop, FieldInfo field)
+    {
+        switch (prop.propertyType)
+        {
+            case SerializedPropertyType.Float: return prop.floatValue.ToString(CultureInfo.InvariantCulture);
+            case SerializedPropertyType.Integer: return prop.intValue.ToString(CultureInfo.InvariantCulture);
+            case SerializedPropertyType.Boolean: return prop.boolValue ? "true" : "false";
+            case SerializedPropertyType.String: return string.IsNullOrEmpty(prop.stringValue) ? null : prop.stringValue;
+            case SerializedPropertyType.ObjectReference: return prop.objectReferenceValue != null ? prop.objectReferenceValue.name : "none";
+            case SerializedPropertyType.Enum:
+            {
+                var t = field.FieldType;
+                var names = Enum.GetNames(t);
+                if (!t.IsDefined(typeof(FlagsAttribute), false))
+                    return names[Mathf.Clamp(prop.enumValueIndex, 0, names.Length - 1)].ToLowerInvariant();
+                int flags = prop.enumValueFlag;
+                var on = new List<string>();
+                foreach (var n in names)
+                {
+                    int v = Convert.ToInt32(Enum.Parse(t, n));
+                    if (v != 0 && (v & (v - 1)) == 0 && (flags & v) == v) on.Add(n.ToLowerInvariant());
+                }
+                return on.Count > 0 ? string.Join(",", on) : "none";
+            }
+            default: return null;
+        }
+    }
+
+    private static int EnumValue(Type t, string name, string field)
+    {
+        foreach (var n in Enum.GetNames(t))
+            if (Key(n) == Key(name)) return Convert.ToInt32(Enum.Parse(t, n));
+        throw new FormatException($"{field}: '{name}' is not one of {string.Join(", ", Enum.GetNames(t))}");
+    }
+
+    // An asset of the field's type by file name. Prefabs for GameObject fields.
+    private static UnityEngine.Object AssetByName(Type type, string name, string field)
+    {
+        string filter = type == typeof(GameObject) ? "t:Prefab" : "t:" + type.Name;
+        foreach (var guid in AssetDatabase.FindAssets(filter))
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            if (Key(System.IO.Path.GetFileNameWithoutExtension(path)) != Key(name)) continue;
+            var a = AssetDatabase.LoadAssetAtPath(path, type);
+            if (a != null) return a;
+        }
+        throw new FormatException($"{field}: no {type.Name} named '{name}'");
+    }
+
+    private static FieldInfo FieldOf(Type type, string path)
+    {
+        for (var t = type; t != null; t = t.BaseType)
+        {
+            var f = t.GetField(path, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            if (f != null) return f;
+        }
+        return null;
     }
 
     private static T Find<T>(Dictionary<string, T> map, string name, string what)
@@ -331,6 +495,7 @@ public class ItemBatchWindow : EditorWindow
             if (kind == Kind.Armor) asset = ApplyArmor(p);
             else if (kind == Kind.Weapon) asset = ApplyWeapon(p);
             else asset = ApplyArchetype(p);
+            ApplyFields(asset, p.Fields);
 
             if (p.Exists) { EditorUtility.SetDirty(asset); updated++; }
             else { AssetDatabase.CreateAsset(asset, p.Path); created++; }
@@ -436,6 +601,7 @@ public class ItemBatchWindow : EditorWindow
         if (a.primaryFire == null) a.primaryFire = new FireMode();
         if (p.Behavior != null) a.primaryFire.behavior = p.Behavior;
         if (p.Delivery != null) a.primaryFire.delivery = p.Delivery;
+        if (o.TryGetValue("firemode", out v)) a.primaryFire.displayName = v;
         if (p.Pool != null) a.ammoPool = p.Pool;
         if (p.ClearPool) a.ammoPool = null;
         return a;
@@ -479,16 +645,18 @@ public class ItemBatchWindow : EditorWindow
         {
             foreach (var a in FindAll<WeaponArchetypeSO>(WeaponRoot))
             {
+                // Every field, so each frame's full set is visible, nothing left on a hidden default.
                 sb.Append(NameOf(a.displayName, a)).Append(" | ").Append(a.weaponType != null ? a.weaponType.name : "?").Append(" |");
-                Val(sb, "damage", a.weaponDamage); Val(sb, "rpm", a.roundsPerMinute); Val(sb, "mag", a.magazineSize);
-                Val(sb, "reload", a.reloadTime); Val(sb, "handling", a.handling); Val(sb, "zoom", a.adsZoom);
-                Val(sb, "range", a.range); Val(sb, "aa", a.aimAssist); Val(sb, "ads", a.baseAdsTime);
-                Val(sb, "equip", a.baseEquipTime); Val(sb, "stow", a.baseStowTime);
                 if (a.primaryFire != null && a.primaryFire.behavior != null) sb.Append(" behavior=").Append(a.primaryFire.behavior.name);
                 if (a.primaryFire != null && a.primaryFire.delivery != null) sb.Append(" delivery=").Append(a.primaryFire.delivery.name);
-                if (a.reloadStyle == ReloadStyle.PerShell) sb.Append(" reloadstyle=pershell");
-                if (a.infiniteReserves) sb.Append(" infinite=true");
-                if (a.ammoPool != null) sb.Append(" pool=").Append(a.ammoPool.name);
+                if (a.primaryFire != null && !string.IsNullOrEmpty(a.primaryFire.displayName)) sb.Append(" firemode=").Append(a.primaryFire.displayName);
+                var so = new SerializedObject(a);
+                foreach (var path in Fields(typeof(WeaponArchetypeSO)).Values)
+                {
+                    if (path == "displayName") continue;
+                    string v = Read(so.FindProperty(path), FieldOf(typeof(WeaponArchetypeSO), path));
+                    if (v != null) sb.Append(' ').Append(path).Append('=').Append(v);
+                }
                 sb.Append('\n');
             }
         }

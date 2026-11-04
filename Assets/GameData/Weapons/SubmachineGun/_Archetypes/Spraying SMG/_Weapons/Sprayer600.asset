@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetype: {fileID: 11400000, guid: 2fcf86a77fb196e4f9afdcff842e2d16, type: 2}
   id: sprayer600
-  displayName: Sprayer 600
+  displayName: Sprayer
   viewmodel: {fileID: 11400000, guid: 6fdf17251f0799d4e9b0d56e286bbddb, type: 2}
   viewmodelSkin: []
   defaultShader: {fileID: 11400000, guid: 6afe353b48cc3a646bf6665295d7e8a2, type: 2}

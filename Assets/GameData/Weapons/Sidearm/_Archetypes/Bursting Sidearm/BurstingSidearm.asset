@@ -14,12 +14,65 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponType: {fileID: 11400000, guid: 478ca46d3d8c5f84b8e85cfe255d8678, type: 2}
   id: sidearm_bursting
-  displayName: Bursting Sidearm
+  displayName: BurstingSidearm
+  baseAdsTime: 0.22
+  adsZoom: 1.15
+  adsCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  adsExitFraction: 1
+  adsMoveSpeedMultiplier: 0.8
+  range: 50
+  falloffStartAtMinRange: 14
+  falloffStartAtMaxRange: 22
+  falloffEndMultiplier: 1.6
+  minDamagePercent: 0.5
+  hipFalloffMultiplier: 0.85
+  falloffCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  aimAssist: 55
+  assistAngleAtMin: 0.5
+  assistAngleAtMax: 1.5
+  assistHipMultiplier: 0.8
+  assistDistanceMultiplier: 1
   weaponDamage: 5
   roundsPerMinute: 390
+  reloadStyle: 0
+  shellStartFraction: 0.15
+  shellEndFraction: 0.2
+  interruptReadyFraction: 0.3
   magazineSize: 30
   reloadTime: 1.5
   infiniteReserves: 0
+  ammoPool: {fileID: 0}
+  handling: 0
+  baseEquipTime: 0.45
+  baseStowTime: 0.35
   primaryFire:
     displayName: 3 Round Burst Projectile
     behavior: {fileID: 11400000, guid: 37003e9df8d84844b9f369e9b64d5c0b, type: 2}

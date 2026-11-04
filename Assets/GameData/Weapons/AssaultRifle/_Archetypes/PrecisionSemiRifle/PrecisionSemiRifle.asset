@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1beabed67d81c843a00ec904d9d8961, type: 3}
+  m_Name: PrecisionSemiRifle
+  m_EditorClassIdentifier: 
+  weaponType: {fileID: 11400000, guid: 20f04e02e595b0347bac6a3f73768bd7, type: 2}
+  id: precision_semi_rifle
+  displayName: Precision Semi Rifle
+  baseAdsTime: 0.35
+  adsZoom: 3.5
+  adsCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  adsExitFraction: 1
+  adsMoveSpeedMultiplier: 0.8
+  range: 70
+  falloffStartAtMinRange: 30
+  falloffStartAtMaxRange: 55
+  falloffEndMultiplier: 1.8
+  minDamagePercent: 0.65
+  hipFalloffMultiplier: 0.85
+  falloffCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  aimAssist: 40
+  assistAngleAtMin: 0.5
+  assistAngleAtMax: 1.5
+  assistHipMultiplier: 0.8
+  assistDistanceMultiplier: 1
+  weaponDamage: 38
+  roundsPerMinute: 180
+  reloadStyle: 0
+  shellStartFraction: 0.15
+  shellEndFraction: 0.2
+  interruptReadyFraction: 0.3
+  magazineSize: 16
+  reloadTime: 2.4
+  infiniteReserves: 0
+  ammoPool: {fileID: 0}
+  handling: 35
+  baseEquipTime: 0.65
+  baseStowTime: 0.5
+  primaryFire:
+    displayName: Semi Auto
+    behavior: {fileID: 11400000, guid: e994552d4c33e474fbaf1138181dc5b5, type: 2}
+    delivery: {fileID: 11400000, guid: b38b61e8f021d194e886619c1acbd934, type: 2}
+    deliveryOverrides: []
+  crosshairPrefab: {fileID: 6358792504129393579, guid: f65e2aca27d6353489d3b57cde01da47, type: 3}
