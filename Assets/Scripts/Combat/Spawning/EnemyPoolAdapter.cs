@@ -6,9 +6,10 @@ using Combat.Feedback;
 namespace Combat.Spawning
 {
     // Coordinates an enemy's pooling: death-to-pool return, nav reset, damage-number
-    // reset with a per-life generation. The return is deferred to end of frame so the
-    // killing hit's full resolution — including the Reaction phase, where an on-kill
-    // explosion reads this victim's still-live status pools for transfer — completes
+    // reset with a per-life generation. With an EnemyRagdoll the corpse decides when to
+    // return; otherwise the return is deferred to end of frame so the
+    // killing hit's full resolution -- including the Reaction phase, where an on-kill
+    // explosion reads this victim's still-live status pools for transfer -- completes
     // before the enemy tears down.
     [RequireComponent(typeof(CombatantHealth))]
     public class EnemyPoolAdapter : MonoBehaviour, IPoolable
@@ -18,6 +19,7 @@ namespace Combat.Spawning
         private CombatantHealth health;
         private NavMeshAgent agent;
         private ICombatant combatant;
+        private Combat.Enemies.EnemyRagdoll ragdoll;
 
         private EnemySpawner spawner;
         private string typeId;
@@ -31,6 +33,7 @@ namespace Combat.Spawning
             health = GetComponent<CombatantHealth>();
             agent = GetComponent<NavMeshAgent>();
             combatant = GetComponent<ICombatant>();
+            ragdoll = GetComponent<Combat.Enemies.EnemyRagdoll>();
         }
 
         private void OnEnable()
@@ -77,7 +80,10 @@ namespace Combat.Spawning
             if (returning) return;
             returning = true;
 
-            // Defer to end of frame so the current hit resolution finishes first —
+            // A ragdoll keeps the corpse and calls Release when it's done with it
+            if (ragdoll != null && ragdoll.isActiveAndEnabled) return;
+
+            // Defer to end of frame so the current hit resolution finishes first --
             // including its Reaction phase, where an on-kill explosion reads this
             // victim's still-live status pools (transfer). Returning synchronously here
             // would clear the pools mid-resolution, before the explosion reads them.
@@ -90,7 +96,12 @@ namespace Combat.Spawning
         private System.Collections.IEnumerator ReturnAtEndOfFrame()
         {
             yield return new WaitForEndOfFrame();
+            Release();
+        }
 
+        // Back to the pool (or destroyed when not pooled)
+        public void Release()
+        {
             if (spawner != null && handle != null)
                 spawner.Despawn(typeId, handle);
             else

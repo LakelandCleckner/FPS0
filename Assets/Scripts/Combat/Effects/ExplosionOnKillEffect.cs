@@ -10,24 +10,24 @@ namespace Combat.Effects
     // to each. Produced by ExplosionOnKillSO.
     //
     // It is a REACTION-phase effect, so it runs after the Application-phase damage that
-    // set WasKill — it reads the kill the same resolution produced.
+    // set WasKill -- it reads the kill the same resolution produced.
     //
     // The blast is SIBLINGS, not chain links: one detonation striking everyone in
     // radius at the parent's depth, full damage. (A version that chains explosions off
     // each kill would use EnqueueChainLinks and is a later effect.) Deferred through
     // the resolver, so the victim's own damage number and Kill event land BEFORE the
-    // blast's — the reason the primitive is a queue and not a synchronous cascade.
+    // blast's -- the reason the primitive is a queue and not a synchronous cascade.
     //
     // STATELESS BY CONTRACT except the NeighbourFinder's scratch buffer, so
     // ExplosionOnKillSO returns a fresh instance (RequiresFreshInstance) rather than a
-    // shared singleton — two weapons detonating in the same frame must not share the
+    // shared singleton -- two weapons detonating in the same frame must not share the
     // overlap buffer. All per-hit data still lives on the context; nothing here holds
     // target state between detonations.
     public class ExplosionOnKillEffect : IHitEffect
     {
         public EffectPhase Phase => EffectPhase.Reaction;
 
-        // This effect does not itself carry forward to a chain link — an explosion
+        // This effect does not itself carry forward to a chain link -- an explosion
         // shouldn't recursively re-arm on its OWN splash hits via the effect list. If
         // the splash kills and should re-detonate, that's the depth-capped chain path,
         // authored deliberately, not this flag.
@@ -49,7 +49,7 @@ namespace Combat.Effects
         private NeighbourFinder finder;
         private readonly List<ICombatant> found = new List<ICombatant>(16);
 
-        // The blast's effect list. Built ONCE — the effects are stateless, so the same
+        // The blast's effect list. Built ONCE -- the effects are stateless, so the same
         // DamageHitEffect (and optional ApplyStatusHitEffect) serve every detonation.
         private readonly List<IHitEffect> blastEffects;
 
@@ -97,7 +97,7 @@ namespace Combat.Effects
                 ? ((MonoBehaviour)ctx.Target).transform.position
                 : ctx.HitPoint;
 
-            // VFX: one blast at the origin. Placeholder Instantiate/Destroy — replace
+            // VFX: one blast at the origin. Placeholder Instantiate/Destroy -- replace
             // with a pool when one exists. Spawned even if no targets are found, so the
             // explosion still reads visually against a lone enemy.
             if (blastVfx != null)
@@ -125,7 +125,10 @@ namespace Combat.Effects
                     vfxLifetime > 0f ? vfxLifetime : 0.4f, placeholderColor);
             }
 
-            // The cascade's shared dedup set, SEEDED WITH THE VICTIM — this is the
+            // Throws corpses in the radius, including the victim's
+            Combat.Enemies.EnemyRagdoll.Blast(center, radius);
+
+            // The cascade's shared dedup set, SEEDED WITH THE VICTIM -- this is the
             // on-kill case, so the blast must not try to hit the corpse that triggered
             // it. (An on-hit arc across living enemies would seed empty; this doesn't.)
             var alreadyHit = new HashSet<ICombatant> { ctx.Target };

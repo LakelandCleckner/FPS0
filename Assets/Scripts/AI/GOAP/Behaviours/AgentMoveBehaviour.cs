@@ -44,7 +44,11 @@ namespace GOAPGettingStarted.Behaviours
 
         private void Start() => ring = FindFirstObjectByType<SurroundRing>();
 
-        private void OnDisable() => ResetApproach();
+        private void OnDisable()
+        {
+            UnsubscribeAgent();
+            ResetApproach();
+        }
 
         // Back to plain movement: path rotation, normal priority, default stopping distance
         private void ResetApproach()
@@ -65,43 +69,57 @@ namespace GOAPGettingStarted.Behaviours
             nav.updateRotation = !on;
         }
 
+        // Named handlers so each enable/disable pairs up (lambdas stacked up every respawn)
         private void OnEnable()
         {
-            agent.Events.OnTargetInRange += _ =>
-            {
-                //Don't stop moving for TransformTargets - player will move 
-                if (currentTarget is TransformTarget)
-                    return;
+            agent.Events.OnTargetInRange += HandleTargetInRange;
+            agent.Events.OnTargetChanged += HandleTargetChanged;
+            agent.Events.OnTargetNotInRange += HandleTargetNotInRange;
+            agent.Events.OnTargetLost += HandleTargetLost;
+        }
 
-                shouldMove = false;
-                if (nav.isActiveAndEnabled && nav.isOnNavMesh)
-                    nav.ResetPath();
-            };
+        private void UnsubscribeAgent()
+        {
+            agent.Events.OnTargetInRange -= HandleTargetInRange;
+            agent.Events.OnTargetChanged -= HandleTargetChanged;
+            agent.Events.OnTargetNotInRange -= HandleTargetNotInRange;
+            agent.Events.OnTargetLost -= HandleTargetLost;
+        }
 
-            agent.Events.OnTargetChanged += (t, inRange) =>
-            {
-                currentTarget = t;
-                // A live target (the player) moves, so never stop chasing it on "in range"
-                shouldMove = t is TransformTarget || !inRange;
-                if (shouldMove)
-                    nav.SetDestination(currentTarget.Position);
-            };
+        private void HandleTargetInRange(ITarget _)
+        {
+            //Don't stop moving for TransformTargets - player will move
+            if (currentTarget is TransformTarget)
+                return;
 
-            agent.Events.OnTargetNotInRange += _ =>
-            {
-                shouldMove = true;
-                if (currentTarget != null && nav.isActiveAndEnabled && nav.isOnNavMesh)
-                    nav.SetDestination(currentTarget.Position);
-            };
+            shouldMove = false;
+            if (nav.isActiveAndEnabled && nav.isOnNavMesh)
+                nav.ResetPath();
+        }
 
-            agent.Events.OnTargetLost += () =>
-            {
-                currentTarget = null;
-                ResetApproach();
-                shouldMove = false;
-                if (nav.isActiveAndEnabled && nav.isOnNavMesh)
-                    nav.ResetPath();
-            };
+        private void HandleTargetChanged(ITarget t, bool inRange)
+        {
+            currentTarget = t;
+            // A live target (the player) moves, so never stop chasing it on "in range"
+            shouldMove = t is TransformTarget || !inRange;
+            if (shouldMove && nav.isActiveAndEnabled && nav.isOnNavMesh)
+                nav.SetDestination(currentTarget.Position);
+        }
+
+        private void HandleTargetNotInRange(ITarget _)
+        {
+            shouldMove = true;
+            if (currentTarget != null && nav.isActiveAndEnabled && nav.isOnNavMesh)
+                nav.SetDestination(currentTarget.Position);
+        }
+
+        private void HandleTargetLost()
+        {
+            currentTarget = null;
+            ResetApproach();
+            shouldMove = false;
+            if (nav.isActiveAndEnabled && nav.isOnNavMesh)
+                nav.ResetPath();
         }
 
         private void Update()

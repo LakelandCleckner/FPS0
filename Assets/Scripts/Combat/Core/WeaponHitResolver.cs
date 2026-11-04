@@ -168,7 +168,13 @@ namespace Combat.Core
         public void ResolveHit(HitContext ctx)
         {
             if (ctx.Target == null) { LogSkipped(ctx, "no target"); return; }
-            if (ctx.Target.IsDying) { LogSkipped(ctx, "target dying"); return; }
+            if (ctx.Target.IsDying)
+            {
+                // Shot into a corpse: push it, no damage or effects
+                Combat.Enemies.EnemyRagdoll.PushFromHit(ctx, false);
+                LogSkipped(ctx, "target dying");
+                return;
+            }
 
             // CRIT ROLL  once per hit, BEFORE effects apply. UNIVERSAL: every
             // resolution flowing through here can crit (direct hits, DOT ticks,
@@ -237,6 +243,9 @@ namespace Combat.Core
             // back to THIS call's nesting level, so d1+ lines are nested resolutions
             // (e.g. a burn's instant first tick, which logs before its parent shot).
             LogResolved(ctx);
+
+            // Killing shot throws the ragdoll
+            if (ctx.WasKill) Combat.Enemies.EnemyRagdoll.PushFromHit(ctx, true);
 
             if (playFeedback && ctx.DamageDealt > 0f)
                 ShowFeedback(ctx);
