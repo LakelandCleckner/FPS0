@@ -23,8 +23,11 @@ namespace Combat.Status
     //  - Diagnostic logging routes through StatusLog, which compiles away entirely
     //    (including the string interpolation at the call site) unless STATUS_DEBUG is
     //    defined in Player Settings > Scripting Define Symbols.
-    public class EffectStackPool
+    public class EffectStackPool : IStatSourceLabel
     {
+        public string StatSourceLabel
+            => Status == null ? "Status" : entries.Count > 1 ? Status.name + " x" + entries.Count : Status.name;
+
         // Safety cap when a status leaves maxEntries at 0
         public const int HardEntryCap = 256;
         private static readonly HashSet<StatusSO> warnedUncapped = new HashSet<StatusSO>();

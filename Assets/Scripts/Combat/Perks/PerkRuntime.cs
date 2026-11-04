@@ -38,13 +38,45 @@ namespace Combat.Perks
     }
 
     // Per-item perk instance: holds state, hooks events, timers and modifiers. Detach cleans everything up.
-    public abstract class PerkRuntime
+    public abstract class PerkRuntime : IStatSourceLabel
     {
         // Raised when any perk's HUD status changes, including on detach.
         public static event Action<PerkRuntime> AnyStatusChanged;
 
+        // Every attached runtime, in attach order.
+        private static readonly List<PerkRuntime> live = new List<PerkRuntime>();
+        public static IReadOnlyList<PerkRuntime> Live => live;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => live.Clear();
+
         public PerkSO Perk => Definition;
         public bool Detached { get; private set; }
+
+        // The WeaponInstance or ArmorInstance this perk is on.
+        public object SourceItem => Ctx != null ? Ctx.Item : null;
+
+        // "Perk (Item)" for stat breakdowns.
+        public string StatSourceLabel
+        {
+            get
+            {
+                string perk = Definition == null ? "Perk"
+                    : string.IsNullOrWhiteSpace(Definition.displayName) ? Definition.name : Definition.displayName;
+                string item = ItemName(SourceItem);
+                return string.IsNullOrEmpty(item) ? perk : perk + " (" + item + ")";
+            }
+        }
+
+        private static string ItemName(object item)
+        {
+            ScriptableObject def = null;
+            string display = null;
+            if (item is WeaponInstance w && w.Definition != null) { def = w.Definition; display = w.Definition.displayName; }
+            else if (item is Combat.Armor.ArmorInstance a && a.Definition != null) { def = a.Definition; display = a.Definition.displayName; }
+            if (def == null) return "";
+            return string.IsNullOrWhiteSpace(display) ? def.name : display;
+        }
 
         // Armour perks, or a weapon perk whose weapon is in hand. The HUD dims the rest.
         public bool InHand => Ctx != null && (Ctx.IsArmor || Ctx.IsHeld);
@@ -84,6 +116,7 @@ namespace Combat.Perks
             Ctx = ctx;
             Detached = false;
             OnAttach();
+            live.Add(this);   // after OnAttach so a throwing attach isn't left listed
             NotifyStatus();
         }
 
@@ -97,6 +130,7 @@ namespace Combat.Perks
             if (Ctx.Clock != null) Ctx.Clock.CancelAll(this);
 
             Detached = true;
+            live.Remove(this);
             NotifyStatus();
         }
 

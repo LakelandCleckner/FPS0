@@ -20,5 +20,5 @@ MonoBehaviour:
   minValue: 0
   useMax: 1
   maxValue: 1
-  isPercent: 0
+  isPercent: 1
   displayDecimals: 0

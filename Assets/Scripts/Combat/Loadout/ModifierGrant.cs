@@ -34,8 +34,10 @@ namespace Combat.Loadout
     }
 
     // One modifier a loadout source (armour, later perks) wants applied while its conditions hold.
-    public sealed class ModifierGrant
+    public sealed class ModifierGrant : IStatSourceLabel
     {
+        public string StatSourceLabel => StatSource.Label(Owner);
+
         public readonly object Owner;
         public readonly StatDefinitionSO Stat;
         public readonly string BucketId;

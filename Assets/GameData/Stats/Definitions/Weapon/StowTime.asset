@@ -21,4 +21,5 @@ MonoBehaviour:
   useMax: 0
   maxValue: 0
   isPercent: 0
-  displayDecimals: 0
+  displayDecimals: 2
+  lowerIsBetter: 1

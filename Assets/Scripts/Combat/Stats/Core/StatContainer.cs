@@ -304,6 +304,38 @@ namespace Combat.Stats
             return true;
         }
 
+        // Base value, and every modifier on the stat into lines (cleared first). For UI breakdowns.
+        public float GetBreakdown(StatDefinitionSO stat, List<StatBreakdownLine> lines)
+        {
+            lines?.Clear();
+            int i = StatRegistry.IndexOf(stat);
+            if (i < 0 || i >= bases.Length) return stat != null ? stat.defaultValue : 0f;
+
+            var list = modifiers[i];
+            if (lines != null && list != null)
+            {
+                for (int j = 0; j < list.Count; j++)
+                {
+                    var m = list[j];
+                    float val = m.Value;
+                    if (m.IsDerived)
+                    {
+                        val = m.SourceStat != null ? m.Coefficient * Resolve(m.SourceStat) : 0f;
+                        if (m.UseCap && val > m.Cap) val = m.Cap;
+                    }
+                    lines.Add(new StatBreakdownLine
+                    {
+                        BucketId = m.BucketId,
+                        Value = val,
+                        Owner = m.Handle.Owner,
+                        IsDerived = m.IsDerived,
+                        SourceStat = m.SourceStat
+                    });
+                }
+            }
+            return hasBase[i] ? bases[i] : stat.defaultValue;
+        }
+
         private int Idx(StatDefinitionSO stat)
         {
             int i = StatRegistry.IndexOf(stat);

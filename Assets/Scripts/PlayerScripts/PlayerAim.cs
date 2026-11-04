@@ -12,8 +12,10 @@ using Combat.Weapons;
 //
 // Aim is suppressed while swapping, sprinting or reloading. Pressing aim cancels a
 // sprint; a held aim button resumes aiming when the suppression ends.
-public class PlayerAim : MonoBehaviour
+public class PlayerAim : MonoBehaviour, IStatSourceLabel
 {
+    public string StatSourceLabel => "Aiming";
+
     [Header("Refs")]
     [SerializeField] private GameSettingsSO settings;
     [SerializeField] private WeaponLoadout loadout;

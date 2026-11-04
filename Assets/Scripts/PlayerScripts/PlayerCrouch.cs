@@ -8,8 +8,10 @@ using Combat.Stats;
 // stands the moment there's room. Crouching cancels a sprint; pressing sprint while
 // crouched stands you up (if there's room) - a held crouch button must be re-pressed.
 [RequireComponent(typeof(CharacterController))]
-public class PlayerCrouch : MonoBehaviour
+public class PlayerCrouch : MonoBehaviour, IStatSourceLabel
 {
+    public string StatSourceLabel => "Crouching";
+
     [Header("Refs")]
     [SerializeField] private GameSettingsSO settings;
     [SerializeField] private PlayerMovement movement;

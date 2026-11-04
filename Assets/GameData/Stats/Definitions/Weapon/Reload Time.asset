@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: reload_time
   displayName: Reload Time
+  resolutionMode: 0
   defaultValue: 0
   useMin: 0
   minValue: 0
@@ -21,3 +22,4 @@ MonoBehaviour:
   maxValue: 0
   isPercent: 0
   displayDecimals: 2
+  lowerIsBetter: 1

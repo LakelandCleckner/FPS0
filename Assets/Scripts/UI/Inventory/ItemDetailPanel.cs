@@ -87,7 +87,7 @@ namespace Combat.UI
                 {
                     var row = UIKit.Node(body, "Effect");
                     UIKit.HStack(row, 10f);
-                    var dot = UIKit.Solid(row, "Dot", e.value >= 0f ? s.positive : s.negative);
+                    var dot = UIKit.Solid(row, "Dot", ItemText.IsGood(e) ? s.positive : s.negative);
                     UIKit.Size(dot, width: 6f, height: 6f);
                     UIKit.Size(UIKit.Text(row, "Text", s, ItemText.Effect(e), s.bodySize - 2f, s.text), flexWidth: 1f);
                 }
@@ -143,7 +143,7 @@ namespace Combat.UI
             UIKit.Size(UIKit.Text(row, "Label", s, e.Label, s.smallSize, s.textMuted), width: 150f);
 
             float delta = v.WithArmor - v.Base;
-            bool better = delta > 0f != e.lowerIsBetter;
+            bool better = delta > 0f != e.LowerIsBetter;
 
             if (e.display == StatDisplay.Bar)
             {

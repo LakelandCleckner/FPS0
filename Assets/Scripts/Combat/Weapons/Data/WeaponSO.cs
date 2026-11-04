@@ -21,8 +21,11 @@ namespace Combat.Weapons
     // damage type + audio + riders + ammo overrides. Base damage is generated, not
     // listed. Perk pool is a placeholder.
     [CreateAssetMenu(fileName = "Weapon", menuName = "Combat/Weapons/Weapon")]
-    public class WeaponSO : ScriptableObject
+    public class WeaponSO : ScriptableObject, Combat.Stats.IStatSourceLabel
     {
+        // Only owns the handling derivations today; revisit if it owns other modifiers.
+        public string StatSourceLabel => "Handling";
+
         [Tooltip("The frame/stat profile this weapon uses.")]
         public WeaponArchetypeSO archetype;
 

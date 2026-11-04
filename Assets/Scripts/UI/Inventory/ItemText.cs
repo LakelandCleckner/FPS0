@@ -89,6 +89,10 @@ namespace Combat.UI
             return amount + " " + stat + scope;
         }
 
+        // Does this effect help? Uses the stat's lower-is-better flag.
+        public static bool IsGood(ModifierEntry e)
+            => e != null && (e.value >= 0f) != (e.stat != null && e.stat.lowerIsBetter);
+
         private static string SignedStat(StatDefinitionSO stat, float v)
         {
             string s = StatFormat.Value(stat, UnityEngine.Mathf.Abs(v));

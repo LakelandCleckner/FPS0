@@ -43,6 +43,8 @@ namespace Combat.Stats
         [Header("Display hints (for future UI)")]
         public bool isPercent = false;
         public int displayDecimals = 0;
+        [Tooltip("A drop is the improvement (reload time, equip time, damage taken). Colours UI effects and deltas.")]
+        public bool lowerIsBetter = false;
 
         [System.NonSerialized] public int RuntimeIndex = -1;
 

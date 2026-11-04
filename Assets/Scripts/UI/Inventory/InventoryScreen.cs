@@ -20,6 +20,7 @@ namespace Combat.UI
         [Header("Look")]
         [SerializeField] private UIStyleSO style;
         [SerializeField] private StatSheetSO weaponStatSheet;
+        [SerializeField] private StatSheetSO characterStatSheet;
         [SerializeField] private WeaponStatKeys statKeys;
 
         [Header("Source")]
@@ -37,6 +38,8 @@ namespace Combat.UI
         [SerializeField] private CarriedPanel carriedPanel;
         [SerializeField] private ItemDetailPanel detailPanel;
         [SerializeField] private InventoryFooter footer;
+        [SerializeField] private CharacterPanel characterPanel;
+        [SerializeField] private StatTooltip tooltip;
 
         [Header("Behaviour")]
         [SerializeField] private float messageTime = 2.5f;
@@ -44,6 +47,8 @@ namespace Combat.UI
         [Header("Edit-mode preview")]
         [Tooltip("Fill the panels in edit mode from the loadout below.")]
         [SerializeField] private bool preview = true;
+        [Tooltip("Tab shown in the edit-mode preview.")]
+        [SerializeField] private InventoryTab previewTab = InventoryTab.Loadout;
         [SerializeField] private StartingLoadoutSO previewLoadout;
         [Tooltip("Armour slots to show in the preview. Empty = the scene PlayerLoadout's slots.")]
         [SerializeField] private List<ArmorSlotSO> previewArmorSlots = new List<ArmorSlotSO>();
@@ -58,6 +63,10 @@ namespace Combat.UI
 
         public UIStyleSO Style => style;
         public StatSheetSO WeaponStatSheet => weaponStatSheet;
+        public StatSheetSO CharacterStatSheet => characterStatSheet;
+        public StatTooltip Tooltip => tooltip;
+        public CombatantStats PlayerStats { get; private set; }
+        public CombatantHealth PlayerHealth { get; private set; }
         public LoadoutView View => view;
         public InventoryTab Tab { get; private set; } = InventoryTab.Loadout;
         public SlotRef Selected { get; private set; } = new SlotRef(SlotKind.Weapon, 0);
@@ -84,6 +93,8 @@ namespace Combat.UI
             if (loadout == null && input != null) loadout = input.GetComponentInParent<PlayerLoadout>();
             if (loadout == null) loadout = FindFirstObjectByType<PlayerLoadout>();
             if (loadout == null) Debug.LogWarning("[Inventory] No PlayerLoadout found.");
+            PlayerStats = loadout != null ? loadout.GetComponentInParent<CombatantStats>() : null;
+            PlayerHealth = PlayerStats != null ? PlayerStats.GetComponent<CombatantHealth>() : null;
             Subscribe(true);
         }
 
@@ -92,6 +103,7 @@ namespace Combat.UI
             if (Application.isPlaying)
             {
                 Subscribe(false);
+                if (tooltip != null) tooltip.Hide();
                 if (open && input != null) input.PopUI(uiOwner);
                 open = false;
             }
@@ -151,6 +163,7 @@ namespace Combat.UI
                 if (detailDirty) RebuildDetail();
                 if (footerDirty) RebuildFooter();
             }
+            if (Tab == InventoryTab.Character && characterPanel != null) characterPanel.Tick(this);
         }
 
         public void SetOpen(bool value)
@@ -168,6 +181,7 @@ namespace Combat.UI
             else
             {
                 if (input != null) input.PopUI(uiOwner);
+                if (tooltip != null) tooltip.Hide();
                 Hovered = null;
                 Message = "";
             }
@@ -180,6 +194,7 @@ namespace Combat.UI
             if (Tab == tab) return;
             Tab = tab;
             Hovered = null;
+            if (tooltip != null) tooltip.Hide();
             Request();
         }
 
@@ -238,6 +253,8 @@ namespace Combat.UI
 
         // ------------------------------------------------------------------ building
 
+        public void RequestRebuild() => Request();
+
         private void Request()
         {
             dirty = true;
@@ -254,6 +271,7 @@ namespace Combat.UI
             if (Application.isPlaying) view.FromLoadout(loadout);
             ClampSelection();
 
+            if (tooltip != null && !tooltip.IsPinned) tooltip.Hide();
             if (backdrop != null) backdrop.color = style.backdrop;
             if (loadoutTab != null) loadoutTab.SetActive(Tab == InventoryTab.Loadout);
             if (characterTab != null) characterTab.SetActive(Tab == InventoryTab.Character);
@@ -265,6 +283,7 @@ namespace Combat.UI
                 Build(carriedPanel);
                 Build(detailPanel);
             }
+            else Build(characterPanel);
             Build(footer);
         }
 
@@ -302,7 +321,7 @@ namespace Combat.UI
 
         private void ClearAll()
         {
-            foreach (var p in new InventoryPanel[] { header, slotsPanel, carriedPanel, detailPanel, footer })
+            foreach (var p in new InventoryPanel[] { header, slotsPanel, carriedPanel, detailPanel, footer, characterPanel })
                 if (p != null) p.Clear();
         }
 
@@ -343,6 +362,7 @@ namespace Combat.UI
                 view.FromStarting(previewLoadout, slots);
                 previewBuilt = true;
             }
+            Tab = previewTab;
             RebuildAll();
         }
 

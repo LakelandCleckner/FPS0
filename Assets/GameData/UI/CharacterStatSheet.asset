@@ -1,0 +1,117 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 220278a80efab354c98e421cadf57d23, type: 3}
+  m_Name: CharacterStatSheet
+  m_EditorClassIdentifier: 
+  groups:
+  - label: Survivability
+    entries:
+    - stat: {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
+      label: Max health
+      display: 1
+      barMax: 100
+      lowerIsBetter: 0
+      unit: 
+      decimals: -1
+      format: 0
+    - stat: {fileID: 11400000, guid: 42789f1ceb8ea56419424ce5f8ff04d8, type: 2}
+      label: Damage taken
+      display: 1
+      barMax: 100
+      lowerIsBetter: 1
+      unit: 
+      decimals: -1
+      format: 3
+    - stat: {fileID: 11400000, guid: f5a8c623ad3a88c48bda3be493dbf950, type: 2}
+      label: Fire resistance
+      display: 1
+      barMax: 100
+      lowerIsBetter: 0
+      unit: 
+      decimals: -1
+      format: 1
+    - stat: {fileID: 11400000, guid: a89e67f16ea52304c9df256c094efcd4, type: 2}
+      label: Ice resistance
+      display: 1
+      barMax: 100
+      lowerIsBetter: 0
+      unit: 
+      decimals: -1
+      format: 1
+    - stat: {fileID: 11400000, guid: 87d6c1c70154b0348b8856aeee374a6c, type: 2}
+      label: Lightning resistance
+      display: 1
+      barMax: 100
+      lowerIsBetter: 0
+      unit: 
+      decimals: -1
+      format: 1
+    - stat: {fileID: 11400000, guid: 3a5aadef136191c46a35a5ecdf04e1ac, type: 2}
+      label: Physical resistance
+      display: 1
+      barMax: 100
+      lowerIsBetter: 0
+      unit: 
+      decimals: -1
+      format: 1
+    - stat: {fileID: 11400000, guid: dc920a34e05adb64c958ff021c4eb339, type: 2}
+      label: Poison resistance
+      display: 1
+      barMax: 100
+      lowerIsBetter: 0
+      unit: 
+      decimals: -1
+      format: 1
+  - label: Offense
+    entries:
+    - stat: {fileID: 11400000, guid: 2d453d23674d7e5419fdb375fc761414, type: 2}
+      label: Crit chance
+      display: 1
+      barMax: 100
+      lowerIsBetter: 0
+      unit: 
+      decimals: 2
+      format: 0
+    - stat: {fileID: 11400000, guid: fc43bc424a3cd7241a8d86e29f7b33b5, type: 2}
+      label: Crit damage
+      display: 1
+      barMax: 100
+      lowerIsBetter: 0
+      unit: 
+      decimals: 2
+      format: 3
+  - label: Movement
+    entries:
+    - stat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
+      label: Move speed
+      display: 1
+      barMax: 100
+      lowerIsBetter: 0
+      unit: 
+      decimals: 1
+      format: 0
+    - stat: {fileID: 11400000, guid: 043a6273eb7f1924b8ccb7fa987563b3, type: 2}
+      label: Sprint multiplier
+      display: 1
+      barMax: 100
+      lowerIsBetter: 0
+      unit: x
+      decimals: 2
+      format: 0
+    - stat: {fileID: 11400000, guid: 2ebca9aacdc02f742b9c70ec3adbe7b9, type: 2}
+      label: Jump force
+      display: 1
+      barMax: 100
+      lowerIsBetter: 0
+      unit: 
+      decimals: 1
+      format: 0
