@@ -173,6 +173,7 @@ namespace Combat.Diagnostics
             "dedupMode",
             "config",
             "direction",
+            "ownerRoot",
         };
 
         // Accumulated during flight. MUST be cleared in Init — field initialisers run
@@ -186,6 +187,7 @@ namespace Combat.Diagnostics
             "pierceUsed",
             "hitTargets",
             "currentHitbox",
+            "currentPlayerHitbox",
             "initialized",
         };
 

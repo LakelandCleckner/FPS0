@@ -1,11 +1,10 @@
 #if UNITY_EDITOR || STATUS_DEBUG
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Combat.Spawning;
 
 namespace Combat.Testing
 {
-    // THROWAWAY spawn tester. Comma spawns one "basic" enemy, period spawns three.
+    // THROWAWAY spawn tester. Debug SpawnOne (comma) spawns one "basic" enemy, SpawnGroup (period) spawns three.
     // Spawns in front of this object (or the camera) so they land in view. Delete once
     // the real spawning flow (a spawner, encounter triggers) exists.
     public class SpawnTestProbe : MonoBehaviour
@@ -22,25 +21,23 @@ namespace Combat.Testing
         [SerializeField] private float groupRadius = 3f;
         [SerializeField] private int groupCount = 3;
 
-        [Header("Keys (new Input System)")]
-        [SerializeField] private Key spawnOneKey = Key.Comma;
-        [SerializeField] private Key spawnGroupKey = Key.Period;
+        private PlayerInputRouter input;
 
         private void Update()
         {
-            var kb = Keyboard.current;
-            if (kb == null) return;
+            if (input == null) input = PlayerInputRouter.For(this);
+            if (input == null) return;
 
-            if (kb[spawnOneKey].wasPressedThisFrame)
+            if (input.Debug.SpawnOne.WasPressedThisFrame())
             {
                 Vector3 pos = SpawnPoint();
                 var h = spawner.Spawn(enemyId, pos);
                 Debug.Log(h != null
                     ? $"[SpawnTest] spawned one '{enemyId}' at {pos}"
-                    : $"[SpawnTest] FAILED to spawn '{enemyId}' — id registered on the spawner?");
+                    : $"[SpawnTest] FAILED to spawn '{enemyId}' - id registered on the spawner?");
             }
 
-            if (kb[spawnGroupKey].wasPressedThisFrame)
+            if (input.Debug.SpawnGroup.WasPressedThisFrame())
             {
                 Vector3 center = SpawnPoint();
                 var list = spawner.SpawnGroup(enemyId, groupCount, center, groupRadius);

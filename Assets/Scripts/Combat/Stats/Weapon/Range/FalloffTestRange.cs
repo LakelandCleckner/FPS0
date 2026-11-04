@@ -35,8 +35,8 @@ namespace Combat.Diagnostics
         [SerializeField] private float worldLabelScale = 0.06f;
 
         [Header("HUD")]
+        [Tooltip("Toggled by the Debug FalloffHud action.")]
         [SerializeField] private bool showHud = true;
-        [SerializeField] private Key hudToggleKey = Key.F3;
         [SerializeField] private float hitFlashTime = 0.5f;
 
         private const string LaneName = "__FalloffLane";
@@ -109,7 +109,8 @@ namespace Combat.Diagnostics
                 Rebuild();
             }
 
-            if (Keyboard.current != null && Keyboard.current[hudToggleKey].wasPressedThisFrame)
+            var input = PlayerInputRouter.Local;
+            if (input != null && input.Debug.FalloffHud.WasPressedThisFrame())
                 showHud = !showHud;
 
             liveArchetype = archetype;
@@ -383,7 +384,7 @@ namespace Combat.Diagnostics
             var a = liveArchetype;
 
             GUI.Label(new Rect(x0, y, width, rowH),
-                $"{weaponName}   range {liveRange:0}   [{hudToggleKey}] hide", headerStyle);
+                $"{weaponName}   range {liveRange:0}   [{HudKeyLabel()}] hide", headerStyle);
             y += rowH;
             GUI.Label(new Rect(x0, y, width, rowH),
                 $"hip {WeaponFalloff.Start(a, liveRange, 0f):0.0}-{WeaponFalloff.End(a, liveRange, 0f):0.0}m   " +
@@ -415,6 +416,12 @@ namespace Combat.Diagnostics
                 }, cellStyle);
                 y += rowH;
             }
+        }
+
+        private static string HudKeyLabel()
+        {
+            var input = PlayerInputRouter.Local;
+            return input != null ? input.Debug.FalloffHud.GetBindingDisplayString() : "-";
         }
 
         private static void Row(float x, float y, float[] cols, string[] cells, GUIStyle style)

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using System.Text;
 using Combat.Armor;
@@ -9,12 +8,7 @@ using Combat.Weapons;
 
 namespace Combat.Loadout
 {
-    // Test harness until there's UI.
-    // F1-F3 cycle carried weapons into a slot, F5-F7 clear it, F4 toggles a lock.
-    // Shift+F1-F5 cycle carried armour into an armour slot, Ctrl+F1-F5 clear it.
-    // F8 rerolls the held weapon's perks, Shift+F8 rerolls every equipped armour piece.
-    // F9 takes 10% of max health (never lethal), Shift+F9 heals 10%.
-    // F10 logs the held weapon's stats with every modifier and its source, Shift+F10 the player's.
+    // Loadout debug commands. Public so a debug panel can call them; keys come from the Debug input map.
     public class LoadoutDebugKeys : MonoBehaviour
     {
         [Tooltip("Found in parents if empty.")]
@@ -26,6 +20,7 @@ namespace Combat.Loadout
         [SerializeField] private WeaponLoadout weapons;
 
         private readonly object debugLock = new object();
+        private PlayerInputRouter input;
 
         private void Awake()
         {
@@ -33,45 +28,46 @@ namespace Combat.Loadout
             if (player == null) player = GetComponentInParent<CombatantStats>();
             if (weapons == null) weapons = GetComponentInParent<WeaponLoadout>();
             if (weapons == null && loadout != null) weapons = loadout.GetComponentInChildren<WeaponLoadout>();
+            input = PlayerInputRouter.For(this);
         }
 
         private void Update()
         {
-            var kb = Keyboard.current;
-            if (kb == null || loadout == null) return;
+            if (input == null) input = PlayerInputRouter.For(this);
+            if (input == null || loadout == null) return;
 
-            if (kb.f8Key.wasPressedThisFrame) { if (kb.shiftKey.isPressed) RerollArmor(); else RerollHeld(); return; }
-            if (kb.f9Key.wasPressedThisFrame) { ChangeHealth(kb.shiftKey.isPressed ? 0.1f : -0.1f); return; }
-            if (kb.f10Key.wasPressedThisFrame) { DumpStats(kb.shiftKey.isPressed); return; }
+            var d = input.Debug;
+            if (d.CycleSlot1.WasPressedThisFrame()) CycleWeapon(0);
+            if (d.CycleSlot2.WasPressedThisFrame()) CycleWeapon(1);
+            if (d.CycleSlot3.WasPressedThisFrame()) CycleWeapon(2);
+            if (d.ToggleLock.WasPressedThisFrame()) ToggleLock();
+            if (d.ClearSlot1.WasPressedThisFrame()) ClearWeapon(0);
+            if (d.ClearSlot2.WasPressedThisFrame()) ClearWeapon(1);
+            if (d.ClearSlot3.WasPressedThisFrame()) ClearWeapon(2);
 
-            int f = PressedFKey(kb);
-            if (f < 0) return;
+            if (d.CycleArmor1.WasPressedThisFrame()) CycleArmor(0);
+            if (d.CycleArmor2.WasPressedThisFrame()) CycleArmor(1);
+            if (d.CycleArmor3.WasPressedThisFrame()) CycleArmor(2);
+            if (d.CycleArmor4.WasPressedThisFrame()) CycleArmor(3);
+            if (d.CycleArmor5.WasPressedThisFrame()) CycleArmor(4);
+            if (d.ClearArmor1.WasPressedThisFrame()) ClearArmor(0);
+            if (d.ClearArmor2.WasPressedThisFrame()) ClearArmor(1);
+            if (d.ClearArmor3.WasPressedThisFrame()) ClearArmor(2);
+            if (d.ClearArmor4.WasPressedThisFrame()) ClearArmor(3);
+            if (d.ClearArmor5.WasPressedThisFrame()) ClearArmor(4);
 
-            if (kb.shiftKey.isPressed) { if (f < 5) CycleArmor(f); return; }
-            if (kb.ctrlKey.isPressed) { if (f < 5) ClearArmor(f); return; }
-
-            if (f <= 2) Cycle(f);
-            else if (f == 3) ToggleLock();
-            else Clear(f - 4);
-        }
-
-        // F1..F7 -> 0..6, -1 if none.
-        private static int PressedFKey(Keyboard kb)
-        {
-            if (kb.f1Key.wasPressedThisFrame) return 0;
-            if (kb.f2Key.wasPressedThisFrame) return 1;
-            if (kb.f3Key.wasPressedThisFrame) return 2;
-            if (kb.f4Key.wasPressedThisFrame) return 3;
-            if (kb.f5Key.wasPressedThisFrame) return 4;
-            if (kb.f6Key.wasPressedThisFrame) return 5;
-            if (kb.f7Key.wasPressedThisFrame) return 6;
-            return -1;
+            if (d.RerollHeld.WasPressedThisFrame()) RerollHeld();
+            if (d.RerollArmor.WasPressedThisFrame()) RerollArmor();
+            if (d.DamageSelf.WasPressedThisFrame()) DamageSelf();
+            if (d.HealSelf.WasPressedThisFrame()) HealSelf();
+            if (d.DumpWeaponStats.WasPressedThisFrame()) DumpWeaponStats();
+            if (d.DumpPlayerStats.WasPressedThisFrame()) DumpPlayerStats();
         }
 
         // ------------------------------------------------------------------ weapons
 
         // Equips the first carried weapon allowed in the slot; the old one goes to the back.
-        private void Cycle(int slot)
+        public void CycleWeapon(int slot)
         {
             var carried = loadout.Inventory != null ? loadout.Inventory.Weapons : null;
             if (carried == null || carried.Count == 0)
@@ -96,7 +92,7 @@ namespace Combat.Loadout
             Debug.Log($"[LoadoutDebug] No carried weapon is allowed in slot {slot + 1}.");
         }
 
-        private void Clear(int slot)
+        public void ClearWeapon(int slot)
         {
             if (loadout.TryClear(slot, out var reason))
                 Debug.Log($"[LoadoutDebug] Slot {slot + 1} cleared.");
@@ -107,7 +103,7 @@ namespace Combat.Loadout
         // ------------------------------------------------------------------ armour
 
         // Equips the first carried piece for this armour slot; the old one goes to the back.
-        private void CycleArmor(int index)
+        public void CycleArmor(int index)
         {
             if (index >= loadout.ArmorSlotCount)
             {
@@ -137,7 +133,7 @@ namespace Combat.Loadout
             Debug.Log($"[LoadoutDebug] No carried armour for {slot.name}.");
         }
 
-        private void ClearArmor(int index)
+        public void ClearArmor(int index)
         {
             var name = index < loadout.ArmorSlotCount ? loadout.ArmorSlots[index].name : $"armour slot {index + 1}";
 
@@ -150,7 +146,7 @@ namespace Combat.Loadout
 
         // ------------------------------------------------------------------ perks
 
-        private void RerollHeld()
+        public void RerollHeld()
         {
             var held = weapons != null ? weapons.Active : null;
             var instance = held != null && held.DamageSource != null ? held.DamageSource.Instance : null;
@@ -164,7 +160,7 @@ namespace Combat.Loadout
             Debug.Log($"[LoadoutDebug] Rerolled {instance.Definition.name}{PerkList(instance.AllPerks())}");
         }
 
-        private void RerollArmor()
+        public void RerollArmor()
         {
             var host = loadout.GetComponent<ArmorPerks>();
             for (int i = 0; i < loadout.ArmorSlotCount; i++)
@@ -188,6 +184,9 @@ namespace Combat.Loadout
         }
 
         // ------------------------------------------------------------------ stat dump
+
+        public void DumpWeaponStats() => DumpStats(false);
+        public void DumpPlayerStats() => DumpStats(true);
 
         private void DumpStats(bool playerStats)
         {
@@ -220,6 +219,10 @@ namespace Combat.Loadout
 
         // ------------------------------------------------------------------ health
 
+        // 10% of max health, never lethal.
+        public void DamageSelf() => ChangeHealth(-0.1f);
+        public void HealSelf() => ChangeHealth(0.1f);
+
         private void ChangeHealth(float fraction)
         {
             var health = player != null ? player.GetComponent<CombatantHealth>() : null;
@@ -234,7 +237,7 @@ namespace Combat.Loadout
 
         // ------------------------------------------------------------------ lock
 
-        private void ToggleLock()
+        public void ToggleLock()
         {
             if (loadout.IsLocked) loadout.RemoveLock(debugLock);
             else loadout.AddLock(debugLock);

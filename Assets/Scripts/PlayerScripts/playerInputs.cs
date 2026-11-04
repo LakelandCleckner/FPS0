@@ -161,6 +161,56 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""Reload"",
+                    ""type"": ""Button"",
+                    ""id"": ""ef22541f-2e5b-4d27-a60d-ece2d35ab493"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""Swap"",
+                    ""type"": ""Button"",
+                    ""id"": ""7a5ebbd4-4da6-46b5-b2dc-48774e3b84a9"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""Slot1"",
+                    ""type"": ""Button"",
+                    ""id"": ""2cc3733a-2ed4-42b6-8af7-833229f5c78a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""Slot2"",
+                    ""type"": ""Button"",
+                    ""id"": ""fc3f1a19-3b61-4a09-8f10-123e6379c9ea"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""Slot3"",
+                    ""type"": ""Button"",
+                    ""id"": ""bfe22659-5339-45da-a497-c2489f3079ab"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -288,7 +338,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""6b1b7cf2-3dfb-45e7-9101-51d1b9646a23"",
-                    ""path"": ""<Gamepad>/leftStick/down"",
+                    ""path"": ""<Gamepad>/leftStickPress"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -354,11 +404,88 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""a662d0a5-df8b-4a34-89e6-4c9d253b7e6f"",
-                    ""path"": ""<Gamepad>/rightStick/down"",
+                    ""path"": ""<Gamepad>/rightStickPress"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Crouch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dfbb1b84-cb9c-4539-98c0-f649b9c4a3d6"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""Reload"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0774a32e-e139-40c3-8c3b-3f3c141401ea"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""Reload"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""116566f7-4ccf-46e5-aa1a-0529107254d5"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""Swap"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7fd76abd-b251-46c1-b5e7-570eda1d5c6c"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""Swap"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ff63d06c-e2bb-4d12-8efd-575a41ac2efa"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""Slot1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5cd78950-e76c-4708-b0e2-f0b248d040bc"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""Slot2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9e85e2b9-48d9-4043-8228-f17e0694909f"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""Slot3"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -410,9 +537,9 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""Click"",
-                    ""type"": ""Button"",
+                    ""type"": ""PassThrough"",
                     ""id"": ""1c98ec40-0219-4fa1-9139-cd273e9c5af1"",
-                    ""expectedControlType"": """",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false,
@@ -430,9 +557,9 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""MiddleClick"",
-                    ""type"": ""Button"",
+                    ""type"": ""PassThrough"",
                     ""id"": ""3e76d736-261e-4245-bed5-93914cf77866"",
-                    ""expectedControlType"": """",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false,
@@ -440,9 +567,9 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""RightClick"",
-                    ""type"": ""Button"",
+                    ""type"": ""PassThrough"",
                     ""id"": ""3d19a6ab-4eba-452d-92b0-865ee9fd9c1a"",
-                    ""expectedControlType"": """",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false,
@@ -583,6 +710,1249 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Menu"",
+            ""id"": ""e5967b3a-308a-4df2-ac2b-f1725b48fbbf"",
+            ""actions"": [
+                {
+                    ""name"": ""Inventory"",
+                    ""type"": ""Button"",
+                    ""id"": ""61a2470e-c2a7-4d1b-b217-6f70cf9885e4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""e4e64ffd-ef46-4880-aaca-8da905627b55"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""Inventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cebfd435-4e1e-4826-96d7-595242edb383"",
+                    ""path"": ""<Gamepad>/select"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""Inventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Debug"",
+            ""id"": ""d68129be-c4ea-49d1-9d04-7f65a07f4717"",
+            ""actions"": [
+                {
+                    ""name"": ""CycleSlot1"",
+                    ""type"": ""Button"",
+                    ""id"": ""3e197352-48f4-42a6-be94-13bf78ac38a2"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""CycleSlot2"",
+                    ""type"": ""Button"",
+                    ""id"": ""be143012-2006-4053-a681-72d393d6e427"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""CycleSlot3"",
+                    ""type"": ""Button"",
+                    ""id"": ""d1a9947e-4bb9-4857-87da-d520714837d3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""ToggleLock"",
+                    ""type"": ""Button"",
+                    ""id"": ""70ff29c8-9674-41c7-8d7a-711c417d39bd"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""ClearSlot1"",
+                    ""type"": ""Button"",
+                    ""id"": ""8a9414dd-d43b-45fd-a224-afe72e690354"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""ClearSlot2"",
+                    ""type"": ""Button"",
+                    ""id"": ""6a2f237e-2f70-41d3-b2d2-e751f4441bcb"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""ClearSlot3"",
+                    ""type"": ""Button"",
+                    ""id"": ""442a799b-5f33-489a-99d1-cbdd258f5ede"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""CycleArmor1"",
+                    ""type"": ""Button"",
+                    ""id"": ""bf7722cb-339c-452d-b5ce-ccaa5c9dbe57"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""CycleArmor2"",
+                    ""type"": ""Button"",
+                    ""id"": ""519fc4d3-3146-4c46-b6bd-516a0b98dae3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""CycleArmor3"",
+                    ""type"": ""Button"",
+                    ""id"": ""38c888e2-a9ec-4d57-a331-a9d3cce20165"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""CycleArmor4"",
+                    ""type"": ""Button"",
+                    ""id"": ""55535791-3243-48b7-a56d-ab0df553f8ac"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""CycleArmor5"",
+                    ""type"": ""Button"",
+                    ""id"": ""02612101-72a7-411f-9aba-cab258f55eb5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""ClearArmor1"",
+                    ""type"": ""Button"",
+                    ""id"": ""4fa85b5c-c918-4237-8cb0-a74de4a0eac2"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""ClearArmor2"",
+                    ""type"": ""Button"",
+                    ""id"": ""71b83413-1f2e-43e5-b47c-887953b0d9cd"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""ClearArmor3"",
+                    ""type"": ""Button"",
+                    ""id"": ""772f094d-52d3-4a66-b556-2a840773e602"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""ClearArmor4"",
+                    ""type"": ""Button"",
+                    ""id"": ""f39ea75b-3358-436f-a7b6-9ca29b5e94a5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""ClearArmor5"",
+                    ""type"": ""Button"",
+                    ""id"": ""7b80f593-b93d-4fdd-b5f1-b88e383bed70"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""RerollHeld"",
+                    ""type"": ""Button"",
+                    ""id"": ""5d5852ed-92e3-4973-a7de-64d3ca0bcef2"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""RerollArmor"",
+                    ""type"": ""Button"",
+                    ""id"": ""1bf8ab47-ed05-4065-be4c-8e046f54e373"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""DamageSelf"",
+                    ""type"": ""Button"",
+                    ""id"": ""a626df95-8539-43f2-9674-a30cb484c90c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""HealSelf"",
+                    ""type"": ""Button"",
+                    ""id"": ""c1ddeeb6-3040-436e-8c57-8dbfcbde46db"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""DumpWeaponStats"",
+                    ""type"": ""Button"",
+                    ""id"": ""3b251a1b-daa8-498d-b1a4-90b429588550"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""DumpPlayerStats"",
+                    ""type"": ""Button"",
+                    ""id"": ""aa025a96-041d-4af5-ad4a-5ee5bd608057"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""SpawnOne"",
+                    ""type"": ""Button"",
+                    ""id"": ""4aac05cf-1b88-40f2-b3f7-1be6ca94364d"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""SpawnGroup"",
+                    ""type"": ""Button"",
+                    ""id"": ""24ab9040-c22d-4ea9-942e-ccb721dc4e37"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""FalloffHud"",
+                    ""type"": ""Button"",
+                    ""id"": ""7f841be9-0e4c-4ed1-97c1-f948e1448dca"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""Alt"",
+                    ""id"": ""df89e2c5-8136-471f-959a-f73962cb6cad"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CycleSlot1"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""f9673fa8-012f-4815-8e0d-bf5de425e43b"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleSlot1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""63704de8-da2c-408f-891c-a8f3db9bab69"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleSlot1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt"",
+                    ""id"": ""8550dbb8-76b2-4cf8-a3f0-647abf7bcab2"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CycleSlot2"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""e8fdad6e-c36f-4cfc-bd7e-641ce3ee70ad"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleSlot2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""257690ae-3862-415f-8514-2b85c649dff6"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleSlot2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt"",
+                    ""id"": ""e20a0e93-4fe4-45cb-ac02-c55820266a59"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CycleSlot3"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""3a856fd3-73e9-4002-a1d6-fa5916ab3f3d"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleSlot3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""6afcb609-449b-4f05-a538-9a3476f6fee4"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleSlot3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt"",
+                    ""id"": ""1eb66046-ed49-4c0f-88c4-c8b44a524101"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleLock"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""fc9b3ba2-80cd-480d-9786-b735f6b3529d"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ToggleLock"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""d3d20d1c-0a5a-4b8c-94be-296c3a1f3780"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ToggleLock"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt"",
+                    ""id"": ""27739211-5820-4bf7-afae-16b047587b17"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClearSlot1"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""ade134d5-f323-4349-b35c-f65ba8d7f58b"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearSlot1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""dcb53f0d-05cf-44e6-baff-73bccaefad4b"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearSlot1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt"",
+                    ""id"": ""edf4a570-b69f-4f81-a67f-17fdf0e31c94"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClearSlot2"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""3a5389fb-408f-4dda-b740-b963a22be844"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearSlot2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""d3723955-a653-4304-965b-a901531364e8"",
+                    ""path"": ""<Keyboard>/6"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearSlot2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt"",
+                    ""id"": ""5131fce0-2f3e-4f5d-8fa4-2d3ea4aee310"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClearSlot3"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""437a3805-81e0-4695-b296-a8d980c781b9"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearSlot3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""6c91a8f7-ca13-433d-9ec4-c731c121f2b2"",
+                    ""path"": ""<Keyboard>/7"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearSlot3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Shift"",
+                    ""id"": ""a2af7781-f39e-425e-9ab4-71088002a972"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CycleArmor1"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""ded715e0-8383-4bfc-b7a9-5bc9735279a0"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleArmor1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""e4690a6e-1fe2-4087-a788-d0a53284501b"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleArmor1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""0388889a-01e5-46cf-8812-cc56ee01fc9e"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleArmor1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Shift"",
+                    ""id"": ""6261b688-73d6-424f-a35c-c0737562d7bc"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CycleArmor2"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""709236a0-7802-4846-9b66-ce23444ee356"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleArmor2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""b52f90d5-8f03-435b-b9ba-d96b76c0c114"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleArmor2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""b7ec8c92-85a1-4d2b-95b5-53d9085e88a0"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleArmor2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Shift"",
+                    ""id"": ""1a2c577b-7fa2-4389-8c94-a31b42defb9f"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CycleArmor3"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""5d4f0cbb-c051-46e1-bf4b-2342e2b23120"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleArmor3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""15a6207b-2f26-46c7-af87-e296296b931d"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleArmor3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""9161267e-9a51-4001-ac24-4d178199e907"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleArmor3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Shift"",
+                    ""id"": ""81ba86e9-fb1c-434f-aa9f-c52502c00b57"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CycleArmor4"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""a983236b-9f78-48a0-9ba8-217c86c17292"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleArmor4"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""5efd8386-19f6-4a96-80b8-6a7bc0ee0df1"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleArmor4"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""becbcbe5-86ed-44b5-ad44-69c845752c40"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleArmor4"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Shift"",
+                    ""id"": ""1644190a-1db7-4fd8-95f2-66256ba2570e"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CycleArmor5"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""a21ec8c1-7179-430f-b4a3-335451460f4b"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleArmor5"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""4aa0733a-f7cb-4f2b-86e9-cb8f4faae2e0"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleArmor5"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""0cbf3d92-0c1e-4a6f-9a72-86e72955b908"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""CycleArmor5"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Ctrl"",
+                    ""id"": ""5b99afeb-6f0f-463b-aeab-f17f14c1e14b"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClearArmor1"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""86e1c2e2-5aa3-4a77-8188-1544d832c636"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearArmor1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""e8e9a96e-bdf1-437a-b6e4-365ae003c210"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearArmor1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""d82a93c3-c0d6-4cbf-90fc-64f64fe37ab4"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearArmor1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Ctrl"",
+                    ""id"": ""f957fbba-dd2e-4772-a58b-f838511dd7f3"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClearArmor2"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""ae523f99-2f4f-409e-b8ba-a7293622f1c7"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearArmor2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""9f121a21-344e-42ec-a8ef-e387711e1688"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearArmor2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""20729143-2175-4a9d-89b8-eda9cab63e75"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearArmor2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Ctrl"",
+                    ""id"": ""3f258294-680a-4f95-b9b6-e553f3682612"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClearArmor3"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""beb8df24-fbb2-4aac-b3bf-38147e135f9f"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearArmor3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""97035da6-615d-452c-b005-63429aa1d0c4"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearArmor3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""b09840e6-136c-4afa-a07c-12b99db51f9f"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearArmor3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Ctrl"",
+                    ""id"": ""ef53a78b-56da-45f5-8880-db5560555b3b"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClearArmor4"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""ab247336-38ad-4e52-9aba-adcedd114aae"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearArmor4"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""80d701fc-e0d4-4fd1-bb7d-9f9532537eee"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearArmor4"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""0485a684-2bd4-4b3d-8b02-20524e8af94c"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearArmor4"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Ctrl"",
+                    ""id"": ""417ceea3-f9ec-4cd8-b2b0-05894daac742"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClearArmor5"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""a7d0e406-af62-4532-b005-9635e8375176"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearArmor5"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""8c95e074-eef4-4139-be68-504a58577413"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearArmor5"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""a04d87dd-8b01-4b04-bee4-593fceef7b32"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ClearArmor5"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt"",
+                    ""id"": ""2bdc6911-f9dc-4f5d-b728-8c423d944ea9"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RerollHeld"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""1612e9b8-2bdb-4820-8ad8-612fb2d94cb9"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""RerollHeld"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""f03bb025-8b14-468d-a84f-dc26e9296cea"",
+                    ""path"": ""<Keyboard>/8"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""RerollHeld"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Shift"",
+                    ""id"": ""3e8b8a1b-fa61-4ecb-b749-4b1a899cfd5b"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RerollArmor"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""469cd1c7-dd7c-475b-80eb-3c0a503133d5"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""RerollArmor"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""af69dc8e-4e7d-4c9c-b462-957b842d2024"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""RerollArmor"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""40fbc314-bbc4-4327-9dc2-a38783b5990f"",
+                    ""path"": ""<Keyboard>/8"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""RerollArmor"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt"",
+                    ""id"": ""f508dcb0-ad7a-4d50-b92e-311e6c1930b2"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DamageSelf"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""280cb02f-ba87-4f84-acca-b663889a8e8a"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""DamageSelf"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""8486b11b-a023-42be-8356-98a94eba4340"",
+                    ""path"": ""<Keyboard>/9"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""DamageSelf"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Shift"",
+                    ""id"": ""cd190850-2a89-41b4-b387-db9e2f24fdd7"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HealSelf"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""25afa797-f7d5-408b-a237-ed7ba28cfb9f"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""HealSelf"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""4059581c-02b4-421c-a0cb-fa11115d439c"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""HealSelf"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""7a13a948-ef75-494b-b2c9-5e26305aa52d"",
+                    ""path"": ""<Keyboard>/9"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""HealSelf"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt"",
+                    ""id"": ""00347578-6be1-4345-b60d-d27af501a588"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DumpWeaponStats"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""b93ffd5b-ab42-4b47-afd9-9e1d1d73e60b"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""DumpWeaponStats"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""5012c9d0-a001-4f02-873b-16263699724e"",
+                    ""path"": ""<Keyboard>/0"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""DumpWeaponStats"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Shift"",
+                    ""id"": ""a7670758-53af-4879-8b9d-fc9edc514b27"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DumpPlayerStats"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""889b5e2d-d1cf-4624-a4e6-3fcfe4e323ea"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""DumpPlayerStats"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""c65fee10-d257-4cf3-83e2-a678829df32b"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""DumpPlayerStats"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""df815710-4911-4861-914d-8042eca2eeaa"",
+                    ""path"": ""<Keyboard>/0"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""DumpPlayerStats"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a55584d8-8700-402c-a72e-26ab138ffe11"",
+                    ""path"": ""<Keyboard>/comma"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""SpawnOne"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""73e78968-31a9-48bf-b4cf-cd56393f957b"",
+                    ""path"": ""<Keyboard>/period"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""SpawnGroup"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6a784dc4-033a-4bd4-9d60-c0e53885c291"",
+                    ""path"": ""<Keyboard>/0"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""FalloffHud"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -602,6 +1972,11 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Aim = m_Player.FindAction("Aim", throwIfNotFound: true);
         m_Player_Crouch = m_Player.FindAction("Crouch", throwIfNotFound: true);
+        m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
+        m_Player_Swap = m_Player.FindAction("Swap", throwIfNotFound: true);
+        m_Player_Slot1 = m_Player.FindAction("Slot1", throwIfNotFound: true);
+        m_Player_Slot2 = m_Player.FindAction("Slot2", throwIfNotFound: true);
+        m_Player_Slot3 = m_Player.FindAction("Slot3", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -612,12 +1987,45 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         m_UI_ScrollWheel = m_UI.FindAction("ScrollWheel", throwIfNotFound: true);
         m_UI_MiddleClick = m_UI.FindAction("MiddleClick", throwIfNotFound: true);
         m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
+        // Menu
+        m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
+        m_Menu_Inventory = m_Menu.FindAction("Inventory", throwIfNotFound: true);
+        // Debug
+        m_Debug = asset.FindActionMap("Debug", throwIfNotFound: true);
+        m_Debug_CycleSlot1 = m_Debug.FindAction("CycleSlot1", throwIfNotFound: true);
+        m_Debug_CycleSlot2 = m_Debug.FindAction("CycleSlot2", throwIfNotFound: true);
+        m_Debug_CycleSlot3 = m_Debug.FindAction("CycleSlot3", throwIfNotFound: true);
+        m_Debug_ToggleLock = m_Debug.FindAction("ToggleLock", throwIfNotFound: true);
+        m_Debug_ClearSlot1 = m_Debug.FindAction("ClearSlot1", throwIfNotFound: true);
+        m_Debug_ClearSlot2 = m_Debug.FindAction("ClearSlot2", throwIfNotFound: true);
+        m_Debug_ClearSlot3 = m_Debug.FindAction("ClearSlot3", throwIfNotFound: true);
+        m_Debug_CycleArmor1 = m_Debug.FindAction("CycleArmor1", throwIfNotFound: true);
+        m_Debug_CycleArmor2 = m_Debug.FindAction("CycleArmor2", throwIfNotFound: true);
+        m_Debug_CycleArmor3 = m_Debug.FindAction("CycleArmor3", throwIfNotFound: true);
+        m_Debug_CycleArmor4 = m_Debug.FindAction("CycleArmor4", throwIfNotFound: true);
+        m_Debug_CycleArmor5 = m_Debug.FindAction("CycleArmor5", throwIfNotFound: true);
+        m_Debug_ClearArmor1 = m_Debug.FindAction("ClearArmor1", throwIfNotFound: true);
+        m_Debug_ClearArmor2 = m_Debug.FindAction("ClearArmor2", throwIfNotFound: true);
+        m_Debug_ClearArmor3 = m_Debug.FindAction("ClearArmor3", throwIfNotFound: true);
+        m_Debug_ClearArmor4 = m_Debug.FindAction("ClearArmor4", throwIfNotFound: true);
+        m_Debug_ClearArmor5 = m_Debug.FindAction("ClearArmor5", throwIfNotFound: true);
+        m_Debug_RerollHeld = m_Debug.FindAction("RerollHeld", throwIfNotFound: true);
+        m_Debug_RerollArmor = m_Debug.FindAction("RerollArmor", throwIfNotFound: true);
+        m_Debug_DamageSelf = m_Debug.FindAction("DamageSelf", throwIfNotFound: true);
+        m_Debug_HealSelf = m_Debug.FindAction("HealSelf", throwIfNotFound: true);
+        m_Debug_DumpWeaponStats = m_Debug.FindAction("DumpWeaponStats", throwIfNotFound: true);
+        m_Debug_DumpPlayerStats = m_Debug.FindAction("DumpPlayerStats", throwIfNotFound: true);
+        m_Debug_SpawnOne = m_Debug.FindAction("SpawnOne", throwIfNotFound: true);
+        m_Debug_SpawnGroup = m_Debug.FindAction("SpawnGroup", throwIfNotFound: true);
+        m_Debug_FalloffHud = m_Debug.FindAction("FalloffHud", throwIfNotFound: true);
     }
 
     ~@PlayerInputs()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, PlayerInputs.Player.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, PlayerInputs.UI.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Menu.enabled, "This will cause a leak and performance issues, PlayerInputs.Menu.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Debug.enabled, "This will cause a leak and performance issues, PlayerInputs.Debug.Disable() has not been called.");
     }
 
     /// <summary>
@@ -700,6 +2108,11 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Aim;
     private readonly InputAction m_Player_Crouch;
+    private readonly InputAction m_Player_Reload;
+    private readonly InputAction m_Player_Swap;
+    private readonly InputAction m_Player_Slot1;
+    private readonly InputAction m_Player_Slot2;
+    private readonly InputAction m_Player_Slot3;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -739,6 +2152,26 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Crouch".
         /// </summary>
         public InputAction @Crouch => m_Wrapper.m_Player_Crouch;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Reload".
+        /// </summary>
+        public InputAction @Reload => m_Wrapper.m_Player_Reload;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Swap".
+        /// </summary>
+        public InputAction @Swap => m_Wrapper.m_Player_Swap;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Slot1".
+        /// </summary>
+        public InputAction @Slot1 => m_Wrapper.m_Player_Slot1;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Slot2".
+        /// </summary>
+        public InputAction @Slot2 => m_Wrapper.m_Player_Slot2;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Slot3".
+        /// </summary>
+        public InputAction @Slot3 => m_Wrapper.m_Player_Slot3;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -786,6 +2219,21 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @Crouch.started += instance.OnCrouch;
             @Crouch.performed += instance.OnCrouch;
             @Crouch.canceled += instance.OnCrouch;
+            @Reload.started += instance.OnReload;
+            @Reload.performed += instance.OnReload;
+            @Reload.canceled += instance.OnReload;
+            @Swap.started += instance.OnSwap;
+            @Swap.performed += instance.OnSwap;
+            @Swap.canceled += instance.OnSwap;
+            @Slot1.started += instance.OnSlot1;
+            @Slot1.performed += instance.OnSlot1;
+            @Slot1.canceled += instance.OnSlot1;
+            @Slot2.started += instance.OnSlot2;
+            @Slot2.performed += instance.OnSlot2;
+            @Slot2.canceled += instance.OnSlot2;
+            @Slot3.started += instance.OnSlot3;
+            @Slot3.performed += instance.OnSlot3;
+            @Slot3.canceled += instance.OnSlot3;
         }
 
         /// <summary>
@@ -818,6 +2266,21 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @Crouch.started -= instance.OnCrouch;
             @Crouch.performed -= instance.OnCrouch;
             @Crouch.canceled -= instance.OnCrouch;
+            @Reload.started -= instance.OnReload;
+            @Reload.performed -= instance.OnReload;
+            @Reload.canceled -= instance.OnReload;
+            @Swap.started -= instance.OnSwap;
+            @Swap.performed -= instance.OnSwap;
+            @Swap.canceled -= instance.OnSwap;
+            @Slot1.started -= instance.OnSlot1;
+            @Slot1.performed -= instance.OnSlot1;
+            @Slot1.canceled -= instance.OnSlot1;
+            @Slot2.started -= instance.OnSlot2;
+            @Slot2.performed -= instance.OnSlot2;
+            @Slot2.canceled -= instance.OnSlot2;
+            @Slot3.started -= instance.OnSlot3;
+            @Slot3.performed -= instance.OnSlot3;
+            @Slot3.canceled -= instance.OnSlot3;
         }
 
         /// <summary>
@@ -1024,6 +2487,473 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="UIActions" /> instance referencing this action map.
     /// </summary>
     public UIActions @UI => new UIActions(this);
+
+    // Menu
+    private readonly InputActionMap m_Menu;
+    private List<IMenuActions> m_MenuActionsCallbackInterfaces = new List<IMenuActions>();
+    private readonly InputAction m_Menu_Inventory;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Menu".
+    /// </summary>
+    public struct MenuActions
+    {
+        private @PlayerInputs m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public MenuActions(@PlayerInputs wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Menu/Inventory".
+        /// </summary>
+        public InputAction @Inventory => m_Wrapper.m_Menu_Inventory;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Menu; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="MenuActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(MenuActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="MenuActions" />
+        public void AddCallbacks(IMenuActions instance)
+        {
+            if (instance == null || m_Wrapper.m_MenuActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_MenuActionsCallbackInterfaces.Add(instance);
+            @Inventory.started += instance.OnInventory;
+            @Inventory.performed += instance.OnInventory;
+            @Inventory.canceled += instance.OnInventory;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="MenuActions" />
+        private void UnregisterCallbacks(IMenuActions instance)
+        {
+            @Inventory.started -= instance.OnInventory;
+            @Inventory.performed -= instance.OnInventory;
+            @Inventory.canceled -= instance.OnInventory;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="MenuActions.UnregisterCallbacks(IMenuActions)" />.
+        /// </summary>
+        /// <seealso cref="MenuActions.UnregisterCallbacks(IMenuActions)" />
+        public void RemoveCallbacks(IMenuActions instance)
+        {
+            if (m_Wrapper.m_MenuActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="MenuActions.AddCallbacks(IMenuActions)" />
+        /// <seealso cref="MenuActions.RemoveCallbacks(IMenuActions)" />
+        /// <seealso cref="MenuActions.UnregisterCallbacks(IMenuActions)" />
+        public void SetCallbacks(IMenuActions instance)
+        {
+            foreach (var item in m_Wrapper.m_MenuActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_MenuActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="MenuActions" /> instance referencing this action map.
+    /// </summary>
+    public MenuActions @Menu => new MenuActions(this);
+
+    // Debug
+    private readonly InputActionMap m_Debug;
+    private List<IDebugActions> m_DebugActionsCallbackInterfaces = new List<IDebugActions>();
+    private readonly InputAction m_Debug_CycleSlot1;
+    private readonly InputAction m_Debug_CycleSlot2;
+    private readonly InputAction m_Debug_CycleSlot3;
+    private readonly InputAction m_Debug_ToggleLock;
+    private readonly InputAction m_Debug_ClearSlot1;
+    private readonly InputAction m_Debug_ClearSlot2;
+    private readonly InputAction m_Debug_ClearSlot3;
+    private readonly InputAction m_Debug_CycleArmor1;
+    private readonly InputAction m_Debug_CycleArmor2;
+    private readonly InputAction m_Debug_CycleArmor3;
+    private readonly InputAction m_Debug_CycleArmor4;
+    private readonly InputAction m_Debug_CycleArmor5;
+    private readonly InputAction m_Debug_ClearArmor1;
+    private readonly InputAction m_Debug_ClearArmor2;
+    private readonly InputAction m_Debug_ClearArmor3;
+    private readonly InputAction m_Debug_ClearArmor4;
+    private readonly InputAction m_Debug_ClearArmor5;
+    private readonly InputAction m_Debug_RerollHeld;
+    private readonly InputAction m_Debug_RerollArmor;
+    private readonly InputAction m_Debug_DamageSelf;
+    private readonly InputAction m_Debug_HealSelf;
+    private readonly InputAction m_Debug_DumpWeaponStats;
+    private readonly InputAction m_Debug_DumpPlayerStats;
+    private readonly InputAction m_Debug_SpawnOne;
+    private readonly InputAction m_Debug_SpawnGroup;
+    private readonly InputAction m_Debug_FalloffHud;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Debug".
+    /// </summary>
+    public struct DebugActions
+    {
+        private @PlayerInputs m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public DebugActions(@PlayerInputs wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/CycleSlot1".
+        /// </summary>
+        public InputAction @CycleSlot1 => m_Wrapper.m_Debug_CycleSlot1;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/CycleSlot2".
+        /// </summary>
+        public InputAction @CycleSlot2 => m_Wrapper.m_Debug_CycleSlot2;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/CycleSlot3".
+        /// </summary>
+        public InputAction @CycleSlot3 => m_Wrapper.m_Debug_CycleSlot3;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/ToggleLock".
+        /// </summary>
+        public InputAction @ToggleLock => m_Wrapper.m_Debug_ToggleLock;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/ClearSlot1".
+        /// </summary>
+        public InputAction @ClearSlot1 => m_Wrapper.m_Debug_ClearSlot1;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/ClearSlot2".
+        /// </summary>
+        public InputAction @ClearSlot2 => m_Wrapper.m_Debug_ClearSlot2;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/ClearSlot3".
+        /// </summary>
+        public InputAction @ClearSlot3 => m_Wrapper.m_Debug_ClearSlot3;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/CycleArmor1".
+        /// </summary>
+        public InputAction @CycleArmor1 => m_Wrapper.m_Debug_CycleArmor1;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/CycleArmor2".
+        /// </summary>
+        public InputAction @CycleArmor2 => m_Wrapper.m_Debug_CycleArmor2;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/CycleArmor3".
+        /// </summary>
+        public InputAction @CycleArmor3 => m_Wrapper.m_Debug_CycleArmor3;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/CycleArmor4".
+        /// </summary>
+        public InputAction @CycleArmor4 => m_Wrapper.m_Debug_CycleArmor4;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/CycleArmor5".
+        /// </summary>
+        public InputAction @CycleArmor5 => m_Wrapper.m_Debug_CycleArmor5;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/ClearArmor1".
+        /// </summary>
+        public InputAction @ClearArmor1 => m_Wrapper.m_Debug_ClearArmor1;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/ClearArmor2".
+        /// </summary>
+        public InputAction @ClearArmor2 => m_Wrapper.m_Debug_ClearArmor2;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/ClearArmor3".
+        /// </summary>
+        public InputAction @ClearArmor3 => m_Wrapper.m_Debug_ClearArmor3;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/ClearArmor4".
+        /// </summary>
+        public InputAction @ClearArmor4 => m_Wrapper.m_Debug_ClearArmor4;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/ClearArmor5".
+        /// </summary>
+        public InputAction @ClearArmor5 => m_Wrapper.m_Debug_ClearArmor5;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/RerollHeld".
+        /// </summary>
+        public InputAction @RerollHeld => m_Wrapper.m_Debug_RerollHeld;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/RerollArmor".
+        /// </summary>
+        public InputAction @RerollArmor => m_Wrapper.m_Debug_RerollArmor;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/DamageSelf".
+        /// </summary>
+        public InputAction @DamageSelf => m_Wrapper.m_Debug_DamageSelf;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/HealSelf".
+        /// </summary>
+        public InputAction @HealSelf => m_Wrapper.m_Debug_HealSelf;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/DumpWeaponStats".
+        /// </summary>
+        public InputAction @DumpWeaponStats => m_Wrapper.m_Debug_DumpWeaponStats;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/DumpPlayerStats".
+        /// </summary>
+        public InputAction @DumpPlayerStats => m_Wrapper.m_Debug_DumpPlayerStats;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/SpawnOne".
+        /// </summary>
+        public InputAction @SpawnOne => m_Wrapper.m_Debug_SpawnOne;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/SpawnGroup".
+        /// </summary>
+        public InputAction @SpawnGroup => m_Wrapper.m_Debug_SpawnGroup;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/FalloffHud".
+        /// </summary>
+        public InputAction @FalloffHud => m_Wrapper.m_Debug_FalloffHud;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Debug; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="DebugActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(DebugActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="DebugActions" />
+        public void AddCallbacks(IDebugActions instance)
+        {
+            if (instance == null || m_Wrapper.m_DebugActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_DebugActionsCallbackInterfaces.Add(instance);
+            @CycleSlot1.started += instance.OnCycleSlot1;
+            @CycleSlot1.performed += instance.OnCycleSlot1;
+            @CycleSlot1.canceled += instance.OnCycleSlot1;
+            @CycleSlot2.started += instance.OnCycleSlot2;
+            @CycleSlot2.performed += instance.OnCycleSlot2;
+            @CycleSlot2.canceled += instance.OnCycleSlot2;
+            @CycleSlot3.started += instance.OnCycleSlot3;
+            @CycleSlot3.performed += instance.OnCycleSlot3;
+            @CycleSlot3.canceled += instance.OnCycleSlot3;
+            @ToggleLock.started += instance.OnToggleLock;
+            @ToggleLock.performed += instance.OnToggleLock;
+            @ToggleLock.canceled += instance.OnToggleLock;
+            @ClearSlot1.started += instance.OnClearSlot1;
+            @ClearSlot1.performed += instance.OnClearSlot1;
+            @ClearSlot1.canceled += instance.OnClearSlot1;
+            @ClearSlot2.started += instance.OnClearSlot2;
+            @ClearSlot2.performed += instance.OnClearSlot2;
+            @ClearSlot2.canceled += instance.OnClearSlot2;
+            @ClearSlot3.started += instance.OnClearSlot3;
+            @ClearSlot3.performed += instance.OnClearSlot3;
+            @ClearSlot3.canceled += instance.OnClearSlot3;
+            @CycleArmor1.started += instance.OnCycleArmor1;
+            @CycleArmor1.performed += instance.OnCycleArmor1;
+            @CycleArmor1.canceled += instance.OnCycleArmor1;
+            @CycleArmor2.started += instance.OnCycleArmor2;
+            @CycleArmor2.performed += instance.OnCycleArmor2;
+            @CycleArmor2.canceled += instance.OnCycleArmor2;
+            @CycleArmor3.started += instance.OnCycleArmor3;
+            @CycleArmor3.performed += instance.OnCycleArmor3;
+            @CycleArmor3.canceled += instance.OnCycleArmor3;
+            @CycleArmor4.started += instance.OnCycleArmor4;
+            @CycleArmor4.performed += instance.OnCycleArmor4;
+            @CycleArmor4.canceled += instance.OnCycleArmor4;
+            @CycleArmor5.started += instance.OnCycleArmor5;
+            @CycleArmor5.performed += instance.OnCycleArmor5;
+            @CycleArmor5.canceled += instance.OnCycleArmor5;
+            @ClearArmor1.started += instance.OnClearArmor1;
+            @ClearArmor1.performed += instance.OnClearArmor1;
+            @ClearArmor1.canceled += instance.OnClearArmor1;
+            @ClearArmor2.started += instance.OnClearArmor2;
+            @ClearArmor2.performed += instance.OnClearArmor2;
+            @ClearArmor2.canceled += instance.OnClearArmor2;
+            @ClearArmor3.started += instance.OnClearArmor3;
+            @ClearArmor3.performed += instance.OnClearArmor3;
+            @ClearArmor3.canceled += instance.OnClearArmor3;
+            @ClearArmor4.started += instance.OnClearArmor4;
+            @ClearArmor4.performed += instance.OnClearArmor4;
+            @ClearArmor4.canceled += instance.OnClearArmor4;
+            @ClearArmor5.started += instance.OnClearArmor5;
+            @ClearArmor5.performed += instance.OnClearArmor5;
+            @ClearArmor5.canceled += instance.OnClearArmor5;
+            @RerollHeld.started += instance.OnRerollHeld;
+            @RerollHeld.performed += instance.OnRerollHeld;
+            @RerollHeld.canceled += instance.OnRerollHeld;
+            @RerollArmor.started += instance.OnRerollArmor;
+            @RerollArmor.performed += instance.OnRerollArmor;
+            @RerollArmor.canceled += instance.OnRerollArmor;
+            @DamageSelf.started += instance.OnDamageSelf;
+            @DamageSelf.performed += instance.OnDamageSelf;
+            @DamageSelf.canceled += instance.OnDamageSelf;
+            @HealSelf.started += instance.OnHealSelf;
+            @HealSelf.performed += instance.OnHealSelf;
+            @HealSelf.canceled += instance.OnHealSelf;
+            @DumpWeaponStats.started += instance.OnDumpWeaponStats;
+            @DumpWeaponStats.performed += instance.OnDumpWeaponStats;
+            @DumpWeaponStats.canceled += instance.OnDumpWeaponStats;
+            @DumpPlayerStats.started += instance.OnDumpPlayerStats;
+            @DumpPlayerStats.performed += instance.OnDumpPlayerStats;
+            @DumpPlayerStats.canceled += instance.OnDumpPlayerStats;
+            @SpawnOne.started += instance.OnSpawnOne;
+            @SpawnOne.performed += instance.OnSpawnOne;
+            @SpawnOne.canceled += instance.OnSpawnOne;
+            @SpawnGroup.started += instance.OnSpawnGroup;
+            @SpawnGroup.performed += instance.OnSpawnGroup;
+            @SpawnGroup.canceled += instance.OnSpawnGroup;
+            @FalloffHud.started += instance.OnFalloffHud;
+            @FalloffHud.performed += instance.OnFalloffHud;
+            @FalloffHud.canceled += instance.OnFalloffHud;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="DebugActions" />
+        private void UnregisterCallbacks(IDebugActions instance)
+        {
+            @CycleSlot1.started -= instance.OnCycleSlot1;
+            @CycleSlot1.performed -= instance.OnCycleSlot1;
+            @CycleSlot1.canceled -= instance.OnCycleSlot1;
+            @CycleSlot2.started -= instance.OnCycleSlot2;
+            @CycleSlot2.performed -= instance.OnCycleSlot2;
+            @CycleSlot2.canceled -= instance.OnCycleSlot2;
+            @CycleSlot3.started -= instance.OnCycleSlot3;
+            @CycleSlot3.performed -= instance.OnCycleSlot3;
+            @CycleSlot3.canceled -= instance.OnCycleSlot3;
+            @ToggleLock.started -= instance.OnToggleLock;
+            @ToggleLock.performed -= instance.OnToggleLock;
+            @ToggleLock.canceled -= instance.OnToggleLock;
+            @ClearSlot1.started -= instance.OnClearSlot1;
+            @ClearSlot1.performed -= instance.OnClearSlot1;
+            @ClearSlot1.canceled -= instance.OnClearSlot1;
+            @ClearSlot2.started -= instance.OnClearSlot2;
+            @ClearSlot2.performed -= instance.OnClearSlot2;
+            @ClearSlot2.canceled -= instance.OnClearSlot2;
+            @ClearSlot3.started -= instance.OnClearSlot3;
+            @ClearSlot3.performed -= instance.OnClearSlot3;
+            @ClearSlot3.canceled -= instance.OnClearSlot3;
+            @CycleArmor1.started -= instance.OnCycleArmor1;
+            @CycleArmor1.performed -= instance.OnCycleArmor1;
+            @CycleArmor1.canceled -= instance.OnCycleArmor1;
+            @CycleArmor2.started -= instance.OnCycleArmor2;
+            @CycleArmor2.performed -= instance.OnCycleArmor2;
+            @CycleArmor2.canceled -= instance.OnCycleArmor2;
+            @CycleArmor3.started -= instance.OnCycleArmor3;
+            @CycleArmor3.performed -= instance.OnCycleArmor3;
+            @CycleArmor3.canceled -= instance.OnCycleArmor3;
+            @CycleArmor4.started -= instance.OnCycleArmor4;
+            @CycleArmor4.performed -= instance.OnCycleArmor4;
+            @CycleArmor4.canceled -= instance.OnCycleArmor4;
+            @CycleArmor5.started -= instance.OnCycleArmor5;
+            @CycleArmor5.performed -= instance.OnCycleArmor5;
+            @CycleArmor5.canceled -= instance.OnCycleArmor5;
+            @ClearArmor1.started -= instance.OnClearArmor1;
+            @ClearArmor1.performed -= instance.OnClearArmor1;
+            @ClearArmor1.canceled -= instance.OnClearArmor1;
+            @ClearArmor2.started -= instance.OnClearArmor2;
+            @ClearArmor2.performed -= instance.OnClearArmor2;
+            @ClearArmor2.canceled -= instance.OnClearArmor2;
+            @ClearArmor3.started -= instance.OnClearArmor3;
+            @ClearArmor3.performed -= instance.OnClearArmor3;
+            @ClearArmor3.canceled -= instance.OnClearArmor3;
+            @ClearArmor4.started -= instance.OnClearArmor4;
+            @ClearArmor4.performed -= instance.OnClearArmor4;
+            @ClearArmor4.canceled -= instance.OnClearArmor4;
+            @ClearArmor5.started -= instance.OnClearArmor5;
+            @ClearArmor5.performed -= instance.OnClearArmor5;
+            @ClearArmor5.canceled -= instance.OnClearArmor5;
+            @RerollHeld.started -= instance.OnRerollHeld;
+            @RerollHeld.performed -= instance.OnRerollHeld;
+            @RerollHeld.canceled -= instance.OnRerollHeld;
+            @RerollArmor.started -= instance.OnRerollArmor;
+            @RerollArmor.performed -= instance.OnRerollArmor;
+            @RerollArmor.canceled -= instance.OnRerollArmor;
+            @DamageSelf.started -= instance.OnDamageSelf;
+            @DamageSelf.performed -= instance.OnDamageSelf;
+            @DamageSelf.canceled -= instance.OnDamageSelf;
+            @HealSelf.started -= instance.OnHealSelf;
+            @HealSelf.performed -= instance.OnHealSelf;
+            @HealSelf.canceled -= instance.OnHealSelf;
+            @DumpWeaponStats.started -= instance.OnDumpWeaponStats;
+            @DumpWeaponStats.performed -= instance.OnDumpWeaponStats;
+            @DumpWeaponStats.canceled -= instance.OnDumpWeaponStats;
+            @DumpPlayerStats.started -= instance.OnDumpPlayerStats;
+            @DumpPlayerStats.performed -= instance.OnDumpPlayerStats;
+            @DumpPlayerStats.canceled -= instance.OnDumpPlayerStats;
+            @SpawnOne.started -= instance.OnSpawnOne;
+            @SpawnOne.performed -= instance.OnSpawnOne;
+            @SpawnOne.canceled -= instance.OnSpawnOne;
+            @SpawnGroup.started -= instance.OnSpawnGroup;
+            @SpawnGroup.performed -= instance.OnSpawnGroup;
+            @SpawnGroup.canceled -= instance.OnSpawnGroup;
+            @FalloffHud.started -= instance.OnFalloffHud;
+            @FalloffHud.performed -= instance.OnFalloffHud;
+            @FalloffHud.canceled -= instance.OnFalloffHud;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="DebugActions.UnregisterCallbacks(IDebugActions)" />.
+        /// </summary>
+        /// <seealso cref="DebugActions.UnregisterCallbacks(IDebugActions)" />
+        public void RemoveCallbacks(IDebugActions instance)
+        {
+            if (m_Wrapper.m_DebugActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="DebugActions.AddCallbacks(IDebugActions)" />
+        /// <seealso cref="DebugActions.RemoveCallbacks(IDebugActions)" />
+        /// <seealso cref="DebugActions.UnregisterCallbacks(IDebugActions)" />
+        public void SetCallbacks(IDebugActions instance)
+        {
+            foreach (var item in m_Wrapper.m_DebugActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_DebugActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="DebugActions" /> instance referencing this action map.
+    /// </summary>
+    public DebugActions @Debug => new DebugActions(this);
     private int m_DefaultSchemeIndex = -1;
     /// <summary>
     /// Provides access to the input control scheme.
@@ -1093,6 +3023,41 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCrouch(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Reload" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnReload(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Swap" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSwap(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Slot1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSlot1(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Slot2" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSlot2(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Slot3" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSlot3(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
@@ -1157,5 +3122,210 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnRightClick(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Menu" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="MenuActions.AddCallbacks(IMenuActions)" />
+    /// <seealso cref="MenuActions.RemoveCallbacks(IMenuActions)" />
+    public interface IMenuActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Inventory" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnInventory(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Debug" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="DebugActions.AddCallbacks(IDebugActions)" />
+    /// <seealso cref="DebugActions.RemoveCallbacks(IDebugActions)" />
+    public interface IDebugActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "CycleSlot1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCycleSlot1(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CycleSlot2" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCycleSlot2(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CycleSlot3" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCycleSlot3(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToggleLock" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToggleLock(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ClearSlot1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnClearSlot1(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ClearSlot2" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnClearSlot2(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ClearSlot3" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnClearSlot3(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CycleArmor1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCycleArmor1(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CycleArmor2" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCycleArmor2(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CycleArmor3" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCycleArmor3(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CycleArmor4" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCycleArmor4(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CycleArmor5" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCycleArmor5(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ClearArmor1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnClearArmor1(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ClearArmor2" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnClearArmor2(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ClearArmor3" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnClearArmor3(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ClearArmor4" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnClearArmor4(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ClearArmor5" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnClearArmor5(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RerollHeld" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRerollHeld(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RerollArmor" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRerollArmor(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "DamageSelf" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDamageSelf(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "HealSelf" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnHealSelf(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "DumpWeaponStats" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDumpWeaponStats(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "DumpPlayerStats" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDumpPlayerStats(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SpawnOne" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSpawnOne(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SpawnGroup" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSpawnGroup(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "FalloffHud" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnFalloffHud(InputAction.CallbackContext context);
     }
 }

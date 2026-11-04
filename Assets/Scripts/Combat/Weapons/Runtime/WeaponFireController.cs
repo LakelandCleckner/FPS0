@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Combat.Core;
 using Combat.Delivery;
 using Combat.Sources;
@@ -33,9 +32,6 @@ namespace Combat.Weapons
         // projectilePrefab REMOVED - it lives on ProjectileSO now. A prefab here meant
         // every weapon using this controller fired the same projectile.
 
-        [Header("Input")]
-        [SerializeField] private Key reloadKey = Key.R;
-
         [Header("Aim Assist")]
         [Tooltip("Layers holding enemy hitbox colliders.")]
         [SerializeField] private LayerMask magnetismMask;
@@ -44,6 +40,7 @@ namespace Combat.Weapons
 
         private PlayerAudio playerAudio;
         private PlayerAim playerAim;
+        private PlayerInputRouter input;
         private readonly Collider[] assistHits = new Collider[32];
 
         public event Action OnFired;
@@ -90,6 +87,7 @@ namespace Combat.Weapons
         {
             playerAudio = GetComponentInParent<PlayerAudio>();
             playerAim = GetComponentInParent<PlayerAim>();
+            input = PlayerInputRouter.For(this);
         }
 
         private void Start()
@@ -132,6 +130,7 @@ namespace Combat.Weapons
         private void Update()
         {
             if (behavior == null) return;
+            if (input == null) input = PlayerInputRouter.For(this);
 
             // Reload intent is buffered BEFORE the gates, and deliberately so.
             // Pressing reload while sprinting cancels the sprint (WeaponLoadout), but
@@ -142,7 +141,7 @@ namespace Combat.Weapons
             //
             // Buffering while stowed is harmless: IsActive gates the attempt and the
             // window expires in a fifth of a second.
-            if (Keyboard.current != null && Keyboard.current[reloadKey].wasPressedThisFrame)
+            if (input != null && input.Player.Reload.WasPressedThisFrame())
                 reloadBuffer = ReloadBufferWindow;
 
             if (reloadBuffer > 0f) reloadBuffer -= Time.deltaTime;
@@ -179,12 +178,12 @@ namespace Combat.Weapons
             // handling-driven ready time and the shot goes out once IsReloading clears.
             if (ammo != null && ammo.IsReloading)
             {
-                if (ammo.IsShellReload && Mouse.current != null && Mouse.current.leftButton.isPressed)
+                if (ammo.IsShellReload && TriggerHeld)
                     ammo.RequestInterrupt();
                 return;
             }
 
-            bool held = Mouse.current != null && Mouse.current.leftButton.isPressed;
+            bool held = TriggerHeld;
             bool pressed = held && !triggerHeldLast;
             bool released = !held && triggerHeldLast;
             triggerHeldLast = held;
@@ -193,6 +192,8 @@ namespace Combat.Weapons
             float rpm = damageSource != null ? damageSource.ResolvedRPM : 0f;
             behavior.Tick(Time.deltaTime, trigger, rpm);
         }
+
+        private bool TriggerHeld => input != null && input.Player.Fire.IsPressed();
 
         private void HandleFireRequested(ShotInfo shot)
         {

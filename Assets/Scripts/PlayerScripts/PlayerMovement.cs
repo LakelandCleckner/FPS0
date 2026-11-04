@@ -40,7 +40,7 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField, Self] private CharacterController characterController;
 
-    private PlayerInputs playerInputs;
+    private PlayerInputRouter input;
 
     [Header("New Input Actions")]
     [SerializeField] private Vector2 moveInput;
@@ -55,26 +55,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
-        playerInputs = new PlayerInputs();
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        input = GetComponent<PlayerInputRouter>();
+        if (input == null)
+        {
+            Debug.LogWarning("[PlayerMovement] No PlayerInputRouter on the player; adding one.");
+            input = gameObject.AddComponent<PlayerInputRouter>();
+        }
 
         if (combatantStats == null)
             combatantStats = GetComponent<CombatantStats>();
-
-        playerInputs.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
-        playerInputs.Player.Move.canceled += _ => moveInput = Vector2.zero;
-
-        playerInputs.Player.Look.performed += ctx => mouseLook.SetLookInput(ctx.ReadValue<Vector2>());
-        playerInputs.Player.Look.canceled += _ => mouseLook.SetLookInput(Vector2.zero);
-
-        playerInputs.Player.Jump.started += ctx =>
-        {
-            jumpBufferCounter = jumpBufferTime;
-        };
-
-        playerInputs.Player.Run.started += Sprint;
-        playerInputs.Player.Run.canceled += Sprint;
     }
 
     private void Start()
@@ -120,8 +109,38 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void OnEnable() => playerInputs.Enable();
-    private void OnDisable() => playerInputs.Disable();
+    private void OnEnable()
+    {
+        var p = input.Player;
+        p.Move.performed += OnMove;
+        p.Move.canceled += OnMove;
+        p.Look.performed += OnLook;
+        p.Look.canceled += OnLook;
+        p.Jump.started += OnJump;
+        p.Run.started += Sprint;
+        p.Run.canceled += Sprint;
+    }
+
+    private void OnDisable()
+    {
+        if (input == null) return;
+        var p = input.Player;
+        p.Move.performed -= OnMove;
+        p.Move.canceled -= OnMove;
+        p.Look.performed -= OnLook;
+        p.Look.canceled -= OnLook;
+        p.Jump.started -= OnJump;
+        p.Run.started -= Sprint;
+        p.Run.canceled -= Sprint;
+
+        moveInput = Vector2.zero;
+        wantsToSprint = false;
+        if (mouseLook != null) mouseLook.SetLookInput(Vector2.zero);
+    }
+
+    private void OnMove(InputAction.CallbackContext ctx) => moveInput = ctx.ReadValue<Vector2>();
+    private void OnLook(InputAction.CallbackContext ctx) => mouseLook.SetLookInput(ctx.ReadValue<Vector2>());
+    private void OnJump(InputAction.CallbackContext ctx) => jumpBufferCounter = jumpBufferTime;
 
     private void UpdateSprintState()
     {

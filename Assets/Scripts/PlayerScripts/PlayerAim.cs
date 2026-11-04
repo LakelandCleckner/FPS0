@@ -42,7 +42,7 @@ public class PlayerAim : MonoBehaviour
     // and the arms pose (AimProgress) read, so they can never drift apart.
     public float Blend { get; private set; }
 
-    private PlayerInputs input;
+    private PlayerInputRouter input;
     private readonly InputLatch latch = new InputLatch();
     private bool wasSuppressed;
     private ModifierHandle moveHandle = ModifierHandle.None;
@@ -51,16 +51,14 @@ public class PlayerAim : MonoBehaviour
 
     private void Awake()
     {
-        input = new PlayerInputs();
+        input = PlayerInputRouter.For(this);
         if (movement == null) movement = GetComponent<PlayerMovement>();
         if (loadout == null) loadout = GetComponent<WeaponLoadout>();
         if (combatantStats == null) combatantStats = GetComponent<CombatantStats>();
     }
 
-    private void OnEnable() => input.Enable();
     private void OnDisable()
     {
-        input.Disable();
         SetMovePenalty(false, 1f);
     }
 
@@ -68,7 +66,9 @@ public class PlayerAim : MonoBehaviour
     {
         if (settings == null) return;
 
-        latch.Update(input.Player.Aim.IsPressed(), settings.aimInputMode, settings.hybridHoldThreshold);
+        if (input == null) input = PlayerInputRouter.For(this);
+        bool aimHeld = input != null && input.Player.Aim.IsPressed();
+        latch.Update(aimHeld, settings.aimInputMode, settings.hybridHoldThreshold);
 
         // Pressing aim during a sprint drops the sprint.
         if (latch.PressedThisFrame && movement != null && movement.IsSprinting)

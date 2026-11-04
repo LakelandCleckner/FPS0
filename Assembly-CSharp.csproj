@@ -127,7 +127,6 @@
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\AgentBrain.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\DamageTypeSO.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\TargetKeys\WanderTarget.cs" />
-    <Compile Include="Assets\Scripts\Debugging\Combat\ChainTestProbe.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Keys\MovementStatKeys.cs" />
     <Compile Include="Assets\Scripts\Enemies\DamageAndHealth\BodyPart.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Actions\InvestigateAction.cs" />
@@ -249,6 +248,7 @@
     <Compile Include="Assets\Scripts\UI\AmmoDisplay.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\HitscanDelivery.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\PlayerCrouch.cs" />
+    <Compile Include="Assets\Scripts\PlayerScripts\PlayerInputRouter.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\PlayerTargetSensor.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\Shields\ParticleSystemShield.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Behaviours\AINoise.cs" />
@@ -269,7 +269,6 @@
     <Compile Include="Assets\Scripts\Enemies\Combat\EnemyMeleeAttack.cs" />
     <Compile Include="Assets\Scripts\Combat\Perks\Types\HolsterReloadPerkSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\IFireBehavior.cs" />
-    <Compile Include="Assets\Scripts\Combat\Stats\Debug\DefenseDebuffTest.cs" />
     <Compile Include="Assets\Scripts\Combat\Spawning\AccumulatorPoolReset.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\WeaponSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\StatResolveTest.cs" />

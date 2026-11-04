@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Combat.Events;
 using Combat.Loadout;
 using Combat.Sources;
@@ -56,14 +55,8 @@ namespace Combat.Weapons
         [SerializeField] private float fallbackStowTime = 0.4f;
 
         [Header("Input")]
-        [SerializeField] private Key swapKey = Key.Q;
-        [Tooltip("Digit keys select a slot directly. 1 selects slot 1, and so on.")]
+        [Tooltip("Slot actions select a slot directly. Slot1 selects slot 1, and so on.")]
         [SerializeField] private bool enableDigitSelect = true;
-
-        [Tooltip("Should match WeaponFireController's reload key. Reloading cancels a " +
-                 "sprint the same way firing does. A shared input asset would remove " +
-                 "this duplication once the fire controller moves off raw device reads.")]
-        [SerializeField] private Key reloadKeyForSprintCancel = Key.R;
 
         [Header("Sprint")]
         [Tooltip("Optional. When set, the weapon cannot fire while sprinting and needs " +
@@ -94,6 +87,7 @@ namespace Combat.Weapons
         private float duration;
 
         private WeaponEventBus bus;
+        private PlayerInputRouter input;
 
         private bool wasSprinting;
         private float sprintExitTimer;
@@ -131,6 +125,7 @@ namespace Combat.Weapons
         private void Awake()
         {
             bus = WeaponEventBus.FindFor(this);
+            input = PlayerInputRouter.For(this);
             if (model == null) model = GetComponentInParent<PlayerLoadout>();
 
             // Spawned weapons wait here so Initialize runs before their Awake.
@@ -439,17 +434,18 @@ namespace Combat.Weapons
 
         private void ReadInput()
         {
-            var kb = Keyboard.current;
-            if (kb == null) return;
+            if (input == null) input = PlayerInputRouter.For(this);
+            if (input == null) return;
 
-            if (kb[swapKey].wasPressedThisFrame)
+            var p = input.Player;
+            if (p.Swap.WasPressedThisFrame())
                 RequestSwap(SwapTarget());
 
             if (!enableDigitSelect) return;
 
-            if (kb.digit1Key.wasPressedThisFrame) RequestSwap(0);
-            else if (kb.digit2Key.wasPressedThisFrame) RequestSwap(1);
-            else if (kb.digit3Key.wasPressedThisFrame) RequestSwap(2);
+            if (p.Slot1.WasPressedThisFrame()) RequestSwap(0);
+            else if (p.Slot2.WasPressedThisFrame()) RequestSwap(1);
+            else if (p.Slot3.WasPressedThisFrame()) RequestSwap(2);
         }
 
         // ------------------------------------------------------------------ sprint
@@ -464,9 +460,8 @@ namespace Combat.Weapons
             // Fire/reload input cancels the sprint instead of being ignored.
             if (actionsCancelSprint && sprinting)
             {
-                bool wantsFire = Mouse.current != null && Mouse.current.leftButton.isPressed;
-                bool wantsReload = Keyboard.current != null
-                                   && Keyboard.current[reloadKeyForSprintCancel].wasPressedThisFrame;
+                bool wantsFire = input != null && input.Player.Fire.IsPressed();
+                bool wantsReload = input != null && input.Player.Reload.WasPressedThisFrame();
 
                 if (wantsFire || wantsReload)
                 {
