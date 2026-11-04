@@ -12,7 +12,7 @@ namespace Combat.Perks
         [Range(0f, 1f)] public float healFraction = 0.1f;
         [Tooltip("Count kills by burns and chains, not just shots.")]
         public HitSourceMask sources = HitSourceMask.All;
-        [Tooltip("Weapon perk: heal on kills by any loadout weapon. Armour always does.")]
+        [Tooltip("Weapon perk: heal on kills by any loadout weapon. Armor always does.")]
         public bool anyWeapon = false;
 
         private void Reset() => listenScope = PerkListenScope.Always;

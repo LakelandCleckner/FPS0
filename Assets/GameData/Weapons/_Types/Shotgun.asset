@@ -16,6 +16,8 @@ MonoBehaviour:
   displayName: Shotgun
   allowedSlots: 4
   inventorySlot: 2
+  defaultViewmodel: {fileID: 11400000, guid: 409e69fdfa7817a45b80198dfa6325bf, type: 2}
+  defaultShader: {fileID: 0}
   perkColumns:
   - label: Barrel
     source: {fileID: 11400000, guid: ba61f02bd0074af4b9a0416032fcb3f0, type: 2}

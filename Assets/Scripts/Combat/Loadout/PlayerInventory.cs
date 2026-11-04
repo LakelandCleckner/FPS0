@@ -15,7 +15,7 @@ namespace Combat.Loadout
         [FormerlySerializedAs("carriedWeaponCap")]
         [SerializeField] private int carriedWeaponCapPerSlot = 9;
 
-        [Tooltip("Armour pieces carried per armour slot. Equipped armour doesn't count.")]
+        [Tooltip("Armor pieces carried per armor slot. Equipped armor doesn't count.")]
         [Min(0)]
         [SerializeField] private int carriedArmorCapPerSlot = 9;
 
@@ -67,7 +67,7 @@ namespace Combat.Loadout
             return true;
         }
 
-        // ------------------------------------------------------------------ armour
+        // ------------------------------------------------------------------ armor
 
         public bool Contains(ArmorInstance piece) => piece != null && armor.Contains(piece);
 

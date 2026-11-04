@@ -16,14 +16,17 @@ MonoBehaviour:
   displayName: Chest Slot
   perkColumns:
   - label: Stat
-    source: {fileID: 11400000, guid: f9ef6742ad4eb0b40b8761933d0b3b3d, type: 2}
+    source: {fileID: 11400000, guid: 51752626e4a5d8f4cbc30633c2d9edcc, type: 2}
     extraPerks: []
   - label: Stat
-    source: {fileID: 11400000, guid: f9ef6742ad4eb0b40b8761933d0b3b3d, type: 2}
+    source: {fileID: 11400000, guid: 51752626e4a5d8f4cbc30633c2d9edcc, type: 2}
     extraPerks: []
   - label: Trait
-    source: {fileID: 11400000, guid: d35dff53427c66b4b8a66b7eda388e47, type: 2}
+    source: {fileID: 11400000, guid: a20a07268795b6f43a10a61cdd12673f, type: 2}
     extraPerks: []
   - label: Trait
-    source: {fileID: 11400000, guid: 203632eff8623844e963ae4e464fe63a, type: 2}
+    source: {fileID: 11400000, guid: a20a07268795b6f43a10a61cdd12673f, type: 2}
+    extraPerks: []
+  - label: Trait
+    source: {fileID: 11400000, guid: a20a07268795b6f43a10a61cdd12673f, type: 2}
     extraPerks: []

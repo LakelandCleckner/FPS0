@@ -6,8 +6,8 @@ namespace Combat.Weapons
     // Stat definitions the loadout resolves off a weapon's own container.
     //
     // These are WEAPON-home stats: a weapon's equip and stow times belong to the
-    // weapon, so a stowed weapon still has them and armour that modifies them
-    // registers onto each weapon's container (with the armour piece as the modifier
+    // weapon, so a stowed weapon still has them and armor that modifies them
+    // registers onto each weapon's container (with the armor piece as the modifier
     // Owner, so RemoveAllFromOwner cleans up on unequip).
     [CreateAssetMenu(fileName = "LoadoutStatKeys", menuName = "Combat/Stats/Loadout Stat Keys")]
     public class LoadoutStatKeys : ScriptableObject

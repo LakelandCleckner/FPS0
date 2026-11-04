@@ -15,11 +15,13 @@ MonoBehaviour:
   id: shotgun_loader
   displayName: Shotgun Loader
   description: Shotguns reload faster.
+  icon: {fileID: 0}
+  shortName: 
   listenScope: 0
   modifiers:
   - stat: {fileID: 11400000, guid: 7579532ea69da3744ab17777fafe21c6, type: 2}
     bucket: 2
-    value: -0.15
+    value: -0.2
     target: 1
     weaponTypes:
     - {fileID: 11400000, guid: e71ec1fc466957844bec5b520a2097f6, type: 2}

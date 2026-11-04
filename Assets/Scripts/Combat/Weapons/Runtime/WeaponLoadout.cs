@@ -761,7 +761,7 @@ namespace Combat.Weapons
         private float StowTime(int index) =>
             ResolveTime(index, statKeys != null ? statKeys.stowTime : null, fallbackStowTime);
 
-        // Resolved off the weapon's container so perks and armour compose; falls back if unwired.
+        // Resolved off the weapon's container so perks and armor compose; falls back if unwired.
         private float ResolveTime(int index, StatDefinitionSO def, float fallback)
         {
             if (!IsValid(index) || def == null) return fallback;

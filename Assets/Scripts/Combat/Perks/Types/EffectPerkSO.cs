@@ -21,7 +21,7 @@ namespace Combat.Perks
             {
                 if (Ctx.IsArmor)
                 {
-                    Debug.LogWarning($"[EffectPerk] '{Definition.name}' needs a weapon; it does nothing on armour.");
+                    Debug.LogWarning($"[EffectPerk] '{Definition.name}' needs a weapon; it does nothing on armor.");
                     return;
                 }
 

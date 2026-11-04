@@ -9,7 +9,7 @@ using Combat.Weapons;
 
 namespace Combat.UI
 {
-    // Character tab: player stats, equipped armour with active perks, and an overview. Values update in place while open.
+    // Character tab: player stats, equipped armor with active perks, and an overview. Values update in place while open.
     public class CharacterPanel : InventoryPanel
     {
         [Header("Column widths (relative)")]
@@ -71,7 +71,7 @@ namespace Combat.UI
             layout.childForceExpandHeight = true;
 
             Stats(Column(root, s, "Stats", statsWidth), screen);
-            Armor(Column(root, s, "Armour", armorWidth), screen);
+            Armor(Column(root, s, "Armor", armorWidth), screen);
             Overview(Column(root, s, "Overview", overviewWidth), screen);
 
             Tick(screen);
@@ -179,7 +179,7 @@ namespace Combat.UI
             }
         }
 
-        // Armour effects that land on weapons, not the player.
+        // Armor effects that land on weapons, not the player.
         private void WeaponEffects(RectTransform body, InventoryScreen screen)
         {
             var s = screen.Style;
@@ -196,13 +196,13 @@ namespace Combat.UI
             }
         }
 
-        // ------------------------------------------------------------------ armour
+        // ------------------------------------------------------------------ armor
 
         private void Armor(RectTransform body, InventoryScreen screen)
         {
             var s = screen.Style;
             var view = screen.View;
-            Heading(body, s, "Armour");
+            Heading(body, s, "Armor");
             for (int i = 0; i < view.ArmorSlots.Count; i++) ArmorCard(body, s, view.ArmorSlots[i], view.Armor[i]);
 
             Gap(body, s);

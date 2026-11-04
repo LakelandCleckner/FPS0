@@ -15,17 +15,19 @@ MonoBehaviour:
   id: chunker_plating
   displayName: Chunker Plating
   description: Double health. 20% slower movement.
+  icon: {fileID: 0}
+  shortName: 
   listenScope: 0
   modifiers:
   - stat: {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
     bucket: 2
     value: 1
-    target: 1
+    target: 0
     weaponTypes: []
     scope: 1
   - stat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
     bucket: 2
     value: -0.2
-    target: 1
+    target: 0
     weaponTypes: []
     scope: 1

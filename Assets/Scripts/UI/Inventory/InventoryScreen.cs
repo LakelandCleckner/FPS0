@@ -50,7 +50,7 @@ namespace Combat.UI
         [Tooltip("Tab shown in the edit-mode preview.")]
         [SerializeField] private InventoryTab previewTab = InventoryTab.Loadout;
         [SerializeField] private StartingLoadoutSO previewLoadout;
-        [Tooltip("Armour slots to show in the preview. Empty = the scene PlayerLoadout's slots.")]
+        [Tooltip("Armor slots to show in the preview. Empty = the scene PlayerLoadout's slots.")]
         [SerializeField] private List<ArmorSlotSO> previewArmorSlots = new List<ArmorSlotSO>();
 
         private readonly LoadoutView view = new LoadoutView();
@@ -243,7 +243,7 @@ namespace Combat.UI
             footerDirty = true;
         }
 
-        // Stat layers for a weapon, with the current equipped armour.
+        // Stat layers for a weapon, with the current equipped armor.
         public WeaponStatPreview PreviewFor(WeaponInstance weapon)
         {
             if (!Application.isPlaying) StatBootstrap.EnsureRegistry();

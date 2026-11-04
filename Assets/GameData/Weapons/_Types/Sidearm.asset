@@ -16,6 +16,8 @@ MonoBehaviour:
   displayName: Sidearm
   allowedSlots: 2
   inventorySlot: 1
+  defaultViewmodel: {fileID: 11400000, guid: a57c3dcab586db94e9a2916da06e2ebb, type: 2}
+  defaultShader: {fileID: 0}
   perkColumns:
   - label: Barrel
     source: {fileID: 11400000, guid: e14613e9698a19e4e9ce80dceacd6a88, type: 2}

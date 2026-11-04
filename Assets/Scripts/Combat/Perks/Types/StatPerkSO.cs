@@ -9,7 +9,7 @@ namespace Combat.Perks
     public class StatPerkSO : PerkSO
     {
         [Tooltip("Weapon perk: Weapons = this weapon; Player = gated by this weapon (InLoadout slotted, InHands held).\n" +
-                 "Armour perk: Weapons = loadout weapons matching the type filter; Player = always.")]
+                 "Armor perk: Weapons = loadout weapons matching the type filter; Player = always.")]
         public List<ModifierEntry> modifiers = new List<ModifierEntry>();
 
         public override PerkRuntime CreateRuntime() => new StatPerkRuntime();

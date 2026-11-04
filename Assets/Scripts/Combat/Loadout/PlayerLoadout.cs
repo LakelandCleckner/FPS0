@@ -15,8 +15,8 @@ namespace Combat.Loadout
 
         [SerializeField] private StartingLoadoutSO startingLoadout;
 
-        [Header("Armour")]
-        [Tooltip("Armour slots in display order. Add a slot asset here to add a slot.")]
+        [Header("Armor")]
+        [Tooltip("Armor slots in display order. Add a slot asset here to add a slot.")]
         [SerializeField] private List<ArmorSlotSO> armorSlots = new List<ArmorSlotSO>();
 
         private readonly WeaponInstance[] weapons = new WeaponInstance[LoadoutSlots.Count];
@@ -130,7 +130,7 @@ namespace Combat.Loadout
         private void AddCarriedArmor(ArmorSO def)
         {
             if (inventory == null || !inventory.TryAddArmor(new ArmorInstance(def, StartRoll())))
-                Debug.LogWarning($"[PlayerLoadout] No carried space for starting armour '{def.name}'.");
+                Debug.LogWarning($"[PlayerLoadout] No carried space for starting armor '{def.name}'.");
         }
 
         // ------------------------------------------------------------------ weapons
@@ -203,18 +203,18 @@ namespace Combat.Loadout
             return true;
         }
 
-        // ------------------------------------------------------------------ armour
+        // ------------------------------------------------------------------ armor
 
-        // Puts armour in its own slot; the previous piece goes to carried inventory.
+        // Puts armor in its own slot; the previous piece goes to carried inventory.
         public bool TryEquipArmor(ArmorInstance piece, out string reason)
         {
             reason = null;
 
             if (IsLocked) { reason = "Loadout is locked."; return false; }
-            if (piece == null || piece.Definition == null) { reason = "No armour."; return false; }
+            if (piece == null || piece.Definition == null) { reason = "No armor."; return false; }
 
             int idx = ArmorSlotIndex(piece.Slot);
-            if (idx < 0) { reason = "This armour's slot isn't on the loadout."; return false; }
+            if (idx < 0) { reason = "This armor's slot isn't on the loadout."; return false; }
             if (armor[idx] == piece) return true;
 
             var old = armor[idx];
@@ -235,13 +235,13 @@ namespace Combat.Loadout
             return true;
         }
 
-        // Empties an armour slot; the piece goes to carried inventory.
+        // Empties an armor slot; the piece goes to carried inventory.
         public bool TryClearArmor(int index, out string reason)
         {
             reason = null;
 
             if (IsLocked) { reason = "Loadout is locked."; return false; }
-            if (index < 0 || index >= armor.Length) { reason = "Invalid armour slot."; return false; }
+            if (index < 0 || index >= armor.Length) { reason = "Invalid armor slot."; return false; }
 
             var old = armor[index];
             if (old == null) return true;

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fc4868a939c53943b121918de7da8a5, type: 3}
   m_Name: StartingLoadout1
   m_EditorClassIdentifier: 
+  rollMode: 0
   equipped:
   - {fileID: 11400000, guid: e12df4051163b664ea4e285983b94015, type: 2}
   - {fileID: 11400000, guid: d3924d4d97123f64abdced4856c5c9fc, type: 2}
@@ -26,3 +27,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a9e0afab78ffb97458e873aee55c2460, type: 2}
   carriedArmor:
   - {fileID: 11400000, guid: f475134a5f88cec40b4ea079697365b0, type: 2}
+  - {fileID: 11400000, guid: 998516904126e104493a35d530c6c841, type: 2}
+  - {fileID: 11400000, guid: 0af34ff1ca966164a99d6fcb16f9593f, type: 2}
+  - {fileID: 11400000, guid: f24fe446ee587de4aa74de8112894437, type: 2}
+  - {fileID: 11400000, guid: d9cde538701173a47b44322063178599, type: 2}
+  - {fileID: 11400000, guid: 6056bcc68ed26c345bc091daac9ae2d0, type: 2}
+  - {fileID: 11400000, guid: 11f728149b10e3848b615af796ed723d, type: 2}
+  - {fileID: 11400000, guid: 5b1f3396280b76a47ac4ec7c0f3c1e46, type: 2}

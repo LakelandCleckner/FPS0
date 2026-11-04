@@ -31,11 +31,11 @@ namespace Combat.Loadout
         [Tooltip("Starting reserves for shared ammo pools.")]
         public List<PoolAmount> ammoPools = new List<PoolAmount>();
 
-        [Header("Armour")]
-        [Tooltip("Armour equipped at start; each goes to its own slot. Extras for a filled slot are carried.")]
+        [Header("Armor")]
+        [Tooltip("Armor equipped at start; each goes to its own slot. Extras for a filled slot are carried.")]
         public List<ArmorSO> equippedArmor = new List<ArmorSO>();
 
-        [Tooltip("Armour carried but not equipped.")]
+        [Tooltip("Armor carried but not equipped.")]
         public List<ArmorSO> carriedArmor = new List<ArmorSO>();
     }
 }

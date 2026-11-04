@@ -16,6 +16,8 @@ MonoBehaviour:
   displayName: Assault Rifle
   allowedSlots: 1
   inventorySlot: 0
+  defaultViewmodel: {fileID: 11400000, guid: d4f46df13b99803418d5c2dac5d10c04, type: 2}
+  defaultShader: {fileID: 0}
   perkColumns:
   - label: Barrel
     source: {fileID: 11400000, guid: 50372d5fa2c8b4a46bc859fb62a988e0, type: 2}

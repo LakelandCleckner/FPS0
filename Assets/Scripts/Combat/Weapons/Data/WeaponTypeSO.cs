@@ -20,6 +20,12 @@ namespace Combat.Weapons
         [Range(0, LoadoutSlots.Count - 1)]
         public int inventorySlot = 0;
 
+        [Header("New weapon defaults (Item Batch)")]
+        [Tooltip("Viewmodel given to new weapons of this type that don't copy from another weapon.")]
+        public WeaponViewmodelSO defaultViewmodel;
+        [Tooltip("Shader preset given to new weapons of this type that don't copy from another weapon. Empty = original look.")]
+        public WeaponShaderSO defaultShader;
+
         [Header("Perks")]
         [Tooltip("Default roll columns for weapons of this type. A weapon with its own columns uses those instead.")]
         public List<PerkColumn> perkColumns = new List<PerkColumn>();

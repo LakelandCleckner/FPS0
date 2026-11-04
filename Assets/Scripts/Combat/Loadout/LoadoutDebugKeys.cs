@@ -14,9 +14,9 @@ namespace Combat.Loadout
         [Tooltip("Found in parents if empty.")]
         [SerializeField] private PlayerLoadout loadout;
 
-        [Tooltip("For logging armour stat results. Found in parents if empty.")]
+        [Tooltip("For logging armor stat results. Found in parents if empty.")]
         [SerializeField] private CombatantStats player;
-        [Tooltip("For logging armour stat results on the held weapon. Found in parents/children if empty.")]
+        [Tooltip("For logging armor stat results on the held weapon. Found in parents/children if empty.")]
         [SerializeField] private WeaponLoadout weapons;
 
         private readonly object debugLock = new object();
@@ -100,14 +100,14 @@ namespace Combat.Loadout
                 Debug.Log($"[LoadoutDebug] Slot {slot + 1}: {reason}");
         }
 
-        // ------------------------------------------------------------------ armour
+        // ------------------------------------------------------------------ armor
 
-        // Equips the first carried piece for this armour slot; the old one goes to the back.
+        // Equips the first carried piece for this armor slot; the old one goes to the back.
         public void CycleArmor(int index)
         {
             if (index >= loadout.ArmorSlotCount)
             {
-                Debug.Log($"[LoadoutDebug] No armour slot {index + 1}.");
+                Debug.Log($"[LoadoutDebug] No armor slot {index + 1}.");
                 return;
             }
 
@@ -130,12 +130,12 @@ namespace Combat.Loadout
                 }
             }
 
-            Debug.Log($"[LoadoutDebug] No carried armour for {slot.name}.");
+            Debug.Log($"[LoadoutDebug] No carried armor for {slot.name}.");
         }
 
         public void ClearArmor(int index)
         {
-            var name = index < loadout.ArmorSlotCount ? loadout.ArmorSlots[index].name : $"armour slot {index + 1}";
+            var name = index < loadout.ArmorSlotCount ? loadout.ArmorSlots[index].name : $"armor slot {index + 1}";
 
             if (loadout.TryClearArmor(index, out var reason))
             {

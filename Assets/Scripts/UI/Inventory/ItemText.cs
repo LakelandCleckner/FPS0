@@ -28,7 +28,7 @@ namespace Combat.UI
                 string a = arch != null ? Pick(arch.displayName, arch.name) : "";
                 return string.IsNullOrEmpty(a) ? t : t + "  /  " + a;
             }
-            if (item is ArmorInstance ar && ar.Slot != null) return Pick(ar.Slot.displayName, ar.Slot.name) + " armour";
+            if (item is ArmorInstance ar && ar.Slot != null) return Pick(ar.Slot.displayName, ar.Slot.name) + " armor";
             return "";
         }
 

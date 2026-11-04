@@ -5,7 +5,7 @@ using Combat.Stats;
 
 namespace Combat.Weapons
 {
-    // One stat seen three ways: the weapon alone, plus its own perks, plus equipped armour.
+    // One stat seen three ways: the weapon alone, plus its own perks, plus equipped armor.
     public struct StatLayers
     {
         public float Base;

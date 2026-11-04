@@ -13,8 +13,8 @@ namespace Combat.Perks
     public sealed class PerkContext
     {
         public object Item;                    // WeaponInstance or ArmorInstance
-        public WeaponDamageSource Weapon;      // null for armour
-        public WeaponAmmo Ammo;                // null for armour
+        public WeaponDamageSource Weapon;      // null for armor
+        public WeaponAmmo Ammo;                // null for armor
         public WeaponEventBus Bus;
         public LoadoutModifierApplier Applier;
         public PerkClock Clock;
@@ -78,7 +78,7 @@ namespace Combat.Perks
             return string.IsNullOrWhiteSpace(display) ? def.name : display;
         }
 
-        // Armour perks, or a weapon perk whose weapon is in hand. The HUD dims the rest.
+        // Armor perks, or a weapon perk whose weapon is in hand. The HUD dims the rest.
         public bool InHand => Ctx != null && (Ctx.IsArmor || Ctx.IsHeld);
 
         // False = nothing to show. Perks with HUD state override this.
@@ -150,7 +150,7 @@ namespace Combat.Perks
 
         // ------------------------------------------------------------------ events
 
-        // Own weapon's events by default; anyWeapon hears every weapon (armour always does).
+        // Own weapon's events by default; anyWeapon hears every weapon (armor always does).
         protected void Listen(WeaponEventType type, HitSourceMask sources = HitSourceMask.Direct, bool anyWeapon = false)
         {
             if (Ctx.Bus == null) return;
@@ -165,8 +165,8 @@ namespace Combat.Perks
 
         // ------------------------------------------------------------------ modifiers
 
-        // Weapons target: this weapon (weapon perk) or filtered loadout weapons (armour).
-        // Player target: gated by this weapon's state (weapon perk) or always (armour).
+        // Weapons target: this weapon (weapon perk) or filtered loadout weapons (armor).
+        // Player target: gated by this weapon's state (weapon perk) or always (armor).
         protected ModifierGrant Grant(ModifierEntry e, float value)
         {
             if (e == null || e.stat == null || Ctx.Applier == null) return null;

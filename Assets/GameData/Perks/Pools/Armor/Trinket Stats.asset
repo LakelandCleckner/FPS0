@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4d1da4720f2c694786e3c4a0bbe5be0, type: 3}
+  m_Name: Trinket Stats
+  m_EditorClassIdentifier: 
+  perks:
+  - {fileID: 11400000, guid: 866c2edb7a41c43498a144a41a927a70, type: 2}
+  - {fileID: 11400000, guid: 2a35159383c965543b3a121d898ee82b, type: 2}
+  - {fileID: 11400000, guid: 0d12706c378fd99449b89490afc77ef3, type: 2}
+  - {fileID: 11400000, guid: 53b0d4e1d01ca13459ee7a4f8714f54e, type: 2}
+  - {fileID: 11400000, guid: da15045ef5fe0044b8331b1c53d7c9f2, type: 2}
+  - {fileID: 11400000, guid: 91b02c5bee9a1344fa996f0d527058a6, type: 2}
+  - {fileID: 11400000, guid: 62f9e3c3eb12cc2478d41802ff28a285, type: 2}
+  - {fileID: 11400000, guid: 189cff52d4804074f89ae83f038dfc18, type: 2}
+  - {fileID: 11400000, guid: 9ebd0444bb0a0c24385c7cc34ae876ca, type: 2}
+  includes: []
+  authoredAs: Keen*, Brutal*, Potent*

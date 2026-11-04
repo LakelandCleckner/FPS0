@@ -46,7 +46,7 @@ namespace Combat.Weapons
 
             // Equip/stow/ADS time are authored in SECONDS on the archetype and have no
             // per-weapon delta on purpose. If one gun in a frame should be snappier,
-            // give it handling — that keeps a single legible knob, and means armour
+            // give it handling — that keeps a single legible knob, and means armor
             // and perks reach it through the same channel.
             container.SetBase(keys.equipTime, a.baseEquipTime);
             container.SetBase(keys.stowTime, a.baseStowTime);

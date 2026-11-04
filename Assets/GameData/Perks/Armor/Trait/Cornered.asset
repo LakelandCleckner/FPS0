@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4c13629e85fd0f4780d73dbbd330d95, type: 3}
+  m_Name: Cornered
+  m_EditorClassIdentifier: 
+  id: cornered
+  displayName: Cornered
+  description: Move 20% faster while below 40% health.
+  icon: {fileID: 0}
+  shortName: 
+  listenScope: 0
+  threshold: 0.4
+  modifiers:
+  - stat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
+    bucket: 2
+    value: 0.2
+    target: 0
+    weaponTypes: []
+    scope: 1

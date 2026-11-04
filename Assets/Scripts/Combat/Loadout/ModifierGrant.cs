@@ -11,7 +11,7 @@ namespace Combat.Loadout
 
     public enum ModifierTarget { Player, Weapons }
 
-    // One authored stat change, used by armour and perks.
+    // One authored stat change, used by armor and perks.
     [Serializable]
     public class ModifierEntry
     {
@@ -26,14 +26,14 @@ namespace Combat.Loadout
         [Tooltip("Player stats, or weapon stats.")]
         public ModifierTarget target = ModifierTarget.Player;
 
-        [Tooltip("Armour, Weapons target only. Empty = every weapon type.")]
+        [Tooltip("Armor, Weapons target only. Empty = every weapon type.")]
         public List<WeaponTypeSO> weaponTypes = new List<WeaponTypeSO>();
 
         [Tooltip("InLoadout = while slotted; InHands = only while held.")]
         public ActivityScope scope = ActivityScope.InLoadout;
     }
 
-    // One modifier a loadout source (armour, later perks) wants applied while its conditions hold.
+    // One modifier a loadout source (armor, later perks) wants applied while its conditions hold.
     public sealed class ModifierGrant : IStatSourceLabel
     {
         public string StatSourceLabel => StatSource.Label(Owner);

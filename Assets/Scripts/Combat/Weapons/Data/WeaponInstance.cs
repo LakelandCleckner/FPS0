@@ -35,7 +35,7 @@ namespace Combat.Weapons
         public void Reroll(RollMode mode = RollMode.Random)
         {
             if (definition == null) { perks.Clear(); return; }
-            PerkRoll.Roll(definition.ResolvedPerkColumns, definition.curatedRoll, mode, perks);
+            PerkRoll.Roll(definition.ResolvedPerkColumns, definition.curatedRoll, mode, perks, definition.intrinsicPerks, definition.name);
         }
 
         // Intrinsic perks, then rolled ones.

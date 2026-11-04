@@ -8,7 +8,7 @@ using Combat.Weapons;
 
 namespace Combat.Perks
 {
-    // Runs the perks of equipped armour. Sits on the player root beside PlayerLoadout.
+    // Runs the perks of equipped armor. Sits on the player root beside PlayerLoadout.
     public class ArmorPerks : MonoBehaviour
     {
         [Tooltip("Found on this object or its parents if empty.")]

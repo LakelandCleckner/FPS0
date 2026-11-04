@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Armor Traits
   m_EditorClassIdentifier: 
   perks:
-  - {fileID: 11400000, guid: a53728b1cf787904bb7188c621000a50, type: 2}
-  - {fileID: 11400000, guid: c28487bcf45a23640bd0e0657cb79983, type: 2}
   - {fileID: 11400000, guid: 4abc19ed617fb6a4d8dd560bdb8cb856, type: 2}
+  - {fileID: 11400000, guid: a53728b1cf787904bb7188c621000a50, type: 2}
+  - {fileID: 11400000, guid: 8ca252577e6b70b48a963aa7f6337bf1, type: 2}
   includes: []
-  authoredAs: folder=Trait
+  authoredAs: Siphon, Kill Mobility, Momentum

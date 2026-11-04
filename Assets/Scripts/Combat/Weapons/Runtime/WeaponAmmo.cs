@@ -212,7 +212,7 @@ namespace Combat.Weapons
                 : 1;
 
         // magSize used to be cached once in Start and never re-read, so a runtime
-        // magazine_size modifier -- armour, a perk, an upgrade -- silently did nothing.
+        // magazine_size modifier -- armor, a perk, an upgrade -- silently did nothing.
         // Re-resolved on access instead. ResolvedMagazineSize is already a cached
         // container read, so this is a version compare in the steady state.
         //

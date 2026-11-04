@@ -6,7 +6,7 @@ using Combat.Weapons;
 
 namespace Combat.Loadout
 {
-    // The one place loadout-driven modifiers are registered (armour and weapon perks).
+    // The one place loadout-driven modifiers are registered (armor and weapon perks).
     // Each grant is its own modifier owner, so a refresh removes by owner and re-adds if still live.
     public class LoadoutModifierApplier : MonoBehaviour
     {

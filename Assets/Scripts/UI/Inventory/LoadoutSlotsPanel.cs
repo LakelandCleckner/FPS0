@@ -6,7 +6,7 @@ using Combat.Weapons;
 
 namespace Combat.UI
 {
-    // Equipped weapons and armour. Click to choose a slot, right-click to unequip it.
+    // Equipped weapons and armor. Click to choose a slot, right-click to unequip it.
     public class LoadoutSlotsPanel : InventoryPanel
     {
         protected override void Build(InventoryScreen screen, RectTransform root)
@@ -25,7 +25,7 @@ namespace Combat.UI
             var gap = UIKit.Node(body, "Gap");
             UIKit.Size(gap, height: s.sectionGap - s.gap);
 
-            Heading(body, s, "Armour");
+            Heading(body, s, "Armor");
             for (int i = 0; i < view.ArmorSlots.Count; i++) ArmorCard(body, screen, i, view.ArmorSlots[i], view.Armor[i]);
         }
 

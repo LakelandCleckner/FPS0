@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4d1da4720f2c694786e3c4a0bbe5be0, type: 3}
+  m_Name: Arms Stats
+  m_EditorClassIdentifier: 
+  perks:
+  - {fileID: 11400000, guid: 2defa108faa885541be5c65ec6cb1f8b, type: 2}
+  - {fileID: 11400000, guid: b7c8a1ca62678c941becefd4dec6fae4, type: 2}
+  - {fileID: 11400000, guid: 3d4d592b6cabc174d9caeb76318967a7, type: 2}
+  - {fileID: 11400000, guid: 22d420654367201419bdf3d390931e90, type: 2}
+  - {fileID: 11400000, guid: 250a07f0a9df34742934c8ca8e5ee63f, type: 2}
+  - {fileID: 11400000, guid: 9431f958e821570448786aa0bd64e7c8, type: 2}
+  - {fileID: 11400000, guid: 673ec13f162bfab43825156820928ed2, type: 2}
+  - {fileID: 11400000, guid: ca93dc62fca786c4fad82f762788d33d, type: 2}
+  - {fileID: 11400000, guid: b839ebe9b8664eb44bccbc0f2d76a73d, type: 2}
+  - {fileID: 11400000, guid: 93d2c88713e26604e91a58de204d2f35, type: 2}
+  includes: []
+  authoredAs: Fast Hands*, Steady Hands*, Steady Aim*, Rifle Loader, Sidearm Loader,
+    SMG Loader, Shotgun Loader

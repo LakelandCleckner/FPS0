@@ -116,7 +116,7 @@ namespace Combat.UI
 
             var head = Heading(body, s, "Stats");
             Legend(head, s, "Perks", s.barPerk);
-            Legend(head, s, "Armour", s.barArmor);
+            Legend(head, s, "Armor", s.barArmor);
 
             var preview = screen.PreviewFor(w);
             if (sheet == null || !preview.IsBuilt)
@@ -161,7 +161,7 @@ namespace Combat.UI
             UIKit.Size(d, width: 52f);
         }
 
-        // Base fill, then perk and armour gains, then any loss carved back out.
+        // Base fill, then perk and armor gains, then any loss carved back out.
         private static void DrawBar(RectTransform bar, UIStyleSO s, StatLayers v, float max)
         {
             var track = UIKit.Box(bar, "Track", s, s.barTrack);
@@ -173,7 +173,7 @@ namespace Combat.UI
 
             Segment(bar, "Base", s.barBase, 0f, Mathf.Min(b, f));
             if (p > b) Segment(bar, "Perks", s.barPerk, b, Mathf.Min(p, Mathf.Max(f, b)));
-            if (f > Mathf.Max(p, b)) Segment(bar, "Armour", s.barArmor, Mathf.Max(p, b), f);
+            if (f > Mathf.Max(p, b)) Segment(bar, "Armor", s.barArmor, Mathf.Max(p, b), f);
             if (f < b) Segment(bar, "Loss", s.barLoss, f, b);
         }
 

@@ -16,6 +16,8 @@ MonoBehaviour:
   displayName: Submachine Gun
   allowedSlots: 1
   inventorySlot: 0
+  defaultViewmodel: {fileID: 11400000, guid: 6fdf17251f0799d4e9b0d56e286bbddb, type: 2}
+  defaultShader: {fileID: 0}
   perkColumns:
   - label: Barrel
     source: {fileID: 11400000, guid: 8e2c8e9d10a125342a4e56d7d1be135f, type: 2}

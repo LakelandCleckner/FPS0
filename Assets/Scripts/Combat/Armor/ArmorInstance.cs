@@ -5,7 +5,7 @@ using Combat.Perks;
 
 namespace Combat.Armor
 {
-    // One owned armour piece: definition plus its rolled perks. Also the owner its modifiers are registered under.
+    // One owned armor piece: definition plus its rolled perks. Also the owner its modifiers are registered under.
     [Serializable]
     public class ArmorInstance
     {
@@ -27,12 +27,12 @@ namespace Combat.Armor
             Reroll(mode);
         }
 
-        public override string ToString() => definition != null ? "armour " + definition.name : "armour";
+        public override string ToString() => definition != null ? "armor " + definition.name : "armor";
 
         public void Reroll(RollMode mode = RollMode.Random)
         {
             if (definition == null) { perks.Clear(); return; }
-            PerkRoll.Roll(definition.ResolvedPerkColumns, definition.curatedRoll, mode, perks);
+            PerkRoll.Roll(definition.ResolvedPerkColumns, definition.curatedRoll, mode, perks, definition.intrinsicPerks, definition.name);
         }
 
         // Intrinsic perks, then rolled ones.

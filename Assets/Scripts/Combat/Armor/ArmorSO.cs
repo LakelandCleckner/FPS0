@@ -4,7 +4,7 @@ using Combat.Perks;
 
 namespace Combat.Armor
 {
-    // An armour definition: its slot and its perks. Fixed bonuses are intrinsic Stat Perks.
+    // An armor definition: its slot and its perks. Fixed bonuses are intrinsic Stat Perks.
     [CreateAssetMenu(fileName = "Armor", menuName = "Combat/Armor/Armor")]
     public class ArmorSO : ScriptableObject
     {
