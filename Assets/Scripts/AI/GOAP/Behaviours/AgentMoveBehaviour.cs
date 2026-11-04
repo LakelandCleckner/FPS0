@@ -13,6 +13,8 @@ namespace GOAPGettingStarted.Behaviours
 
         // Must match the In Range value set on WanderAction in the capability asset
         public float StoppingDistance = 1.5f;
+        [Tooltip("Stopping distance while walking to a surround slot.")]
+        public float SlotStoppingDistance = 0.2f;
 
         private AgentBehaviour agent;
         private NavMeshAgent nav;
@@ -22,6 +24,7 @@ namespace GOAPGettingStarted.Behaviours
         private ITarget currentTarget;
         private bool shouldMove;
         private float lastAppliedSpeed = -1f;
+        private SurroundRing ring;
 
         private void Awake()
         {
@@ -31,6 +34,16 @@ namespace GOAPGettingStarted.Behaviours
             melee = GetComponent<EnemyMeleeAttack>();
 
             nav.stoppingDistance = StoppingDistance;
+        }
+
+        private void Start() => ring = FindFirstObjectByType<SurroundRing>();
+
+        private void OnDisable() => LeaveRing();
+
+        private void LeaveRing()
+        {
+            if (ring != null) ring.Leave(transform);
+            if (nav != null) nav.stoppingDistance = StoppingDistance;
         }
 
         private void OnEnable()
@@ -64,6 +77,7 @@ namespace GOAPGettingStarted.Behaviours
             agent.Events.OnTargetLost += () =>
             {
                 currentTarget = null;
+                LeaveRing();
                 shouldMove = false;
                 if (nav.isActiveAndEnabled && nav.isOnNavMesh)
                     nav.ResetPath();
@@ -107,7 +121,7 @@ namespace GOAPGettingStarted.Behaviours
             // Continuously update destination for live targets like the player
             if (shouldMove && currentTarget is TransformTarget && nav.isActiveAndEnabled && nav.isOnNavMesh)
             {
-                nav.SetDestination(currentTarget.Position);
+                nav.SetDestination(Destination(currentTarget.Position));
                 nav.isStopped = false;
 
                 // Inside stopping distance the agent halts, and NavMesh rotation only turns it
@@ -123,7 +137,26 @@ namespace GOAPGettingStarted.Behaviours
                 return;
             }
 
+            LeaveRing();
             nav.isStopped = !shouldMove;
+        }
+
+        // Near the player: its surround slot. Otherwise the player itself.
+        private Vector3 Destination(Vector3 target)
+        {
+            if (ring == null) return target;
+
+            Vector3 flat = target - transform.position;
+            flat.y = 0f;
+            if (flat.magnitude > ring.EngageDistance)
+            {
+                LeaveRing();
+                return target;
+            }
+
+            ring.Join(transform);
+            nav.stoppingDistance = SlotStoppingDistance;
+            return ring.SlotPosition(transform);
         }
 
         private void OnDrawGizmos()

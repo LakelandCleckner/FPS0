@@ -64,6 +64,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\TargetKeys\InvestigateTarget.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Keys\WeaponStatKeys.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\MaxHealthChangeTest.cs" />
+    <Compile Include="Assets\Scripts\Combat\Core\PlayerHitbox.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\AutoFireBehaviorSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Perks\PerkSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Armor\ArmorSO.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\Goals\WanderGoal.cs" />
     <Compile Include="Assets\Scripts\PlayerScripts\ThirdPerson\ThirdPersonBodyAnimator.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Keys\DefenseStatKeys.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Combat\SurroundRing.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\StatSystemTest.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Modifiers\StatModifier.cs" />
     <Compile Include="Assets\Scripts\UI\DamageIndicatorRing.cs" />
@@ -191,6 +193,7 @@
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\PelletDeliverySOEditor.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\WeaponStatParityTest.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Modifiers\ModifierHandle.cs" />
+    <Compile Include="Assets\Scripts\PlayerScripts\ThirdPerson\FirstPersonLegsOffset.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\DamageNumberFormatter.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Buckets\StatModifierValue.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Buckets\StatResolver.cs" />
@@ -237,6 +240,7 @@
     <Compile Include="Assets\Scripts\Combat\Stats\Keys\LoadoutStatKeys.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\DamageSpec.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\VfxData.cs" />
+    <Compile Include="Assets\Scripts\Combat\Core\PhysicsLayers.cs" />
     <Compile Include="Assets\Scripts\Combat\Perks\Types\MagScaledPerkSO.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Actions\WanderAction.cs" />
     <Compile Include="Assets\Scripts\UI\AmmoDisplay.cs" />

@@ -30,7 +30,7 @@ namespace Combat.Weapons
         [Header("Scene refs injected into delivery")]
         [SerializeField] private WeaponHitResolver resolver;
         [SerializeField] private Transform muzzle;
-        // projectilePrefab REMOVED — it lives on ProjectileSO now. A prefab here meant
+        // projectilePrefab REMOVED - it lives on ProjectileSO now. A prefab here meant
         // every weapon using this controller fired the same projectile.
 
         [Header("Input")]
@@ -58,7 +58,7 @@ namespace Combat.Weapons
 
         private const float ReloadBufferWindow = 0.2f;
 
-        // PER-WEAPON shot counter. Monotonic for the life of this controller — it
+        // PER-WEAPON shot counter. Monotonic for the life of this controller - it
         // deliberately survives BuildFireMode, because resetting it on an equip would
         // let a new shot reuse an id still held by an in-flight projectile or a live
         // DOT entry, which is the collision the id exists to prevent.
@@ -75,7 +75,7 @@ namespace Combat.Weapons
         public bool IsActive { get; set; } = true;
 
         // Firing specifically. False while sprinting and during the sprint-out
-        // recovery, when IsActive is still true — the weapon is in your hands, it
+        // recovery, when IsActive is still true - the weapon is in your hands, it
         // just isn't on target yet.
         public bool CanFire { get; set; } = true;
 
@@ -83,7 +83,7 @@ namespace Combat.Weapons
 
         // Set by WeaponLoadout from the spawned gun model's GunModel. Called in the
         // loadout's Awake, before this component's Start builds the delivery, so the
-        // delivery is built with it — no rebuild needed.
+        // delivery is built with it - no rebuild needed.
         public void SetMuzzle(Transform newMuzzle) => muzzle = newMuzzle;
 
         private void Awake()
@@ -137,7 +137,7 @@ namespace Combat.Weapons
             // Pressing reload while sprinting cancels the sprint (WeaponLoadout), but
             // PlayerMovement recomputes IsSprinting in its own Update, so IsActive can
             // still be false on the frame the key goes down. wasPressedThisFrame is
-            // true for exactly one frame — without a buffer that press is simply lost
+            // true for exactly one frame - without a buffer that press is simply lost
             // and the player has to press reload twice to come out of a sprint.
             //
             // Buffering while stowed is harmless: IsActive gates the attempt and the
@@ -149,7 +149,7 @@ namespace Combat.Weapons
 
             if (!IsActive) return;
 
-            // A burst is committed once started — releasing the trigger doesn't cut it
+            // A burst is committed once started - releasing the trigger doesn't cut it
             // short, so a reload can't interrupt one either. Without this the behaviour
             // freezes mid-burst at the IsReloading gate below and resumes afterwards,
             // firing its remaining shots seconds later. Narrow window, but reachable
@@ -171,7 +171,7 @@ namespace Combat.Weapons
             // A reload is committed once started, so firing waits rather than
             // cancelling it. The input isn't lost: an auto weapon reads Held live and
             // fires the instant the reload completes. Semi-auto needs a fresh press,
-            // because triggerHeldLast stops updating below this line — no banked shot
+            // because triggerHeldLast stops updating below this line - no banked shot
             // from a trigger you were already holding.
             //
             // EXCEPTION: a per-shell reload (shotgun) is interruptible. Pulling the
@@ -209,7 +209,7 @@ namespace Combat.Weapons
                 return;
             }
 
-            // The behaviour doesn't know the id — the controller owns the counter, so
+            // The behaviour doesn't know the id - the controller owns the counter, so
             // the behaviour stays a pure timing machine.
             Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
             float aimBlend = playerAim != null ? playerAim.Blend : 0f;
@@ -239,7 +239,8 @@ namespace Combat.Weapons
             if (angle <= 0f || maxDist <= 0f) return ray.direction;
 
             // Direct hit already: no assist
-            if (Physics.Raycast(ray, out var direct, maxDist, lineOfSightMask, QueryTriggerInteraction.Ignore)
+            int losMask = PhysicsLayers.ShotMask(lineOfSightMask);
+            if (Physics.Raycast(ray, out var direct, maxDist, losMask, QueryTriggerInteraction.Ignore)
                 && direct.collider.GetComponentInParent<EnemyHitbox>() != null)
                 return ray.direction;
 
@@ -273,7 +274,7 @@ namespace Combat.Weapons
                 if (a >= bestAngle) continue;
 
                 // Line of sight: first thing hit must be this target
-                if (Physics.Raycast(ray.origin, to / dist, out var los, dist + 0.1f, lineOfSightMask, QueryTriggerInteraction.Ignore))
+                if (Physics.Raycast(ray.origin, to / dist, out var los, dist + 0.1f, losMask, QueryTriggerInteraction.Ignore))
                 {
                     var losBox = los.collider.GetComponentInParent<EnemyHitbox>();
                     if (losBox == null || losBox.combatant != hitbox.combatant) continue;
@@ -286,7 +287,7 @@ namespace Combat.Weapons
             return best;
         }
 
-        // Exact index first, then -1 meaning "the final shot" — so an override stays
+        // Exact index first, then -1 meaning "the final shot" - so an override stays
         // correct if the burst count changes.
         private IDelivery SelectDelivery(in ShotInfo shot)
         {

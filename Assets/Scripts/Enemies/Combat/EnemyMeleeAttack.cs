@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using Combat.Core;
 using Combat.Effects;
 using Combat.Sources;
@@ -28,6 +29,16 @@ namespace Combat.Enemies
             [Tooltip("Hitboxes that deal damage for this move.")]
             public BodyPart[] hitParts = { BodyPart.Arm };
 
+            [Tooltip("Furthest the enemy steps forward during the swing (m, 0 = no lunge).")]
+            public float lungeDistance = 1.5f;
+            [Tooltip("The lunge stops this far from the player's centre (m).")]
+            public float strikeDistance = 1f;
+            public int lungeStartFrame = 0;
+            [Tooltip("-1 = the first damage frame.")]
+            public int lungeEndFrame = -1;
+            [Tooltip("On: follows the player during the wind-up. Off: aims where they stood when the swing started.")]
+            public bool lungeTracks = false;
+
             [NonSerialized] public List<Collider> Colliders;
             [NonSerialized] public List<IHitEffect> Effects;
         }
@@ -37,6 +48,8 @@ namespace Combat.Enemies
         [SerializeField] private WeaponHitResolver resolver;
         [SerializeField] private Animator animator;
         [SerializeField] private EnemyAttackStatKeys statKeys;
+        [Tooltip("Moves the enemy during lunges. Found on this object if empty.")]
+        [SerializeField] private NavMeshAgent navAgent;
         [SerializeField] private DamageTypeSO damageType;
 
         [Header("Base Stats (pushed as stat bases at Start)")]
@@ -78,7 +91,7 @@ namespace Combat.Enemies
         private float Cooldown => Stat(statKeys != null ? statKeys.attackCooldown : null, baseCooldown);
         private float AttackSpeed => Mathf.Max(0.05f, Stat(statKeys != null ? statKeys.attackSpeed : null, baseAttackSpeed));
 
-        private readonly Collider[] overlap = new Collider[8];
+        private readonly Collider[] overlap = new Collider[16];
         private AttackMove current;
         private int lastMove = -1;
         private Transform player;
@@ -91,6 +104,8 @@ namespace Combat.Enemies
         private int indexHash;
         private int armsLayer = -1;
         private float armsWeight = 1f;
+        private Vector3 lungeTarget;
+        private float lunged;
 
         // ---- IDamageSource ----
         public List<IHitEffect> GetEffects() => current != null ? current.Effects : null;
@@ -108,6 +123,7 @@ namespace Combat.Enemies
             if (combatantStats == null) combatantStats = GetComponent<CombatantStats>();
             if (resolver == null) resolver = GetComponentInChildren<WeaponHitResolver>();
             if (animator == null) animator = GetComponentInChildren<Animator>();
+            if (navAgent == null) navAgent = GetComponent<NavMeshAgent>();
 
             attackingHash = Animator.StringToHash(attackingBool);
             speedHash = Animator.StringToHash(attackSpeedFloat);
@@ -159,6 +175,8 @@ namespace Combat.Enemies
             hitThisSwing = false;
             swingTime = 0f;
             swingSpeed = AttackSpeed;
+            lungeTarget = player.position;
+            lunged = 0f;
 
             if (animator != null)
             {
@@ -183,8 +201,10 @@ namespace Combat.Enemies
 
             if (combatantStats != null && combatantStats.IsDying) { CancelSwing(); return; }
 
+            float prevFrame = swingTime * current.clipFrameRate * swingSpeed;
             swingTime += Time.deltaTime;
             float frame = swingTime * current.clipFrameRate * swingSpeed;
+            Lunge(prevFrame, frame);
 
             if (player != null && swingTurnSpeed > 0f)
             {
@@ -216,19 +236,46 @@ namespace Combat.Enemies
                 if (col == null || !col.enabled) continue;
 
                 int n = Overlap(col);
+                Vector3 from = col.bounds.center;
+                if (col is MeshCollider) n = KeepTouching(col, n);
+
+                // Closest player hitbox to the attacking limb; any player collider as fallback
+                PlayerHitbox best = null;
+                float bestDist = float.MaxValue;
+                Collider fallback = null;
                 for (int k = 0; k < n; k++)
                 {
-                    var hurtbox = overlap[k].GetComponentInParent<PlayerHurtbox>();
-                    if (hurtbox == null) continue;
+                    var hb = overlap[k].GetComponent<PlayerHitbox>();
+                    if (hb != null && hb.Hurtbox != null)
+                    {
+                        float d = (overlap[k].ClosestPoint(from) - from).sqrMagnitude;
+                        if (d < bestDist) { bestDist = d; best = hb; }
+                    }
+                    else if (fallback == null && overlap[k].GetComponentInParent<PlayerHurtbox>() != null)
+                    {
+                        fallback = overlap[k];
+                    }
+                }
 
+                if (best != null)
+                {
                     hitThisSwing = true;
-                    DeliverHit(hurtbox, overlap[k].ClosestPoint(col.bounds.center));
+                    DeliverHit(best.Hurtbox, best.GetComponent<Collider>().ClosestPoint(from),
+                               best.bodyPart, best.damageMultiplier, best.ApplyTickDamage);
+                    return;
+                }
+                if (fallback != null)
+                {
+                    var hurtbox = fallback.GetComponentInParent<PlayerHurtbox>();
+                    hitThisSwing = true;
+                    DeliverHit(hurtbox, fallback.ClosestPoint(from), hurtbox.BodyPart, 1f, hurtbox.ApplyDamage);
                     return;
                 }
             }
         }
 
-        private void DeliverHit(PlayerHurtbox hurtbox, Vector3 point)
+        private void DeliverHit(PlayerHurtbox hurtbox, Vector3 point, BodyPart part, float multiplier,
+                                Action<float, DamageTypeSO> tickDamage)
         {
             if (resolver == null) { Debug.LogWarning($"[EnemyMeleeAttack] '{name}' has no WeaponHitResolver."); return; }
 
@@ -239,8 +286,9 @@ namespace Combat.Enemies
                 SourceFaction = Faction,
                 DamageType = damageType,
                 Source = HitSource.Direct,
-                BodyPartHit = hurtbox.BodyPart,
-                ApplyStatusTickDamage = hurtbox.ApplyDamage,
+                BodyPartHit = part,
+                HitboxMultiplier = multiplier,
+                ApplyStatusTickDamage = tickDamage,
                 Attacker = combatantStats,
                 Effects = current.Effects,
                 DamageSource = this,
@@ -251,7 +299,53 @@ namespace Combat.Enemies
             hurtbox.Receive(resolver, ctx, transform);
 
             if (logHits)
-                Debug.Log($"[EnemyMeleeAttack] {name} hit player for {ctx.DamageDealt:F1}");
+                Debug.Log($"[EnemyMeleeAttack] {name} hit player {part} for {ctx.DamageDealt:F1}");
+        }
+
+        // Steps toward the player across the lunge frames, stopping at strike distance; stays on the navmesh
+        private void Lunge(float prevFrame, float frame)
+        {
+            if (current.lungeDistance <= 0f || navAgent == null || player == null) return;
+            if (!navAgent.isActiveAndEnabled || !navAgent.isOnNavMesh) return;
+
+            float start = current.lungeStartFrame;
+            float end = current.lungeEndFrame >= 0 ? current.lungeEndFrame : current.hitStartFrame;
+            if (end <= start || frame <= start || prevFrame >= end) return;
+
+            Vector3 to = Flat((current.lungeTracks ? player.position : lungeTarget) - transform.position);
+            float remaining = Mathf.Min(to.magnitude - current.strikeDistance, current.lungeDistance - lunged);
+            if (remaining <= 0f) return;
+
+            // Share of what is left, by how much of the lunge window this frame covers
+            float from = Mathf.Max(prevFrame, start);
+            float share = Mathf.Clamp01((Mathf.Min(frame, end) - from) / (end - from));
+            float step = remaining * share;
+            navAgent.Move(to.normalized * step);
+            lunged += step;
+        }
+
+        // Hull attack limbs: keep only colliders within hitPadding of the limb (the bounds box overlap is coarse)
+        private int KeepTouching(Collider limb, int n)
+        {
+            int kept = 0;
+            float pad2 = hitPadding * hitPadding;
+            for (int k = 0; k < n; k++)
+            {
+                var other = overlap[k];
+                bool touching;
+                if (other is CharacterController)
+                {
+                    touching = true;   // ClosestPoint is unsupported there; the fallback path only
+                }
+                else
+                {
+                    Vector3 p = other.ClosestPoint(limb.bounds.center);
+                    Vector3 q = limb.ClosestPoint(p);
+                    touching = (p - q).sqrMagnitude <= pad2;
+                }
+                if (touching) overlap[kept++] = other;
+            }
+            return kept;
         }
 
         private int Overlap(Collider col)
@@ -304,8 +398,10 @@ namespace Combat.Enemies
                 foreach (var hb in hitboxes)
                 {
                     if (m.hitParts == null || Array.IndexOf(m.hitParts, hb.bodyPart) < 0) continue;
-                    var col = hb.GetComponent<Collider>();
-                    if (col != null) m.Colliders.Add(col);
+
+                    // The hitbox's own colliders and its hull child; disabled ones are skipped at hit time
+                    foreach (var col in hb.GetComponentsInChildren<Collider>(true))
+                        if (col.GetComponentInParent<EnemyHitbox>() == hb) m.Colliders.Add(col);
                 }
                 if (m.Colliders.Count == 0)
                     Debug.LogWarning($"[EnemyMeleeAttack] '{name}' move '{m.label}' found no hitboxes for its hit parts.");

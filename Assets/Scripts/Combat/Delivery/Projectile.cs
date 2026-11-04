@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using Combat.Core;
 
@@ -49,6 +49,11 @@ namespace Combat.Delivery
         // The hitbox currently being resolved. Read by the cached base-damage
         // delegate below rather than captured in a per-hit closure.
         private EnemyHitbox currentHitbox;
+        private PlayerHitbox currentPlayerHitbox;
+
+        // Shooter's root, so the projectile never hits its own body; nearest other hit wins
+        private Transform ownerRoot;
+        private readonly RaycastHit[] castHits = new RaycastHit[16];
 
         // Allocated once per projectile instead of once per hit. Safe to bind to
         // mutable fields because ApplyDamageToTarget is consumed synchronously during
@@ -65,8 +70,10 @@ namespace Combat.Delivery
 
         private void ApplyBaseDamage(float dmg)
         {
-            if (currentHitbox == null) return;
-            currentHitbox.combatant.TakeDamage(dmg, currentHitbox.bodyPart, damageType);
+            if (currentHitbox != null)
+                currentHitbox.combatant.TakeDamage(dmg, currentHitbox.bodyPart, damageType);
+            else if (currentPlayerHitbox != null)
+                currentPlayerHitbox.ApplyTickDamage(dmg, damageType);
         }
 
         public void SetPoolOrigin(Projectile prefab) => poolOrigin = prefab;
@@ -106,6 +113,9 @@ namespace Combat.Delivery
             pierceUsed = 0;
             hitTargets.Clear();
             currentHitbox = null;
+            currentPlayerHitbox = null;
+            var owner = attacker as Component;
+            ownerRoot = owner != null ? owner.transform : null;
 
             // Shot-level context fields. The per-hit ones are set in HandleHit.
             hitContext.Source = HitSource.Direct;
@@ -131,7 +141,7 @@ namespace Combat.Delivery
             float step = config.speed * Time.deltaTime;
             Vector3 start = transform.position;
 
-            if (Physics.Raycast(start, direction, out var hit, step, config.collisionMask))
+            if (NearestNotOwner(start, step, out var hit))
             {
                 HandleHit(hit);
                 if (!initialized) return;
@@ -149,8 +159,31 @@ namespace Combat.Delivery
                 Despawn();
         }
 
+        private bool NearestNotOwner(Vector3 start, float step, out RaycastHit best)
+        {
+            best = default;
+            int n = Physics.RaycastNonAlloc(start, direction, castHits, step,
+                                            PhysicsLayers.ShotMask(config.collisionMask));
+            float bestDist = float.MaxValue;
+            for (int i = 0; i < n; i++)
+            {
+                if (ownerRoot != null && castHits[i].collider.transform.IsChildOf(ownerRoot)) continue;
+                if (castHits[i].distance >= bestDist) continue;
+                bestDist = castHits[i].distance;
+                best = castHits[i];
+            }
+            return bestDist < float.MaxValue;
+        }
+
         private void HandleHit(RaycastHit hit)
         {
+            var playerHitbox = hit.collider.GetComponent<PlayerHitbox>();
+            if (playerHitbox != null)
+            {
+                HandlePlayerHit(hit, playerHitbox);
+                return;
+            }
+
             var hitbox = hit.collider.GetComponentInParent<EnemyHitbox>();
 
             if (hitbox == null)
@@ -186,6 +219,7 @@ namespace Combat.Delivery
                        hit.collider);
 
             currentHitbox = hitbox;
+            currentPlayerHitbox = null;
 
             // Refill the reusable context. Every field an effect or the resolver
             // WRITES must be reset here or state leaks from the previous hit -
@@ -201,15 +235,60 @@ namespace Combat.Delivery
             // because EffectStackPool holds this delegate for the life of a status.
             hitContext.ApplyStatusTickDamage = hitbox.ApplyTickDamage;
 
+            hitContext.ShowFloatingNumber = true;
+
+            ResetHitResults();
+            resolver.ResolveHit(hitContext);
+            ApplyImpact();
+        }
+
+        // A projectile landing on a player body hitbox
+        private void HandlePlayerHit(RaycastHit hit, PlayerHitbox playerHitbox)
+        {
+            var hurtbox = playerHitbox.Hurtbox;
+            var target = hurtbox != null ? hurtbox.Target : null;
+            if (target == null)
+            {
+                HitLog.Warn($"[HitDebug:Projectile] {HitLog.DescribeCollider(hit.collider)} " +
+                            "-> player hitbox has no PlayerHurtbox, dropped", playerHitbox);
+                return;
+            }
+
+            if (!hitTargets.Add(target)) return;
+
+            HitLog.Log($"[HitDebug:Projectile] {HitLog.DescribeCollider(hit.collider)} -> player {playerHitbox.bodyPart}",
+                       hit.collider);
+
+            currentHitbox = null;
+            currentPlayerHitbox = playerHitbox;
+
+            hitContext.BumpGeneration();
+            hitContext.Target = target;
+            hitContext.HitPoint = hit.point;
+            hitContext.HitboxMultiplier = playerHitbox.damageMultiplier;
+            hitContext.BodyPartHit = playerHitbox.bodyPart;
+            hitContext.ApplyStatusTickDamage = playerHitbox.ApplyTickDamage;
+            hitContext.ShowFloatingNumber = false;
+
+            ResetHitResults();
+            var attackerComponent = attacker as Component;
+            hurtbox.Receive(resolver, hitContext, attackerComponent != null ? attackerComponent.transform : null);
+            ApplyImpact();
+        }
+
+        // Fields the resolver and effects write; cleared before every hit
+        private void ResetHitResults()
+        {
             hitContext.DamageDealt = 0f;
             hitContext.WasKill = false;
             hitContext.WasHeadshot = false;
             hitContext.WasDebuffed = false;
             hitContext.ChainDepth = 0;
             hitContext.ResetAlreadyHit();
+        }
 
-            resolver.ResolveHit(hitContext);
-
+        private void ApplyImpact()
+        {
             switch (config.impactMode)
             {
                 case ProjectileImpactMode.DestroyOnHit:
@@ -230,6 +309,7 @@ namespace Combat.Delivery
         {
             initialized = false;
             currentHitbox = null;
+            currentPlayerHitbox = null;
 
             if (ProjectilePool.Instance != null)
                 ProjectilePool.Instance.Return(this, poolOrigin);

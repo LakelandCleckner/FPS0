@@ -6,6 +6,7 @@ using Combat.Stats;
 namespace Combat.Core
 {
     // Player-side receiver for enemy hits: applies damage, publishes DamageTaken, raises Damaged for HUD/camera.
+    // PlayerHitbox colliders route here with their own body part; bodyPart below is the fallback.
     public class PlayerHurtbox : MonoBehaviour
     {
         [SerializeField] private CombatantStats combatant;
@@ -36,9 +37,12 @@ namespace Combat.Core
             bus = GetComponent<WeaponEventBus>();
         }
 
-        private void ApplyTypedDamage(float damage, DamageTypeSO type)
+        private void ApplyTypedDamage(float damage, DamageTypeSO type) => TakeDamage(damage, bodyPart, type);
+
+        // Damage to a specific part, used by PlayerHitbox
+        public void TakeDamage(float damage, BodyPart part, DamageTypeSO type)
         {
-            if (combatant != null) combatant.TakeDamage(damage, bodyPart, type);
+            if (combatant != null) combatant.TakeDamage(damage, part, type);
         }
 
         // Resolves ctx through the attacker's resolver, then reports the result on the player side.

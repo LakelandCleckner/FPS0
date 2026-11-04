@@ -457,11 +457,13 @@ public class TPBodySetup : EditorWindow
         go.transform.localPosition = new Vector3(0f, feet, backOffset);
         go.transform.localRotation = Quaternion.identity;
 
-        // No colliders, Default layer
-        foreach (var col in go.GetComponentsInChildren<Collider>(true)) Undo.DestroyObjectImmediate(col);
+        // No colliders, Default layer; player hitboxes (HB_*) keep their trigger and layer
+        foreach (var col in go.GetComponentsInChildren<Collider>(true))
+            if (col.GetComponent<Combat.Core.PlayerHitbox>() == null) Undo.DestroyObjectImmediate(col);
         foreach (var rb in go.GetComponentsInChildren<Rigidbody>(true)) Undo.DestroyObjectImmediate(rb);
         foreach (var t in go.GetComponentsInChildren<Transform>(true))
         {
+            if (t.GetComponent<Combat.Core.PlayerHitbox>() != null) continue;
             Undo.RecordObject(t.gameObject, undo);
             t.gameObject.layer = 0;
         }

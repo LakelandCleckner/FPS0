@@ -68,7 +68,10 @@
     <Compile Include="Assets\Editor\TPGripTool.cs" />
     <Compile Include="Assets\Editor\GoapCapabilityBuilder.cs" />
     <Compile Include="Assets\Editor\EnemyAttackAnimatorSetup.cs" />
+    <Compile Include="Assets\Editor\EnemyHitboxMeshFit.cs" />
+    <Compile Include="Assets\Editor\HitboxHullCutter.cs" />
     <Compile Include="Assets\Editor\PerkPoolBatchWindow.cs" />
+    <Compile Include="Assets\Editor\PlayerHitboxSetup.cs" />
     <Compile Include="Assets\Editor\MixamoClipSetup.cs" />
     <Compile Include="Assets\Editor\WeaponShaderSOEditor.cs" />
     <Compile Include="Assets\Editor\TPBodySetup.cs" />
