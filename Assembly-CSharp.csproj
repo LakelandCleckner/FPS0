@@ -103,6 +103,7 @@
     <Compile Include="Assets\Scripts\Combat\Delivery\DamageHitEffect.cs" />
     <Compile Include="Assets\Scripts\Combat\Core\Enums.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\BurstFireBehaviorSO.cs" />
+    <Compile Include="Assets\Scripts\UI\Inventory\ItemFilter.cs" />
     <Compile Include="Assets\Scripts\UI\Inventory\InventoryHeader.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Debug\BlastRadiusGizmo.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponAnimator.cs" />
@@ -150,6 +151,7 @@
     <Compile Include="Assets\PixPlays\Components\Scripts\BindingPointType.cs" />
     <Compile Include="Assets\Scripts\Combat\Armor\ArmorInstance.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\BurstFireBehavior.cs" />
+    <Compile Include="Assets\Scripts\UI\Inventory\ItemGridPanel.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\DebugLogEffectSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Spawning\EnemyPoolAdapter.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Runtime\CombatantStats.cs" />
@@ -172,6 +174,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\IsWandering.cs" />
     <Compile Include="Assets\Scripts\UI\Inventory\InventoryFooter.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\Wandering\WanderTargetSensor.cs" />
+    <Compile Include="Assets\Scripts\UI\Inventory\DeleteHoldFill.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\GoapRuntimeInit.cs" />
     <Compile Include="Assets\StarterAssets\FirstPersonController\Scripts\FirstPersonController.cs" />
     <Compile Include="Assets\Scripts\Combat\Spawning\EnemySpawner.cs" />
@@ -185,6 +188,7 @@
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponFireController.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxAddons\ParticleSystemScaleLifetime.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\AOE\WindAoeVfx.cs" />
+    <Compile Include="Assets\Scripts\UI\Inventory\VaultFilterBar.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\LocationInvestigated.cs" />
     <Compile Include="Assets\Scripts\Debugging\Combat\HitLog.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxAddons\TrailScaleWithHierarchy.cs" />

@@ -56,15 +56,8 @@ namespace Combat.UI
         private static void ItemTile(Transform grid, InventoryScreen screen, object item, SlotRef slot)
         {
             var s = screen.Style;
-            var tile = Tile(grid, "Item", screen, item);
+            var tile = ItemTile(grid, screen, item);
             tile.LeftClick += t => screen.EquipToSelected(t.Item);
-
-            var mono = UIKit.Text(tile.transform, "Monogram", s, ItemText.Monogram(item), s.gridTileSize * 0.26f, s.text,
-                                  TextAlignmentOptions.Center, heading: true);
-            UIKit.Anchor(mono.rectTransform, new Vector2(0f, 0.3f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
-
-            var name = UIKit.Text(tile.transform, "Name", s, ItemText.Name(item), s.labelSize + 1f, ItemText.NameColor(s, item, s.textMuted), TextAlignmentOptions.Center);
-            UIKit.Anchor(name.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.3f), new Vector2(8f, 6f), new Vector2(-8f, 0f));
 
             // Counts against another slot's cap: say which.
             if (item is WeaponInstance w && slot.Kind == SlotKind.Weapon && w.Definition.InventorySlot != slot.Index)

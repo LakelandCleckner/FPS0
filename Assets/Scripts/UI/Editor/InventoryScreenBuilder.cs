@@ -128,6 +128,8 @@ namespace Combat.UI.EditorTools
                 added.Add("StatTooltip");
             }
 
+            AddVault(so, contentT, added);
+
             var sheetProp = so.FindProperty("characterStatSheet");
             if (sheetProp.objectReferenceValue == null)
             {
@@ -143,6 +145,56 @@ namespace Combat.UI.EditorTools
                 EditorSceneManager.MarkSceneDirty(screen.gameObject.scene);
                 Debug.Log("[InventoryBuilder] Added: " + string.Join(", ", added) + ".");
             }
+        }
+
+        // Vault tab: filter bar across the top, carried grid left, vault grid middle, detail right.
+        private static void AddVault(SerializedObject so, Transform contentT, List<string> added)
+        {
+            var tabProp = so.FindProperty("vaultTab");
+            var tab = tabProp.objectReferenceValue as GameObject;
+            if (tab == null)
+            {
+                tab = Rect(contentT, "VaultTab", Vector2.zero, Vector2.one, new Vector2(72f, 96f), new Vector2(-72f, -140f)).gameObject;
+                tab.SetActive(false);
+                Undo.RegisterCreatedObjectUndo(tab, "Add Vault Tab");
+                tabProp.objectReferenceValue = tab;
+                added.Add("VaultTab");
+            }
+
+            const float bar = 158f;
+            var t = tab.transform;
+            Part<VaultFilterBar>(so, "filterBar", t, "Filters", new Vector2(0f, 1f), Vector2.one, new Vector2(0f, -bar), Vector2.zero, added);
+            var carried = Part<ItemGridPanel>(so, "vaultCarriedPanel", t, "Carried", Vector2.zero, new Vector2(0f, 1f), Vector2.zero, new Vector2(440f, -bar - 16f), added);
+            var vault = Part<ItemGridPanel>(so, "vaultPanel", t, "Vault", Vector2.zero, Vector2.one, new Vector2(464f, 0f), new Vector2(-624f, -bar - 16f), added);
+            Part<ItemDetailPanel>(so, "vaultDetailPanel", t, "Detail", new Vector2(1f, 0f), Vector2.one, new Vector2(-600f, 0f), new Vector2(0f, -bar - 16f), added);
+
+            SetMode(carried, ItemGridPanel.Mode.Carried);
+            SetMode(vault, ItemGridPanel.Mode.Vault);
+        }
+
+        // The panel on the screen's field, else a new rect under the tab with that component.
+        private static T Part<T>(SerializedObject so, string field, Transform parent, string name,
+                                 Vector2 min, Vector2 max, Vector2 offsetMin, Vector2 offsetMax, List<string> added) where T : Component
+        {
+            var prop = so.FindProperty(field);
+            if (prop.objectReferenceValue is T existing) return existing;
+
+            var rt = Rect(parent, name, min, max, offsetMin, offsetMax);
+            Undo.RegisterCreatedObjectUndo(rt.gameObject, "Add " + name);
+            var c = rt.gameObject.AddComponent<T>();
+            prop.objectReferenceValue = c;
+            added.Add("Vault " + name);
+            return c;
+        }
+
+        private static void SetMode(ItemGridPanel panel, ItemGridPanel.Mode mode)
+        {
+            if (panel == null) return;
+            var pso = new SerializedObject(panel);
+            var m = pso.FindProperty("mode");
+            if (m.enumValueIndex == (int)mode) return;
+            m.enumValueIndex = (int)mode;
+            pso.ApplyModifiedProperties();
         }
 
         private static StatSheetSO FindOrCreateCharacterSheet()

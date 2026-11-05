@@ -21,13 +21,30 @@ namespace Combat.UI
             string close = input != null ? input.Menu.Inventory.GetBindingDisplayString() : "Tab";
             string back = input != null ? input.UI.Cancel.GetBindingDisplayString() : "Esc";
 
+            string store = Key(input != null ? input.UI.Store : null, "V");
+            string delete = "Hold " + Key(input != null ? input.UI.Delete : null, "X");
             if (screen.Tab == InventoryTab.Loadout)
             {
                 Hint(root, s, "LMB", "Select / Equip");
                 Hint(root, s, "RMB", "Unequip");
+                Hint(root, s, store, "Store");
+                Hint(root, s, delete, "Delete");
+            }
+            else if (screen.Tab == InventoryTab.Vault)
+            {
+                Hint(root, s, "LMB", "Move");
+                Hint(root, s, store, "Move");
+                Hint(root, s, delete, "Delete");
             }
             Hint(root, s, string.IsNullOrEmpty(close) ? "Tab" : close, "Close");
             if (!string.IsNullOrEmpty(back) && back != close) Hint(root, s, back, "Back");
+        }
+
+        // First binding's display name (the keyboard one), or the fallback.
+        private static string Key(InputAction action, string fallback)
+        {
+            string k = action != null && action.bindings.Count > 0 ? action.GetBindingDisplayString(0) : "";
+            return string.IsNullOrEmpty(k) ? fallback : k;
         }
 
         private static void Hint(Transform parent, UIStyleSO s, string key, string action)

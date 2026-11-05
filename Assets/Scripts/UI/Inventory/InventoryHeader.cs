@@ -21,6 +21,7 @@ namespace Combat.UI
 
             Tab(root, screen, "Loadout", InventoryTab.Loadout);
             Tab(root, screen, "Character", InventoryTab.Character);
+            Tab(root, screen, "Vault", InventoryTab.Vault);
 
             UIKit.Spacer(root);
 

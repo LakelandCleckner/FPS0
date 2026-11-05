@@ -32,8 +32,9 @@ namespace Combat.UI
         {
             var s = screen.Style;
             Heading(body, s, "Details");
-            UIKit.Text(body, "Hint", s, "This slot is empty. Hover a carried item to see it here, then click it to equip.",
-                       s.smallSize, s.textMuted, wrap: true);
+            string hint = screen.Tab == InventoryTab.Vault ? "Hover an item to see it here. Click it to move it between carried and the vault."
+                : "This slot is empty. Hover a carried item to see it here, then click it to equip.";
+            UIKit.Text(body, "Hint", s, hint, s.smallSize, s.textMuted, wrap: true);
         }
 
         private void Weapon(RectTransform body, InventoryScreen screen, WeaponInstance w)

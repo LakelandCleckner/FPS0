@@ -24,6 +24,8 @@ namespace Combat.UI
         public readonly List<ArmorInstance> Armor = new List<ArmorInstance>();
         public readonly List<WeaponInstance> CarriedWeapons = new List<WeaponInstance>();
         public readonly List<ArmorInstance> CarriedArmor = new List<ArmorInstance>();
+        public readonly List<WeaponInstance> VaultWeapons = new List<WeaponInstance>();
+        public readonly List<ArmorInstance> VaultArmor = new List<ArmorInstance>();
         public int WeaponCapPerSlot = 9;
         public int ArmorCapPerSlot = 9;
         public bool Locked;
@@ -49,6 +51,13 @@ namespace Combat.UI
                 CarriedArmor.AddRange(inv.Armor);
                 WeaponCapPerSlot = inv.CarriedWeaponCapPerSlot;
                 ArmorCapPerSlot = inv.CarriedArmorCapPerSlot;
+
+                var vault = inv.GetComponent<PlayerVault>();
+                if (vault != null)
+                {
+                    VaultWeapons.AddRange(vault.Weapons);
+                    VaultArmor.AddRange(vault.Armor);
+                }
             }
             Locked = loadout.IsLocked;
         }
@@ -76,6 +85,10 @@ namespace Combat.UI
                 else CarriedArmor.Add(new ArmorInstance(a, mode, start.RollRarity()));
             }
             foreach (var a in start.carriedArmor) if (a != null) CarriedArmor.Add(new ArmorInstance(a, mode, start.RollRarity()));
+
+            // Sample vault so the vault tab has something to lay out.
+            foreach (var w in start.carried) if (w != null) VaultWeapons.Add(new WeaponInstance(w, mode, start.RollRarity()));
+            foreach (var a in start.carriedArmor) if (a != null) VaultArmor.Add(new ArmorInstance(a, mode, start.RollRarity()));
         }
 
         public void Clear()
@@ -85,6 +98,8 @@ namespace Combat.UI
             Armor.Clear();
             CarriedWeapons.Clear();
             CarriedArmor.Clear();
+            VaultWeapons.Clear();
+            VaultArmor.Clear();
             Locked = false;
         }
 
@@ -133,6 +148,12 @@ namespace Combat.UI
             foreach (var a in CarriedArmor) if (a.Slot == armorSlot) n++;
             return n;
         }
+
+        public bool IsCarried(object item)
+            => item is WeaponInstance w ? CarriedWeapons.Contains(w) : item is ArmorInstance a && CarriedArmor.Contains(a);
+
+        public bool IsVaulted(object item)
+            => item is WeaponInstance w ? VaultWeapons.Contains(w) : item is ArmorInstance a && VaultArmor.Contains(a);
 
         public int Cap(SlotRef slot) => slot.Kind == SlotKind.Weapon ? WeaponCapPerSlot : ArmorCapPerSlot;
 

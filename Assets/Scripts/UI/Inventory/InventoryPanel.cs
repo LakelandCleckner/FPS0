@@ -76,5 +76,44 @@ namespace Combat.UI
             tile.HoverChanged += screen.OnTileHover;
             return tile;
         }
+
+        // Grid tile for an owned item: monogram, name in its rarity colour, and the delete-hold fill.
+        protected static UITile ItemTile(Transform grid, InventoryScreen screen, object item)
+        {
+            var s = screen.Style;
+            var tile = Tile(grid, "Item", screen, item);
+
+            var mono = UIKit.Text(tile.transform, "Monogram", s, ItemText.Monogram(item), s.gridTileSize * 0.26f, s.text,
+                                  TMPro.TextAlignmentOptions.Center, heading: true);
+            UIKit.Anchor(mono.rectTransform, new Vector2(0f, 0.3f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
+
+            var name = UIKit.Text(tile.transform, "Name", s, ItemText.Name(item), s.labelSize + 1f, ItemText.NameColor(s, item, s.textMuted),
+                                  TMPro.TextAlignmentOptions.Center);
+            UIKit.Anchor(name.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.3f), new Vector2(8f, 6f), new Vector2(-8f, 0f));
+
+            var fill = UIKit.Box(tile.transform, "DeleteFill", s, new Color(s.negative.r, s.negative.g, s.negative.b, 0.35f));
+            fill.gameObject.AddComponent<UnityEngine.UI.LayoutElement>().ignoreLayout = true;
+            UIKit.Anchor(fill.rectTransform, Vector2.zero, new Vector2(1f, 0f), Vector2.zero, Vector2.zero);
+            fill.enabled = false;
+            fill.gameObject.AddComponent<DeleteHoldFill>().Setup(screen, item, fill);
+            return tile;
+        }
+
+        // Fixed-size tile grid; columns fit the width when it's known.
+        protected static RectTransform Grid(Transform parent, UIStyleSO s, int count, float width)
+        {
+            int columns = width > 0f ? Mathf.Max(1, Mathf.FloorToInt((width + s.gap) / (s.gridTileSize + s.gap))) : Mathf.Max(1, s.gridColumns);
+            int rows = Mathf.Max(1, Mathf.CeilToInt(count / (float)columns));
+
+            var grid = UIKit.Node(parent, "Grid");
+            var g = grid.gameObject.AddComponent<UnityEngine.UI.GridLayoutGroup>();
+            g.cellSize = new Vector2(s.gridTileSize, s.gridTileSize);
+            g.spacing = new Vector2(s.gap, s.gap);
+            g.constraint = UnityEngine.UI.GridLayoutGroup.Constraint.FixedColumnCount;
+            g.constraintCount = columns;
+            g.childAlignment = TextAnchor.UpperLeft;
+            UIKit.Size(grid, height: rows * s.gridTileSize + (rows - 1) * s.gap);
+            return grid;
+        }
     }
 }
