@@ -131,7 +131,7 @@ namespace Combat.UI
             UIKit.Anchor(bar.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(0f, 6f), new Vector2(4f, -6f));
 
             float right = toVault ? 92f : 16f;
-            var name = UIKit.Text(rt, "Name", s, ItemText.Name(item), s.bodySize, rarity.HasValue && rarity.Value != Rarity.Common ? rc : s.text);
+            var name = UIKit.Text(rt, "Name", s, ItemText.Name(item), s.bodySize, rarity.HasValue && rarity.Value != Rarity.Common ? rc : s.text, lines: 2);
             UIKit.Anchor(name.rectTransform, new Vector2(0f, 0.5f), new Vector2(1f, 1f), new Vector2(18f, 0f), new Vector2(-right, -4f));
 
             string kind = ItemText.Kind(item);

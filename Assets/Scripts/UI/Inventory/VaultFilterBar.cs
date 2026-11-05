@@ -177,6 +177,8 @@ namespace Combat.UI
                 UIKit.Stretch(placeholder.rectTransform);
                 var text = UIKit.Text(area, "Text", s, "", s.smallSize, s.text);
                 text.overflowMode = TextOverflowModes.Overflow;
+                text.enableAutoSizing = false;
+                text.fontSize = s.smallSize;
                 UIKit.Stretch(text.rectTransform);
 
                 search = rt.gameObject.AddComponent<TMP_InputField>();

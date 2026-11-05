@@ -21,6 +21,8 @@ namespace Combat.UI
         public float labelSize = 12f;
         [Tooltip("Letter spacing on uppercase headings and labels.")]
         public float headingSpacing = 8f;
+        [Tooltip("Single-line text shrinks to fit, down to this fraction of its size, then truncates.")]
+        [Range(0.2f, 1f)] public float minTextScale = 0.4f;
 
         [Header("Surfaces")]
         public Color backdrop = new Color(0.02f, 0.03f, 0.04f, 0.86f);
@@ -69,12 +71,14 @@ namespace Combat.UI
         public float sectionGap = 22f;
 
         [Header("Sizes")]
-        public float weaponSlotHeight = 100f;
-        public float armorSlotHeight = 58f;
+        public float weaponSlotHeight = 112f;
+        public float armorSlotHeight = 76f;
         public float gridTileSize = 118f;
         [Min(1)] public int gridColumns = 3;
         public float perkIconSize = 46f;
         public float chipSize = 26f;
+        [Tooltip("Perk chips per row on the equipped cards.")]
+        [Min(1)] public int chipsPerRow = 4;
 
         private readonly Dictionary<int, Sprite> fills = new Dictionary<int, Sprite>();
         private readonly Dictionary<long, Sprite> borders = new Dictionary<long, Sprite>();

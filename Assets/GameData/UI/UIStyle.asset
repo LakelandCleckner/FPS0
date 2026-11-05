@@ -45,8 +45,8 @@ MonoBehaviour:
   padding: 22
   gap: 10
   sectionGap: 22
-  weaponSlotHeight: 100
-  armorSlotHeight: 58
+  weaponSlotHeight: 112
+  armorSlotHeight: 76
   gridTileSize: 118
   gridColumns: 3
   perkIconSize: 46

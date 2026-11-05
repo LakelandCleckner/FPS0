@@ -73,7 +73,8 @@ namespace Combat.UI
         }
 
         public static TMP_Text Text(Transform parent, string name, UIStyleSO style, string value, float size, Color color,
-                                    TextAlignmentOptions align = TextAlignmentOptions.MidlineLeft, bool heading = false, bool wrap = false)
+                                    TextAlignmentOptions align = TextAlignmentOptions.MidlineLeft, bool heading = false, bool wrap = false,
+                                    int lines = 1)
         {
             var rt = Node(parent, name);
             var t = rt.gameObject.AddComponent<TextMeshProUGUI>();
@@ -83,8 +84,18 @@ namespace Combat.UI
             t.color = color;
             t.alignment = align;
             t.raycastTarget = false;
-            t.textWrappingMode = wrap ? TextWrappingModes.Normal : TextWrappingModes.NoWrap;
+            bool fit = !wrap;
+            t.textWrappingMode = wrap || lines > 1 ? TextWrappingModes.Normal : TextWrappingModes.NoWrap;
+            // Truncate, not Ellipsis: TMP re-looks up the ellipsis glyph per style and warns on bold text.
             t.overflowMode = wrap ? TextOverflowModes.Overflow : TextOverflowModes.Truncate;
+            // Fitted text wraps up to its line count, then shrinks, then truncates.
+            if (fit)
+            {
+                t.enableAutoSizing = true;
+                t.fontSizeMax = size;
+                t.fontSizeMin = Mathf.Max(1f, size * style.minTextScale);
+                if (lines > 1) Size(t, height: LineHeight(size) * lines);
+            }
             if (heading)
             {
                 t.fontStyle = FontStyles.UpperCase | FontStyles.Bold;
@@ -92,6 +103,9 @@ namespace Combat.UI
             }
             return t;
         }
+
+        // Height of one line of text at this size, for reserving room in layouts.
+        public static float LineHeight(float size) => Mathf.Ceil(size * 1.2f);
 
         // Small uppercase label: section headings, column names, captions.
         public static TMP_Text Label(Transform parent, string name, UIStyleSO style, string value, Color? color = null)

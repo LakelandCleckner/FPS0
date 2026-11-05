@@ -15,9 +15,8 @@ namespace Combat.UI
             var view = screen.View;
             Surface(root, s);
 
-            var body = UIKit.Node(root, "Body");
-            UIKit.Stretch(body);
-            UIKit.VStack(body, s.gap, UIKit.Pad(s.padding));
+            var area = UIKit.Stretch(UIKit.Node(root, "Area"));
+            var body = UIKit.Scroll(area, s.gap, UIKit.Pad(s.padding));
 
             Heading(body, s, "Weapons");
             for (int i = 0; i < view.Weapons.Length; i++) WeaponCard(body, screen, i, view.Weapons[i]);
@@ -52,15 +51,15 @@ namespace Combat.UI
             if (weapon == null)
             {
                 UIKit.Text(info, "Name", s, "Empty", s.bodySize, s.textFaint);
-                UIKit.Text(info, "Kind", s, "Pick a carried weapon to equip", s.smallSize, s.textFaint);
+                UIKit.Text(info, "Kind", s, "Pick a carried weapon to equip", s.smallSize, s.textFaint, lines: 2);
                 return;
             }
 
-            UIKit.Text(info, "Name", s, ItemText.Name(weapon), s.bodySize + 1f, ItemText.NameColor(s, weapon, s.text));
+            UIKit.Text(info, "Name", s, ItemText.Name(weapon), s.bodySize + 1f, ItemText.NameColor(s, weapon, s.text), lines: 2);
             string kind = ItemText.Kind(weapon);
             string element = ItemText.Element(weapon);
-            UIKit.Text(info, "Kind", s, string.IsNullOrEmpty(element) ? kind : kind + "  /  " + element, s.smallSize, s.textMuted);
-            Chips(info, s, weapon.Perks);
+            UIKit.Text(info, "Kind", s, string.IsNullOrEmpty(element) ? kind : kind + "  /  " + element, s.smallSize, s.textMuted, lines: 2);
+            ChipGrid(tile.transform, s, weapon.Perks);
         }
 
         private static void ArmorCard(Transform parent, InventoryScreen screen, int index, ArmorSlotSO slot, ArmorInstance piece)
@@ -80,14 +79,10 @@ namespace Combat.UI
             UIKit.VStack(info, 2f, null, TextAnchor.MiddleLeft);
             UIKit.Size(info, flexWidth: 1f);
             UIKit.Label(info, "Slot", s, ItemText.SlotName(slot));
-            UIKit.Text(info, "Name", s, piece != null ? ItemText.Name(piece) : "Empty", s.bodySize - 1f, piece != null ? ItemText.NameColor(s, piece, s.text) : s.textFaint);
+            UIKit.Text(info, "Name", s, piece != null ? ItemText.Name(piece) : "Empty", s.bodySize - 1f,
+                       piece != null ? ItemText.NameColor(s, piece, s.text) : s.textFaint, lines: piece != null ? 2 : 1);
 
-            if (piece != null)
-            {
-                var chips = UIKit.Node(tile.transform, "Perks");
-                UIKit.HStack(chips, 4f, null, TextAnchor.MiddleRight);
-                foreach (var p in piece.Perks) if (p != null) Chip(chips, s, p);
-            }
+            if (piece != null) ChipGrid(tile.transform, s, piece.Perks);
         }
 
         // Square item icon; the monogram stands in until icon art exists.
@@ -100,13 +95,26 @@ namespace Combat.UI
             UIKit.Stretch(t.rectTransform);
         }
 
-        private static void Chips(Transform parent, UIStyleSO s, System.Collections.Generic.IReadOnlyList<PerkSO> perks)
+        // Perk chips on the card's right, wrapping to a new row every Chips Per Row.
+        private static void ChipGrid(Transform parent, UIStyleSO s, System.Collections.Generic.IReadOnlyList<PerkSO> perks)
         {
-            var row = UIKit.Node(parent, "Perks");
-            UIKit.HStack(row, 4f);
-            bool any = false;
-            foreach (var p in perks) if (p != null) { Chip(row, s, p); any = true; }
-            if (!any) UIKit.Size(row, height: 0f);
+            int count = 0;
+            foreach (var p in perks) if (p != null) count++;
+            if (count == 0) return;
+
+            const float gap = 4f;
+            int perRow = Mathf.Max(1, s.chipsPerRow);
+            int rows = Mathf.CeilToInt(count / (float)perRow);
+
+            var grid = UIKit.Node(parent, "Perks");
+            var g = grid.gameObject.AddComponent<UnityEngine.UI.GridLayoutGroup>();
+            g.cellSize = new Vector2(s.chipSize, s.chipSize);
+            g.spacing = new Vector2(gap, gap);
+            g.constraint = UnityEngine.UI.GridLayoutGroup.Constraint.FixedColumnCount;
+            g.constraintCount = perRow;
+            g.childAlignment = TextAnchor.MiddleRight;
+            UIKit.Size(grid, width: perRow * s.chipSize + (perRow - 1) * gap, height: rows * s.chipSize + (rows - 1) * gap);
+            foreach (var p in perks) if (p != null) Chip(grid, s, p);
         }
 
         public static void Chip(Transform parent, UIStyleSO s, PerkSO perk)

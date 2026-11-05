@@ -88,7 +88,7 @@ namespace Combat.UI
             UIKit.Anchor(mono.rectTransform, new Vector2(0f, 0.3f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
 
             var name = UIKit.Text(tile.transform, "Name", s, ItemText.Name(item), s.labelSize + 1f, ItemText.NameColor(s, item, s.textMuted),
-                                  TMPro.TextAlignmentOptions.Center);
+                                  TMPro.TextAlignmentOptions.Center, lines: 2);
             UIKit.Anchor(name.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.3f), new Vector2(8f, 6f), new Vector2(-8f, 0f));
 
             var fill = UIKit.Box(tile.transform, "DeleteFill", s, new Color(s.negative.r, s.negative.g, s.negative.b, 0.35f));
