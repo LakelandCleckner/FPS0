@@ -928,6 +928,16 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
+                },
+                {
+                    "name": "SpawnDrop",
+                    "type": "Button",
+                    "id": "46a9eb9d-52ca-4271-a95e-49b532a85ad4",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -1865,6 +1875,39 @@
                     "action": "FalloffHud",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "Alt",
+                    "id": "92ae4a0d-f9d4-495a-bf1e-8453dbf58719",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SpawnDrop",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "4ec92b10-8b0e-4c6f-ae53-da0b4a6abbdd",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Default",
+                    "action": "SpawnDrop",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "a741cdb1-94a0-4331-a29a-8c2d934a3ad8",
+                    "path": "<Keyboard>/minus",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Default",
+                    "action": "SpawnDrop",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }

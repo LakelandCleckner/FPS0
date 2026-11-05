@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
 using Combat.Armor;
+using Combat.Loot;
 using Combat.Perks;
 using Combat.Stats;
 using Combat.Weapons;
@@ -18,6 +19,10 @@ namespace Combat.Loadout
         [SerializeField] private CombatantStats player;
         [Tooltip("For logging armor stat results on the held weapon. Found in parents/children if empty.")]
         [SerializeField] private WeaponLoadout weapons;
+
+        [Tooltip("Rolled by the spawn-drop key.")]
+        [SerializeField] private LootTableSO debugLootTable;
+        [SerializeField] private float debugDropDistance = 3f;
 
         private readonly object debugLock = new object();
         private PlayerInputRouter input;
@@ -62,6 +67,7 @@ namespace Combat.Loadout
             if (d.HealSelf.WasPressedThisFrame()) HealSelf();
             if (d.DumpWeaponStats.WasPressedThisFrame()) DumpWeaponStats();
             if (d.DumpPlayerStats.WasPressedThisFrame()) DumpPlayerStats();
+            if (d.SpawnDrop.WasPressedThisFrame()) SpawnDrop();
         }
 
         // ------------------------------------------------------------------ weapons
@@ -233,6 +239,23 @@ namespace Combat.Loadout
             else health.TakeDamage(Mathf.Min(amount, health.CurrentHealth - 1f), BodyPart.Torso, null);
 
             Debug.Log($"[LoadoutDebug] Health {health.CurrentHealth:0}/{health.MaxHealth:0}");
+        }
+
+        // ------------------------------------------------------------------ loot
+
+        // Rolls the debug loot table and drops it in front of the camera, ignoring drop chance.
+        public void SpawnDrop()
+        {
+            if (debugLootTable == null) { Debug.Log("[LoadoutDebug] No debug loot table set."); return; }
+
+            var cam = Camera.main;
+            var from = cam != null ? cam.transform : loadout.transform;
+            var forward = Vector3.ProjectOnPlane(from.forward, Vector3.up);
+            if (forward.sqrMagnitude < 0.001f) forward = loadout.transform.forward;
+
+            var drop = debugLootTable.SpawnDrop(from.position + forward.normalized * debugDropDistance, true);
+            if (drop != null) Debug.Log($"[LoadoutDebug] Dropped {drop.Label} ({drop.Rarity})");
+            else Debug.Log("[LoadoutDebug] Loot table rolled nothing.");
         }
 
         // ------------------------------------------------------------------ lock

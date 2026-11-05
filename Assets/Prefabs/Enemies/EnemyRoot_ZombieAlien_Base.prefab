@@ -967,6 +967,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2780478270126569151, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8084834533867843646}
+    - targetCorrespondingSourceObject: {fileID: 2780478270126569151, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8279633274126724274}
   m_SourcePrefab: {fileID: 100100000, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}
 --- !u!114 &108623951137932325 stripped
 MonoBehaviour:
@@ -1124,6 +1127,20 @@ MonoBehaviour:
   limbAngularDamping: 0.05
   hullCorpses: 1
   extraDisable: []
+--- !u!114 &8279633274126724274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539902503267225480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a69b8a846b28c3a40b50bbb5f340c451, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lootTable: {fileID: 11400000, guid: 25be603a02a1e934392d259c03744a03, type: 2}
+  dropPoint: {fileID: 0}
 --- !u!4 &7497867919796180745 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6612740343518719550, guid: 02aa935e575653b41ae17346a48a2b56, type: 3}

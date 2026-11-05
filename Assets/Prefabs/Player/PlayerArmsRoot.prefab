@@ -1225,6 +1225,7 @@ GameObject:
   - component: {fileID: 5414710975603091818}
   - component: {fileID: 7505601004465929770}
   - component: {fileID: 981419240446868281}
+  - component: {fileID: 1063168930511842724}
   m_Layer: 8
   m_Name: PlayerArmsRoot
   m_TagString: Player
@@ -1457,9 +1458,7 @@ MonoBehaviour:
   statKeys: {fileID: 11400000, guid: 09a13dc11d493ca499a3955b5ee02738, type: 2}
   fallbackEquipTime: 0.5
   fallbackStowTime: 0.4
-  swapKey: 31
   enableDigitSelect: 1
-  reloadKeyForSprintCancel: 32
   playerMovement: {fileID: 2501316767126194405}
   sprintExitFraction: 0.5
   actionsCancelSprint: 1
@@ -1481,8 +1480,6 @@ MonoBehaviour:
   spawnDistance: 6
   groupRadius: 3
   groupCount: 3
-  spawnOneKey: 7
-  spawnGroupKey: 8
 --- !u!114 &240824279214565352
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1540,7 +1537,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04a2c11c53180364c94c098c9983b560, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  carriedWeaponCap: 9
+  carriedWeaponCapPerSlot: 9
   carriedArmorCapPerSlot: 9
 --- !u!114 &2881276839120533511
 MonoBehaviour:
@@ -1557,6 +1554,8 @@ MonoBehaviour:
   loadout: {fileID: 0}
   player: {fileID: 3694005707256881966}
   weapons: {fileID: 3516509819376779916}
+  debugLootTable: {fileID: 11400000, guid: 25be603a02a1e934392d259c03744a03, type: 2}
+  debugDropDistance: 3
 --- !u!114 &6003708728100343798
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1706,6 +1705,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   presentation: {fileID: 4229018123170512051}
+--- !u!114 &1063168930511842724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6041466214417116510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b502dde05b8f904fbd5743d5a15af51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6377282824227111301
 GameObject:
   m_ObjectHideFlags: 0

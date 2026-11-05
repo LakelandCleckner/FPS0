@@ -1014,6 +1014,16 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""SpawnDrop"",
+                    ""type"": ""Button"",
+                    ""id"": ""46a9eb9d-52ca-4271-a95e-49b532a85ad4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -1951,6 +1961,39 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""action"": ""FalloffHud"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Alt"",
+                    ""id"": ""92ae4a0d-f9d4-495a-bf1e-8453dbf58719"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SpawnDrop"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""4ec92b10-8b0e-4c6f-ae53-da0b4a6abbdd"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""SpawnDrop"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""a741cdb1-94a0-4331-a29a-8c2d934a3ad8"",
+                    ""path"": ""<Keyboard>/minus"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""SpawnDrop"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -2018,6 +2061,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         m_Debug_SpawnOne = m_Debug.FindAction("SpawnOne", throwIfNotFound: true);
         m_Debug_SpawnGroup = m_Debug.FindAction("SpawnGroup", throwIfNotFound: true);
         m_Debug_FalloffHud = m_Debug.FindAction("FalloffHud", throwIfNotFound: true);
+        m_Debug_SpawnDrop = m_Debug.FindAction("SpawnDrop", throwIfNotFound: true);
     }
 
     ~@PlayerInputs()
@@ -2613,6 +2657,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_Debug_SpawnOne;
     private readonly InputAction m_Debug_SpawnGroup;
     private readonly InputAction m_Debug_FalloffHud;
+    private readonly InputAction m_Debug_SpawnDrop;
     /// <summary>
     /// Provides access to input actions defined in input action map "Debug".
     /// </summary>
@@ -2729,6 +2774,10 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @FalloffHud => m_Wrapper.m_Debug_FalloffHud;
         /// <summary>
+        /// Provides access to the underlying input action "Debug/SpawnDrop".
+        /// </summary>
+        public InputAction @SpawnDrop => m_Wrapper.m_Debug_SpawnDrop;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Debug; }
@@ -2832,6 +2881,9 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @FalloffHud.started += instance.OnFalloffHud;
             @FalloffHud.performed += instance.OnFalloffHud;
             @FalloffHud.canceled += instance.OnFalloffHud;
+            @SpawnDrop.started += instance.OnSpawnDrop;
+            @SpawnDrop.performed += instance.OnSpawnDrop;
+            @SpawnDrop.canceled += instance.OnSpawnDrop;
         }
 
         /// <summary>
@@ -2921,6 +2973,9 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @FalloffHud.started -= instance.OnFalloffHud;
             @FalloffHud.performed -= instance.OnFalloffHud;
             @FalloffHud.canceled -= instance.OnFalloffHud;
+            @SpawnDrop.started -= instance.OnSpawnDrop;
+            @SpawnDrop.performed -= instance.OnSpawnDrop;
+            @SpawnDrop.canceled -= instance.OnSpawnDrop;
         }
 
         /// <summary>
@@ -3327,5 +3382,12 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnFalloffHud(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SpawnDrop" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSpawnDrop(InputAction.CallbackContext context);
     }
 }

@@ -137,6 +137,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\Actions\InvestigateAction.cs" />
     <Compile Include="Assets\Scripts\Combat\Loadout\PlayerInventory.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Buckets\StatBucketSO.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Combat\EnemyLootDropper.cs" />
     <Compile Include="Assets\Scripts\DamageNumbers\DamageNumberPool.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\HitscanDeliverySO.cs" />
     <Compile Include="Assets\Scripts\Combat\Delivery\ProjectilePool.cs" />
@@ -152,6 +153,7 @@
     <Compile Include="Assets\Scripts\Combat\Effects\DebugLogEffectSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Spawning\EnemyPoolAdapter.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Runtime\CombatantStats.cs" />
+    <Compile Include="Assets\Scripts\Combat\Loadout\PlayerVault.cs" />
     <Compile Include="Assets\Scripts\Combat\Status\StatusReceiver.cs" />
     <Compile Include="Assets\Scripts\Debugging\Performance\ContextResetAudit.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\LocationVfx.cs" />
@@ -179,6 +181,7 @@
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\PlayerInAttackRange.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\ApplyStatusHitEffect.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponAmmo.cs" />
+    <Compile Include="Assets\Scripts\Combat\Loot\RarityWeights.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponFireController.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxAddons\ParticleSystemScaleLifetime.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\AOE\WindAoeVfx.cs" />
@@ -248,6 +251,7 @@
     <Compile Include="Assets\Scripts\Enemies\Combat\EnemyRagdoll.cs" />
     <Compile Include="Assets\Scripts\Combat\Perks\PerkRuntime.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\CanvasInputs\UICanvasControllerInput.cs" />
+    <Compile Include="Assets\Scripts\Combat\Loot\LootTableSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Effects\DebugLogHitEffect.cs" />
     <Compile Include="Assets\Scripts\UI\Inventory\StatTooltip.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\AmmoPickup.cs" />
@@ -295,6 +299,7 @@
     <Compile Include="Assets\Scripts\Weapons\Skins\WeaponZoneSetSO.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\LocationInvestigatedSensor.cs" />
     <Compile Include="Assets\Scripts\Weapons\HitmarkerUI.cs" />
+    <Compile Include="Assets\Scripts\Combat\Loot\ItemDrop.cs" />
     <Compile Include="Assets\Scripts\UI\Data\StatSheetSO.cs" />
     <Compile Include="Assets\Animations\Enemies\Mixamo\Imports\Alien_Zombie\AlienZombieBaseLocomotionAnimator.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\FireMode.cs" />

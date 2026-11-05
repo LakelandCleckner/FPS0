@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Combat.Armor;
+using Combat.Loot;
 using Combat.Perks;
 using Combat.Weapons;
 #if UNITY_EDITOR
@@ -47,14 +48,7 @@ namespace Combat.Loadout
         [Min(0)] public int rareWeight = 30;
         [Min(0)] public int legendaryWeight = 10;
 
-        public Rarity RollRarity()
-        {
-            int total = commonWeight + rareWeight + legendaryWeight;
-            if (total <= 0) return Rarity.Common;
-            int r = UnityEngine.Random.Range(0, total);
-            if (r < commonWeight) return Rarity.Common;
-            return r < commonWeight + rareWeight ? Rarity.Rare : Rarity.Legendary;
-        }
+        public Rarity RollRarity() => RarityWeights.Roll(commonWeight, rareWeight, legendaryWeight);
 
         [Header("Random (testing)")]
         [Tooltip("Ignore the lists above and roll a random loadout every play.")]

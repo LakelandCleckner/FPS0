@@ -66,6 +66,7 @@
     <Compile Include="Assets\TutorialInfo\Scripts\Editor\ReadmeEditor.cs" />
     <Compile Include="Assets\Editor\StatPerkBatchWindow.cs" />
     <Compile Include="Assets\Editor\TPGripTool.cs" />
+    <Compile Include="Assets\Scripts\Combat\Loot\Editor\ItemDropSetup.cs" />
     <Compile Include="Assets\Editor\GoapCapabilityBuilder.cs" />
     <Compile Include="Assets\Editor\EnemyAttackAnimatorSetup.cs" />
     <Compile Include="Assets\Scripts\UI\Editor\InventoryScreenBuilder.cs" />
