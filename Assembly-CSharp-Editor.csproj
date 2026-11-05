@@ -79,6 +79,7 @@
     <Compile Include="Assets\Editor\MixamoClipSetup.cs" />
     <Compile Include="Assets\Editor\WeaponShaderSOEditor.cs" />
     <Compile Include="Assets\Editor\TPBodySetup.cs" />
+    <Compile Include="Assets\Scripts\UI\Editor\PickupToastSetup.cs" />
     <Compile Include="Assets\Editor\RetroWeaponClipRenamer.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -201,6 +201,7 @@
     <Compile Include="Assets\Scripts\Combat\Delivery\Projectile.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\IHittable.cs" />
     <Compile Include="Assets\Scripts\Combat\Spawning\EnemyPool.cs" />
+    <Compile Include="Assets\Scripts\UI\PickupToast.cs" />
     <Compile Include="Assets\Scripts\Enemies\DamageAndHealth\EnemyHitbox.cs" />
     <Compile Include="Assets\Scripts\Combat\Perks\Types\EffectPerkSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Data\PelletDeliverySOEditor.cs" />

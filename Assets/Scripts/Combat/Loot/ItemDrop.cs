@@ -33,6 +33,9 @@ namespace Combat.Loot
         [Header("Audio")]
         [SerializeField] private AudioClip pickupClip;
 
+        // Fired on pickup: the receiving inventory, the item, and whether it went to the vault.
+        public static event System.Action<PlayerInventory, object, bool> Collected;
+
         private WeaponInstance weapon;
         private ArmorInstance armor;
         private Vector3 visualBase;
@@ -119,6 +122,7 @@ namespace Combat.Loot
             if (playerAudio != null && pickupClip != null) playerAudio.Play2D(pickupClip);
 
             Debug.Log($"[Loot] {Label} ({Rarity}) -> {where}");
+            Collected?.Invoke(inventory, weapon != null ? (object)weapon : armor, where == "vault");
             Destroy(gameObject);
         }
 
