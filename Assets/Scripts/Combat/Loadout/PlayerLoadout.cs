@@ -96,7 +96,7 @@ namespace Combat.Loadout
                         continue;
                     }
 
-                    weapons[i] = new WeaponInstance(def, StartRoll());
+                    weapons[i] = new WeaponInstance(def, StartRoll(), StartRarity());
                 }
             }
 
@@ -114,7 +114,7 @@ namespace Combat.Loadout
                     AddCarriedArmor(def);
                 }
                 else if (armor[idx] != null) AddCarriedArmor(def);
-                else armor[idx] = new ArmorInstance(def, StartRoll());
+                else armor[idx] = new ArmorInstance(def, StartRoll(), StartRarity());
             }
 
             foreach (var def in startingLoadout.carriedArmor)
@@ -136,26 +136,26 @@ namespace Combat.Loadout
                        ?? Pick(weaponPool, w => LoadoutSlots.Allows(w.AllowedSlots, slot));
                 if (def == null) continue;
                 used.Add(def);
-                weapons[i] = new WeaponInstance(def, StartRoll());
+                weapons[i] = new WeaponInstance(def, StartRoll(), StartRarity());
             }
 
             for (int i = 0; i < armor.Length; i++)
             {
                 var slot = armorSlots[i];
                 var def = Pick(armorPool, a => a.slot == slot);
-                if (def != null) armor[i] = new ArmorInstance(def, StartRoll());
+                if (def != null) armor[i] = new ArmorInstance(def, StartRoll(), StartRarity());
             }
 
             if (inventory == null) return;
             for (int n = 0; n < startingLoadout.randomCarriedWeapons; n++)
             {
                 var def = Pick(weaponPool, null);
-                if (def != null) inventory.TryAddWeapon(new WeaponInstance(def, StartRoll()));
+                if (def != null) inventory.TryAddWeapon(new WeaponInstance(def, StartRoll(), StartRarity()));
             }
             for (int n = 0; n < startingLoadout.randomCarriedArmor; n++)
             {
                 var def = Pick(armorPool, a => ArmorSlotIndex(a.slot) >= 0);
-                if (def != null) inventory.TryAddArmor(new ArmorInstance(def, StartRoll()));
+                if (def != null) inventory.TryAddArmor(new ArmorInstance(def, StartRoll(), StartRarity()));
             }
         }
 
@@ -171,17 +171,19 @@ namespace Combat.Loadout
             return chosen;
         }
 
+        private Rarity StartRarity() => startingLoadout != null ? startingLoadout.RollRarity() : Rarity.Common;
+
         private RollMode StartRoll() => startingLoadout != null ? startingLoadout.rollMode : RollMode.Random;
 
         private void AddCarried(WeaponSO def)
         {
-            if (inventory == null || !inventory.TryAddWeapon(new WeaponInstance(def, StartRoll())))
+            if (inventory == null || !inventory.TryAddWeapon(new WeaponInstance(def, StartRoll(), StartRarity())))
                 Debug.LogWarning($"[PlayerLoadout] No carried space for starting weapon '{def.name}'.");
         }
 
         private void AddCarriedArmor(ArmorSO def)
         {
-            if (inventory == null || !inventory.TryAddArmor(new ArmorInstance(def, StartRoll())))
+            if (inventory == null || !inventory.TryAddArmor(new ArmorInstance(def, StartRoll(), StartRarity())))
                 Debug.LogWarning($"[PlayerLoadout] No carried space for starting armor '{def.name}'.");
         }
 

@@ -16,17 +16,30 @@ MonoBehaviour:
   displayName: Arms Slot
   perkColumns:
   - label: Stat
+    minRarity: 0
     source: {fileID: 11400000, guid: 281cb695fe11a974e8cea421cd9bf464, type: 2}
     extraPerks: []
   - label: Stat
+    minRarity: 0
     source: {fileID: 11400000, guid: 281cb695fe11a974e8cea421cd9bf464, type: 2}
     extraPerks: []
   - label: Trait
+    minRarity: 0
     source: {fileID: 11400000, guid: a53a94537aa2d6741b41f3b28dfafe9d, type: 2}
     extraPerks: []
   - label: Trait
+    minRarity: 0
     source: {fileID: 11400000, guid: a53a94537aa2d6741b41f3b28dfafe9d, type: 2}
     extraPerks: []
   - label: Trait
+    minRarity: 1
+    source: {fileID: 11400000, guid: a53a94537aa2d6741b41f3b28dfafe9d, type: 2}
+    extraPerks: []
+  - label: Trait
+    minRarity: 2
+    source: {fileID: 11400000, guid: a53a94537aa2d6741b41f3b28dfafe9d, type: 2}
+    extraPerks: []
+  - label: Trait
+    minRarity: 3
     source: {fileID: 11400000, guid: a53a94537aa2d6741b41f3b28dfafe9d, type: 2}
     extraPerks: []

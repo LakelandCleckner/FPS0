@@ -40,7 +40,7 @@ namespace Combat.UI
         {
             var s = screen.Style;
             var def = w.Definition;
-            Title(body, s, ItemText.Name(w), ItemText.Kind(w), ItemText.Element(w));
+            Title(body, s, w, ItemText.Kind(w), ItemText.Element(w));
 
             // Slot rules
             var rules = UIKit.Node(body, "Slots");
@@ -75,7 +75,7 @@ namespace Combat.UI
         private void Armor(RectTransform body, InventoryScreen screen, ArmorInstance a)
         {
             var s = screen.Style;
-            Title(body, s, ItemText.Name(a), ItemText.Kind(a), null);
+            Title(body, s, a, ItemText.Kind(a), null);
 
             effects.Clear();
             foreach (var p in a.AllPerks()) p.CollectStaticModifiers(effects);
@@ -193,11 +193,14 @@ namespace Combat.UI
 
         // ------------------------------------------------------------------ parts
 
-        private static void Title(RectTransform body, UIStyleSO s, string name, string kind, string element)
+        // Name in its rarity colour; the kind line leads with the rarity.
+        private static void Title(RectTransform body, UIStyleSO s, object item, string kind, string element)
         {
             var block = UIKit.Node(body, "TitleBlock");
             UIKit.VStack(block, 6f);
-            UIKit.Text(block, "Name", s, name, s.titleSize - 4f, s.text, heading: true);
+            UIKit.Text(block, "Name", s, ItemText.Name(item), s.titleSize - 4f, ItemText.NameColor(s, item, s.text), heading: true);
+            var rarity = ItemText.RarityOf(item);
+            if (rarity.HasValue) kind = rarity.Value + "  /  " + kind;
 
             var line = UIKit.Node(block, "Kind");
             UIKit.HStack(line, 10f);

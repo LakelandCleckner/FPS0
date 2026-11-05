@@ -48,6 +48,8 @@ namespace Combat.Weapons
         [SerializeField] private Camera viewmodelCamera;
         [Tooltip("Found in parents if empty.")]
         [SerializeField] private PlayerAim playerAim;
+        [Tooltip("Debug: a dot at true screen center while aiming, to line the sight up against.")]
+        [SerializeField] private bool debugCenterDot = false;
 
         [Header("Interrupt cross-fade targets")]
         [SerializeField] private string armsActionsLayer = "Actions";
@@ -65,6 +67,9 @@ namespace Combat.Weapons
 
         private Vector3 basePosition;
         private Vector3 aimOffset;      // parent-space shift that centers the sight
+        private WeaponViewmodelSO viewmodel;
+        private Transform sightPoint;
+        private Quaternion baseRotation;
         public int ArmsEmptyStateHash { get; private set; }
         public int GunRestStateHash { get; private set; }
 
@@ -76,13 +81,46 @@ namespace Combat.Weapons
                 ArmsActionsLayer = armsAnimator.GetLayerIndex(armsActionsLayer);
 
             basePosition = transform.localPosition;
+            baseRotation = transform.localRotation;
             if (playerAim == null) playerAim = GetComponentInParent<PlayerAim>();
         }
 
         private void LateUpdate()
         {
             float blend = playerAim != null ? playerAim.Blend : 0f;
-            transform.localPosition = basePosition + aimOffset * blend;
+            transform.localPosition = basePosition + (aimOffset + Nudge()) * blend;
+            transform.localRotation = baseRotation;
+            Tilt(blend);
+        }
+
+        // The viewmodel's ADS tilt, rotated around the front sight so the post stays put.
+        private void Tilt(float blend)
+        {
+            if (viewmodel == null || viewmodel.adsTiltDeg == Vector2.zero || sightPoint == null || viewmodelCamera == null || blend <= 0f) return;
+            var cam = viewmodelCamera.transform;
+            Vector3 pivot = sightPoint.position;
+            transform.RotateAround(pivot, cam.right, -viewmodel.adsTiltDeg.x * blend);
+            transform.RotateAround(pivot, cam.up, viewmodel.adsTiltDeg.y * blend);
+        }
+
+        // The viewmodel's ADS nudge, read live so it can be tuned in play mode.
+        private Vector3 Nudge()
+        {
+            if (viewmodel == null || viewmodel.adsNudgeMm == Vector2.zero || viewmodelCamera == null) return Vector3.zero;
+            Vector3 world = viewmodelCamera.transform.TransformVector(new Vector3(viewmodel.adsNudgeMm.x, viewmodel.adsNudgeMm.y, 0f) * 0.001f);
+            return transform.parent != null ? transform.parent.InverseTransformVector(world) : world;
+        }
+
+        private void OnGUI()
+        {
+            if (!debugCenterDot || playerAim == null || playerAim.Blend < 0.99f) return;
+            float x = Screen.width * 0.5f, y = Screen.height * 0.5f;
+            var old = GUI.color;
+            GUI.color = Color.black;
+            GUI.DrawTexture(new Rect(x - 2f, y - 2f, 4f, 4f), Texture2D.whiteTexture);
+            GUI.color = Color.red;
+            GUI.DrawTexture(new Rect(x - 1f, y - 1f, 2f, 2f), Texture2D.whiteTexture);
+            GUI.color = old;
         }
 
         // Called by WeaponLoadout BEFORE OnEquipStarted fires. Swapping the controller
@@ -91,6 +129,9 @@ namespace Combat.Weapons
                               Transform sight)
         {
             Current = weapon;
+            var source = weapon != null ? weapon.DamageSource : null;
+            viewmodel = source != null && source.Weapon != null ? source.Weapon.viewmodel : null;
+            sightPoint = sight;
             if (armsAnimator == null || controller == null) return;
 
             if (armsAnimator.runtimeAnimatorController != controller)
@@ -116,6 +157,7 @@ namespace Combat.Weapons
             if (clip == null) return;
 
             transform.localPosition = basePosition;
+            transform.localRotation = baseRotation;
             clip.SampleAnimation(armsAnimator.gameObject, 0f);
 
             // Where the sight sits relative to the camera's center line; zero X/Y

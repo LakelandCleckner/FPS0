@@ -8,4 +8,8 @@ AnimatorOverrideController:
   m_PrefabAsset: {fileID: 0}
   m_Name: AOC_Arms_Pistol
   m_Controller: {fileID: 9100000, guid: b12b0a5aa19b9ec4289d1c07080bb2ef, type: 2}
-  m_Clips: []
+  m_Clips:
+  - m_OriginalClip: {fileID: -623603649343465320, guid: 6600aae27396f104aab59cbcd4903bd3, type: 3}
+    m_OverrideClip: {fileID: -623603649343465320, guid: bbb1c5f900389d844800af5c4b361470, type: 3}
+  - m_OriginalClip: {fileID: -623603649343465320, guid: 675a2c5ff1771e649852d8beeddd67d0, type: 3}
+    m_OverrideClip: {fileID: -623603649343465320, guid: bbb1c5f900389d844800af5c4b361470, type: 3}

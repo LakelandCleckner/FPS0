@@ -80,6 +80,8 @@ namespace Combat.Weapons
         public List<HitEffectSO> riderEffects = new List<HitEffectSO>();
 
         [Header("Perks")]
+        [Tooltip("Hand-made top tier: always Mythic, uses its own columns and curated picks.")]
+        public bool mythic = false;
         [Tooltip("Always present on every copy.")]
         public List<PerkSO> intrinsicPerks = new List<PerkSO>();
         [Tooltip("One perk is rolled from each column. Empty = use the weapon type's columns.")]

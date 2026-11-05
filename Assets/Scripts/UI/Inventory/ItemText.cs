@@ -32,6 +32,30 @@ namespace Combat.UI
             return "";
         }
 
+        // Rarity of an owned item, null for anything else.
+        public static Rarity? RarityOf(object item)
+        {
+            if (item is WeaponInstance w) return w.Rarity;
+            if (item is ArmorInstance a) return a.Rarity;
+            return null;
+        }
+
+        // Item names take their rarity colour; Common keeps the given colour.
+        public static UnityEngine.Color NameColor(UIStyleSO s, object item, UnityEngine.Color normal)
+        {
+            var r = RarityOf(item);
+            return r.HasValue && r.Value != Rarity.Common ? s.RarityColor(r.Value) : normal;
+        }
+
+        public static UnityEngine.Color BorderColor(UIStyleSO s, object item)
+        {
+            var r = RarityOf(item);
+            if (!r.HasValue || r.Value == Rarity.Common) return s.tileBorder;
+            var c = s.RarityColor(r.Value);
+            c.a = s.rarityBorderAlpha;
+            return c;
+        }
+
         public static string SlotName(ArmorSlotSO slot) => slot != null ? Pick(slot.displayName, slot.name) : "";
 
         public static string Element(WeaponInstance w)

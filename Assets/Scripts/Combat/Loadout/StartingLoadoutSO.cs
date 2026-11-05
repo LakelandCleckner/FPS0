@@ -41,6 +41,21 @@ namespace Combat.Loadout
         [Tooltip("Armor carried but not equipped.")]
         public List<ArmorSO> carriedArmor = new List<ArmorSO>();
 
+        [Header("Rarity")]
+        [Tooltip("Odds for each item's rarity. Mythic only comes from Mythic definitions.")]
+        [Min(0)] public int commonWeight = 60;
+        [Min(0)] public int rareWeight = 30;
+        [Min(0)] public int legendaryWeight = 10;
+
+        public Rarity RollRarity()
+        {
+            int total = commonWeight + rareWeight + legendaryWeight;
+            if (total <= 0) return Rarity.Common;
+            int r = UnityEngine.Random.Range(0, total);
+            if (r < commonWeight) return Rarity.Common;
+            return r < commonWeight + rareWeight ? Rarity.Rare : Rarity.Legendary;
+        }
+
         [Header("Random (testing)")]
         [Tooltip("Ignore the lists above and roll a random loadout every play.")]
         public bool randomize = false;

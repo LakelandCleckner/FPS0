@@ -216,7 +216,7 @@ namespace Combat.UI
 
         private void ArmorCard(Transform parent, UIStyleSO s, ArmorSlotSO slot, ArmorInstance piece)
         {
-            var card = UIKit.Box(parent, "Armor_" + ItemText.SlotName(slot), s, piece != null ? s.tile : s.tileEmpty, true);
+            var card = UIKit.Box(parent, "Armor_" + ItemText.SlotName(slot), s, piece != null ? s.tile : s.tileEmpty, true, ItemText.BorderColor(s, piece));
             UIKit.VStack(card, 6f, UIKit.Pad(14f, 14f, 10f, 10f));
 
             var top = UIKit.Node(card.transform, "Top");
@@ -226,7 +226,7 @@ namespace Combat.UI
             UIKit.VStack(info, 2f, null, TextAnchor.MiddleLeft);
             UIKit.Size(info, flexWidth: 1f);
             UIKit.Label(info, "Slot", s, ItemText.SlotName(slot));
-            UIKit.Text(info, "Name", s, piece != null ? ItemText.Name(piece) : "Empty", s.bodySize - 1f, piece != null ? s.text : s.textFaint);
+            UIKit.Text(info, "Name", s, piece != null ? ItemText.Name(piece) : "Empty", s.bodySize - 1f, piece != null ? ItemText.NameColor(s, piece, s.text) : s.textFaint);
             if (piece == null) return;
 
             effects.Clear();
@@ -332,7 +332,7 @@ namespace Combat.UI
 
         private static void WeaponCard(Transform parent, UIStyleSO s, int slot, WeaponInstance w)
         {
-            var card = UIKit.Box(parent, "Weapon_" + (slot + 1), s, w != null ? s.tile : s.tileEmpty, true);
+            var card = UIKit.Box(parent, "Weapon_" + (slot + 1), s, w != null ? s.tile : s.tileEmpty, true, ItemText.BorderColor(s, w));
             UIKit.HStack(card, 12f, UIKit.Pad(12f, 12f, 8f, 8f));
             UIKit.Size(card, height: s.armorSlotHeight + 6f);
 
@@ -343,7 +343,7 @@ namespace Combat.UI
             var info = UIKit.Node(card.transform, "Info");
             UIKit.VStack(info, 2f, null, TextAnchor.MiddleLeft);
             UIKit.Size(info, flexWidth: 1f);
-            UIKit.Text(info, "Name", s, w != null ? ItemText.Name(w) : "Empty", s.bodySize - 1f, w != null ? s.text : s.textFaint);
+            UIKit.Text(info, "Name", s, w != null ? ItemText.Name(w) : "Empty", s.bodySize - 1f, w != null ? ItemText.NameColor(s, w, s.text) : s.textFaint);
             if (w != null) UIKit.Text(info, "Kind", s, ItemText.Kind(w), s.smallSize - 1f, s.textMuted);
         }
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using Combat.Perks;
 
 namespace Combat.UI
 {
@@ -41,6 +42,14 @@ namespace Combat.UI
         public Color positive = new Color(0.5f, 0.86f, 0.58f, 1f);
         public Color negative = new Color(0.96f, 0.44f, 0.4f, 1f);
 
+        [Header("Rarity")]
+        public Color rarityCommon = new Color(0.72f, 0.76f, 0.8f, 1f);
+        public Color rarityRare = new Color(0.38f, 0.62f, 1f, 1f);
+        public Color rarityLegendary = new Color(0.72f, 0.45f, 1f, 1f);
+        public Color rarityMythic = new Color(1f, 0.85f, 0.35f, 1f);
+        [Tooltip("Tile border strength for Rare and up. Common keeps the normal border.")]
+        [Range(0f, 1f)] public float rarityBorderAlpha = 0.55f;
+
         [Header("Stat bars")]
         public Color barTrack = new Color(1f, 1f, 1f, 0.07f);
         public Color barBase = new Color(0.86f, 0.89f, 0.91f, 1f);
@@ -68,6 +77,17 @@ namespace Combat.UI
 
         private readonly Dictionary<int, Sprite> fills = new Dictionary<int, Sprite>();
         private readonly Dictionary<long, Sprite> borders = new Dictionary<long, Sprite>();
+
+        public Color RarityColor(Rarity r)
+        {
+            switch (r)
+            {
+                case Rarity.Rare: return rarityRare;
+                case Rarity.Legendary: return rarityLegendary;
+                case Rarity.Mythic: return rarityMythic;
+                default: return rarityCommon;
+            }
+        }
 
         public TMP_FontAsset BodyFont => font != null ? font : TMP_Settings.defaultFontAsset;
         public TMP_FontAsset HeadingFont => headingFont != null ? headingFont : BodyFont;

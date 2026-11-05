@@ -9,14 +9,12 @@ AnimatorOverrideController:
   m_Name: AOC_Arms_SMG
   m_Controller: {fileID: 9100000, guid: b12b0a5aa19b9ec4289d1c07080bb2ef, type: 2}
   m_Clips:
-  - m_OriginalClip: {fileID: -623603649343465320, guid: 0898f8a7545c6dc478829241bfcc28c1, type: 3}
-    m_OverrideClip: {fileID: -623603649343465320, guid: 9bda54c9af6ed96468edcc7db1851a29, type: 3}
   - m_OriginalClip: {fileID: -623603649343465320, guid: f2dfc50b84c042b41a44d02ab62e5199, type: 3}
     m_OverrideClip: {fileID: -623603649343465320, guid: 3dff71ea0ccc0fb498f52d39dfb088a0, type: 3}
   - m_OriginalClip: {fileID: -623603649343465320, guid: f8b1d9984e0eb6342a825c5edf7e077c, type: 3}
     m_OverrideClip: {fileID: -623603649343465320, guid: 15e07e4755b54f64288b4edcc1d515f5, type: 3}
   - m_OriginalClip: {fileID: -623603649343465320, guid: 6600aae27396f104aab59cbcd4903bd3, type: 3}
-    m_OverrideClip: {fileID: -623603649343465320, guid: 09c0839a40a84de45afb91e2ad85920a, type: 3}
+    m_OverrideClip: {fileID: -623603649343465320, guid: 987e23a82ab09dd4a9e184a8c93d2b26, type: 3}
   - m_OriginalClip: {fileID: -623603649343465320, guid: 452751ca3d466254c919b612a6725618, type: 3}
     m_OverrideClip: {fileID: -623603649343465320, guid: 23f25819fbdd9fb43afa4c5c336d8fb7, type: 3}
   - m_OriginalClip: {fileID: -623603649343465320, guid: c058a8198ce725c4da5ea3e5e727b949, type: 3}
@@ -36,6 +34,6 @@ AnimatorOverrideController:
   - m_OriginalClip: {fileID: -623603649343465320, guid: cce94b20580c7bd4fb5c24e8d9549981, type: 3}
     m_OverrideClip: {fileID: -623603649343465320, guid: 39aebbc5d2d8ac04fa2fc819c792d489, type: 3}
   - m_OriginalClip: {fileID: -623603649343465320, guid: 675a2c5ff1771e649852d8beeddd67d0, type: 3}
-    m_OverrideClip: {fileID: -623603649343465320, guid: cb9dbdd9107fcb1428f6c70d9f534fcc, type: 3}
+    m_OverrideClip: {fileID: -623603649343465320, guid: 987e23a82ab09dd4a9e184a8c93d2b26, type: 3}
   - m_OriginalClip: {fileID: -623603649343465320, guid: 209a8909617a50d4b945d848f54ff596, type: 3}
     m_OverrideClip: {fileID: -623603649343465320, guid: 99ff7533678a21645a214487a72b95ba, type: 3}

@@ -62,7 +62,8 @@ namespace Combat.UI
         {
             var style = screen.Style;
             var fill = UIKit.Box(parent, name, style, style.tile);
-            var border = UIKit.Outline(fill.rectTransform, style, style.tileBorder);
+            var borderColor = ItemText.BorderColor(style, item);
+            var border = UIKit.Outline(fill.rectTransform, style, borderColor);
 
             var mark = UIKit.Solid(fill.rectTransform, "SelectedMark", style.accent);
             UIKit.Anchor(mark.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(0f, 6f), new Vector2(3f, -6f));
@@ -71,7 +72,7 @@ namespace Combat.UI
             var tile = fill.gameObject.AddComponent<UITile>();
             tile.Item = item;
             tile.interactable = interactable;
-            tile.Setup(fill, border, mark, style.tile, style.tileHover, style.tileBorder, style.accent);
+            tile.Setup(fill, border, mark, style.tile, style.tileHover, borderColor, style.accent);
             tile.HoverChanged += screen.OnTileHover;
             return tile;
         }

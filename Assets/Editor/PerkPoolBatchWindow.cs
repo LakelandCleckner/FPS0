@@ -32,6 +32,7 @@ public class PerkPoolBatchWindow : EditorWindow
         public bool Inherit;
         public readonly List<string> Pools = new List<string>();   // "" = no pool
         public readonly List<string> Labels = new List<string>();
+        public readonly List<Rarity> Mins = new List<Rarity>();
     }
 
     private const string PerkRoot = "Assets/GameData/Perks";
@@ -89,7 +90,8 @@ public class PerkPoolBatchWindow : EditorWindow
 
         EditorGUILayout.LabelField("Assignments", EditorStyles.boldLabel);
         EditorGUILayout.HelpBox(
-            $"Item | Pool, Pool, -, Pool | Label, Label     ('-' = no pool for that column)\n" +
+            $"Item | Pool, Pool, -, Pool | Label, Label | min=Common, Rare     ('-' = no pool for that column)\n" +
+            "min= sets the lowest rarity each column rolls at; leave it off to keep the current values.\n" +
             $"{GroupWord}=Name | ...  sets the default for every item without its own columns.\n" +
             "Item | inherit  clears an item's own columns so it uses the default.",
             MessageType.None);
@@ -247,8 +249,23 @@ public class PerkPoolBatchWindow : EditorWindow
                 }
                 if (a.Pools.Count == 0) throw new FormatException("no columns");
 
-                if (parts.Length > 2)
-                    foreach (var l in parts[2].Split(',')) a.Labels.Add(l.Trim());
+                // Optional sections after the pools: labels, and min=Rarity per column.
+                for (int x = 2; x < parts.Length; x++)
+                {
+                    string sec = parts[x].Trim();
+                    if (sec.StartsWith("min=", StringComparison.OrdinalIgnoreCase))
+                    {
+                        foreach (var r in sec.Substring(4).Split(','))
+                        {
+                            if (!Enum.TryParse(r.Trim(), true, out Rarity rar) || !Enum.IsDefined(typeof(Rarity), rar))
+                                throw new FormatException($"'{r.Trim()}' is not a rarity ({string.Join(", ", Enum.GetNames(typeof(Rarity)))})");
+                            a.Mins.Add(rar);
+                        }
+                    }
+                    else if (a.Labels.Count == 0)
+                        foreach (var l in sec.Split(',')) a.Labels.Add(l.Trim());
+                    else throw new FormatException($"unexpected section '{sec}'");
+                }
             }
             assignments.Add(a);
         });
@@ -324,6 +341,7 @@ public class PerkPoolBatchWindow : EditorWindow
                     {
                         label = i < a.Labels.Count && a.Labels[i].Length > 0 ? a.Labels[i] : old != null ? old.label : "",
                         source = a.Pools[i].Length > 0 ? made[Key(a.Pools[i])] : null,
+                        minRarity = i < a.Mins.Count ? a.Mins[i] : old != null ? old.minRarity : Rarity.Common,
                         extraPerks = old != null ? old.extraPerks : new List<PerkSO>()   // keeps one-off extras
                     });
                 }
@@ -384,17 +402,22 @@ public class PerkPoolBatchWindow : EditorWindow
 
         var names = new List<string>();
         var labels = new List<string>();
-        bool anyLabel = false;
+        var mins = new List<string>();
+        bool anyLabel = false, anyMin = false;
         foreach (var c in cols)
         {
             names.Add(c != null && c.source != null ? c.source.name : "-");
             string l = c != null ? c.label : "";
             labels.Add(l);
             anyLabel |= !string.IsNullOrEmpty(l);
+            var m = c != null ? c.minRarity : Rarity.Common;
+            mins.Add(m.ToString());
+            anyMin |= m != Rarity.Common;
         }
 
         sb.Append(target).Append(" | ").Append(string.Join(", ", names));
         if (anyLabel) sb.Append(" | ").Append(string.Join(", ", labels));
+        if (anyMin) sb.Append(" | min=").Append(string.Join(", ", mins));
         sb.Append('\n');
     }
 

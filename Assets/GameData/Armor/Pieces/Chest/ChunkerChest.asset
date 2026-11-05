@@ -15,6 +15,7 @@ MonoBehaviour:
   id: chunker_chest
   displayName: Chunker Chest
   slot: {fileID: 11400000, guid: 773fdea7bf7d89b40825fb161780dac0, type: 2}
+  mythic: 1
   intrinsicPerks:
   - {fileID: 11400000, guid: 2728a8a8c6176134290102d0a59c246b, type: 2}
   perkColumns: []

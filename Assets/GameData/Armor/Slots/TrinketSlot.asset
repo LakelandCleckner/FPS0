@@ -16,17 +16,30 @@ MonoBehaviour:
   displayName: Trinket Slot
   perkColumns:
   - label: Stat
+    minRarity: 0
     source: {fileID: 11400000, guid: bb52dbadbe5b6d244a7e3e7fe064cc43, type: 2}
     extraPerks: []
   - label: Stat
+    minRarity: 0
     source: {fileID: 11400000, guid: bb52dbadbe5b6d244a7e3e7fe064cc43, type: 2}
     extraPerks: []
   - label: Trait
+    minRarity: 0
     source: {fileID: 11400000, guid: ad857877be697b944bd4fbe855d9b6ec, type: 2}
     extraPerks: []
   - label: Trait
+    minRarity: 0
     source: {fileID: 11400000, guid: ad857877be697b944bd4fbe855d9b6ec, type: 2}
     extraPerks: []
   - label: Trait
+    minRarity: 1
+    source: {fileID: 11400000, guid: ad857877be697b944bd4fbe855d9b6ec, type: 2}
+    extraPerks: []
+  - label: Trait
+    minRarity: 2
+    source: {fileID: 11400000, guid: ad857877be697b944bd4fbe855d9b6ec, type: 2}
+    extraPerks: []
+  - label: Trait
+    minRarity: 3
     source: {fileID: 11400000, guid: ad857877be697b944bd4fbe855d9b6ec, type: 2}
     extraPerks: []

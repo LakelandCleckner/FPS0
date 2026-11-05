@@ -12,6 +12,7 @@ namespace Combat.Weapons
         [SerializeField] private string uid;
         [SerializeField] private WeaponSO definition;
         [SerializeField] private List<PerkSO> perks = new List<PerkSO>();
+        [SerializeField] private Rarity rarity;
 
         [Tooltip("Rounds in the magazine. -1 = full on first spawn.")]
         public int magazine = -1;
@@ -24,18 +25,23 @@ namespace Combat.Weapons
 
         // Rolled picks, one per column (null where a column had nothing to roll).
         public IReadOnlyList<PerkSO> Perks => perks;
+        public Rarity Rarity => rarity;
 
-        public WeaponInstance(WeaponSO definition, RollMode mode = RollMode.Random)
+        // Mythic definitions are always Mythic.
+        public WeaponInstance(WeaponSO definition, RollMode mode = RollMode.Random, Rarity rarity = Rarity.Common)
         {
             this.definition = definition;
+            this.rarity = definition != null && definition.mythic ? Rarity.Mythic : rarity;
             uid = Guid.NewGuid().ToString("N");
             Reroll(mode);
         }
 
+        // New perks at the same rarity. Mythic items always use their curated picks.
         public void Reroll(RollMode mode = RollMode.Random)
         {
             if (definition == null) { perks.Clear(); return; }
-            PerkRoll.Roll(definition.ResolvedPerkColumns, definition.curatedRoll, mode, perks, definition.intrinsicPerks, definition.name);
+            if (definition.mythic) mode = RollMode.Curated;
+            PerkRoll.Roll(definition.ResolvedPerkColumns, definition.curatedRoll, mode, perks, definition.intrinsicPerks, definition.name, rarity);
         }
 
         // Intrinsic perks, then rolled ones.

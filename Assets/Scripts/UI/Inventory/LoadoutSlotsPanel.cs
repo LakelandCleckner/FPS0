@@ -56,7 +56,7 @@ namespace Combat.UI
                 return;
             }
 
-            UIKit.Text(info, "Name", s, ItemText.Name(weapon), s.bodySize + 1f, s.text);
+            UIKit.Text(info, "Name", s, ItemText.Name(weapon), s.bodySize + 1f, ItemText.NameColor(s, weapon, s.text));
             string kind = ItemText.Kind(weapon);
             string element = ItemText.Element(weapon);
             UIKit.Text(info, "Kind", s, string.IsNullOrEmpty(element) ? kind : kind + "  /  " + element, s.smallSize, s.textMuted);
@@ -80,7 +80,7 @@ namespace Combat.UI
             UIKit.VStack(info, 2f, null, TextAnchor.MiddleLeft);
             UIKit.Size(info, flexWidth: 1f);
             UIKit.Label(info, "Slot", s, ItemText.SlotName(slot));
-            UIKit.Text(info, "Name", s, piece != null ? ItemText.Name(piece) : "Empty", s.bodySize - 1f, piece != null ? s.text : s.textFaint);
+            UIKit.Text(info, "Name", s, piece != null ? ItemText.Name(piece) : "Empty", s.bodySize - 1f, piece != null ? ItemText.NameColor(s, piece, s.text) : s.textFaint);
 
             if (piece != null)
             {

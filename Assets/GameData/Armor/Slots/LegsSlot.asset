@@ -16,17 +16,30 @@ MonoBehaviour:
   displayName: Legs Slot
   perkColumns:
   - label: Stat
+    minRarity: 0
     source: {fileID: 11400000, guid: c15040a60ee29354daf9c722ed4cc9fc, type: 2}
     extraPerks: []
   - label: Stat
+    minRarity: 0
     source: {fileID: 11400000, guid: c15040a60ee29354daf9c722ed4cc9fc, type: 2}
     extraPerks: []
   - label: Trait
+    minRarity: 0
     source: {fileID: 11400000, guid: ae75c185cf3bb6544a55f7f63f3f7735, type: 2}
     extraPerks: []
   - label: Trait
+    minRarity: 0
     source: {fileID: 11400000, guid: ae75c185cf3bb6544a55f7f63f3f7735, type: 2}
     extraPerks: []
   - label: Trait
+    minRarity: 1
+    source: {fileID: 11400000, guid: ae75c185cf3bb6544a55f7f63f3f7735, type: 2}
+    extraPerks: []
+  - label: Trait
+    minRarity: 2
+    source: {fileID: 11400000, guid: ae75c185cf3bb6544a55f7f63f3f7735, type: 2}
+    extraPerks: []
+  - label: Trait
+    minRarity: 3
     source: {fileID: 11400000, guid: ae75c185cf3bb6544a55f7f63f3f7735, type: 2}
     extraPerks: []

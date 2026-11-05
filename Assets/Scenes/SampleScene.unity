@@ -2058,6 +2058,10 @@ PrefabInstance:
       propertyPath: spawner
       value: 
       objectReference: {fileID: 427031535}
+    - target: {fileID: 7669667991982255898, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
+      propertyPath: debugCenterDot
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

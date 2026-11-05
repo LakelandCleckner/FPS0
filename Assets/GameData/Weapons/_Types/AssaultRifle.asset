@@ -20,17 +20,30 @@ MonoBehaviour:
   defaultShader: {fileID: 0}
   perkColumns:
   - label: Barrel
+    minRarity: 0
     source: {fileID: 11400000, guid: 50372d5fa2c8b4a46bc859fb62a988e0, type: 2}
     extraPerks: []
   - label: Magazine
+    minRarity: 0
     source: {fileID: 11400000, guid: 268034a300785e04daddcbd879b3fd1a, type: 2}
     extraPerks: []
   - label: Trait
+    minRarity: 0
     source: {fileID: 11400000, guid: f6ca8791d3915d440b637ddf629daddc, type: 2}
     extraPerks: []
   - label: Trait
+    minRarity: 0
     source: {fileID: 11400000, guid: 256cc2e72b7a4b548b19a0abe02b12b0, type: 2}
     extraPerks: []
   - label: Trait
+    minRarity: 1
     source: {fileID: 11400000, guid: bae76d937fc6aab459e354ed6991f942, type: 2}
+    extraPerks: []
+  - label: Trait
+    minRarity: 2
+    source: {fileID: 11400000, guid: d765c4dc6e13d8d4eb8a08dc803da118, type: 2}
+    extraPerks: []
+  - label: Trait
+    minRarity: 3
+    source: {fileID: 11400000, guid: d765c4dc6e13d8d4eb8a08dc803da118, type: 2}
     extraPerks: []

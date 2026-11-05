@@ -63,7 +63,7 @@ namespace Combat.UI
                                   TextAlignmentOptions.Center, heading: true);
             UIKit.Anchor(mono.rectTransform, new Vector2(0f, 0.3f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
 
-            var name = UIKit.Text(tile.transform, "Name", s, ItemText.Name(item), s.labelSize + 1f, s.textMuted, TextAlignmentOptions.Center);
+            var name = UIKit.Text(tile.transform, "Name", s, ItemText.Name(item), s.labelSize + 1f, ItemText.NameColor(s, item, s.textMuted), TextAlignmentOptions.Center);
             UIKit.Anchor(name.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.3f), new Vector2(8f, 6f), new Vector2(-8f, 0f));
 
             // Counts against another slot's cap: say which.

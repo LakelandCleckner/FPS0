@@ -16,17 +16,30 @@ MonoBehaviour:
   displayName: Head Slot
   perkColumns:
   - label: Stat
+    minRarity: 0
     source: {fileID: 11400000, guid: 003e98de51142fd4ea8c088df435fd48, type: 2}
     extraPerks: []
   - label: Stat
+    minRarity: 0
     source: {fileID: 11400000, guid: 003e98de51142fd4ea8c088df435fd48, type: 2}
     extraPerks: []
   - label: Trait
+    minRarity: 0
     source: {fileID: 11400000, guid: 01a119250624b9644982999a296cd122, type: 2}
     extraPerks: []
   - label: Trait
+    minRarity: 0
     source: {fileID: 11400000, guid: 01a119250624b9644982999a296cd122, type: 2}
     extraPerks: []
   - label: Trait
+    minRarity: 1
+    source: {fileID: 11400000, guid: 01a119250624b9644982999a296cd122, type: 2}
+    extraPerks: []
+  - label: Trait
+    minRarity: 2
+    source: {fileID: 11400000, guid: 01a119250624b9644982999a296cd122, type: 2}
+    extraPerks: []
+  - label: Trait
+    minRarity: 3
     source: {fileID: 11400000, guid: 01a119250624b9644982999a296cd122, type: 2}
     extraPerks: []

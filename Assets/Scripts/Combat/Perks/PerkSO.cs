@@ -16,6 +16,9 @@ namespace Combat.Perks
 
     public enum RollMode { Random, Curated }
 
+    // Item rarity. Sets which columns roll and which perk tier each column takes.
+    public enum Rarity { Common, Rare, Legendary, Mythic }
+
     // A perk recipe: parameters and wiring. CreateRuntime builds the per-item instance that holds state.
     public abstract class PerkSO : ScriptableObject
     {
@@ -57,6 +60,8 @@ namespace Combat.Perks
     public class PerkColumn
     {
         public string label = "";
+        [Tooltip("Rolls only on items of this rarity or higher; lower rarities leave it empty.")]
+        public Rarity minRarity = Rarity.Common;
         [Tooltip("Shared pool. Editing it changes every column that uses it.")]
         public PerkPoolSO source;
         [Tooltip("Optional. Perks for this column only, on top of the source pool. Usually empty.")]
@@ -79,10 +84,13 @@ namespace Combat.Perks
         private static readonly HashSet<string> used = new HashSet<string>();
         private static readonly HashSet<string> warned = new HashSet<string>();
 
-        // One pick per column, uniform, never repeating a perk family already on the item (intrinsics included).
-        // A column with nothing left stays empty. Curated picks are kept as authored.
+        private static readonly Dictionary<string, List<PerkSO>> families = new Dictionary<string, List<PerkSO>>();
+        private static readonly List<string> familyKeys = new List<string>();
+
+        // One pick per column: a random family not already on the item (intrinsics included), at the tier the rarity allows.
+        // Columns above the item's rarity, or with nothing left, stay empty. Curated picks are kept as authored.
         public static void Roll(List<PerkColumn> columns, List<PerkSO> curated, RollMode mode, List<PerkSO> into,
-                                IEnumerable<PerkSO> intrinsic = null, string owner = null)
+                                IEnumerable<PerkSO> intrinsic = null, string owner = null, Rarity rarity = Rarity.Common)
         {
             into.Clear();
             used.Clear();
@@ -95,19 +103,16 @@ namespace Combat.Perks
             {
                 PerkSO pick = null;
 
+                if (columns[i] != null && columns[i].minRarity > rarity) { into.Add(null); continue; }
+
                 if (mode == RollMode.Curated && curated != null && i < curated.Count)
                     pick = curated[i];
 
                 if (pick == null && columns[i] != null)
                 {
                     columns[i].Gather(candidates);
-                    for (int c = candidates.Count - 1; c >= 0; c--)
-                        if (used.Contains(Family(candidates[c]))) candidates.RemoveAt(c);
-
-                    if (candidates.Count > 0)
-                        pick = candidates[UnityEngine.Random.Range(0, candidates.Count)];
-                    else
-                        WarnEmpty(owner, columns[i], i);
+                    pick = PickFamily(candidates, rarity);
+                    if (pick == null) WarnEmpty(owner, columns[i], i);
                     candidates.Clear();
                 }
 
@@ -116,20 +121,67 @@ namespace Combat.Perks
             }
         }
 
+        // A random unused family, then its highest tier at or below the rarity (Common I, Rare II, Legendary III, Mythic IV).
+        // A family with no tier that low gives its lowest.
+        private static PerkSO PickFamily(List<PerkSO> perks, Rarity rarity)
+        {
+            families.Clear();
+            familyKeys.Clear();
+            foreach (var p in perks)
+            {
+                if (p == null) continue;
+                string f = Family(p);
+                if (used.Contains(f)) continue;
+                if (!families.TryGetValue(f, out var list)) { families[f] = list = new List<PerkSO>(); familyKeys.Add(f); }
+                if (!list.Contains(p)) list.Add(p);
+            }
+            if (familyKeys.Count == 0) return null;
+
+            var tiers = families[familyKeys[UnityEngine.Random.Range(0, familyKeys.Count)]];
+            int target = (int)rarity + 1;
+            PerkSO best = null, lowest = null;
+            foreach (var p in tiers)
+            {
+                int t = Tier(p);
+                if (t <= target && (best == null || t > Tier(best))) best = p;
+                if (lowest == null || t < Tier(lowest)) lowest = p;
+            }
+            return best ?? lowest;
+        }
+
         // "Sturdy III" and "Sturdy I" are one family: the name without a trailing roman numeral.
         public static string Family(PerkSO perk)
         {
-            string n = (string.IsNullOrWhiteSpace(perk.displayName) ? perk.name : perk.displayName).Trim();
+            string n = Name(perk);
             int space = n.LastIndexOf(' ');
-            if (space > 0 && IsRoman(n.Substring(space + 1))) n = n.Substring(0, space);
+            if (space > 0 && Roman(n.Substring(space + 1)) > 0) n = n.Substring(0, space);
             return n.ToLowerInvariant();
         }
 
-        private static bool IsRoman(string s)
+        // The trailing roman numeral, or 1 for a perk without one.
+        public static int Tier(PerkSO perk)
         {
-            if (s.Length == 0) return false;
-            foreach (char c in s) if (c != 'I' && c != 'V' && c != 'X') return false;
-            return true;
+            string n = Name(perk);
+            int space = n.LastIndexOf(' ');
+            int t = space > 0 ? Roman(n.Substring(space + 1)) : 0;
+            return t > 0 ? t : 1;
+        }
+
+        private static string Name(PerkSO perk) => (string.IsNullOrWhiteSpace(perk.displayName) ? perk.name : perk.displayName).Trim();
+
+        // I..XXXIX, 0 if not a numeral.
+        private static int Roman(string s)
+        {
+            if (s.Length == 0) return 0;
+            int total = 0, prev = 0;
+            for (int i = s.Length - 1; i >= 0; i--)
+            {
+                int v = s[i] == 'I' ? 1 : s[i] == 'V' ? 5 : s[i] == 'X' ? 10 : 0;
+                if (v == 0) return 0;
+                total += v < prev ? -v : v;
+                prev = Mathf.Max(prev, v);
+            }
+            return total;
         }
 
         private static void WarnEmpty(string owner, PerkColumn column, int index)

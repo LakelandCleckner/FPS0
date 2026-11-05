@@ -15,6 +15,7 @@ MonoBehaviour:
   id: ophidiarms
   displayName: Ophidiarms
   slot: {fileID: 11400000, guid: 14f7571ee2d33b0458da741d0eeef45d, type: 2}
+  mythic: 1
   intrinsicPerks:
   - {fileID: 11400000, guid: fcea1f7544584e843a3e4be7a80d1ba0, type: 2}
   perkColumns: []
