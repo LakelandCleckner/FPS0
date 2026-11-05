@@ -17,7 +17,7 @@ namespace Combat.Perks
     public enum RollMode { Random, Curated }
 
     // Item rarity. Sets which columns roll and which perk tier each column takes.
-    public enum Rarity { Common, Rare, Legendary, Mythic }
+    public enum Rarity { Common, Uncommon, Rare, Legendary, Mythic }
 
     // A perk recipe: parameters and wiring. CreateRuntime builds the per-item instance that holds state.
     public abstract class PerkSO : ScriptableObject
@@ -121,7 +121,7 @@ namespace Combat.Perks
             }
         }
 
-        // A random unused family, then its highest tier at or below the rarity (Common I, Rare II, Legendary III, Mythic IV).
+        // A random unused family, then its highest tier at or below the rarity (Common I, Uncommon II, Rare III, Legendary IV, Mythic V).
         // A family with no tier that low gives its lowest.
         private static PerkSO PickFamily(List<PerkSO> perks, Rarity rarity)
         {

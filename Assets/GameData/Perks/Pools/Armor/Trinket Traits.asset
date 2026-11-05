@@ -15,6 +15,9 @@ MonoBehaviour:
   perks:
   - {fileID: 11400000, guid: 382a33e76cfaf2647b8aaa8504f64967, type: 2}
   - {fileID: 11400000, guid: a69ceb4bc6ba82244b6eef4dc32fa5b8, type: 2}
+  - {fileID: 11400000, guid: 6ce9c095b6ef2bb4a9a445f901f41ae3, type: 2}
+  - {fileID: 11400000, guid: 8b819ac1fdf84354e92a1654565a44dd, type: 2}
+  - {fileID: 11400000, guid: a7536468637438f4389859f24ba3473a, type: 2}
   includes:
   - {fileID: 11400000, guid: 203632eff8623844e963ae4e464fe63a, type: 2}
-  authoredAs: '@Armor Traits, Focus, Executioner'
+  authoredAs: '@Armor Traits, Focus, Executioner, Overflow, Critical Mass, Desperado'

@@ -45,10 +45,11 @@ namespace Combat.Loadout
         [Header("Rarity")]
         [Tooltip("Odds for each item's rarity. Mythic only comes from Mythic definitions.")]
         [Min(0)] public int commonWeight = 60;
+        [Min(0)] public int uncommonWeight = 30;
         [Min(0)] public int rareWeight = 30;
         [Min(0)] public int legendaryWeight = 10;
 
-        public Rarity RollRarity() => RarityWeights.Roll(commonWeight, rareWeight, legendaryWeight);
+        public Rarity RollRarity() => RarityWeights.Roll(commonWeight, uncommonWeight, rareWeight, legendaryWeight);
 
         [Header("Random (testing)")]
         [Tooltip("Ignore the lists above and roll a random loadout every play.")]

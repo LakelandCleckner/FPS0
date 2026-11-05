@@ -27,9 +27,8 @@ namespace Combat.Loot
 
         [Header("Roll")]
         public RollMode rollMode = RollMode.Random;
+        [Tooltip("Mythic drops a hand-made Mythic from the pools; other rarities never pick one.")]
         public RarityWeights rarity = RarityWeights.Default;
-        [Tooltip("Let Mythic definitions in the pools drop.")]
-        public bool allowMythic = false;
 
         [Header("Pools")]
         [Tooltip("Empty in the editor = every weapon in the project.")]
@@ -38,6 +37,7 @@ namespace Combat.Loot
         public List<ArmorSO> armor = new List<ArmorSO>();
 
         private const float GroundProbe = 6f;
+        private bool warnedNoMythic;
 
         // Rolls and spawns one drop at the position. Null when nothing drops.
         public ItemDrop SpawnDrop(Vector3 position, bool ignoreChance = false)
@@ -58,16 +58,31 @@ namespace Combat.Loot
             weapon = null;
             piece = null;
 
-            var w = Filter(Resolve(weapons), d => d.mythic);
-            var a = Filter(Resolve(armor), d => d.mythic);
+            var allW = Resolve(weapons);
+            var allA = Resolve(armor);
+            var r = rarity.Roll();
+
+            bool mythic = r == Rarity.Mythic;
+            var w = allW.FindAll(d => d.mythic == mythic);
+            var a = allA.FindAll(d => d.mythic == mythic);
+
+            // No hand-made Mythic to give: drop a Legendary instead.
+            if (mythic && w.Count == 0 && a.Count == 0)
+            {
+                if (!warnedNoMythic) { warnedNoMythic = true; Debug.LogWarning($"[Loot] {name} rolled Mythic but has no Mythic items; dropping Legendary."); }
+                r = Rarity.Legendary;
+                w = allW.FindAll(d => !d.mythic);
+                a = allA.FindAll(d => !d.mythic);
+            }
+
             int ww = w.Count > 0 ? weaponWeight : 0;
             int aw = a.Count > 0 ? armorWeight : 0;
             if (ww + aw <= 0) return false;
 
             if (Random.Range(0, ww + aw) < ww)
-                weapon = new WeaponInstance(w[Random.Range(0, w.Count)], rollMode, rarity.Roll());
+                weapon = new WeaponInstance(w[Random.Range(0, w.Count)], rollMode, r);
             else
-                piece = new ArmorInstance(a[Random.Range(0, a.Count)], rollMode, rarity.Roll());
+                piece = new ArmorInstance(a[Random.Range(0, a.Count)], rollMode, r);
             return true;
         }
 
@@ -76,12 +91,6 @@ namespace Combat.Loot
             var origin = p + Vector3.up * 1f;
             return Physics.Raycast(origin, Vector3.down, out var hit, GroundProbe, groundMask, QueryTriggerInteraction.Ignore)
                 ? hit.point : p;
-        }
-
-        private List<T> Filter<T>(List<T> list, System.Predicate<T> isMythic)
-        {
-            if (!allowMythic) list.RemoveAll(isMythic);
-            return list;
         }
 
         private static List<T> Resolve<T>(List<T> pool) where T : ScriptableObject

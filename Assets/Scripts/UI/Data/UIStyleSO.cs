@@ -44,10 +44,11 @@ namespace Combat.UI
 
         [Header("Rarity")]
         public Color rarityCommon = new Color(0.72f, 0.76f, 0.8f, 1f);
+        public Color rarityUncommon = new Color(0.42f, 0.82f, 0.45f, 1f);
         public Color rarityRare = new Color(0.38f, 0.62f, 1f, 1f);
         public Color rarityLegendary = new Color(0.72f, 0.45f, 1f, 1f);
         public Color rarityMythic = new Color(1f, 0.85f, 0.35f, 1f);
-        [Tooltip("Tile border strength for Rare and up. Common keeps the normal border.")]
+        [Tooltip("Tile border strength for Uncommon and up. Common keeps the normal border.")]
         [Range(0f, 1f)] public float rarityBorderAlpha = 0.55f;
 
         [Header("Stat bars")]
@@ -82,6 +83,7 @@ namespace Combat.UI
         {
             switch (r)
             {
+                case Rarity.Uncommon: return rarityUncommon;
                 case Rarity.Rare: return rarityRare;
                 case Rarity.Legendary: return rarityLegendary;
                 case Rarity.Mythic: return rarityMythic;

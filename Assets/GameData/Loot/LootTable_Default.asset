@@ -21,9 +21,10 @@ MonoBehaviour:
   armorWeight: 1
   rollMode: 0
   rarity:
-    common: 60
-    rare: 30
-    legendary: 10
-  allowMythic: 1
+    common: 50
+    uncommon: 30
+    rare: 14
+    legendary: 5
+    mythic: 1
   weapons: []
   armor: []

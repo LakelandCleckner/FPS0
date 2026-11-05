@@ -15,6 +15,9 @@ MonoBehaviour:
   perks:
   - {fileID: 11400000, guid: 8f0871035fe48ea438580e1847366c93, type: 2}
   - {fileID: 11400000, guid: 9bb4b17725c81c64eaa8fb277d67133d, type: 2}
+  - {fileID: 11400000, guid: 90371d9bf2bc517468b9dcd706e7c841, type: 2}
+  - {fileID: 11400000, guid: 190fa84ac43e9d04bbd0b7c2d4cc5c7c, type: 2}
+  - {fileID: 11400000, guid: e7a8e9651814af94c9c60af32757d45f, type: 2}
   includes:
   - {fileID: 11400000, guid: 203632eff8623844e963ae4e464fe63a, type: 2}
-  authoredAs: '@Armor Traits, Light Feet, Cornered'
+  authoredAs: '@Armor Traits, Light Feet, Cornered, Evasive, Springstep, Fleet'

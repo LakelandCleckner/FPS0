@@ -43,3 +43,7 @@ MonoBehaviour:
     minRarity: 3
     source: {fileID: 11400000, guid: ae75c185cf3bb6544a55f7f63f3f7735, type: 2}
     extraPerks: []
+  - label: Trait
+    minRarity: 4
+    source: {fileID: 11400000, guid: ae75c185cf3bb6544a55f7f63f3f7735, type: 2}
+    extraPerks: []

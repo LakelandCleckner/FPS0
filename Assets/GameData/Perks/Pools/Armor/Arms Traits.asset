@@ -15,6 +15,9 @@ MonoBehaviour:
   perks:
   - {fileID: 11400000, guid: 42a0e3916d8efd9498e95d76bdb4dd27, type: 2}
   - {fileID: 11400000, guid: 6da23ffe62aab4945aef8642c2189c8a, type: 2}
+  - {fileID: 11400000, guid: 53aa4eb47a0fdaf4894acf454cf5e6d7, type: 2}
+  - {fileID: 11400000, guid: 0047f635b271107468cdfb63a22643bf, type: 2}
+  - {fileID: 11400000, guid: e3931f472fc1b6848b0650e9876aa5ed, type: 2}
   includes:
   - {fileID: 11400000, guid: 203632eff8623844e963ae4e464fe63a, type: 2}
-  authoredAs: '@Armor Traits, Adrenaline, Quick Draw'
+  authoredAs: '@Armor Traits, Adrenaline, Quick Draw, Fast Hands, Sleight, Hot Swap'

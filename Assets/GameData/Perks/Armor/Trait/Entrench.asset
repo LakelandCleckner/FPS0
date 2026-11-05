@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f488871374fb1014ba6535628d40da6a, type: 3}
+  m_Name: Entrench
+  m_EditorClassIdentifier: 
+  id: entrench
+  displayName: Entrench
+  description: Kills grant 8% damage reduction for 5 seconds, stacking 3 times.
+  icon: {fileID: 0}
+  shortName: 
+  listenScope: 1
+  trigger: 2
+  sources: 3
+  anyWeapon: 0
+  oncePerShot: 0
+  everyN: 1
+  window: 0
+  duration: 5
+  maxStacks: 3
+  endOnStow: 0
+  modifiers:
+  - stat: {fileID: 11400000, guid: 42789f1ceb8ea56419424ce5f8ff04d8, type: 2}
+    bucket: 0
+    value: -0.08
+    target: 0
+    weaponTypes: []
+    scope: 1

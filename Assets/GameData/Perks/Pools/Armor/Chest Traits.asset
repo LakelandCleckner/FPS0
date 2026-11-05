@@ -16,6 +16,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c28487bcf45a23640bd0e0657cb79983, type: 2}
   - {fileID: 11400000, guid: cab5558b9070f444eb5f73e3bbc23d06, type: 2}
   - {fileID: 11400000, guid: 52c20d4c5e8763d4e97a5752f30e1a56, type: 2}
+  - {fileID: 11400000, guid: a8ed3aa98303cf14ca57f0efdcb260f7, type: 2}
+  - {fileID: 11400000, guid: 2be74d5ba3048f54781280942abef87a, type: 2}
+  - {fileID: 11400000, guid: 923d91bd7b4c0ca49be8198a38b1254b, type: 2}
   includes:
   - {fileID: 11400000, guid: 203632eff8623844e963ae4e464fe63a, type: 2}
-  authoredAs: '@Armor Traits, Last Stand, Retaliation, Second Wind'
+  authoredAs: '@Armor Traits, Last Stand, Retaliation, Second Wind, Entrench, Iron
+    Skin, Brace'
