@@ -187,8 +187,8 @@
     <Compile Include="Assets\Scripts\Combat\Loot\RarityWeights.cs" />
     <Compile Include="Assets\Scripts\Combat\Weapons\Runtime\WeaponFireController.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxAddons\ParticleSystemScaleLifetime.cs" />
-    <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\AOE\WindAoeVfx.cs" />
     <Compile Include="Assets\Scripts\UI\Inventory\VaultFilterBar.cs" />
+    <Compile Include="Assets\PixPlays\Components\Scripts\VfxSystem\AOE\WindAoeVfx.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\WorldKeys\LocationInvestigated.cs" />
     <Compile Include="Assets\Scripts\Debugging\Combat\HitLog.cs" />
     <Compile Include="Assets\PixPlays\Components\Scripts\VfxAddons\TrailScaleWithHierarchy.cs" />
@@ -231,8 +231,8 @@
     <Compile Include="Assets\Scripts\Combat\Armor\ArmorSlotSO.cs" />
     <Compile Include="Assets\Scripts\Combat\Sources\IDamageSource.cs" />
     <Compile Include="Assets\Scripts\Combat\Perks\Types\LowHealthPerkSO.cs" />
-    <Compile Include="Assets\Scripts\Debugging\Combat\EnemyDebugProbe.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Modifiers\IStatSourceLabel.cs" />
+    <Compile Include="Assets\Scripts\Debugging\Combat\EnemyDebugProbe.cs" />
     <Compile Include="Assets\Scripts\Combat\Spawning\EnemyPoolHandle.cs" />
     <Compile Include="Assets\StarterAssets\FirstPersonController\Scripts\BasicRigidBodyPush.cs" />
     <Compile Include="Assets\Scripts\Combat\Stats\Weapon\WeaponStatPreview.cs" />
@@ -304,6 +304,7 @@
     <Compile Include="Assets\Scripts\Weapons\Skins\WeaponZoneSetSO.cs" />
     <Compile Include="Assets\Scripts\AI\GOAP\Sensors\LocationInvestigatedSensor.cs" />
     <Compile Include="Assets\Scripts\Weapons\HitmarkerUI.cs" />
+    <Compile Include="Assets\Scripts\Combat\Stats\Weapon\Range\IPrecisionSource.cs" />
     <Compile Include="Assets\Scripts\Combat\Loot\ItemDrop.cs" />
     <Compile Include="Assets\Scripts\UI\Data\StatSheetSO.cs" />
     <Compile Include="Assets\Animations\Enemies\Mixamo\Imports\Alien_Zombie\AlienZombieBaseLocomotionAnimator.cs" />

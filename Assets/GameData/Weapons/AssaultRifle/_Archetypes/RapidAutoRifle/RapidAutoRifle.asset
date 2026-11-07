@@ -61,6 +61,7 @@ MonoBehaviour:
   assistHipMultiplier: 0.8
   assistDistanceMultiplier: 1
   weaponDamage: 14
+  precisionMultiplier: 1.5
   roundsPerMinute: 600
   reloadStyle: 0
   shellStartFraction: 0.15

@@ -58,6 +58,7 @@ namespace Combat.Weapons
             // Range: archetype base + weapon delta; clamped 0-100 at resolve
             if (keys.range != null) container.SetBase(keys.range, a.range + weapon.rangeDelta);
             if (keys.aimAssist != null) container.SetBase(keys.aimAssist, a.aimAssist + weapon.aimAssistDelta);
+            if (keys.precisionDamage != null) container.SetBase(keys.precisionDamage, a.precisionMultiplier + weapon.precisionDelta);
 
             RegisterHandlingDerivations(container, weapon, keys);
         }

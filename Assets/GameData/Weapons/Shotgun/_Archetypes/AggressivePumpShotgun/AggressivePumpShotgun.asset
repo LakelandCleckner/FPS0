@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponType: {fileID: 11400000, guid: e71ec1fc466957844bec5b520a2097f6, type: 2}
   id: aggressive_pump_shotgun
-  displayName: Aggresive Pump Shotgun
+  displayName: Aggressive Pump Shotgun
   baseAdsTime: 0.3
   adsZoom: 1.15
   adsCurve:
@@ -79,6 +79,7 @@ MonoBehaviour:
   assistHipMultiplier: 0.8
   assistDistanceMultiplier: 1
   weaponDamage: 60
+  precisionMultiplier: 1.2
   roundsPerMinute: 90
   reloadStyle: 1
   shellStartFraction: 0

@@ -58,6 +58,8 @@ namespace Combat.Weapons
 
         [Header("Base Stats (the frame profile)")]
         public float weaponDamage = 0f;
+        [Tooltip("Head-hit damage multiplier, applied before the hitbox's own multiplier.")]
+        [Min(1f)] public float precisionMultiplier = 1.5f;
 
         [Tooltip("Fire rate in ROUNDS per minute -- the same meaning for every fire " +
                  "behaviour. A burst weapon at 390 fires 390 rounds per minute; its " +

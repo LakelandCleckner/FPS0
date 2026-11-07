@@ -1549,7 +1549,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   combatant: {fileID: 0}
   bodyPart: 0
-  damageMultiplier: 1.5
+  damageMultiplier: 1
   damageType: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
 --- !u!1 &9142239078543309633 stripped
 GameObject:

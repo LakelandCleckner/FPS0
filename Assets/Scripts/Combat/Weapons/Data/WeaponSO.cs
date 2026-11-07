@@ -64,6 +64,8 @@ namespace Combat.Weapons
         public float rangeDelta = 0f;
         [Tooltip("Aim assist stat delta (stat caps at 100).")]
         public float aimAssistDelta = 0f;
+        [Tooltip("Precision multiplier delta.")]
+        public float precisionDelta = 0f;
 
         [Header("Ammo")]
         [Tooltip("Starting reserve ammo (outside the magazine).")]

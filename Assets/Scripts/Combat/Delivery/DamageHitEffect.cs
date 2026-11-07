@@ -24,10 +24,13 @@ namespace Combat.Effects
             float final = raw * ctx.HitboxMultiplier;   // precision
             final *= ctx.CritMultiplier;                 // crit (rolled at resolver)
 
-            // Pellet split and range falloff: direct hits only
+            // Pellet split, weapon precision and range falloff: direct hits only
             if (ctx.Source == HitSource.Direct)
             {
                 final *= ctx.Shot.DamageScale;
+
+                if (ctx.BodyPartHit == BodyPart.Head && ctx.DamageSource is IPrecisionSource precise)
+                    final *= precise.PrecisionMultiplier;
 
                 if (ctx.Shot.HasOrigin && ctx.DamageSource is IRangeFalloffSource falloff)
                     final *= falloff.FalloffMultiplier(

@@ -34,6 +34,8 @@ namespace Combat.Weapons
         public StatDefinitionSO range;        // "range"  0-100, maps into the archetype's falloff band
         [Header("Aim Assist")]
         public StatDefinitionSO aimAssist;    // "aim_assist"  0-100, maps into the archetype's magnetism cone
+        [Header("Precision")]
+        public StatDefinitionSO precisionDamage; // "precision_damage"  head-hit multiplier (1.9 = x1.9)
 
 
         // NOTE (global_damage representation): the legacy StatBlock stores this as a

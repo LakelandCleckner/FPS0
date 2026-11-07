@@ -11,7 +11,7 @@ namespace Combat.Sources
     // live from the container. Exposes the wielder as an ICombatant (now CombatantStats,
     // so crit reads go straight to the stat container -- no health coupling) and its
     // own SourceStats.
-    public class WeaponDamageSource : MonoBehaviour, IDamageSource, IRangeFalloffSource
+    public class WeaponDamageSource : MonoBehaviour, IDamageSource, IRangeFalloffSource, IPrecisionSource
     {
         [Header("Weapon Definition")]
         [SerializeField] private WeaponSO weapon;
@@ -127,6 +127,18 @@ namespace Combat.Sources
                     ? container.Resolve(statKeys.aimAssist)
                     : (weapon != null && weapon.archetype != null ? weapon.archetype.aimAssist + weapon.aimAssistDelta : 0f);
                 return Mathf.Clamp(v, 0f, 100f);
+            }
+        }
+
+        // Precision stat, floored at 1 so a head hit never does less than a body hit
+        public float PrecisionMultiplier
+        {
+            get
+            {
+                float v = container != null && statKeys != null && statKeys.precisionDamage != null
+                    ? container.Resolve(statKeys.precisionDamage)
+                    : (weapon != null && weapon.archetype != null ? weapon.archetype.precisionMultiplier + weapon.precisionDelta : 1f);
+                return Mathf.Max(1f, v);
             }
         }
 

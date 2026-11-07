@@ -41,8 +41,8 @@ public class ItemBatchWindow : EditorWindow
     private const string ArmorRoot = "Assets/GameData/Armor/Pieces";
     private const string WeaponRoot = "Assets/GameData/Weapons";
 
-    private static readonly string[] DeltaKeys = { "damage", "rpm", "mag", "reload", "handling", "zoom", "range", "aa" };
-    private static readonly string[] ArchNumberKeys = { "damage", "rpm", "mag", "reload", "handling", "zoom", "range", "aa", "ads", "equip", "stow" };
+    private static readonly string[] DeltaKeys = { "damage", "rpm", "mag", "reload", "handling", "zoom", "range", "aa", "precision" };
+    private static readonly string[] ArchNumberKeys = { "damage", "rpm", "mag", "reload", "handling", "zoom", "range", "aa", "precision", "ads", "equip", "stow" };
     private static readonly HashSet<string> ArmorKeys = new HashSet<string> { "intrinsic" };
     private static readonly HashSet<string> WeaponKeys = new HashSet<string>(DeltaKeys) { "intrinsic", "from", "element", "reserves" };
     private static readonly HashSet<string> ArchKeys = new HashSet<string>(ArchNumberKeys) { "from", "behavior", "delivery", "firemode", "reloadstyle", "infinite", "pool" };
@@ -118,11 +118,11 @@ public class ItemBatchWindow : EditorWindow
                        "Saved to " + ArmorRoot + "/<Slot>. Roll columns come from the slot unless set in Perk Pool Batch.";
             case Kind.Weapon:
                 return "Name[, Name] | archetype [| key=value ...]\n" +
-                       "Keys: damage rpm mag reload handling zoom range aa (deltas), reserves, element=Type, from=Weapon, intrinsic=Perk, Perk\n" +
+                       "Keys: damage rpm mag reload handling zoom range aa precision (deltas), reserves, element=Type, from=Weapon, intrinsic=Perk, Perk\n" +
                        "New weapons get their type's default viewmodel and shader. from= copies viewmodel, skin, shader, element, audio and reserves instead.";
             default:
                 return "Name[, Name] | type [| key=value ...]\n" +
-                       "Keys (absolute values): damage rpm mag reload handling zoom range aa ads equip stow, behavior=, delivery=, firemode=Label, reloadstyle=magazine|pershell, infinite=true|false, pool=Pool|none, from=Archetype\n" +
+                       "Keys (absolute values): damage rpm mag reload handling zoom range aa precision ads equip stow, behavior=, delivery=, firemode=Label, reloadstyle=magazine|pershell, infinite=true|false, pool=Pool|none, from=Archetype\n" +
                        "from= copies every other field (falloff, curves, fire mode, crosshair). Saved to Weapons/<Type>/_Archetypes/<Name>.";
         }
     }
@@ -259,6 +259,9 @@ public class ItemBatchWindow : EditorWindow
             ScriptableObject existing = ExistingFor(name);
             p.Exists = existing != null;
             p.Path = p.Exists ? AssetDatabase.GetAssetPath(existing) : NewPath(groupAsset, name);
+            // A new frame copied from nothing must author its precision, not inherit a code default.
+            if (kind == Kind.Archetype && !p.Exists && p.From == null && !p.Options.ContainsKey("precision"))
+                throw new FormatException($"new archetype '{name}' needs precision=");
             yield return p;
         }
     }
@@ -560,6 +563,7 @@ public class ItemBatchWindow : EditorWindow
         if (o.TryGetValue("zoom", out v)) w.adsZoomDelta = Number(v, "zoom");
         if (o.TryGetValue("range", out v)) w.rangeDelta = Number(v, "range");
         if (o.TryGetValue("aa", out v)) w.aimAssistDelta = Number(v, "aa");
+        if (o.TryGetValue("precision", out v)) w.precisionDelta = Number(v, "precision");
         if (o.TryGetValue("reserves", out v)) w.startingReserves = Mathf.RoundToInt(Number(v, "reserves"));
         if (p.Element != null) w.baseDamageType = p.Element;
         if (p.Intrinsic != null) w.intrinsicPerks = new List<PerkSO>(p.Intrinsic);
@@ -592,6 +596,7 @@ public class ItemBatchWindow : EditorWindow
         if (o.TryGetValue("zoom", out v)) a.adsZoom = Number(v, "zoom");
         if (o.TryGetValue("range", out v)) a.range = Mathf.Clamp(Number(v, "range"), 0f, 100f);
         if (o.TryGetValue("aa", out v)) a.aimAssist = Mathf.Clamp(Number(v, "aa"), 0f, 100f);
+        if (o.TryGetValue("precision", out v)) a.precisionMultiplier = Mathf.Max(1f, Number(v, "precision"));
         if (o.TryGetValue("ads", out v)) a.baseAdsTime = Number(v, "ads");
         if (o.TryGetValue("equip", out v)) a.baseEquipTime = Number(v, "equip");
         if (o.TryGetValue("stow", out v)) a.baseStowTime = Number(v, "stow");
@@ -635,6 +640,7 @@ public class ItemBatchWindow : EditorWindow
                 Delta(sb, "zoom", w.adsZoomDelta);
                 Delta(sb, "range", w.rangeDelta);
                 Delta(sb, "aa", w.aimAssistDelta);
+                Delta(sb, "precision", w.precisionDelta);
                 sb.Append(" reserves=").Append(w.startingReserves);
                 if (w.baseDamageType != null) sb.Append(" element=").Append(NameOf(w.baseDamageType.displayName, w.baseDamageType));
                 AppendIntrinsic(sb, w.intrinsicPerks);

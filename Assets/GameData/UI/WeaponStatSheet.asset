@@ -43,6 +43,13 @@ MonoBehaviour:
       lowerIsBetter: 0
       unit: 
       decimals: -1
+    - stat: {fileID: 11400000, guid: c340ae8b125643f49800c334f9ab5dcb, type: 2}
+      label: Precision
+      display: 1
+      barMax: 100
+      lowerIsBetter: 0
+      unit: x
+      decimals: 2
     - stat: {fileID: 11400000, guid: 1af39531c4c9d474f810115fd25ae295, type: 2}
       label: Handling
       display: 0

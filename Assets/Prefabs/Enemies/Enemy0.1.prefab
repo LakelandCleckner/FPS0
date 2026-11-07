@@ -288,4 +288,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyHealth: {fileID: 2619749479806944473}
   bodyPart: 0
-  damageMultiplier: 1.3
+  damageMultiplier: 1
