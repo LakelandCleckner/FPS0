@@ -75,6 +75,10 @@ Enemy variants (elite, miniboss, elemental) and squads, a debug panel, reflex si
 | Nunito, Space Mono, Yatra One | Google Fonts | SIL Open Font License 1.1 |
 | CrashKonijn GOAP | [crashkonijn](https://github.com/crashkonijn/GOAP) | See package |
 | Scene Ref Attribute | [KyleBanks](https://github.com/KyleBanks/scene-ref-attribute) | See package |
+| Sizzle cymbal (poison hitmarker) | [pjcohen](https://freesound.org/s/147039/) on Freesound | Freesound license (see link) |
+| Cartoon punch (physical hitmarker) | [rsilveira_88](https://freesound.org/s/216200/) on Freesound | Freesound license (see link) |
+| Blow torch (fire hitmarker) | [abloemarts242029](https://freesound.org/s/765135/) on Freesound | Freesound license (see link) |
+| Footsteps, gunfire, ammo, kill and ambience sounds; prototype assets | Jimmy Vegas, [How to Make an FPS in Unity 6](https://www.youtube.com/playlist?list=PLZ1b66Z1KFKinfPc4Ny9CDjIwcHEz0zc4) | Provided free with the tutorial series |
 
 Third-party assets remain the property of their authors and are included only as part of this project.
 
