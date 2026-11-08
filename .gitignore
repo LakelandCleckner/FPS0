@@ -1,5 +1,4 @@
-# Unity .gitignore
-.utmp/
+# Unity generated
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
@@ -7,15 +6,45 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+.utmp/
+sysinfo.txt
+crashlytics-build.properties
 
+# IDE generated
 .vs/
-.vs/FPS0/v17/
+.idea/
+.vscode/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.pdb.meta
+*.mdb.meta
+
+# Build output
+*.apk
+*.aab
+*.app
+*.unitypackage
+
+# Local drops and OS files
+/*.zip
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local-only packages and assets
 Packages/com.crashkonijn.goap/
 Assets/PixPlays/
 Assets/PixPlays.meta
-.vs/FPS0/v17/.suo
-.vs/FPS0/v17/DocumentLayout.backup.json
-.vs/FPS0/v17/DocumentLayout.json
-.vs/FPS0/v17/fileList.bin
-Assembly-CSharp.csproj
-.vs/
