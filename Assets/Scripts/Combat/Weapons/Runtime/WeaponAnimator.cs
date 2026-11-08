@@ -67,6 +67,8 @@ namespace Combat.Weapons
         private static readonly int AimingParam = Animator.StringToHash("Aiming");
         private static readonly int CrouchingParam = Animator.StringToHash("Crouching");
         private static readonly int AimProgressParam = Animator.StringToHash("AimProgress");
+        private static readonly int AimRaiseState = Animator.StringToHash("Aim Raise");
+        private static readonly int AimState = Animator.StringToHash("Aim");
 
         // One Animator plus the clip lengths THIS weapon plays on it.
         private sealed class Target
@@ -237,6 +239,23 @@ namespace Combat.Weapons
             if (!DrivesArms) return;
             arms.Bool(AimingParam, aiming);
             arms.Float(AimProgressParam, playerAim.Blend);
+            if (aiming) EnterAimRaise();
+        }
+
+        // Aim starts the arms' aim pose now, even mid crouch blend.
+        private void EnterAimRaise()
+        {
+            var a = arms.Anim;
+            if (a == null || !a.isActiveAndEnabled || !a.HasState(0, AimRaiseState)) return;
+
+            var cur = a.GetCurrentAnimatorStateInfo(0);
+            if (cur.shortNameHash == AimRaiseState || cur.shortNameHash == AimState) return;
+            if (a.IsInTransition(0))
+            {
+                var next = a.GetNextAnimatorStateInfo(0);
+                if (next.shortNameHash == AimRaiseState || next.shortNameHash == AimState) return;
+            }
+            a.Play(AimRaiseState, 0);
         }
 
         // 0..1 = idle..walk, 1..2 = walk..sprint, from ACTUAL speed so it follows the

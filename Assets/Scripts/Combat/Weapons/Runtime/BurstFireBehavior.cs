@@ -64,6 +64,12 @@ namespace Combat.Weapons
         // the burst ends instead of dry-firing its remaining shots.
         public void NotifyShotFailed() => aborted = true;
 
+        // Drops the rest of the current burst (sprint or swap); the cooldown still applies.
+        public void Cut(float rpm)
+        {
+            if (Bursting) EndBurst(rpm);
+        }
+
         public void Tick(float deltaTime, in TriggerState trigger, float rpm)
         {
             if (cooldown > 0f) cooldown -= deltaTime;

@@ -146,6 +146,10 @@ namespace Combat.Weapons
 
             if (reloadBuffer > 0f) reloadBuffer -= Time.deltaTime;
 
+            // Sprinting or swapping cuts a burst; otherwise it would freeze and fire its rest later.
+            if ((!IsActive || !CanFire) && behavior is BurstFireBehavior cut && cut.Bursting)
+                cut.Cut(damageSource != null ? damageSource.ResolvedRPM : 0f);
+
             if (!IsActive) return;
 
             // A burst is committed once started - releasing the trigger doesn't cut it

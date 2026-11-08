@@ -470,6 +470,9 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
+  - m_ConditionMode: 2
+    m_ConditionEvent: Aiming
+    m_EventTreshold: 0
   - m_ConditionMode: 1
     m_ConditionEvent: Crouching
     m_EventTreshold: 0
@@ -1129,7 +1132,7 @@ AnimatorStateTransition:
   m_ExitTime: 0.94736844
   m_HasExitTime: 0
   m_HasFixedDuration: 1
-  m_InterruptionSource: 0
+  m_InterruptionSource: 3
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
 --- !u!1102 &6376465449734303183
@@ -1256,7 +1259,7 @@ AnimatorStateTransition:
   m_ExitTime: 0.9271255
   m_HasExitTime: 0
   m_HasFixedDuration: 1
-  m_InterruptionSource: 0
+  m_InterruptionSource: 3
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
 --- !u!1101 &9134802807453922390
@@ -1267,6 +1270,9 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
+  - m_ConditionMode: 2
+    m_ConditionEvent: Aiming
+    m_EventTreshold: 0
   - m_ConditionMode: 4
     m_ConditionEvent: AimProgress
     m_EventTreshold: 0.01
