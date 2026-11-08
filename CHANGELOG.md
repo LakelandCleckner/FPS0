@@ -8,6 +8,122 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Housekeeping c
 
 ---
 
+## [0.0.11] - 2026-11-02 to 2026-11-07
+
+Third-person body, player hitboxes, enemy rework and ragdolls, unified input, inventory screen, rarity, loot and vault.
+
+### Added
+- Third-person body (Mixamo Ch15, pistol and rifle locomotion packs, legs mask) with `PlayerPresentation` snapshotting movement, crouch, aim and pitch and relaying held-weapon events; `ThirdPersonBodyAnimator`; `BodyVisibility` (shadows-only body and a legs-only mesh in first person); `FirstPersonLegsOffset` drawing the legs back through proxy bones.
+- `ThirdPersonWeapon`: world gun on the right hand, left-hand IK, spine aim correction with Hip Aim Weight, fire raise to the shoulder, kick, procedural magazine and shell reloads, equip and stow lowering.
+- Third-person grip points, scale and barrel axis on `GunModel`; `WeaponViewmodelSO.thirdPersonController`; TP Body Setup, TP Grip Tool and Mixamo Clip Setup editor tools.
+- `PlayerHitbox` per-bone hitboxes on the third-person body; Player Hitbox Setup and Enemy Hitbox Mesh Fit tools sharing `HitboxHullCutter` (per-bone convex hulls under the face limit, separate hand and foot hulls).
+- Hitscan and projectile hits on the player, routed through `PlayerHurtbox` with the hitbox's body part; part-aware `PlayerHurtbox.TakeDamage`.
+- Brain-owned enemy perception: view cone, 10 m sense radius, line of sight to any player collider; engage on any health drop and on gunfire heard within 80 m (`AINoise`, `PlayerGunfireNoise`); Relentless engagement with a lose-sight grace and search fallback.
+- `SurroundRing` tuning: direct rush to contact range led by player velocity, settled-enemy avoidance priority, flanking into the nearest open gap when blocked.
+- Melee lunge per move (distance, strike distance, frame window, tracking or committed, wind-up move speed); Reach hit mode (distance and front cone) as the default; clear-line check against other enemies' body blockers.
+- BodyBlocker layer with enemy blocker capsules and a player `NavMeshObstacle`.
+- `EnemyRagdoll`: ragdoll death with persistent corpses (cap 50, optional lifetime, sink and return to pool), hull corpses, pushes from the killing shot, shots into corpses and on-kill blasts.
+- `PlayerInputRouter`: one `PlayerInputs` instance, UI-mode locks with cursor and UI module, binding override save and load; Reload, Swap, Slot1-3, Menu map (Inventory on Tab / View) and a Debug map holding every debug key.
+- Inventory screen: loadout tab, carried grid, item detail with layered stat bars and perk columns, character tab with stat sheet, armor, active perks and health; `StatTooltip` breakdown with hover and click-to-pin; Build Inventory Screen tool.
+- UI framework: `UIStyleSO`, `UIKit`, `UITile`, `StatSheetSO` (value formats Plain, Bonus, Multiplier, Both), `WeaponStatPreview`, `StatContainer.GetBreakdown`, `IStatSourceLabel`, `StatDefinitionSO.lowerIsBetter`.
+- `WeaponTypeSO.inventorySlot` with a per-weapon override; carried weapon cap per slot.
+- Item Batch tool (armor, weapons and archetypes from text lines, any-field keys, `from=` copying) and Trait Perk Batch tool; Perk Pool Batch `min=` column rarity.
+- Rarity per item instance (Common, Uncommon, Rare, Legendary, Mythic) with `PerkColumn.minRarity`, rarity-picked perk tiers, hand-made Mythic items and rarity colours in the UI.
+- Item drops: `LootTableSO`, `RarityWeights` (default 50/30/14/5/1), `ItemDrop` walk-over pickups coloured by rarity, `EnemyLootDropper`, `PlayerVault`, Setup Item Drops tool and a debug drop key.
+- Vault tab with store, hold-to-delete (longer from Legendary up), filters, sorting and search.
+- `PickupToast` HUD rows for picked-up items.
+- Six archetypes (Rapid Auto Rifle, Precision Semi Rifle, Rapid Semi Shotgun, Heavy Sidearm, Tactical SMG, Rapid SMG) and launch weapons Rattler, Marksman, Scatter, Thumper, Cutter, Buzzer.
+- Armor stat perks, 24 armor trait perks, per-slot armor pools and 16 generic armor pieces; a sixth trait column at Mythic.
+- `StartingLoadoutSO` Randomize with weapon and armor pools and rarity weights.
+- `precision_damage` weapon stat: `WeaponArchetypeSO.precisionMultiplier`, `WeaponSO.precisionDelta`, `IPrecisionSource`; applied to direct head hits.
+- ADS Nudge and ADS Tilt on `WeaponViewmodelSO`; Debug Center Dot.
+- `BurstFireBehavior.Cut`.
+
+### Changed
+- Enemy brain states simplified to Wander, Engaged and Search; goals requested only on state change; `PlayerVisible` driven by the brain.
+- Enemy x Player collisions off; shots and magnetism line of sight ignore body blockers.
+- Enemy hitboxes are mesh-fit hulls; old shapes kept for the ragdoll; enemy head multipliers set to 1.0.
+- Enemy melee routes to the closest player hitbox and keeps chasing through the wind-up; NavMeshAgent steering retuned.
+- Movement, aim, crouch, fire controller and loadout read input through the router; serialized key fields removed; gamepad sprint and crouch on stick press.
+- Debug keys moved off the F row to an Alt layer; falloff HUD on 0.
+- Perk rolls never repeat a family on one item; a column with nothing left stays empty.
+- Weapons renamed to one family name per archetype (Dueler, Plinker, Burster, Pumper, Slugger, Sprayer); ids unchanged.
+- Existing archetypes given authored range, aim assist and falloff; Bursting and Plinking Sidearm handling raised.
+- UI text shrinks and wraps to fit; taller uniform loadout cards with a perk chip grid.
+- Arms aim breathing and aim walk use the aim pose; sights aligned per viewmodel.
+- Sprint, sprint-out or swap cuts an in-progress burst.
+- Spelling: "armour" to "armor" in code, comments and UI text.
+
+### Fixed
+- ADS held back while a crouch or stand blend played.
+- Enemies freezing beside the player when GOAP switched to Attack with the target in range.
+- Agent event handlers stacking on every respawn.
+- Third-person startup race that hid the gun and left the arm lowered.
+- Aggressive Pump Shotgun display name spelling.
+
+### Removed
+- `DefenseDebuffTest`, `ChainTestProbe` and the unused `InputSystem_Actions` asset.
+- Surround slot assignment (replaced by the direct rush).
+
+---
+
+## [0.0.10] - 2026-10-17 to 2026-10-31
+
+Inventory, armor, perks, player HUD, enemy melee and weapon skins.
+
+### Added
+- Per-weapon viewmodel material swaps (`MaterialSwap`, `WeaponSO.viewmodelSkin`), applied to spawned gun renderers.
+- `WeaponZones` shader: URP lit, id zone mask with per-zone recolour, brightness, metallic, smoothness and emission.
+- `WeaponZoneSetSO` (shared zone convention, stable ids, max 16) and `WeaponShaderSO` (per-zone look preset applied by property block); `WeaponSO.defaultShader`.
+- Weapon Zone Editor: click UV islands to assign zones, hover outline, live preview, undo, mask load/save, preset preview, legacy RGBA conversion. `WeaponShaderSOEditor` with zone dropdown and duplicate warning.
+- Inventory: `WeaponInstance`, `AmmoPoolSO`, `LoadoutSlotMask`, `StartingLoadoutSO`; `PlayerInventory` (carried weapons with a cap, shared ammo pools); `PlayerLoadout` (three weapon slots, slot rules, locks).
+- Per-weapon slot override on `WeaponSO`; optional `ammoPool` on `WeaponArchetypeSO`; `WeaponDamageSource.Initialize` for pre-Awake instance injection.
+- `AmmoPickup` routes to a shared pool or the held weapon, with Rounds / Magazines units and `consumeWhenUnused`.
+- Armor: `ArmorSlotSO`, `ArmorSO`, `ArmorInstance`; armor slots on `PlayerLoadout` with equip, clear, locks and `ArmorSlotChanged`; carried armor with a per-slot cap; starting armor; Head, Arms, Chest, Legs and Trinket slot assets.
+- `ModifierGrant` and `LoadoutModifierApplier`: one registration point for `InLoadout` / `InHands` modifiers on the player and loadout weapons.
+- Perk system: `PerkSO` / `PerkRuntime` with listen scope, per-item state, timers and modifier grants; `PerkClock`; `WeaponPerks` and `ArmorPerks` hosts.
+- Perk types: Stat, Effect, `TriggeredBuff`, `PrecisionRefund`, `HolsterReload`, `SwapSynergy`, `MagScaled`, `HealOnKill` and `LowHealth`.
+- Perk columns, intrinsic perks and curated rolls on `WeaponSO` and `ArmorSO`; nested `PerkPoolSO`; default columns on `WeaponTypeSO` and `ArmorSlotSO`; roll mode on `StartingLoadoutSO`.
+- Armor stat perks (Tough, Bounding, Steady Hands, Fast Hands) and pools (Survival, Mobility, Handling, Armor Traits, Defensive).
+- `WeaponDamageSource.AddEffect` / `RemoveEffect`; `WeaponAmmo.AddToMagazine` / `RefillInstant`.
+- Multi-source kill credit: each status entry records its applying source, and every live source gets a Kill.
+- Stat Perk, Effect Perk and Perk Pool batch editor windows with tiers, folder rules, excludes and live validation.
+- `CombatantHealth.HealthChanged`; `StatContainer.DebugDescribe`; debug keys for loadout, armor (Shift/Ctrl+F1-F5), perk reroll (F8), health (F9) and stat dumps (F10).
+- `HealthBar`: fill over a delayed chip, segment and major ticks snapped to screen pixels, current/max text, low-health pulse, floating hit and heal numbers.
+- `PerkTracker`: code-built tiles with stacks, timers and counters; stowed-weapon perks dimmed. `PerkStatus`, `PerkRuntime.AnyStatusChanged`, and icon and short name on `PerkSO`.
+- Enemy melee (`EnemyMeleeAttack`): weighted moves with per-move clip frames, damage multiplier and hit parts; overlap from the enemy's own hitboxes during damage frames; one hit per swing; cooldown after recovery.
+- `EnemyAttackStatKeys` (`attack_damage`, `attack_range`, `attack_cooldown`, `attack_speed`).
+- `PlayerHurtbox` and the `DamageTaken` event; `playFeedback` toggle on `WeaponHitResolver`.
+- GOAP `PlayerInAttackRange` key and sensor, and `AttackAction`.
+- `DamageIndicatorRing` and `CameraBump`.
+- Enemy Attack Animator Setup tool; alien zombie `Attack_0` state and parameters.
+- GOAP Capability Builder: text authoring, validation before write, Create Missing, Add `GoapIds`.
+
+### Changed
+- `WeaponTypeSO.slotCategory` replaced with `allowedSlots`.
+- `WeaponLoadout` spawns weapons from a runtime prefab per owned instance, caches and deactivates removed weapons, and stows then equips when the held slot is replaced.
+- `WeaponAmmo` magazine backed by the instance; reserves by the instance or a shared pool.
+- `WeaponHitResolver` falls back to runtime lookups for its hitmarker and audio references.
+- Scene-placed player weapons replaced with the `WeaponRuntime` prefab and a `StartingLoadout` asset.
+- Player max health change mode set to Proportional.
+- `ModifierEntry` moved to the loadout namespace and shared with perks; `SetValue` and single-grant Remove on the applier.
+- `WeaponSO.riderEffects` deprecated; riders moved to intrinsic Effect Perks.
+- Armor bonuses moved to intrinsic Stat Perks; armor pieces inherit their slot's default columns.
+- Zone masks moved from RGBA to id masks; pistol, rifle, SMG and shotgun base materials switched to `WeaponZones`; a shader preset assigned on every weapon.
+- `ChaseAction` targets attack range; `AgentMoveBehaviour` holds position while swinging.
+- Some rifle animations set to loop.
+- HUD canvas set to Pixel Perfect.
+
+### Fixed
+- Nested stat resolves shared one scratch list, adding a derived source's modifiers to the dependent stat (`ads_time` resolved to 26.4s with handling modifiers).
+- Health bar ticks sat off the fill under the default slider layout.
+
+### Removed
+- `UVIslandFinder` (superseded by the Weapon Zone Editor).
+- `ArmorSO.modifiers` and the applier's armor registration path.
+
+---
+
 ## [0.0.9] - 2026-10-17
 
 Range, aim assist and status-transfer hardening.
