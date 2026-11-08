@@ -56,7 +56,7 @@ Assets/GameData           stat, weapon, armor, perk and loot assets
 
 - Unity 6000.0.84f1, URP
 - C#, new Input System, AI Navigation
-- [CrashKonijn GOAP](https://github.com/crashkonijn/GOAP) v3 (kept locally under `Packages/`, not committed)
+- [CrashKonijn GOAP](https://github.com/crashkonijn/GOAP) 3.1.1, installed from GitHub through the package manifest
 - Git LFS for large model files
 
 ## Roadmap
@@ -73,7 +73,7 @@ Enemy variants (elite, miniboss, elemental) and squads, a debug panel, reflex si
 | Starter Assets | Unity Technologies | Unity Companion License |
 | Characters and animations (Ch15, Ch44 and animation packs) | [Mixamo](https://www.mixamo.com) (Adobe) | Mixamo terms |
 | Nunito, Space Mono, Yatra One | Google Fonts | SIL Open Font License 1.1 |
-| CrashKonijn GOAP | [crashkonijn](https://github.com/crashkonijn/GOAP) | See package |
+| CrashKonijn GOAP | [crashkonijn](https://github.com/crashkonijn/GOAP) | Apache License 2.0 |
 | Scene Ref Attribute | [KyleBanks](https://github.com/KyleBanks/scene-ref-attribute) | See package |
 | Sizzle cymbal (poison hitmarker) | [pjcohen](https://freesound.org/s/147039/) on Freesound | Freesound license (see link) |
 | Cartoon punch (physical hitmarker) | [rsilveira_88](https://freesound.org/s/216200/) on Freesound | Freesound license (see link) |
