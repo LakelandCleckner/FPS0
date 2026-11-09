@@ -30,8 +30,8 @@ MonoBehaviour:
   meleeHitEffects: []
   deathEffects: []
   affixes: []
-  tint: {r: 0.6301887, g: 0.052062936, b: 0.046372306, a: 1}
-  emission: {r: 0, g: 0, b: 0, a: 1}
+  look: {fileID: 11400000, guid: 7546961413d747d1941047c3b8a61baa, type: 2}
+  emission: {r: 1, g: 0, b: 0, a: 1}
   scale: 1.2
   healthBar: 1
   lootTable: {fileID: 0}

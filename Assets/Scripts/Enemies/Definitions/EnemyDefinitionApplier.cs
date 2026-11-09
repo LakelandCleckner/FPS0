@@ -19,10 +19,6 @@ namespace Combat.Enemies
         [Tooltip("Used when no variant is set (archetype with no layers).")]
         [SerializeField] private EnemyArchetypeSO archetype;
 
-        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
-        private static readonly int ColorId = Shader.PropertyToID("_Color");
-        private static readonly int EmissionId = Shader.PropertyToID("_EmissionColor");
-
         private CombatantStats stats;
         private CombatantHealth health;
         private EnemyMeleeAttack melee;
@@ -31,7 +27,7 @@ namespace Combat.Enemies
         private MaterialPropertyBlock block;
         private Vector3 authoredScale;
         private bool started;
-        private bool tinted;
+        private bool overridden;
 
         private readonly List<EnemyModifierSO> layers = new List<EnemyModifierSO>();
         private readonly List<object> modifierOwners = new List<object>();
@@ -60,12 +56,7 @@ namespace Combat.Enemies
             loot = GetComponent<EnemyLootDropper>();
             authoredScale = transform.localScale;
             block = new MaterialPropertyBlock();
-
-            var all = GetComponentsInChildren<Renderer>(true);
-            var list = new List<Renderer>(all.Length);
-            foreach (var r in all)
-                if (r is MeshRenderer || r is SkinnedMeshRenderer) list.Add(r);
-            renderers = list.ToArray();
+            renderers = EnemyLook.FindRenderers(gameObject);
         }
 
         private void OnEnable()
@@ -142,7 +133,7 @@ namespace Combat.Enemies
                 if (melee != null) melee.Configure(null, null);
                 if (loot != null) loot.Configure(null, false, 0);
                 deathEffects.Clear();
-                ApplyVisuals(Color.white, Color.black, 1f);
+                ApplyLook(EnemyLook.Plain);
                 RebuildAffixes(null);
                 return;
             }
@@ -251,49 +242,18 @@ namespace Combat.Enemies
             DisplayName = variant != null ? variant.DisplayName : arch.StatSourceLabel;
 
             var bar = arch.healthBar;
-            Color tint = Color.white;
-            Color emission = Color.black;
-            float scale = 1f;
             for (int i = 0; i < layers.Count; i++)
-            {
-                var m = layers[i];
-                if (m.healthBar > bar) bar = m.healthBar;
-                tint *= m.tint;
-                emission += m.emission;
-                scale *= m.scale;
-            }
+                if (layers[i].healthBar > bar) bar = layers[i].healthBar;
             HealthBar = bar;
-            ApplyVisuals(tint, emission, scale);
+            ApplyLook(EnemyLook.Resolve(layers));
         }
 
-        // Tint multiplies each material's own color; plain values clear the overrides.
-        private void ApplyVisuals(Color tint, Color emission, float scale)
+        private void ApplyLook(EnemyLook look)
         {
-            transform.localScale = authoredScale * scale;
-
-            // Plain looks leave renderers block-free so they stay SRP Batcher compatible.
-            bool plain = tint == Color.white && emission == Color.black;
-            if (plain && !tinted) return;
-            tinted = !plain;
-
-            foreach (var r in renderers)
-            {
-                if (r == null) continue;
-                var mats = r.sharedMaterials;
-                for (int i = 0; i < mats.Length; i++)
-                {
-                    if (plain) { r.SetPropertyBlock(null, i); continue; }
-                    block.Clear();
-                    var mat = mats[i];
-                    if (mat != null)
-                    {
-                        if (mat.HasProperty(BaseColorId)) block.SetColor(BaseColorId, mat.GetColor(BaseColorId) * tint);
-                        else if (mat.HasProperty(ColorId)) block.SetColor(ColorId, mat.GetColor(ColorId) * tint);
-                        if (emission != Color.black && mat.HasProperty(EmissionId)) block.SetColor(EmissionId, emission);
-                    }
-                    r.SetPropertyBlock(block, i);
-                }
-            }
+            transform.localScale = authoredScale * look.Scale;
+            if (look.IsPlain && !overridden) return;
+            overridden = !look.IsPlain;
+            look.ApplyTo(renderers, block);
         }
 
         // ---- affixes ----

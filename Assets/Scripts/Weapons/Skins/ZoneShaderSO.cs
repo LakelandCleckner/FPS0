@@ -4,11 +4,12 @@ using UnityEngine;
 
 namespace Combat.Weapons
 {
-    // Colour preset for zone-masked guns; works on any gun whose mask uses the same zone ids.
-    [CreateAssetMenu(fileName = "WeaponShader", menuName = "Combat/Weapons/Weapon Shader")]
-    public class WeaponShaderSO : ScriptableObject
+    // Colour preset for zone-masked models (guns, enemies); works on any mask that uses the same zone ids.
+    [CreateAssetMenu(fileName = "ZoneShader", menuName = "Combat/Zones/Zone Shader")]
+    public class ZoneShaderSO : ScriptableObject
     {
-        public const string ShaderName = "FPS0/WeaponZones";
+        public const string WeaponShaderName = "FPS0/WeaponZones";
+        public const string EnemyShaderName = "FPS0/EnemyLit";
 
         [Serializable]
         public class ZoneLook
@@ -23,15 +24,15 @@ namespace Combat.Weapons
         }
 
         [Tooltip("Zone names for the inspector dropdown. Matching is by zone id.")]
-        public WeaponZoneSetSO zoneSet;
+        public ZoneSetSO zoneSet;
         public List<ZoneLook> zones = new List<ZoneLook>();
 
         private static readonly int ColorArray = Shader.PropertyToID("_ZoneColor");
         private static readonly int SurfaceArray = Shader.PropertyToID("_ZoneSurface");
         private static readonly int EmissionArray = Shader.PropertyToID("_ZoneEmission");
-        private static readonly Vector4[] colorBuf = new Vector4[WeaponZoneSetSO.MaxZones];
-        private static readonly Vector4[] surfaceBuf = new Vector4[WeaponZoneSetSO.MaxZones];
-        private static readonly Vector4[] emissionBuf = new Vector4[WeaponZoneSetSO.MaxZones];
+        private static readonly Vector4[] colorBuf = new Vector4[ZoneSetSO.MaxZones];
+        private static readonly Vector4[] surfaceBuf = new Vector4[ZoneSetSO.MaxZones];
+        private static readonly Vector4[] emissionBuf = new Vector4[ZoneSetSO.MaxZones];
 
         // Applies this preset to every zone-shader renderer under the gun.
         public void ApplyTo(GameObject gun)
@@ -56,7 +57,7 @@ namespace Combat.Weapons
             {
                 foreach (var look in looks)
                 {
-                    if (look == null || look.zoneId < 1 || look.zoneId > WeaponZoneSetSO.MaxZones) continue;
+                    if (look == null || look.zoneId < 1 || look.zoneId > ZoneSetSO.MaxZones) continue;
                     int i = look.zoneId - 1;
                     var c = ToShaderSpace(look.color);
                     var e = ToShaderSpace(look.emission);
@@ -74,8 +75,15 @@ namespace Combat.Weapons
         public static bool UsesZoneShader(Renderer r)
         {
             foreach (var m in r.sharedMaterials)
-                if (m != null && m.shader != null && m.shader.name == ShaderName) return true;
+                if (IsZoneShader(m)) return true;
             return false;
+        }
+
+        public static bool IsZoneShader(Material m)
+        {
+            if (m == null || m.shader == null) return false;
+            string n = m.shader.name;
+            return n == WeaponShaderName || n == EnemyShaderName;
         }
 
         // Vector arrays skip Unity's colour conversion, so convert here.

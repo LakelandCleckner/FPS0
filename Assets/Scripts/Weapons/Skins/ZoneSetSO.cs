@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace Combat.Weapons
 {
-    // Shared zone convention: names and stable ids used by every gun mask and shader preset.
-    [CreateAssetMenu(fileName = "WeaponZoneSet", menuName = "Combat/Weapons/Weapon Zone Set")]
-    public class WeaponZoneSetSO : ScriptableObject
+    // Zone convention: names and stable ids shared by a family of masks and shader presets (guns, enemies).
+    [CreateAssetMenu(fileName = "ZoneSet", menuName = "Combat/Zones/Zone Set")]
+    public class ZoneSetSO : ScriptableObject
     {
         public const int MaxZones = 16;
 

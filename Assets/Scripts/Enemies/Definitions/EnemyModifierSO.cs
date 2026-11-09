@@ -4,6 +4,7 @@ using Combat.Core;
 using Combat.Effects;
 using Combat.Loot;
 using Combat.Stats;
+using Combat.Weapons;
 
 namespace Combat.Enemies
 {
@@ -36,8 +37,8 @@ namespace Combat.Enemies
         public List<EnemyAffixSO> affixes = new List<EnemyAffixSO>();
 
         [Header("Visual")]
-        [Tooltip("Multiplies the material base color.")]
-        public Color tint = Color.white;
+        [Tooltip("Zone colour preset. Needs FPS0/EnemyLit with a zone mask. Per zone, the last layer that sets it wins.")]
+        public ZoneShaderSO look;
         [Tooltip("Added emission. Needs emission enabled on the material.")]
         [ColorUsage(false, true)] public Color emission = Color.black;
         [Tooltip("Multiplies the root scale.")]

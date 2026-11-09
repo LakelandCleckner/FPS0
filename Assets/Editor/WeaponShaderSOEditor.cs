@@ -4,8 +4,8 @@ using UnityEditor;
 using UnityEngine;
 
 // Zone looks picked by name from the preset's zone set.
-[CustomEditor(typeof(WeaponShaderSO))]
-public class WeaponShaderSOEditor : Editor
+[CustomEditor(typeof(ZoneShaderSO))]
+public class ZoneShaderSOEditor : Editor
 {
     public override void OnInspectorGUI()
     {
@@ -13,7 +13,7 @@ public class WeaponShaderSOEditor : Editor
 
         var setProp = serializedObject.FindProperty("zoneSet");
         EditorGUILayout.PropertyField(setProp);
-        var set = setProp.objectReferenceValue as WeaponZoneSetSO;
+        var set = setProp.objectReferenceValue as ZoneSetSO;
         if (set == null)
             EditorGUILayout.HelpBox("Assign a Zone Set to pick zones by name.", MessageType.Info);
 
@@ -54,7 +54,7 @@ public class WeaponShaderSOEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
-    private static void AddLook(SerializedProperty list, WeaponZoneSetSO set, HashSet<int> used)
+    private static void AddLook(SerializedProperty list, ZoneSetSO set, HashSet<int> used)
     {
         int id = 1;
         if (set != null)
@@ -78,9 +78,9 @@ public class WeaponShaderSOEditor : Editor
         e.FindPropertyRelative("emission").colorValue = Color.black;
     }
 
-    private static int ZonePopup(WeaponZoneSetSO set, int id)
+    private static int ZonePopup(ZoneSetSO set, int id)
     {
-        if (set == null) return EditorGUILayout.IntSlider("Zone Id", id, 1, WeaponZoneSetSO.MaxZones);
+        if (set == null) return EditorGUILayout.IntSlider("Zone Id", id, 1, ZoneSetSO.MaxZones);
 
         var names = new List<string>();
         var ids = new List<int>();
@@ -98,7 +98,7 @@ public class WeaponShaderSOEditor : Editor
         return EditorGUILayout.IntPopup("Zone", id, names.ToArray(), ids.ToArray());
     }
 
-    private static string ZoneName(WeaponZoneSetSO set, int id)
+    private static string ZoneName(ZoneSetSO set, int id)
     {
         var z = set != null ? set.Find(id) : null;
         return z != null ? $"'{z.name}'" : $"Zone {id}";

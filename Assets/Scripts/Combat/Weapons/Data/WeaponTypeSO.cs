@@ -24,7 +24,7 @@ namespace Combat.Weapons
         [Tooltip("Viewmodel given to new weapons of this type that don't copy from another weapon.")]
         public WeaponViewmodelSO defaultViewmodel;
         [Tooltip("Shader preset given to new weapons of this type that don't copy from another weapon. Empty = original look.")]
-        public WeaponShaderSO defaultShader;
+        public ZoneShaderSO defaultShader;
 
         [Header("Perks")]
         [Tooltip("Default roll columns for weapons of this type. A weapon with its own columns uses those instead.")]
