@@ -1,0 +1,336 @@
+using System.Collections.Generic;
+using UnityEngine;
+using Combat.Core;
+using Combat.Effects;
+using Combat.Loot;
+using Combat.Stats;
+using Combat.Spawning;
+
+namespace Combat.Enemies
+{
+    // Applies an archetype and its modifier layers to this enemy every life.
+    // Runs before other Starts so health and AI read the final stats on the first frame.
+    [DefaultExecutionOrder(-100)]
+    [RequireComponent(typeof(CombatantStats))]
+    public class EnemyDefinitionApplier : MonoBehaviour, IPoolable
+    {
+        [Tooltip("Variant to apply. Takes priority over Archetype.")]
+        [SerializeField] private EnemyVariantSO variant;
+        [Tooltip("Used when no variant is set (archetype with no layers).")]
+        [SerializeField] private EnemyArchetypeSO archetype;
+
+        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+        private static readonly int ColorId = Shader.PropertyToID("_Color");
+        private static readonly int EmissionId = Shader.PropertyToID("_EmissionColor");
+
+        private CombatantStats stats;
+        private CombatantHealth health;
+        private EnemyMeleeAttack melee;
+        private EnemyLootDropper loot;
+        private Renderer[] renderers;
+        private MaterialPropertyBlock block;
+        private Vector3 authoredScale;
+        private bool started;
+        private bool tinted;
+
+        private readonly List<EnemyModifierSO> layers = new List<EnemyModifierSO>();
+        private readonly List<object> modifierOwners = new List<object>();
+        private readonly Dictionary<StatDefinitionSO, float> authoredBases = new Dictionary<StatDefinitionSO, float>();
+        private readonly List<IHitEffect> meleeEffects = new List<IHitEffect>();
+        private readonly List<HitEffectSO> deathEffects = new List<HitEffectSO>();
+        private readonly List<EnemyAffix> affixes = new List<EnemyAffix>();
+        private EnemyVariantSO affixVariant;
+        private EnemyArchetypeSO affixArchetype;
+
+        public EnemyVariantSO Variant => variant;
+        public EnemyArchetypeSO Archetype => variant != null ? variant.archetype : archetype;
+        public bool HasDefinition => Archetype != null;
+        public string DisplayName { get; private set; } = "";
+        public EnemyHealthBarMode HealthBar { get; private set; }
+        public IReadOnlyList<EnemyModifierSO> Layers => layers;
+        public IReadOnlyList<HitEffectSO> DeathEffects => deathEffects;
+        public CombatantStats Stats => stats;
+        public CombatantHealth Health => health;
+
+        private void Awake()
+        {
+            stats = GetComponent<CombatantStats>();
+            health = GetComponent<CombatantHealth>();
+            melee = GetComponent<EnemyMeleeAttack>();
+            loot = GetComponent<EnemyLootDropper>();
+            authoredScale = transform.localScale;
+            block = new MaterialPropertyBlock();
+
+            var all = GetComponentsInChildren<Renderer>(true);
+            var list = new List<Renderer>(all.Length);
+            foreach (var r in all)
+                if (r is MeshRenderer || r is SkinnedMeshRenderer) list.Add(r);
+            renderers = list.ToArray();
+        }
+
+        private void OnEnable()
+        {
+            if (stats != null) stats.ModifiersCleared += Apply;
+            if (health != null) { health.HealthChanged += HandleHealthChanged; health.OnDeath += HandleDeath; }
+        }
+
+        private void OnDisable()
+        {
+            if (stats != null) stats.ModifiersCleared -= Apply;
+            if (health != null) { health.HealthChanged -= HandleHealthChanged; health.OnDeath -= HandleDeath; }
+        }
+
+        private void Start()
+        {
+            started = true;
+            Apply();
+        }
+
+        // ---- IPoolable ----
+
+        // Reuse re-applies through CombatantStats.ModifiersCleared, so order on the prefab doesn't matter.
+        public void OnSpawn() { }
+
+        public void OnDespawn()
+        {
+            for (int i = 0; i < affixes.Count; i++) affixes[i].OnDespawn(this);
+        }
+
+        // ---- API ----
+
+        public void SetVariant(EnemyVariantSO v)
+        {
+            variant = v;
+            if (started) Apply();
+        }
+
+        public void SetArchetype(EnemyArchetypeSO a)
+        {
+            variant = null;
+            archetype = a;
+            if (started) Apply();
+        }
+
+        // True when the definition owns this stat's base, so components skip pushing their own.
+        public bool DefinesBase(StatDefinitionSO stat)
+        {
+            if (stat == null) return false;
+            var arch = Archetype;
+            if (arch == null) return false;
+            if (arch.DefinesBase(stat)) return true;
+            if (variant != null)
+                foreach (var m in variant.modifiers)
+                    if (m != null && m.SetsBase(stat)) return true;
+            return false;
+        }
+
+        // Full, idempotent apply: bases, modifiers, melee, loot, visuals, affixes.
+        public void Apply()
+        {
+            var c = stats != null ? stats.Container : null;
+            if (c == null) return;
+
+            RemoveModifiers(c);
+            RestoreBases(c);
+
+            layers.Clear();
+            var arch = Archetype;
+            if (arch == null)
+            {
+                DisplayName = name;
+                HealthBar = EnemyHealthBarMode.None;
+                if (melee != null) melee.Configure(null, null);
+                if (loot != null) loot.Configure(null, false, 0);
+                deathEffects.Clear();
+                ApplyVisuals(Color.white, Color.black, 1f);
+                RebuildAffixes(null);
+                return;
+            }
+
+            if (variant != null)
+                foreach (var m in variant.modifiers)
+                    if (m != null) layers.Add(m);
+
+            foreach (var b in arch.baseStats)
+                if (b.stat != null) WriteBase(c, b.stat, b.baseValue);
+
+            for (int i = 0; i < layers.Count; i++)
+            {
+                var m = layers[i];
+                bool added = false;
+                foreach (var e in m.stats)
+                {
+                    if (e.stat == null) continue;
+                    if (e.op == EnemyStatOp.SetBase) { WriteBase(c, e.stat, e.value); continue; }
+                    e.AddTo(c, m);
+                    added = true;
+                }
+                if (added) modifierOwners.Add(m);
+            }
+
+            ApplyMelee(arch);
+            ApplyLoot(arch);
+            CollectDeathEffects(arch);
+            ApplyPresentation(arch);
+            RebuildAffixes(arch);
+
+            for (int i = 0; i < affixes.Count; i++) affixes[i].OnSpawn(this);
+        }
+
+        // ---- stats ----
+
+        private void RemoveModifiers(StatContainer c)
+        {
+            for (int i = 0; i < modifierOwners.Count; i++) c.RemoveAllFromOwner(modifierOwners[i]);
+            modifierOwners.Clear();
+        }
+
+        // Puts back bases a previous definition overwrote, so a variant swap leaves no residue.
+        private void RestoreBases(StatContainer c)
+        {
+            foreach (var kv in authoredBases) c.SetBase(kv.Key, kv.Value);
+        }
+
+        private void WriteBase(StatContainer c, StatDefinitionSO stat, float value)
+        {
+            if (!authoredBases.ContainsKey(stat)) authoredBases[stat] = c.GetBase(stat);
+            c.SetBase(stat, value);
+        }
+
+        // ---- melee / loot / death ----
+
+        private void ApplyMelee(EnemyArchetypeSO arch)
+        {
+            if (melee == null) return;
+
+            DamageTypeSO type = arch.meleeDamageType;
+            meleeEffects.Clear();
+            AddEffects(arch.meleeHitEffects);
+            for (int i = 0; i < layers.Count; i++)
+            {
+                if (layers[i].meleeDamageType != null) type = layers[i].meleeDamageType;
+                AddEffects(layers[i].meleeHitEffects);
+            }
+            melee.Configure(type, meleeEffects);
+        }
+
+        private void AddEffects(List<HitEffectSO> list)
+        {
+            foreach (var so in list)
+                if (so != null) meleeEffects.Add(so.GetInstance());
+        }
+
+        private void ApplyLoot(EnemyArchetypeSO arch)
+        {
+            if (loot == null) return;
+            LootTableSO table = arch.lootTable;
+            bool guaranteed = false;
+            int extra = 0;
+            for (int i = 0; i < layers.Count; i++)
+            {
+                var m = layers[i];
+                if (m.lootTable != null) table = m.lootTable;
+                guaranteed |= m.guaranteedDrop;
+                extra += m.extraDrops;
+            }
+            loot.Configure(table, guaranteed, extra);
+        }
+
+        private void CollectDeathEffects(EnemyArchetypeSO arch)
+        {
+            deathEffects.Clear();
+            foreach (var so in arch.deathEffects) if (so != null) deathEffects.Add(so);
+            for (int i = 0; i < layers.Count; i++)
+                foreach (var so in layers[i].deathEffects) if (so != null) deathEffects.Add(so);
+        }
+
+        // ---- presentation ----
+
+        private void ApplyPresentation(EnemyArchetypeSO arch)
+        {
+            DisplayName = variant != null ? variant.DisplayName : arch.StatSourceLabel;
+
+            var bar = arch.healthBar;
+            Color tint = Color.white;
+            Color emission = Color.black;
+            float scale = 1f;
+            for (int i = 0; i < layers.Count; i++)
+            {
+                var m = layers[i];
+                if (m.healthBar > bar) bar = m.healthBar;
+                tint *= m.tint;
+                emission += m.emission;
+                scale *= m.scale;
+            }
+            HealthBar = bar;
+            ApplyVisuals(tint, emission, scale);
+        }
+
+        // Tint multiplies each material's own color; plain values clear the overrides.
+        private void ApplyVisuals(Color tint, Color emission, float scale)
+        {
+            transform.localScale = authoredScale * scale;
+
+            // Plain looks leave renderers block-free so they stay SRP Batcher compatible.
+            bool plain = tint == Color.white && emission == Color.black;
+            if (plain && !tinted) return;
+            tinted = !plain;
+
+            foreach (var r in renderers)
+            {
+                if (r == null) continue;
+                var mats = r.sharedMaterials;
+                for (int i = 0; i < mats.Length; i++)
+                {
+                    if (plain) { r.SetPropertyBlock(null, i); continue; }
+                    block.Clear();
+                    var mat = mats[i];
+                    if (mat != null)
+                    {
+                        if (mat.HasProperty(BaseColorId)) block.SetColor(BaseColorId, mat.GetColor(BaseColorId) * tint);
+                        else if (mat.HasProperty(ColorId)) block.SetColor(ColorId, mat.GetColor(ColorId) * tint);
+                        if (emission != Color.black && mat.HasProperty(EmissionId)) block.SetColor(EmissionId, emission);
+                    }
+                    r.SetPropertyBlock(block, i);
+                }
+            }
+        }
+
+        // ---- affixes ----
+
+        // Same definition as last life keeps its runtimes; they reset in OnSpawn.
+        private void RebuildAffixes(EnemyArchetypeSO arch)
+        {
+            if (arch != null && variant == affixVariant && arch == affixArchetype) return;
+
+            for (int i = 0; i < affixes.Count; i++) affixes[i].OnRemoved(this);
+            affixes.Clear();
+            affixVariant = variant;
+            affixArchetype = arch;
+            if (arch == null) return;
+
+            AddAffixes(arch.affixes);
+            for (int i = 0; i < layers.Count; i++) AddAffixes(layers[i].affixes);
+        }
+
+        private void AddAffixes(List<EnemyAffixSO> list)
+        {
+            foreach (var so in list)
+            {
+                if (so == null) continue;
+                var rt = so.CreateRuntime();
+                if (rt != null) affixes.Add(rt);
+            }
+        }
+
+        private void HandleHealthChanged(float current, float max)
+        {
+            for (int i = 0; i < affixes.Count; i++) affixes[i].OnHealthChanged(this, current, max);
+        }
+
+        private void HandleDeath()
+        {
+            for (int i = 0; i < affixes.Count; i++) affixes[i].OnDeath(this);
+        }
+    }
+}

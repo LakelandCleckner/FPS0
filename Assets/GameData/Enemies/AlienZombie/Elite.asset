@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 136e049eae749a34786eed3ed8b17687, type: 3}
+  m_Name: Elite
+  m_EditorClassIdentifier: 
+  displayName: Elite
+  namePrefix: Elite
+  kind: 0
+  element: {fileID: 0}
+  stats:
+  - stat: {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
+    op: 2
+    value: 3
+  - stat: {fileID: 11400000, guid: 4b85464f9cc196e40ba282e7b615bfbc, type: 2}
+    op: 2
+    value: 1.5
+  - stat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
+    op: 2
+    value: 1.1
+  meleeDamageType: {fileID: 0}
+  meleeHitEffects: []
+  deathEffects: []
+  affixes: []
+  tint: {r: 0.6301887, g: 0.052062936, b: 0.046372306, a: 1}
+  emission: {r: 0, g: 0, b: 0, a: 1}
+  scale: 1.2
+  healthBar: 1
+  lootTable: {fileID: 0}
+  guaranteedDrop: 1
+  extraDrops: 0

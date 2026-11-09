@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a2239615da196c4cbf1327208773335, type: 3}
+  m_Name: AlienZombie_Archetype
+  m_EditorClassIdentifier: 
+  id: alien_zombie
+  displayName: Alien Zombie
+  bodyPrefab: {fileID: 1539902503267225480, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
+  baseStats:
+  - stat: {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
+    baseValue: 100
+  - stat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
+    baseValue: 5
+  - stat: {fileID: 11400000, guid: a80e01f34d9994742bd8da080f5e830b, type: 2}
+    baseValue: 2
+  - stat: {fileID: 11400000, guid: 6fcba625bc9be654dbc0b4bc960ffea6, type: 2}
+    baseValue: 1.5
+  - stat: {fileID: 11400000, guid: f5a8c623ad3a88c48bda3be493dbf950, type: 2}
+    baseValue: 0.5
+  - stat: {fileID: 11400000, guid: 4b85464f9cc196e40ba282e7b615bfbc, type: 2}
+    baseValue: 80
+  - stat: {fileID: 11400000, guid: 291e4f778c7bb4f4db6637ab9782efe8, type: 2}
+    baseValue: 1.5
+  - stat: {fileID: 11400000, guid: c3d2d2cbbdc53884c8451c90c7b0666e, type: 2}
+    baseValue: 0.5
+  - stat: {fileID: 11400000, guid: 7e32b5788ffa76848ab50a28814e8e89, type: 2}
+    baseValue: 2
+  meleeDamageType: {fileID: 0}
+  meleeHitEffects: []
+  deathEffects: []
+  affixes: []
+  healthBar: 0
+  lootTable: {fileID: 11400000, guid: 25be603a02a1e934392d259c03744a03, type: 2}

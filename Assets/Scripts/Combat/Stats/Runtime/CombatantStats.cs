@@ -34,6 +34,9 @@ namespace Combat.Stats
         private StatContainer container;
         public StatContainer Container => container;
 
+        // Fired on reuse right after every modifier is stripped, so persistent sources can re-add theirs.
+        public event System.Action ModifiersCleared;
+
         // ---- ICombatant ----
         public StatContainer Stats => container;              // direct — no health path
         public int Faction => faction;
@@ -76,6 +79,7 @@ namespace Combat.Stats
         public void OnSpawn()
         {
             container?.ClearAllModifiers();
+            ModifiersCleared?.Invoke();
         }
 
         public void OnDespawn() { }

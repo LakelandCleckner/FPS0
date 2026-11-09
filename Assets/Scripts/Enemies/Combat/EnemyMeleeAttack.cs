@@ -133,11 +133,14 @@ namespace Combat.Enemies
         private float armsWeight = 1f;
         private Vector3 lungeTarget;
         private float lunged;
+        private EnemyDefinitionApplier definition;
+        private DamageTypeSO activeDamageType;
+        private readonly List<IHitEffect> extraEffects = new List<IHitEffect>();
 
         // ---- IDamageSource ----
         public List<IHitEffect> GetEffects() => current != null ? current.Effects : null;
         public int Faction => combatantStats != null ? combatantStats.Faction : 0;
-        public DamageTypeSO BaseDamageType => damageType;
+        public DamageTypeSO BaseDamageType => activeDamageType;
         public int MaxChainDepth => 0;
         public float ChainFalloff => 1f;
         public float ChainGrowth => 1f;
@@ -151,6 +154,8 @@ namespace Combat.Enemies
             if (resolver == null) resolver = GetComponentInChildren<WeaponHitResolver>();
             if (animator == null) animator = GetComponentInChildren<Animator>();
             if (navAgent == null) navAgent = GetComponent<NavMeshAgent>();
+            definition = GetComponent<EnemyDefinitionApplier>();
+            activeDamageType = damageType;
 
             attackingHash = Animator.StringToHash(attackingBool);
             speedHash = Animator.StringToHash(attackSpeedFloat);
@@ -388,7 +393,7 @@ namespace Combat.Enemies
                 Target = hurtbox.Target,
                 HitPoint = point,
                 SourceFaction = Faction,
-                DamageType = damageType,
+                DamageType = activeDamageType,
                 Source = HitSource.Direct,
                 BodyPartHit = part,
                 HitboxMultiplier = multiplier,
@@ -494,7 +499,6 @@ namespace Combat.Enemies
         private void BuildMoves()
         {
             var hitboxes = GetComponentsInChildren<EnemyHitbox>(true);
-            var attackStat = statKeys != null ? statKeys.attackDamage : null;
 
             foreach (var m in moves)
             {
@@ -509,12 +513,49 @@ namespace Combat.Enemies
                 }
                 if (m.Colliders.Count == 0)
                     Debug.LogWarning($"[EnemyMeleeAttack] '{name}' move '{m.label}' found no hitboxes for its hit parts.");
-
-                m.Effects = new List<IHitEffect>(1);
-                m.Effects.Add(attackStat != null
-                    ? new DamageHitEffect(new DamageSpec(attackStat, StatScope.Source, m.damageMultiplier, damageType, false))
-                    : new DamageHitEffect(new DamageSpec(baseDamage * m.damageMultiplier, damageType, false)));
             }
+            BuildEffects();
+        }
+
+        // Per move: its damage effect plus any extra on-hit effects from the enemy definition.
+        private void BuildEffects()
+        {
+            var attackStat = statKeys != null ? statKeys.attackDamage : null;
+            foreach (var m in moves)
+            {
+                m.Effects = new List<IHitEffect>(1 + extraEffects.Count);
+                m.Effects.Add(attackStat != null
+                    ? new DamageHitEffect(new DamageSpec(attackStat, StatScope.Source, m.damageMultiplier, activeDamageType, false))
+                    : new DamageHitEffect(new DamageSpec(baseDamage * m.damageMultiplier, activeDamageType, false)));
+                m.Effects.AddRange(extraEffects);
+            }
+        }
+
+        // Damage type override (null = authored) and extra on-hit effects, set by the enemy definition.
+        public void Configure(DamageTypeSO typeOverride, IReadOnlyList<IHitEffect> extras)
+        {
+            var type = typeOverride != null ? typeOverride : damageType;
+            if (type == activeDamageType && SameEffects(extras)) return;   // pooled reuse, nothing changed
+
+            activeDamageType = type;
+            extraEffects.Clear();
+            if (extras != null)
+                for (int i = 0; i < extras.Count; i++)
+                    if (extras[i] != null) extraEffects.Add(extras[i]);
+            BuildEffects();
+        }
+
+        private bool SameEffects(IReadOnlyList<IHitEffect> extras)
+        {
+            int n = 0;
+            if (extras != null)
+                for (int i = 0; i < extras.Count; i++)
+                {
+                    if (extras[i] == null) continue;
+                    if (n >= extraEffects.Count || extraEffects[n] != extras[i]) return false;
+                    n++;
+                }
+            return n == extraEffects.Count;
         }
 
         // Weighted random, skipping the last move when avoidRepeat is on.
@@ -550,10 +591,18 @@ namespace Combat.Enemies
         {
             var c = combatantStats != null ? combatantStats.Container : null;
             if (c == null || statKeys == null) return;
-            if (statKeys.attackDamage != null) c.SetBase(statKeys.attackDamage, baseDamage);
-            if (statKeys.attackRange != null) c.SetBase(statKeys.attackRange, baseRange);
-            if (statKeys.attackCooldown != null) c.SetBase(statKeys.attackCooldown, baseCooldown);
-            if (statKeys.attackSpeed != null) c.SetBase(statKeys.attackSpeed, baseAttackSpeed);
+            PushBase(c, statKeys.attackDamage, baseDamage);
+            PushBase(c, statKeys.attackRange, baseRange);
+            PushBase(c, statKeys.attackCooldown, baseCooldown);
+            PushBase(c, statKeys.attackSpeed, baseAttackSpeed);
+        }
+
+        // Skips stats the enemy definition owns.
+        private void PushBase(StatContainer c, StatDefinitionSO def, float value)
+        {
+            if (def == null) return;
+            if (definition != null && definition.DefinesBase(def)) return;
+            c.SetBase(def, value);
         }
 
         private void FindPlayer()

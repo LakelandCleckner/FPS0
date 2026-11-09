@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using Combat.Stats;
 using Combat.Spawning;
+using Combat.Enemies;
 
 namespace GOAPGettingStarted.Behaviours
 {
@@ -75,6 +76,7 @@ namespace GOAPGettingStarted.Behaviours
         private GoapActionProvider actionProvider;
         private EnemyMemory memory;
         private CombatantHealth health;
+        private EnemyDefinitionApplier definition;
 
         private Transform player;
         private CombatantStats playerStats;
@@ -92,6 +94,7 @@ namespace GOAPGettingStarted.Behaviours
             actionProvider = GetComponent<GoapActionProvider>();
             memory = GetComponent<EnemyMemory>();
             health = GetComponent<CombatantHealth>();
+            definition = GetComponent<EnemyDefinitionApplier>();
             if (combatantStats == null) combatantStats = GetComponent<CombatantStats>();
             sightMask = LayerMask.GetMask("Default", "Ground", "Player");
         }
@@ -293,15 +296,22 @@ namespace GOAPGettingStarted.Behaviours
             return c.Resolve(def);
         }
 
-        // Serialized tuning -> stat bases. Modifiers layer on top of these.
+        // Serialized tuning -> stat bases, skipping any the enemy definition owns. Modifiers layer on top.
         private void PushMovementBases()
         {
             var c = combatantStats != null ? combatantStats.Container : null;
             if (c == null || movementKeys == null) return;
 
-            if (movementKeys.moveSpeed != null) c.SetBase(movementKeys.moveSpeed, baseMoveSpeed);
-            if (movementKeys.chaseSpeedMultiplier != null) c.SetBase(movementKeys.chaseSpeedMultiplier, chaseSpeedMultiplier);
-            if (movementKeys.investigateSpeedMultiplier != null) c.SetBase(movementKeys.investigateSpeedMultiplier, investigateSpeedMultiplier);
+            PushBase(c, movementKeys.moveSpeed, baseMoveSpeed);
+            PushBase(c, movementKeys.chaseSpeedMultiplier, chaseSpeedMultiplier);
+            PushBase(c, movementKeys.investigateSpeedMultiplier, investigateSpeedMultiplier);
+        }
+
+        private void PushBase(StatContainer c, StatDefinitionSO def, float value)
+        {
+            if (def == null) return;
+            if (definition != null && definition.DefinesBase(def)) return;
+            c.SetBase(def, value);
         }
     }
 }
