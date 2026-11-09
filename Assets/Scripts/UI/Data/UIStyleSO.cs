@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using Combat.Enemies;
 using Combat.Perks;
 
 namespace Combat.UI
@@ -53,6 +54,20 @@ namespace Combat.UI
         [Tooltip("Tile border strength for Uncommon and up. Common keeps the normal border.")]
         [Range(0f, 1f)] public float rarityBorderAlpha = 0.55f;
 
+        [Header("Enemy ranks")]
+        public Color rankMinor = new Color(0.86f, 0.25f, 0.22f, 1f);
+        public Color rankMajor = new Color(1f, 0.66f, 0.2f, 1f);
+        public Color rankElite = new Color(0.78f, 0.42f, 1f, 1f);
+        public Color rankMiniboss = new Color(1f, 0.86f, 0.35f, 1f);
+        public Color rankBoss = new Color(1f, 0.86f, 0.35f, 1f);
+        [Tooltip("Optional rank icons. Empty = pips (Minor 1 to Miniboss 4).")]
+        public Sprite rankIconMinor;
+        public Sprite rankIconMajor;
+        public Sprite rankIconElite;
+        public Sprite rankIconMiniboss;
+        [Tooltip("Default shield colour when a shield doesn't set its own.")]
+        public Color enemyShield = new Color(0.45f, 0.8f, 1f, 1f);
+
         [Header("Stat bars")]
         public Color barTrack = new Color(1f, 1f, 1f, 0.07f);
         public Color barBase = new Color(0.86f, 0.89f, 0.91f, 1f);
@@ -92,6 +107,30 @@ namespace Combat.UI
                 case Rarity.Legendary: return rarityLegendary;
                 case Rarity.Mythic: return rarityMythic;
                 default: return rarityCommon;
+            }
+        }
+
+        public Color RankColor(EnemyRank r)
+        {
+            switch (r)
+            {
+                case EnemyRank.Major: return rankMajor;
+                case EnemyRank.Elite: return rankElite;
+                case EnemyRank.Miniboss: return rankMiniboss;
+                case EnemyRank.Boss: return rankBoss;
+                default: return rankMinor;
+            }
+        }
+
+        public Sprite RankIcon(EnemyRank r)
+        {
+            switch (r)
+            {
+                case EnemyRank.Major: return rankIconMajor;
+                case EnemyRank.Elite: return rankIconElite;
+                case EnemyRank.Miniboss: return rankIconMiniboss;
+                case EnemyRank.Minor: return rankIconMinor;
+                default: return null;
             }
         }
 

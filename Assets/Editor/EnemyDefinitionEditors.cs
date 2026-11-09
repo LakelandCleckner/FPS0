@@ -458,7 +458,7 @@ public static class EnemyDefinitionGUI
 
     private static void Summary(EnemyArchetypeSO arch, IReadOnlyList<EnemyModifierSO> layers)
     {
-        var bar = arch.healthBar;
+        var rank = arch.rank;
         var loot = arch.lootTable;
         var meleeType = arch.meleeDamageType;
         bool guaranteed = false;
@@ -474,7 +474,7 @@ public static class EnemyDefinitionGUI
             foreach (var m in layers)
             {
                 if (m == null) continue;
-                if (m.healthBar > bar) bar = m.healthBar;
+                if ((int)m.raiseRankTo > (int)rank) rank = (EnemyRank)m.raiseRankTo;
                 if (m.lootTable != null) loot = m.lootTable;
                 if (m.meleeDamageType != null) meleeType = m.meleeDamageType;
                 guaranteed |= m.guaranteedDrop;
@@ -484,7 +484,7 @@ public static class EnemyDefinitionGUI
                 Names(m.affixes, affixes);
             }
 
-        Line("Health bar", bar.ToString());
+        Line("Rank", rank.ToString());
         Line("Loot", (loot != null ? loot.name : "prefab table")
                      + (guaranteed ? ", guaranteed drop" : "") + (extra > 0 ? $", +{extra} rolls" : ""));
         Line("Melee type", meleeType != null ? meleeType.displayName : "prefab default");

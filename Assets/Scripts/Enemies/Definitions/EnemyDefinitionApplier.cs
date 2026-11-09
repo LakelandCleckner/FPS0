@@ -42,7 +42,30 @@ namespace Combat.Enemies
         public EnemyArchetypeSO Archetype => variant != null ? variant.archetype : archetype;
         public bool HasDefinition => Archetype != null;
         public string DisplayName { get; private set; } = "";
-        public EnemyHealthBarMode HealthBar { get; private set; }
+        public EnemyRank Rank { get; private set; }
+        public IShieldSource Shield { get; private set; }
+
+        // Every live definition-driven enemy, for HUD readers like the health bars.
+        public static readonly List<EnemyDefinitionApplier> Active = new List<EnemyDefinitionApplier>();
+
+        // Top of the visible body, for anchoring overhead UI.
+        public Vector3 HeadPosition
+        {
+            get
+            {
+                bool any = false;
+                float top = 0f;
+                for (int i = 0; i < renderers.Length; i++)
+                {
+                    var r = renderers[i];
+                    if (r == null || !r.enabled) continue;
+                    float y = r.bounds.max.y;
+                    if (!any || y > top) { top = y; any = true; }
+                }
+                var p = transform.position;
+                return new Vector3(p.x, any ? top : p.y + 2f, p.z);
+            }
+        }
         public IReadOnlyList<EnemyModifierSO> Layers => layers;
         public IReadOnlyList<HitEffectSO> DeathEffects => deathEffects;
         public CombatantStats Stats => stats;
@@ -57,16 +80,20 @@ namespace Combat.Enemies
             authoredScale = transform.localScale;
             block = new MaterialPropertyBlock();
             renderers = EnemyLook.FindRenderers(gameObject);
+            Shield = GetComponent<IShieldSource>();
         }
 
         private void OnEnable()
         {
+            Active.Add(this);
             if (stats != null) stats.ModifiersCleared += Apply;
             if (health != null) { health.HealthChanged += HandleHealthChanged; health.OnDeath += HandleDeath; }
         }
 
         private void OnDisable()
         {
+            int i = Active.IndexOf(this);
+            if (i >= 0) { Active[i] = Active[Active.Count - 1]; Active.RemoveAt(Active.Count - 1); }
             if (stats != null) stats.ModifiersCleared -= Apply;
             if (health != null) { health.HealthChanged -= HandleHealthChanged; health.OnDeath -= HandleDeath; }
         }
@@ -76,6 +103,19 @@ namespace Combat.Enemies
             started = true;
             Apply();
         }
+
+#if UNITY_EDITOR
+        // Variant or archetype edited in the Inspector during Play re-applies straight away.
+        private void OnValidate()
+        {
+            if (Application.isPlaying && started && isActiveAndEnabled) UnityEditor.EditorApplication.delayCall += ReapplyIfAlive;
+        }
+
+        private void ReapplyIfAlive()
+        {
+            if (this != null && started) Apply();
+        }
+#endif
 
         // ---- IPoolable ----
 
@@ -129,7 +169,7 @@ namespace Combat.Enemies
             if (arch == null)
             {
                 DisplayName = name;
-                HealthBar = EnemyHealthBarMode.None;
+                Rank = EnemyRank.Minor;
                 if (melee != null) melee.Configure(null, null);
                 if (loot != null) loot.Configure(null, false, 0);
                 deathEffects.Clear();
@@ -241,10 +281,10 @@ namespace Combat.Enemies
         {
             DisplayName = variant != null ? variant.DisplayName : arch.StatSourceLabel;
 
-            var bar = arch.healthBar;
+            var rank = arch.rank;
             for (int i = 0; i < layers.Count; i++)
-                if (layers[i].healthBar > bar) bar = layers[i].healthBar;
-            HealthBar = bar;
+                if ((int)layers[i].raiseRankTo > (int)rank) rank = (EnemyRank)layers[i].raiseRankTo;
+            Rank = rank;
             ApplyLook(EnemyLook.Resolve(layers));
         }
 

@@ -34,8 +34,19 @@ namespace Combat.Enemies
         }
     }
 
-    // Which health bar an enemy shows. Higher wins when layers combine.
-    public enum EnemyHealthBarMode { None, Overhead, Boss }
+    // Enemy rank: drives the health bar colour, rank icon and name display. Boss never uses the overhead bar.
+    public enum EnemyRank { Minor, Major, Elite, Miniboss, Boss }
+
+    // A modifier's rank change; the highest rank across layers wins.
+    public enum EnemyRankRaise { Keep = 0, Major = 1, Elite = 2, Miniboss = 3, Boss = 4 }
+
+    // Optional shield on an enemy, drawn over its health bar.
+    public interface IShieldSource
+    {
+        float CurrentShield { get; }
+        float MaxShield { get; }
+        UnityEngine.Color ShieldColor { get; }
+    }
 
     public enum EnemyModifierKind { Tier, Element, Other }
 }

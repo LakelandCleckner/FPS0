@@ -34,7 +34,8 @@ namespace Combat.Enemies
         public List<EnemyAffixSO> affixes = new List<EnemyAffixSO>();
 
         [Header("Presentation")]
-        public EnemyHealthBarMode healthBar = EnemyHealthBarMode.None;
+        [Tooltip("Base rank. Tier modifiers can raise it.")]
+        public EnemyRank rank = EnemyRank.Minor;
 
         [Header("Loot")]
         [Tooltip("Empty = the loot dropper's own table.")]

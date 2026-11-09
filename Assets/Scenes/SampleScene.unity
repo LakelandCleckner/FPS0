@@ -1050,8 +1050,14 @@ MonoBehaviour:
   - variant: {fileID: 11400000, guid: 91705cf51fcbdef4e87c7170e5668658, type: 2}
     archetype: {fileID: 0}
     prewarm: 3
-  - variant: {fileID: 0}
-    archetype: {fileID: 11400000, guid: 8fa0625f1cf517c419a1a444cfe9843d, type: 2}
+  - variant: {fileID: 11400000, guid: 037306af97b64250a63803ae193af914, type: 2}
+    archetype: {fileID: 0}
+    prewarm: 3
+  - variant: {fileID: 11400000, guid: 6688678af3124c61b94de741acb31c1c, type: 2}
+    archetype: {fileID: 0}
+    prewarm: 3
+  - variant: {fileID: 11400000, guid: 746be6500dde4f0c8029628aa601b975, type: 2}
+    archetype: {fileID: 0}
     prewarm: 3
   poolParent: {fileID: 0}
 --- !u!4 &427031536
@@ -2223,7 +2229,7 @@ PrefabInstance:
     - target: {fileID: 6633584322727871009, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
       propertyPath: variant
       value: 
-      objectReference: {fileID: 11400000, guid: 91705cf51fcbdef4e87c7170e5668658, type: 2}
+      objectReference: {fileID: 11400000, guid: 037306af97b64250a63803ae193af914, type: 2}
     - target: {fileID: 7669667991982255898, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
       propertyPath: debugCenterDot
       value: 1
@@ -2836,25 +2842,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 945083515}
   m_CullTransparentMesh: 1
---- !u!1 &968226087 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1539902503267225480, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
-  m_PrefabInstance: {fileID: 1754590421}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &968226088
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 968226087}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a8854ece777ae045b58e30e6abb057d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  variant: {fileID: 0}
-  archetype: {fileID: 0}
 --- !u!1 &1011692389
 GameObject:
   m_ObjectHideFlags: 0
@@ -3100,6 +3087,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1501253219}
   - {fileID: 1626212454}
   - {fileID: 632418749}
   - {fileID: 664382082}
@@ -3689,6 +3677,91 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   searchWidth: 340
+--- !u!1 &1501253218
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1501253219}
+  - component: {fileID: 1501253220}
+  m_Layer: 5
+  m_Name: EnemyHealthBars
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1501253219
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1501253218}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1111732126}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1501253220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1501253218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b61bd05546e3fd94eab04d8466b6f7a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  style: {fileID: 11400000, guid: 11f8fb84ae28be04cb6d108f753d4a35, type: 2}
+  viewCamera: {fileID: 0}
+  aimRange: 150
+  aimMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  holdTime: 3
+  fadeTime: 0.4
+  maxDistance: 120
+  maxBars: 24
+  barWidth: 150
+  barHeight: 6
+  shieldHeight: 3
+  framePadding: 2
+  nameSize: 15
+  iconSize: 14
+  headOffset: 0.35
+  farScale: 1
+  frameColor: {r: 0, g: 0, b: 0, a: 0.7}
+  frameRadius: 2
+  sheenColor: {r: 1, g: 1, b: 1, a: 0.18}
+  sheenHeight: 0.4
+  rankUnderline: 1
+  autoStep: 1
+  tickHealth: 100
+  majorEvery: 10
+  tickColor: {r: 0, g: 0, b: 0, a: 1}
+  tickWidth: 1
+  majorTickWidth: 1
+  ticksOnFillOnly: 1
+  tickHeight: 0.5
+  maxTicks: 30
+  chipDelay: 0.35
+  chipSpeed: 0.9
+  damageChipColor: {r: 1, g: 1, b: 1, a: 0.85}
+  healChipColor: {r: 0.45, g: 1, b: 0.55, a: 0.9}
+  healDelay: 0.15
 --- !u!114 &1551917934 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3516509819376779916, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
@@ -4075,10 +4148,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnemyRoot_ZombieAlien_Base
       objectReference: {fileID: 0}
-    - target: {fileID: 1539902503267225480, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7497867919796180745, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.1115923
@@ -4122,10 +4191,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1539902503267225480, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 968226088}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
 --- !u!1 &1911722830
 GameObject:

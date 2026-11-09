@@ -45,8 +45,8 @@ namespace Combat.Enemies
         [Min(0.01f)] public float scale = 1f;
 
         [Header("Presentation")]
-        [Tooltip("Highest mode across layers wins.")]
-        public EnemyHealthBarMode healthBar = EnemyHealthBarMode.None;
+        [Tooltip("Raises the enemy's rank. The highest rank across layers wins.")]
+        public EnemyRankRaise raiseRankTo = EnemyRankRaise.Keep;
 
         [Header("Loot")]
         [Tooltip("Empty = no change. Last layer that sets one wins.")]

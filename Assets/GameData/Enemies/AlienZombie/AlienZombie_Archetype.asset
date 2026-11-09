@@ -38,5 +38,5 @@ MonoBehaviour:
   meleeHitEffects: []
   deathEffects: []
   affixes: []
-  healthBar: 0
+  rank: 0
   lootTable: {fileID: 11400000, guid: 25be603a02a1e934392d259c03744a03, type: 2}
