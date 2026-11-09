@@ -99,4 +99,4 @@ namespace Combat.Spawning
             return new EnemyPoolHandle(go);
         }
     }
-}
+}

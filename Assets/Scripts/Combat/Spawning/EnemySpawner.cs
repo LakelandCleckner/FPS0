@@ -222,4 +222,4 @@ namespace Combat.Spawning
             return new Vector3(c.x, 0f, c.y);
         }
     }
-}
+}
