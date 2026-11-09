@@ -1,5 +1,6 @@
 #if UNITY_EDITOR || STATUS_DEBUG
 using UnityEngine;
+using Combat.Enemies;
 using Combat.Spawning;
 
 namespace Combat.Testing
@@ -13,6 +14,8 @@ namespace Combat.Testing
 
         [Tooltip("Type id to spawn. Matches the id registered on the EnemySpawner.")]
         [SerializeField] private string enemyId = "basic";
+        [Tooltip("When set, spawns this variant instead of the type id.")]
+        [SerializeField] private EnemyVariantSO variant;
 
         [Header("Placement")]
         [Tooltip("How far in front of this object to spawn.")]
@@ -31,19 +34,23 @@ namespace Combat.Testing
             if (input.Debug.SpawnOne.WasPressedThisFrame())
             {
                 Vector3 pos = SpawnPoint();
-                var h = spawner.Spawn(enemyId, pos);
+                var h = variant != null ? spawner.Spawn(variant, pos) : spawner.Spawn(enemyId, pos);
                 Debug.Log(h != null
-                    ? $"[SpawnTest] spawned one '{enemyId}' at {pos}"
-                    : $"[SpawnTest] FAILED to spawn '{enemyId}' - id registered on the spawner?");
+                    ? $"[SpawnTest] spawned one '{Label}' at {pos}"
+                    : $"[SpawnTest] FAILED to spawn '{Label}' - id registered on the spawner?");
             }
 
             if (input.Debug.SpawnGroup.WasPressedThisFrame())
             {
                 Vector3 center = SpawnPoint();
-                var list = spawner.SpawnGroup(enemyId, groupCount, center, groupRadius);
-                Debug.Log($"[SpawnTest] spawned {list.Count}/{groupCount} '{enemyId}' around {center}");
+                var list = variant != null
+                    ? spawner.SpawnGroup(variant, groupCount, center, groupRadius)
+                    : spawner.SpawnGroup(enemyId, groupCount, center, groupRadius);
+                Debug.Log($"[SpawnTest] spawned {list.Count}/{groupCount} '{Label}' around {center}");
             }
         }
+
+        private string Label => variant != null ? variant.DisplayName : enemyId;
 
         // A point in front of this object on the ground plane. Uses the object's
         // forward; if this is on the player/camera, enemies appear ahead of you.

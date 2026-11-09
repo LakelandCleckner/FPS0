@@ -17,14 +17,24 @@ namespace Combat.Spawning
     {
         private readonly GameObject prefab;
         private readonly Transform parent;
+        private readonly System.Action<GameObject> setup;
         private readonly Stack<EnemyPoolHandle> free = new Stack<EnemyPoolHandle>();
 
         public GameObject Prefab => prefab;
 
-        public EnemyPool(GameObject prefab, Transform parent)
+        // setup runs once per new instance, before its first Start (e.g. assigning its enemy variant).
+        public EnemyPool(GameObject prefab, Transform parent, System.Action<GameObject> setup = null)
         {
             this.prefab = prefab;
             this.parent = parent;
+            this.setup = setup;
+        }
+
+        // Creates instances up front and parks them in the pool, so first spawns don't hitch.
+        public void Prewarm(int count)
+        {
+            for (int i = 0; i < count; i++)
+                Return(CreateInactiveAndInit(parent.position, parent.rotation));
         }
 
         public EnemyPoolHandle Rent(Vector3 position, Quaternion rotation)
@@ -77,6 +87,7 @@ namespace Combat.Spawning
         private EnemyPoolHandle CreateInactiveAndInit(Vector3 position, Quaternion rotation)
         {
             var go = Object.Instantiate(prefab, position, rotation, parent);
+            setup?.Invoke(go);
 
             var init = go.GetComponent<GoapRuntimeInit>();
             if (init != null)
@@ -88,4 +99,4 @@ namespace Combat.Spawning
             return new EnemyPoolHandle(go);
         }
     }
-}
+}

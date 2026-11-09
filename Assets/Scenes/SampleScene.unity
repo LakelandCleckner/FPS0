@@ -1045,9 +1045,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb00f20c17dcce845aac1053266e423b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  types:
-  - id: basic
-    prefab: {fileID: 1539902503267225480, guid: c2b8ea5c10747ea479286892e689b0de, type: 3}
+  types: []
+  variants:
+  - variant: {fileID: 11400000, guid: 91705cf51fcbdef4e87c7170e5668658, type: 2}
+    archetype: {fileID: 0}
+    prewarm: 3
+  - variant: {fileID: 0}
+    archetype: {fileID: 11400000, guid: 8fa0625f1cf517c419a1a444cfe9843d, type: 2}
+    prewarm: 3
   poolParent: {fileID: 0}
 --- !u!4 &427031536
 Transform:
@@ -2215,6 +2220,10 @@ PrefabInstance:
       propertyPath: spawner
       value: 
       objectReference: {fileID: 427031535}
+    - target: {fileID: 6633584322727871009, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
+      propertyPath: variant
+      value: 
+      objectReference: {fileID: 11400000, guid: 91705cf51fcbdef4e87c7170e5668658, type: 2}
     - target: {fileID: 7669667991982255898, guid: 374bca89bf8b719408f59bb08e61ce18, type: 3}
       propertyPath: debugCenterDot
       value: 1

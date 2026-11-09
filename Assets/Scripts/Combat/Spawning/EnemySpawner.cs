@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Combat.Enemies;
 
 namespace Combat.Spawning
 {
@@ -21,8 +22,23 @@ namespace Combat.Spawning
             public GameObject prefab;
         }
 
+        // One enemy definition: a variant, or a plain archetype when no variant is set.
+        [System.Serializable]
+        public struct VariantEntry
+        {
+            public EnemyVariantSO variant;
+            [Tooltip("Used when Variant is empty: the archetype with no modifier layers.")]
+            public EnemyArchetypeSO archetype;
+            [Tooltip("Instances created at scene start so first spawns don't hitch.")]
+            [Min(0)] public int prewarm;
+        }
+
         [Header("Registered enemy types")]
         [SerializeField] private EnemyType[] types;
+
+        [Header("Registered variants (one pool each)")]
+        [Tooltip("Spawning a variant that isn't listed still works; its pool is created on first use.")]
+        [SerializeField] private VariantEntry[] variants;
 
         [Tooltip("Inactive pooled instances are parented here. Leave empty to use this " +
                  "spawner's own transform.")]
@@ -30,6 +46,10 @@ namespace Combat.Spawning
 
         private readonly Dictionary<string, EnemyPool> poolsById
             = new Dictionary<string, EnemyPool>();
+        private readonly Dictionary<Object, string> idByDefinition = new Dictionary<Object, string>();
+        private readonly Dictionary<string, Object> definitionById = new Dictionary<string, Object>();
+        private readonly HashSet<Object> failed = new HashSet<Object>();
+        private Transform PoolParent => poolParent != null ? poolParent : transform;
 
         private void Awake()
         {
@@ -47,6 +67,93 @@ namespace Combat.Spawning
                     poolsById[t.id] = new EnemyPool(t.prefab, parent);
                 }
             }
+
+            if (variants != null)
+                foreach (var v in variants)
+                    Register(v.variant != null ? v.variant : (Object)v.archetype);
+        }
+
+        // Prewarm after every Awake, so the scene's GOAP manager exists for new instances.
+        private void Start()
+        {
+            if (variants == null) return;
+            foreach (var v in variants)
+            {
+                if (v.prewarm <= 0) continue;
+                var id = Register(v.variant != null ? v.variant : (Object)v.archetype);
+                if (id != null) poolsById[id].Prewarm(v.prewarm);
+            }
+        }
+
+        // ---- variants ----
+
+        // Spawns a variant from its own pool; an unlisted variant gets a pool on first use.
+        public EnemyPoolHandle Spawn(EnemyVariantSO variant, Vector3 position, Quaternion rotation)
+        {
+            var id = Register(variant);
+            return id != null ? Spawn(id, position, rotation) : null;
+        }
+
+        public EnemyPoolHandle Spawn(EnemyVariantSO variant, Vector3 position)
+            => Spawn(variant, position, Quaternion.identity);
+
+        // A plain archetype, no modifier layers.
+        public EnemyPoolHandle Spawn(EnemyArchetypeSO archetype, Vector3 position, Quaternion rotation)
+        {
+            var id = Register(archetype);
+            return id != null ? Spawn(id, position, rotation) : null;
+        }
+
+        public List<EnemyPoolHandle> SpawnGroup(EnemyVariantSO variant, int count, Vector3 center, float radius)
+        {
+            var id = Register(variant);
+            return id != null ? SpawnGroup(id, count, center, radius) : new List<EnemyPoolHandle>();
+        }
+
+        // Pool id for a variant or archetype, creating its pool once. Null when it can't spawn.
+        private string Register(Object definition)
+        {
+            if (definition == null || failed.Contains(definition)) return null;
+            if (idByDefinition.TryGetValue(definition, out var known)) return known;
+            failed.Add(definition);   // cleared below once the pool exists; failures log once
+
+            var variant = definition as EnemyVariantSO;
+            var archetype = variant != null ? variant.archetype : definition as EnemyArchetypeSO;
+            var prefab = variant != null ? variant.Prefab : archetype != null ? archetype.bodyPrefab : null;
+            string label = variant != null ? variant.DisplayName : archetype != null ? archetype.StatSourceLabel : definition.name;
+
+            if (archetype == null) { Debug.LogError($"[EnemySpawner] '{definition.name}' has no archetype.", definition); return null; }
+            if (prefab == null) { Debug.LogError($"[EnemySpawner] '{definition.name}' has no body prefab.", definition); return null; }
+            if (prefab.GetComponent<EnemyDefinitionApplier>() == null)
+            {
+                Debug.LogError($"[EnemySpawner] '{prefab.name}' has no EnemyDefinitionApplier, so '{definition.name}' can't apply.", prefab);
+                return null;
+            }
+
+            string id = variant != null ? variant.id : archetype.id;
+            if (string.IsNullOrEmpty(id))
+            {
+                id = definition.name;
+                Debug.LogWarning($"[EnemySpawner] '{definition.name}' has no id; using its asset name.", definition);
+            }
+            if (poolsById.ContainsKey(id))
+            {
+                var other = definitionById.TryGetValue(id, out var o) ? o : null;
+                Debug.LogError($"[EnemySpawner] Id '{id}' on '{definition.name}' is already used by '{(other != null ? other.name : "an enemy type")}'.", definition);
+                return null;
+            }
+
+            poolsById[id] = new EnemyPool(prefab, PoolParent, go =>
+            {
+                go.name = label;
+                var applier = go.GetComponent<EnemyDefinitionApplier>();
+                if (variant != null) applier.SetVariant(variant);
+                else applier.SetArchetype(archetype);
+            });
+            failed.Remove(definition);
+            idByDefinition[definition] = id;
+            definitionById[id] = definition;
+            return id;
         }
 
         // THE PRIMITIVE — one enemy of a type at a position. Returns the handle so a
@@ -115,4 +222,4 @@ namespace Combat.Spawning
             return new Vector3(c.x, 0f, c.y);
         }
     }
-}
+}
