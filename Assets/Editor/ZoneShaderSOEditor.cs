@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Combat.Weapons;
+using Combat.Zones;
 using UnityEditor;
 using UnityEngine;
 

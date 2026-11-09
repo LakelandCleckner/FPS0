@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc74f750f19c1f4438765429e21add61, type: 3}
   m_Name: EnemyZones
   m_EditorClassIdentifier: 
+  shader: {fileID: 4800000, guid: cca59bcb240f46d89c64763a5a52d6e9, type: 3}
   zones:
   - name: Skin
     id: 1

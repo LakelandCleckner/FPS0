@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Combat.Weapons
+namespace Combat.Zones
 {
-    // Colour preset for zone-masked models (guns, enemies); works on any mask that uses the same zone ids.
+    // Colour preset for zone-masked models; works on any mask that uses the same zone ids.
     [CreateAssetMenu(fileName = "ZoneShader", menuName = "Combat/Zones/Zone Shader")]
     public class ZoneShaderSO : ScriptableObject
     {
@@ -34,13 +34,13 @@ namespace Combat.Weapons
         private static readonly Vector4[] surfaceBuf = new Vector4[ZoneSetSO.MaxZones];
         private static readonly Vector4[] emissionBuf = new Vector4[ZoneSetSO.MaxZones];
 
-        // Applies this preset to every zone-shader renderer under the gun.
-        public void ApplyTo(GameObject gun)
+        // Applies this preset to every zone-shader renderer under the model.
+        public void ApplyTo(GameObject model)
         {
-            if (gun == null) return;
+            if (model == null) return;
             var block = new MaterialPropertyBlock();
             WriteTo(block);
-            foreach (var r in gun.GetComponentsInChildren<Renderer>(true))
+            foreach (var r in model.GetComponentsInChildren<Renderer>(true))
                 if (UsesZoneShader(r)) r.SetPropertyBlock(block);
         }
 

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Combat.Weapons;
+using Combat.Zones;
 
 namespace Combat.Enemies
 {

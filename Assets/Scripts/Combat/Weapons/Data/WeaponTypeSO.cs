@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Combat.Perks;
+using Combat.Zones;
 
 namespace Combat.Weapons
 {

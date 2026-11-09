@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using Combat.Enemies;
 using Combat.Stats;
-using Combat.Weapons;
+using Combat.Zones;
 
 // Inspector preview, final stats and checks for enemy archetypes, modifiers and variants.
 public class EnemyPreview
@@ -221,48 +221,175 @@ public static class EnemyDefinitionReport
         return map;
     }
 
-    public static List<string> Checks(EnemyArchetypeSO arch, IReadOnlyList<EnemyModifierSO> layers, GameObject prefab, EnemyLook look)
+    public class Issue
     {
-        var list = new List<string>();
-        if (arch == null) { list.Add("No archetype."); return list; }
-        if (string.IsNullOrEmpty(arch.id)) list.Add($"Archetype '{arch.name}' has no id.");
-        if (prefab == null) list.Add("No body prefab.");
+        public string Text;
+        public string FixLabel;
+        public System.Action Fix;
+    }
+
+    private static Issue Note(List<Issue> list, string text, string fixLabel = null, System.Action fix = null)
+    {
+        var issue = new Issue { Text = text, FixLabel = fixLabel, Fix = fix };
+        list.Add(issue);
+        return issue;
+    }
+
+    public static List<Issue> Checks(EnemyArchetypeSO arch, IReadOnlyList<EnemyModifierSO> layers, GameObject prefab, EnemyLook look)
+    {
+        var list = new List<Issue>();
+        if (arch == null) { Note(list, "No archetype."); return list; }
+        if (string.IsNullOrEmpty(arch.id)) Note(list, $"Archetype '{arch.name}' has no id.");
+        if (prefab == null) Note(list, "No body prefab.");
         else if (prefab.GetComponent<EnemyDefinitionApplier>() == null)
-            list.Add("Body prefab has no EnemyDefinitionApplier, so none of this applies in game.");
+            Note(list, "Body prefab has no EnemyDefinitionApplier, so none of this applies in game.",
+                 "Add Applier", () => EnemySetupFixes.AddApplier(prefab, arch));
 
         if (layers != null)
         {
             var seen = new HashSet<EnemyModifierSO>();
             foreach (var m in layers)
             {
-                if (m == null) { list.Add("A modifier slot is empty."); continue; }
-                if (!seen.Add(m)) list.Add($"'{m.name}' is listed twice.");
+                if (m == null) { Note(list, "A modifier slot is empty."); continue; }
+                if (!seen.Add(m)) Note(list, $"'{m.name}' is listed twice.");
                 foreach (var e in m.stats)
-                    if (e.stat == null) { list.Add($"{m.StatSourceLabel}: a stat entry has no stat."); break; }
+                    if (e.stat == null) { Note(list, $"{m.StatSourceLabel}: a stat entry has no stat."); break; }
             }
         }
 
-        if (prefab != null && !look.IsPlain)
-        {
-            var noShader = new HashSet<string>();
-            var noMask = new HashSet<string>();
-            var noEmission = new HashSet<string>();
-            foreach (var r in EnemyLook.FindRenderers(prefab))
-                foreach (var mat in r.sharedMaterials)
-                {
-                    if (mat == null) continue;
-                    if (look.Zones.Count > 0)
-                    {
-                        if (mat.shader == null || mat.shader.name != ZoneShaderSO.EnemyShaderName) noShader.Add(mat.name);
-                        else if (mat.GetTexture("_ZoneMask") == null) noMask.Add(mat.name);
-                    }
-                    if (look.Emission != Color.black && !mat.IsKeywordEnabled("_EMISSION")) noEmission.Add(mat.name);
-                }
-            if (noShader.Count > 0) list.Add("Zone looks need the FPS0/EnemyLit shader. Not using it: " + string.Join(", ", noShader));
-            if (noMask.Count > 0) list.Add("No zone mask assigned, so zone looks don't show on: " + string.Join(", ", noMask));
-            if (noEmission.Count > 0) list.Add("Emission is off on: " + string.Join(", ", noEmission));
-        }
+        if (prefab == null) return list;
+
+        var noShader = new HashSet<string>();
+        var noMask = new HashSet<string>();
+        var noEmission = new HashSet<string>();
+        foreach (var r in EnemyLook.FindRenderers(prefab))
+            foreach (var mat in r.sharedMaterials)
+            {
+                if (mat == null) continue;
+                if (mat.shader == null || mat.shader.name != ZoneShaderSO.EnemyShaderName) noShader.Add(mat.name);
+                else if (look.Zones.Count > 0 && mat.GetTexture("_ZoneMask") == null) noMask.Add(mat.name);
+                if (look.Emission != Color.black && !mat.IsKeywordEnabled("_EMISSION")) noEmission.Add(mat.name);
+            }
+        if (noShader.Count > 0)
+            Note(list, "Not set up for zone looks (needs FPS0/EnemyLit): " + string.Join(", ", noShader),
+                 "Set Up Materials", () => EnemySetupFixes.SetUpMaterials(prefab));
+        if (noMask.Count > 0)
+            Note(list, "No zone mask assigned, so zone looks don't show on: " + string.Join(", ", noMask),
+                 "Open Zone Editor", () => EnemySetupFixes.OpenZoneEditor(prefab));
+        if (noEmission.Count > 0) Note(list, "Emission is off on: " + string.Join(", ", noEmission));
         return list;
+    }
+}
+
+// One-click setup for a new enemy body: applier on the prefab, materials on FPS0/EnemyLit.
+public static class EnemySetupFixes
+{
+    private const string UrpLit = "Universal Render Pipeline/Lit";
+
+    public static void AddApplier(GameObject prefab, EnemyArchetypeSO arch)
+    {
+        string path = AssetDatabase.GetAssetPath(prefab);
+        if (string.IsNullOrEmpty(path)) return;
+        var root = PrefabUtility.LoadPrefabContents(path);
+        try
+        {
+            if (root.GetComponent<EnemyDefinitionApplier>() == null)
+            {
+                var applier = root.AddComponent<EnemyDefinitionApplier>();
+                var so = new SerializedObject(applier);
+                so.FindProperty("archetype").objectReferenceValue = arch;
+                so.ApplyModifiedPropertiesWithoutUndo();
+            }
+            PrefabUtility.SaveAsPrefabAsset(root, path);
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(root);
+        }
+        Debug.Log($"[Enemies] Added EnemyDefinitionApplier to '{prefab.name}'.");
+    }
+
+    // Model-embedded materials are extracted next to the model and remapped; URP Lit materials switch to FPS0/EnemyLit.
+    public static void SetUpMaterials(GameObject prefab)
+    {
+        var enemyLit = Shader.Find(ZoneShaderSO.EnemyShaderName);
+        if (enemyLit == null) { Debug.LogError($"[Enemies] Shader '{ZoneShaderSO.EnemyShaderName}' not found."); return; }
+
+        var mats = new List<Material>();
+        foreach (var r in EnemyLook.FindRenderers(prefab))
+            foreach (var m in r.sharedMaterials)
+                if (m != null && !mats.Contains(m)) mats.Add(m);
+
+        var skipped = new List<string>();
+        int converted = 0;
+        foreach (var mat in mats)
+        {
+            var target = AssetDatabase.IsSubAsset(mat) ? Extract(mat) : mat;
+            if (target == null) { skipped.Add(mat.name + " (could not extract)"); continue; }
+            if (target.shader != null && target.shader.name == ZoneShaderSO.EnemyShaderName) continue;
+            if (target.shader == null || target.shader.name != UrpLit)
+            {
+                skipped.Add($"{target.name} ({(target.shader != null ? target.shader.name : "no shader")})");
+                continue;
+            }
+            Undo.RecordObject(target, "Set Up Enemy Materials");
+            target.shader = enemyLit;
+            EditorUtility.SetDirty(target);
+            converted++;
+        }
+        AssetDatabase.SaveAssets();
+
+        Debug.Log($"[Enemies] '{prefab.name}': {converted} material(s) switched to {ZoneShaderSO.EnemyShaderName}.");
+        if (skipped.Count > 0)
+            Debug.LogWarning("[Enemies] Not converted (only URP Lit converts automatically): " + string.Join(", ", skipped));
+    }
+
+    // Pulls a material out of its model into <model folder>/Materials and points the model at it.
+    private static Material Extract(Material embedded)
+    {
+        string modelPath = AssetDatabase.GetAssetPath(embedded);
+        var importer = AssetImporter.GetAtPath(modelPath) as ModelImporter;
+        if (importer == null) return null;
+
+        string name = embedded.name;
+        string folder = System.IO.Path.GetDirectoryName(modelPath).Replace('\\', '/') + "/Materials";
+        if (!AssetDatabase.IsValidFolder(folder))
+            AssetDatabase.CreateFolder(System.IO.Path.GetDirectoryName(folder).Replace('\\', '/'), "Materials");
+
+        string dest = folder + "/" + name + ".mat";
+        var external = AssetDatabase.LoadAssetAtPath<Material>(dest) ?? FindExternal(name, System.IO.Path.GetDirectoryName(modelPath).Replace('\\', '/'));
+        if (external == null)
+        {
+            string error = AssetDatabase.ExtractAsset(embedded, dest);
+            if (!string.IsNullOrEmpty(error)) { Debug.LogError($"[Enemies] Extract '{name}' failed: {error}"); return null; }
+            AssetDatabase.WriteImportSettingsIfDirty(modelPath);
+            AssetDatabase.ImportAsset(dest, ImportAssetOptions.ForceUpdate);
+            external = AssetDatabase.LoadAssetAtPath<Material>(dest);
+        }
+        if (external == null) return null;
+
+        importer.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(Material), name), external);
+        importer.SaveAndReimport();
+        return external;
+    }
+
+    // An already-extracted material with the same name anywhere under the model's folder.
+    private static Material FindExternal(string name, string modelFolder)
+    {
+        foreach (var guid in AssetDatabase.FindAssets("t:Material " + name, new[] { modelFolder }))
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            if (!path.EndsWith(".mat")) continue;
+            var m = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (m != null && m.name == name) return m;
+        }
+        return null;
+    }
+
+    public static void OpenZoneEditor(GameObject prefab)
+    {
+        AssetDatabase.OpenAsset(prefab);
+        EditorWindow.GetWindow<ZoneEditor>("Zones");
     }
 }
 
@@ -288,7 +415,19 @@ public static class EnemyDefinitionGUI
         EditorGUILayout.LabelField("Drag to rotate, scroll to zoom.", EditorStyles.centeredGreyMiniLabel);
 
         foreach (var c in EnemyDefinitionReport.Checks(arch, layers, prefab, look))
-            EditorGUILayout.HelpBox(c, MessageType.Warning);
+        {
+            EditorGUILayout.HelpBox(c.Text, MessageType.Warning);
+            if (c.Fix == null) continue;
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button(c.FixLabel, GUILayout.Width(140f)))
+                {
+                    var fix = c.Fix;
+                    EditorApplication.delayCall += () => fix();
+                }
+            }
+        }
 
         if (arch == null) return;
 

@@ -4,7 +4,7 @@ using Combat.Core;
 using Combat.Effects;
 using Combat.Loot;
 using Combat.Stats;
-using Combat.Weapons;
+using Combat.Zones;
 
 namespace Combat.Enemies
 {

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc74f750f19c1f4438765429e21add61, type: 3}
   m_Name: _WeaponZones
   m_EditorClassIdentifier: 
+  shader: {fileID: 4800000, guid: 28c2f0843d0f68b4fb7efc6e24a5df2d, type: 3}
   zones:
   - name: Primary
     id: 1

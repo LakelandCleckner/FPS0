@@ -3,6 +3,7 @@ using UnityEngine;
 using Combat.Core;
 using Combat.Effects;
 using Combat.Perks;
+using Combat.Zones;
 
 namespace Combat.Weapons
 {

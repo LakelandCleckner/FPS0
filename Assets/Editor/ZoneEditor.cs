@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Combat.Weapons;
+using Combat.Zones;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-// Paints zone id masks for FPS0/WeaponZones and FPS0/EnemyLit: one mask per material, all edited together.
-public class WeaponZoneEditor : EditorWindow
+// Paints zone id masks for zone-shader models: one mask per material, all edited together.
+public class ZoneEditor : EditorWindow
 {
     private const string WeaponMaskFolder = "Assets/Art/WeaponMasks";
     private const string EnemyMaskFolder = "Assets/Art/EnemyMasks";
@@ -92,7 +92,7 @@ public class WeaponZoneEditor : EditorWindow
     private int setDirtyCount = -1;
 
     [MenuItem("Tools/Zone Editor")]
-    private static void Open() => GetWindow<WeaponZoneEditor>("Zones");
+    private static void Open() => GetWindow<ZoneEditor>("Zones");
 
     private void OnEnable()
     {
@@ -193,6 +193,7 @@ public class WeaponZoneEditor : EditorWindow
             }
             active.Add(l);
         }
+        MatchZoneSet();
 
         // Saved masks for models no longer open are dropped; unsaved ones stay until saved or discarded.
         for (int i = layers.Count - 1; i >= 0; i--)
@@ -204,6 +205,22 @@ public class WeaponZoneEditor : EditorWindow
             layers.RemoveAt(i);
         }
         ApplyPreview();
+    }
+
+    // Switches to the zone set made for the open model's shader; a set with no shader set stays as picked.
+    private void MatchZoneSet()
+    {
+        if (active.Count == 0 || active[0].material == null) return;
+        var shader = active[0].material.shader;
+        if (zoneSet != null && (zoneSet.shader == null || zoneSet.shader == shader)) return;
+
+        foreach (var guid in AssetDatabase.FindAssets("t:ZoneSetSO"))
+        {
+            var set = AssetDatabase.LoadAssetAtPath<ZoneSetSO>(AssetDatabase.GUIDToAssetPath(guid));
+            if (set == null || set.shader != shader) continue;
+            zoneSet = set;
+            return;
+        }
     }
 
     private MaskLayer LayerFor(Material m)
@@ -708,9 +725,24 @@ public class WeaponZoneEditor : EditorWindow
         ti.SaveAndReimport();
     }
 
-    private static string MaskFolder(MaskLayer l) =>
-        l.material != null && l.material.shader != null && l.material.shader.name == ZoneShaderSO.EnemyShaderName
-            ? EnemyMaskFolder : WeaponMaskFolder;
+    // Enemy masks go in a folder per model so different enemies never mix.
+    private static string MaskFolder(MaskLayer l)
+    {
+        bool enemy = l.material != null && l.material.shader != null && l.material.shader.name == ZoneShaderSO.EnemyShaderName;
+        if (!enemy) return WeaponMaskFolder;
+        string model = ModelName();
+        return string.IsNullOrEmpty(model) ? EnemyMaskFolder : EnemyMaskFolder + "/" + model;
+    }
+
+    // The open prefab's name, else the selected object's root.
+    private static string ModelName()
+    {
+        var stage = PrefabStageUtility.GetCurrentPrefabStage();
+        string n = stage != null ? stage.prefabContentsRoot.name
+                 : Selection.activeGameObject != null ? Selection.activeGameObject.transform.root.name : "";
+        foreach (char c in Path.GetInvalidFileNameChars()) n = n.Replace(c.ToString(), "");
+        return n.Trim();
+    }
 
     // Zone id in RGB, opaque alpha.
     private static Color32[] BuildPixels(MaskLayer l)

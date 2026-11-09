@@ -2,13 +2,16 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Combat.Weapons
+namespace Combat.Zones
 {
-    // Zone convention: names and stable ids shared by a family of masks and shader presets (guns, enemies).
+    // Zone convention: names and stable ids shared by a family of masks and shader presets.
     [CreateAssetMenu(fileName = "ZoneSet", menuName = "Combat/Zones/Zone Set")]
     public class ZoneSetSO : ScriptableObject
     {
         public const int MaxZones = 16;
+
+        [Tooltip("Shader this set is for. The Zone Editor picks the matching set for the open model.")]
+        public Shader shader;
 
         [Serializable]
         public class Zone
