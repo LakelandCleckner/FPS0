@@ -36,6 +36,7 @@ MonoBehaviour:
     baseValue: 2
   meleeDamageType: {fileID: 0}
   meleeHitEffects: []
+  behaviourProfile: {fileID: 11400000, guid: 1bbe144fae80473a91d2b46cbcda3f5a, type: 2}
   deathEffects: []
   affixes: []
   rank: 0

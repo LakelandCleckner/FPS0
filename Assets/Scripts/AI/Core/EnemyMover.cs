@@ -50,6 +50,13 @@ namespace Combat.AI
         private object speedOwner;
         private float speedFactor = 1f;
 
+        // Hold mode: keep a distance from the target and circle (waiting for an attack token).
+        private object holdOwner;
+        private float holdDistance;
+        private float holdCircleSpeed;
+        private float holdBearing;
+        private float holdDirection = 1f;
+
         public float BaseMoveSpeed => Stat(movementKeys != null ? movementKeys.moveSpeed : null, baseMoveSpeed);
         public float ChaseFactor => Stat(movementKeys != null ? movementKeys.chaseSpeedMultiplier : null, chaseSpeedMultiplier);
         public float InvestigateFactor => Stat(movementKeys != null ? movementKeys.investigateSpeedMultiplier : null, investigateSpeedMultiplier);
@@ -94,6 +101,7 @@ namespace Combat.AI
         {
             speedOwner = null;
             speedFactor = 1f;
+            holdOwner = null;
             manualRotation = false;
             currentTarget = null;
             shouldMove = false;
@@ -117,6 +125,21 @@ namespace Combat.AI
             if (speedOwner != owner) return;
             speedOwner = null;
             speedFactor = 1f;
+        }
+
+        // Keep this distance from the live target and circle at this many degrees per second.
+        public void Hold(object owner, float distance, float circleSpeed)
+        {
+            holdOwner = owner;
+            holdDistance = distance;
+            holdCircleSpeed = circleSpeed;
+            holdDirection = Random.value < 0.5f ? -1f : 1f;
+            holdBearing = float.NaN;
+        }
+
+        public void ReleaseHold(object owner)
+        {
+            if (holdOwner == owner) holdOwner = null;
         }
 
         // An action turning the agent itself (look-around) takes rotation away from the path.
@@ -234,6 +257,7 @@ namespace Combat.AI
         // for a moment: swing round toward its side or back, then rush again.
         private Vector3 Destination(Vector3 target)
         {
+            if (holdOwner != null) return HoldPoint(target);
             if (ring == null) return target;
 
             Vector3 toTarget = target - transform.position;
@@ -286,6 +310,28 @@ namespace Combat.AI
 
             nav.stoppingDistance = ring.ApproachDistance;
             return Lead(target, dist);
+        }
+
+        // A point on a circle around the target, drifting round it, facing the target once there.
+        private Vector3 HoldPoint(Vector3 target)
+        {
+            Vector3 fromTarget = transform.position - target;
+            fromTarget.y = 0f;
+            if (float.IsNaN(holdBearing)) holdBearing = fromTarget.sqrMagnitude > 0.01f ? Bearing(fromTarget) : Random.Range(0f, 360f);
+            holdBearing += holdDirection * holdCircleSpeed * Time.deltaTime;
+
+            if (ring != null) ring.SetClose(transform, false);
+            SetFacing(fromTarget.magnitude <= holdDistance + 1.5f);
+            nav.avoidancePriority = defaultPriority;
+            nav.stoppingDistance = 0.3f;
+
+            float a = holdBearing * Mathf.Deg2Rad;
+            Vector3 p = target + new Vector3(Mathf.Sin(a), 0f, Mathf.Cos(a)) * holdDistance;
+            if (NavMesh.SamplePosition(p, out var hit, 1.5f, NavMesh.AllAreas)) return hit.position;
+
+            // Blocked on this side: turn round and circle the other way
+            holdDirection = -holdDirection;
+            return transform.position;
         }
 
         // Aim ahead of the target's movement while still closing in

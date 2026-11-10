@@ -22,6 +22,7 @@ MonoBehaviour:
     resist: 0
   meleeDamageType: {fileID: 11400000, guid: bb5cd7710169fec488edfdb57f9d8ade, type: 2}
   meleeHitEffects: []
+  behaviourProfile: {fileID: 11400000, guid: 0aa7b45b6e9f404e9c1e2769cd3e542e, type: 2}
   deathEffects:
   - {fileID: 11400000, guid: a4f3687b33f542218ab0400e2a4e0c0c, type: 2}
   affixes: []

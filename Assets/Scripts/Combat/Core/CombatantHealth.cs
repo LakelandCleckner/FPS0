@@ -201,6 +201,17 @@ public class CombatantHealth : MonoBehaviour, IPoolable
         }
     }
 
+    // Dies now, skipping the absorber (self-detonation). Counts as a body kill, not a precision one.
+    public void Kill()
+    {
+        if (IsDying) return;
+        LastHitPart = BodyPart.Torso;
+        currentHealth = 0f;
+        NotifyHealth();
+        IsDying = true;
+        Die();
+    }
+
     public void Heal(float amount)
     {
         if (IsDying) return;

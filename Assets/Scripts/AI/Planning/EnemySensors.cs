@@ -12,7 +12,10 @@ namespace Combat.AI.Goap
             AddLocalWorldSensor<HasTarget>((agent, refs) => refs.GetCachedComponent<EnemyPerception>().HasTarget);
             AddLocalWorldSensor<TargetVisible>((agent, refs) => refs.GetCachedComponent<EnemyPerception>().TargetVisible);
             AddLocalWorldSensor<HasLastKnown>((agent, refs) => refs.GetCachedComponent<EnemyPerception>().HasLastKnown);
+            AddLocalWorldSensor<HasAttackToken>((agent, refs) => refs.GetCachedComponent<EnemyBrain>().HasToken);
+            AddLocalWorldSensor<ShieldDown>((agent, refs) => refs.GetCachedComponent<EnemyBrain>().ShieldDown);
             AddLocalWorldSensor<TargetKilled>((agent, refs) => false);
+            AddLocalWorldSensor<ShieldRecovered>((agent, refs) => false);
             AddLocalWorldSensor<Searched>((agent, refs) => false);
             AddLocalWorldSensor<IsIdle>((agent, refs) => false);
 
@@ -30,6 +33,14 @@ namespace Combat.AI.Goap
                 if (!p.HasLastKnown) return null;
                 if (existing is PositionTarget pt) return pt.SetPosition(p.LastKnownPosition);
                 return new PositionTarget(p.LastKnownPosition);
+            });
+
+            AddLocalTargetSensor<CoverTarget>((agent, refs, existing) =>
+            {
+                var brain = refs.GetCachedComponent<EnemyBrain>();
+                if (brain == null || !brain.TryGetCover(out var point)) return null;
+                if (existing is PositionTarget pt) return pt.SetPosition(point);
+                return new PositionTarget(point);
             });
 
             // Holds the current point while walking to it; rolls a new one when a wander starts.

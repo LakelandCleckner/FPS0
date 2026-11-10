@@ -48,6 +48,25 @@ namespace Combat.Enemies
         public EnemyRank Rank { get; private set; }
         public IShieldSource Shield { get; private set; }
 
+        // Fired after every apply, so the AI can rebind to a new behaviour profile.
+        public event System.Action Applied;
+
+        // Archetype's profile, overridden by the last layer that sets one. Read straight from the
+        // definition so it is valid before the first apply.
+        public Combat.AI.EnemyBehaviourProfileSO BehaviourProfile
+        {
+            get
+            {
+                var arch = Archetype;
+                if (arch == null) return null;
+                var p = arch.behaviourProfile;
+                if (variant != null)
+                    foreach (var m in variant.modifiers)
+                        if (m != null && m.behaviourProfile != null) p = m.behaviourProfile;
+                return p;
+            }
+        }
+
         // Every live definition-driven enemy, for HUD readers like the health bars.
         public static readonly List<EnemyDefinitionApplier> Active = new List<EnemyDefinitionApplier>();
 
@@ -180,6 +199,7 @@ namespace Combat.Enemies
                 ApplyShield(null);
                 ApplyLook(EnemyLook.Plain);
                 RebuildAffixes(null);
+                Applied?.Invoke();
                 return;
             }
 
@@ -219,6 +239,7 @@ namespace Combat.Enemies
             RebuildAffixes(arch);
 
             for (int i = 0; i < affixes.Count; i++) affixes[i].OnSpawn(this);
+            Applied?.Invoke();
         }
 
         // ---- stats ----

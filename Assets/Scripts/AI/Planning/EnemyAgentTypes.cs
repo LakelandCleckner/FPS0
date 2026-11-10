@@ -5,14 +5,16 @@ using UnityEngine;
 
 namespace Combat.AI.Goap
 {
-    // Agent types built in code and registered with the scene's GoapBehaviour on first use.
+    // One agent type per behaviour profile, built in code from its capability flags and
+    // registered with the scene's GoapBehaviour on first use.
     public static class EnemyAgentTypes
     {
-        public const string Melee = "EnemyMelee";
+        // Used when an enemy has no profile: melee, search, idle.
+        public const string Default = "Enemy_Default";
 
         private static GoapBehaviour goap;
 
-        public static IAgentType Get(string id)
+        public static IAgentType Get(EnemyBehaviourProfileSO profile)
         {
             if (goap == null) goap = Object.FindFirstObjectByType<GoapBehaviour>();
             if (goap == null)
@@ -21,36 +23,32 @@ namespace Combat.AI.Goap
                 return null;
             }
 
+            string id = profile != null ? profile.AgentTypeId : Default;
+
             // GetAgentType initialises the runner first, then throws if the id is unknown.
             try { return goap.GetAgentType(id); }
             catch (KeyNotFoundException) { }
 
-            var config = Build(id, goap.Config.GoapInjector);
-            if (config == null)
-            {
-                Debug.LogError($"[EnemyAgentTypes] Unknown agent type '{id}'.");
-                return null;
-            }
-            goap.Register(config);
+            goap.Register(Build(id, profile, goap.Config.GoapInjector));
             return goap.GetAgentType(id);
         }
 
-        private static IAgentTypeConfig Build(string id, IGoapInjector injector)
+        private static IAgentTypeConfig Build(string id, EnemyBehaviourProfileSO p, IGoapInjector injector)
         {
-            switch (id)
-            {
-                case Melee:
-                {
-                    var b = new AgentTypeBuilder(injector, id);
-                    b.AddCapability<PerceptionCapability>();
-                    b.AddCapability<MeleeCapability>();
-                    b.AddCapability<SearchCapability>();
-                    b.AddCapability<IdleCapability>();
-                    return b.Build();
-                }
-                default:
-                    return null;
-            }
+            bool melee = p == null || p.melee;
+            bool kamikaze = p != null && p.kamikaze;
+            bool cover = p != null && p.shieldCover;
+            bool search = p == null || p.search;
+            bool idle = p == null || p.idle;
+
+            var b = new AgentTypeBuilder(injector, id);
+            b.AddCapability<PerceptionCapability>();
+            if (melee) b.AddCapability<MeleeCapability>();
+            if (kamikaze) b.AddCapability<KamikazeCapability>();
+            if (cover) b.AddCapability<ShieldCoverCapability>();
+            if (search) b.AddCapability<SearchCapability>();
+            if (idle) b.AddCapability<IdleCapability>();
+            return b.Build();
         }
     }
 }

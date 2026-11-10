@@ -27,6 +27,10 @@ namespace Combat.Enemies
         public DamageTypeSO meleeDamageType;
         public List<HitEffectSO> meleeHitEffects = new List<HitEffectSO>();
 
+        [Header("Behaviour")]
+        [Tooltip("How it fights. Empty = plain melee. Modifiers can override it.")]
+        public Combat.AI.EnemyBehaviourProfileSO behaviourProfile;
+
         [Header("Death")]
         [Tooltip("Blasts or hazards left behind on death.")]
         public List<EnemyDeathEffectSO> deathEffects = new List<EnemyDeathEffectSO>();

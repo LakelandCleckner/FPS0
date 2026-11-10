@@ -43,6 +43,10 @@ namespace Combat.Enemies
         [Tooltip("Added to every melee move (burn, slow, poison).")]
         public List<HitEffectSO> meleeHitEffects = new List<HitEffectSO>();
 
+        [Header("Behaviour")]
+        [Tooltip("Empty = no change. Last layer that sets one wins.")]
+        public Combat.AI.EnemyBehaviourProfileSO behaviourProfile;
+
         [Header("Shield")]
         [Tooltip("Grants a recharging shield. Last layer that sets one wins.")]
         public EnemyShieldSO shield;

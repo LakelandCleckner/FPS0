@@ -5,7 +5,7 @@ using Combat.Enemies;
 
 namespace Combat.AI.Goap
 {
-    // Chase the target (moving phase) and swing whenever EnemyMeleeAttack allows; a swing holds the plan.
+    // With a token: chase the target (moving phase) and swing whenever EnemyMeleeAttack allows; a swing holds the plan.
     public class MeleeAttackAction : GoapActionBase<MeleeAttackAction.Data>
     {
         public override void Start(IMonoAgent agent, Data data)
@@ -44,6 +44,137 @@ namespace Combat.AI.Goap
             public ITarget Target { get; set; }
             public EnemyMover Mover;
             public EnemyMeleeAttack Melee;
+        }
+    }
+
+    // Circle the target at the profile's hold distance until one of its attack tokens frees up.
+    public class WaitForTokenAction : GoapActionBase<WaitForTokenAction.Data>
+    {
+        private const float RingSlack = 2f;
+
+        public override void Start(IMonoAgent agent, Data data)
+        {
+            data.Mover = agent.Transform.GetComponent<EnemyMover>();
+            data.Brain = agent.Transform.GetComponent<EnemyBrain>();
+            data.Perception = agent.Transform.GetComponent<EnemyPerception>();
+            var p = data.Brain != null ? data.Brain.Profile : null;
+            data.HoldDistance = p != null ? p.holdDistance : 5f;
+            if (data.Mover != null)
+            {
+                data.Mover.RequestSpeed(data, data.Mover.ChaseFactor);
+                data.Mover.Hold(data, data.HoldDistance, p != null ? p.holdCircleSpeed : 12f);
+            }
+        }
+
+        // Takes a free token on the way in; otherwise performs once on the ring.
+        public override bool IsInRange(IMonoAgent agent, float distance, Data data, IComponentReference references)
+        {
+            return TryAcquire(data) || distance <= data.HoldDistance + RingSlack;
+        }
+
+        public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
+        {
+            return TryAcquire(data) ? ActionRunState.Completed : ActionRunState.ContinueOrResolve;
+        }
+
+        private static bool TryAcquire(Data data)
+        {
+            if (data.Brain == null || data.Perception == null) return false;
+            return AttackTokens.TryAcquire(data.Perception.Target, data.Brain);
+        }
+
+        public override void End(IMonoAgent agent, Data data)
+        {
+            if (data.Mover == null) return;
+            data.Mover.ReleaseHold(data);
+            data.Mover.ReleaseSpeed(data);
+        }
+
+        public class Data : IActionData
+        {
+            public ITarget Target { get; set; }
+            public EnemyMover Mover;
+            public EnemyBrain Brain;
+            public EnemyPerception Perception;
+            public float HoldDistance;
+        }
+    }
+
+    // Sprint at the target and self-detonate in range; the death effects do the damage.
+    public class KamikazeAction : GoapActionBase<KamikazeAction.Data>
+    {
+        public override void Start(IMonoAgent agent, Data data)
+        {
+            data.Mover = agent.Transform.GetComponent<EnemyMover>();
+            data.Health = agent.Transform.GetComponent<CombatantHealth>();
+            var brain = agent.Transform.GetComponent<EnemyBrain>();
+            var p = brain != null ? brain.Profile : null;
+            data.TriggerRange = p != null ? p.kamikazeTriggerRange : 2.5f;
+            if (data.Mover != null) data.Mover.RequestSpeed(data, p != null ? p.kamikazeSpeedFactor : data.Mover.ChaseFactor);
+        }
+
+        public override bool IsInRange(IMonoAgent agent, float distance, Data data, IComponentReference references)
+        {
+            return distance <= data.TriggerRange;
+        }
+
+        public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
+        {
+            if (data.Health != null) data.Health.Kill();
+            return ActionRunState.Completed;
+        }
+
+        public override void End(IMonoAgent agent, Data data)
+        {
+            if (data.Mover != null) data.Mover.ReleaseSpeed(data);
+        }
+
+        public class Data : IActionData
+        {
+            public ITarget Target { get; set; }
+            public EnemyMover Mover;
+            public CombatantHealth Health;
+            public float TriggerRange;
+        }
+    }
+
+    // Break off to cover (or back away) and wait there until the shield is full again.
+    public class TakeCoverAction : GoapActionBase<TakeCoverAction.Data>
+    {
+        private const float DriftLimit = 1.5f;
+
+        public override void Start(IMonoAgent agent, Data data)
+        {
+            data.Mover = agent.Transform.GetComponent<EnemyMover>();
+            data.Brain = agent.Transform.GetComponent<EnemyBrain>();
+            if (data.Brain != null) data.Brain.ReleaseToken();
+            if (data.Mover != null) data.Mover.RequestSpeed(data, data.Mover.ChaseFactor);
+        }
+
+        public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
+        {
+            if (data.Brain == null || !data.Brain.ShieldDown) return ActionRunState.Completed;
+
+            // Cover got exposed and a new spot was picked: re-plan so we move there
+            if (data.Target != null && Vector3.Distance(agent.Transform.position, data.Target.Position) > DriftLimit)
+                return ActionRunState.Stop;
+
+            if (data.Mover != null) data.Mover.Halt();
+            return ActionRunState.ContinueOrResolve;
+        }
+
+        public override void End(IMonoAgent agent, Data data)
+        {
+            if (data.Mover == null) return;
+            data.Mover.ReleaseSpeed(data);
+            data.Mover.Halt();
+        }
+
+        public class Data : IActionData
+        {
+            public ITarget Target { get; set; }
+            public EnemyMover Mover;
+            public EnemyBrain Brain;
         }
     }
 
