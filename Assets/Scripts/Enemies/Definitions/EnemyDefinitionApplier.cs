@@ -25,6 +25,7 @@ namespace Combat.Enemies
         private EnemyMeleeAttack melee;
         private EnemyLootDropper loot;
         private WeaponHitResolver resolver;
+        private EnemyShield shield;
         private Renderer[] renderers;
         private MaterialPropertyBlock block;
         private Vector3 authoredScale;
@@ -83,7 +84,7 @@ namespace Combat.Enemies
             authoredScale = transform.localScale;
             block = new MaterialPropertyBlock();
             renderers = EnemyLook.FindRenderers(gameObject);
-            Shield = GetComponent<IShieldSource>();
+            shield = GetComponent<EnemyShield>();
         }
 
         private void OnEnable()
@@ -176,6 +177,7 @@ namespace Combat.Enemies
                 if (melee != null) melee.Configure(null, null);
                 if (loot != null) loot.Configure(null, false, 0);
                 deathEffects.Clear();
+                ApplyShield(null);
                 ApplyLook(EnemyLook.Plain);
                 RebuildAffixes(null);
                 return;
@@ -212,6 +214,7 @@ namespace Combat.Enemies
             ApplyMelee(arch);
             ApplyLoot(arch);
             CollectDeathEffects(arch);
+            ApplyShield(arch);
             ApplyPresentation(arch);
             RebuildAffixes(arch);
 
@@ -283,6 +286,21 @@ namespace Combat.Enemies
             foreach (var so in arch.deathEffects) if (so != null) deathEffects.Add(so);
             for (int i = 0; i < layers.Count; i++)
                 foreach (var so in layers[i].deathEffects) if (so != null) deathEffects.Add(so);
+        }
+
+        // ---- shield ----
+
+        // Adds the shield component the first time a layer needs one; keeps it (off) afterwards.
+        private void ApplyShield(EnemyArchetypeSO arch)
+        {
+            EnemyShieldSO so = null;
+            for (int i = 0; arch != null && i < layers.Count; i++)
+                if (layers[i].shield != null) so = layers[i].shield;
+
+            if (so != null && shield == null) shield = gameObject.AddComponent<EnemyShield>();
+            if (shield != null) shield.Configure(so, health, stats, resolver);
+            if (health != null) health.Absorber = so != null ? shield : null;
+            Shield = so != null ? shield : null;
         }
 
         // ---- presentation ----

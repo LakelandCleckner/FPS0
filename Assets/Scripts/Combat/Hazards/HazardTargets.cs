@@ -14,24 +14,33 @@ namespace Combat.Hazards
             public Vector3 Point;
         }
 
-        private static readonly Collider[] overlap = new Collider[64];
+        private static Collider[] overlap = new Collider[128];
         private static readonly HashSet<object> seen = new HashSet<object>();
 
         // Everyone in a sphere. A zero mask skips that side. Exclude is usually the effect's owner.
-        public static void InSphere(Vector3 centre, float radius, int playerMask, int enemyMask, ICombatant exclude, List<Target> results)
+        // Accept filters per collider, so one stray limb outside an area can't drop the whole body.
+        public static void InSphere(Vector3 centre, float radius, int playerMask, int enemyMask, ICombatant exclude,
+                                    List<Target> results, System.Func<Vector3, bool> accept = null)
         {
             results.Clear();
             seen.Clear();
             int mask = playerMask | enemyMask;
             if (mask == 0 || radius <= 0f) return;
 
+            // Every body carries many hitboxes; grow the buffer rather than miss enemies.
             int n = Physics.OverlapSphereNonAlloc(centre, radius, overlap, mask, QueryTriggerInteraction.Collide);
+            while (n == overlap.Length)
+            {
+                overlap = new Collider[overlap.Length * 2];
+                n = Physics.OverlapSphereNonAlloc(centre, radius, overlap, mask, QueryTriggerInteraction.Collide);
+            }
             for (int i = 0; i < n; i++)
             {
                 var col = overlap[i];
                 if (col == null) continue;
                 int bit = 1 << col.gameObject.layer;
                 Vector3 point = col.ClosestPoint(centre);
+                if (accept != null && !accept(point)) continue;
 
                 if ((playerMask & bit) != 0)
                 {
@@ -61,14 +70,12 @@ namespace Combat.Hazards
         {
             float r = pool.Radius, h = pool.Height;
             Vector3 foot = pool.transform.position;
-            InSphere(foot + Vector3.up * (h * 0.5f), Mathf.Sqrt(r * r + h * h * 0.25f), playerMask, enemyMask, exclude, results);
-
-            for (int i = results.Count - 1; i >= 0; i--)
-            {
-                Vector3 d = results[i].Point - foot;
-                bool inside = d.y >= -0.5f && d.y <= h && d.x * d.x + d.z * d.z <= r * r;
-                if (!inside) results.RemoveAt(i);
-            }
+            InSphere(foot + Vector3.up * (h * 0.5f), Mathf.Sqrt(r * r + h * h * 0.25f), playerMask, enemyMask, exclude, results,
+                p =>
+                {
+                    Vector3 d = p - foot;
+                    return d.y >= -0.5f && d.y <= h && d.x * d.x + d.z * d.z <= r * r;
+                });
         }
 
         // Primitive with no collider, tinted through a property block.

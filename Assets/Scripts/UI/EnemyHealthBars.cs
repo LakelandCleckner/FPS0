@@ -107,6 +107,7 @@ namespace Combat.UI
         {
             public float LastSeen = -999f;
             public float LastHealth = -1f;
+            public float LastShield;
             public float Shown;      // fill
             public float Target;     // real health fraction
             public float Chip;
@@ -155,6 +156,10 @@ namespace Combat.UI
                     tracked[e] = t;
                 }
                 if (TrackHealth(e, t)) t.LastSeen = now;
+                // Shield damage reveals the bar too.
+                float sh = e.Shield != null ? e.Shield.CurrentShield : 0f;
+                if (sh < t.LastShield - 0.01f) t.LastSeen = now;
+                t.LastShield = sh;
                 if (e == aimed) t.LastSeen = now;
                 Animate(t, dt);
             }

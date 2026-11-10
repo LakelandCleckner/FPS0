@@ -43,6 +43,10 @@ namespace Combat.Enemies
         [Tooltip("Added to every melee move (burn, slow, poison).")]
         public List<HitEffectSO> meleeHitEffects = new List<HitEffectSO>();
 
+        [Header("Shield")]
+        [Tooltip("Grants a recharging shield. Last layer that sets one wins.")]
+        public EnemyShieldSO shield;
+
         [Header("Death")]
         [Tooltip("Blasts or hazards left behind on death.")]
         public List<EnemyDeathEffectSO> deathEffects = new List<EnemyDeathEffectSO>();

@@ -3,6 +3,12 @@ using Combat.Core;
 using Combat.Stats;
 using Combat.Spawning;
 
+// Something that soaks damage before health (an enemy shield). Returns what passes through.
+public interface IDamageAbsorber
+{
+    float Absorb(float damage, DamageTypeSO type);
+}
+
 // Health state + defensive layers for a combatant. Phase: defensive stats.
 //
 // Pooling: fires OnDeath instead of destroying, so a PooledEnemy can decide when/how
@@ -34,6 +40,9 @@ public class CombatantHealth : MonoBehaviour, IPoolable
 
     // Body part of the most recent damage, so death reactions can tell a precision kill.
     public BodyPart LastHitPart { get; private set; } = BodyPart.Torso;
+
+    // Optional layer in front of health, e.g. an enemy shield.
+    public IDamageAbsorber Absorber { get; set; }
 
     // Fired when this combatant dies (health hits 0). A PooledEnemy subscribes to
     // return the instance to its pool; anything else (score, loot, VFX) can too. Death
@@ -177,6 +186,11 @@ public class CombatantHealth : MonoBehaviour, IPoolable
     {
         if (IsDying) return;
         LastHitPart = partHit;
+        if (Absorber != null)
+        {
+            damage = Absorber.Absorb(damage, type);
+            if (damage <= 0f) return;
+        }
         RefreshMax();
         currentHealth = Mathf.Clamp(currentHealth - damage, 0f, cachedMax);
         NotifyHealth();
