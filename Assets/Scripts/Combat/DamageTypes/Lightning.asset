@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: lightning
   displayName: Lightning
+  color: {r: 0.65, g: 0.55, b: 1, a: 1}
   hitSound: {fileID: 0}
   font: {fileID: 0}
   normalGradient:

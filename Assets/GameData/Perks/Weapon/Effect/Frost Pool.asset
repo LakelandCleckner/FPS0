@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 100ac6fc588f484a902443800b048765, type: 3}
+  m_Name: Frost Pool
+  m_EditorClassIdentifier: 
+  id: frost_pool
+  displayName: Frost Pool
+  description: Kills leave a pool of frost that slows and chills enemies standing in it.
+  icon: {fileID: 0}
+  shortName: FP
+  listenScope: 1
+  trigger: 2
+  sources: 1
+  anyWeapon: 0
+  maxActive: 3
+  pool:
+    radius: 2.5
+    height: 2
+    duration: 6
+    tickInterval: 0.5
+    growTime: 0.3
+    groundLayers:
+      serializedVersion: 2
+      m_Bits: 4294966911
+    opacity: 0.45
+    fallbackColor: {r: 1, g: 0.35, b: 0.05, a: 1}
+    slow: 0.4
+    slowStat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 128
+  damageStat: {fileID: 11400000, guid: 74e01aed325cce348acbd5d421549c4f, type: 2}
+  damageCoefficient: 0.05
+  damageType: {fileID: 11400000, guid: 4e160728f4591b5449e17a7cceb05c43, type: 2}
+  applyStatus: {fileID: 0}

@@ -67,6 +67,9 @@ namespace Combat.Effects
                  "0 = don't scale, use the prefab's authored scale as-is.")]
         public float vfxReferenceRadius = 0f;
 
+        [Tooltip("Recolour the VFX and placeholder to the damage type's colour.")]
+        public bool tintToDamageType = true;
+
         [Header("Placeholder VFX (when no prefab is assigned)")]
         [Tooltip("With no blastVfx prefab, spawn a translucent sphere at the blast " +
                  "radius that expands and fades — a stand-in until real VFX exists, and " +
@@ -108,7 +111,8 @@ namespace Combat.Effects
                 vfxReferenceRadius: vfxReferenceRadius,
                 usePlaceholderVfx: usePlaceholderVfx,
                 transferableStatuses: transferableStatuses,
-                placeholderColor: placeholderColor);
+                placeholderColor: placeholderColor,
+                tint: tintToDamageType && damageType != null ? damageType.color : Color.clear);
         }
     }
 }

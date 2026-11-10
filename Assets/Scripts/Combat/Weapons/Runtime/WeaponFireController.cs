@@ -77,6 +77,7 @@ namespace Combat.Weapons
         public bool CanFire { get; set; } = true;
 
         public WeaponDamageSource DamageSource => damageSource;
+        public WeaponHitResolver Resolver => resolver;
 
         // Set by WeaponLoadout from the spawned gun model's GunModel. Called in the
         // loadout's Awake, before this component's Start builds the delivery, so the

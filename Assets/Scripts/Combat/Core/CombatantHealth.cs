@@ -32,6 +32,9 @@ public class CombatantHealth : MonoBehaviour, IPoolable
 
     public bool IsDying { get; private set; }
 
+    // Body part of the most recent damage, so death reactions can tell a precision kill.
+    public BodyPart LastHitPart { get; private set; } = BodyPart.Torso;
+
     // Fired when this combatant dies (health hits 0). A PooledEnemy subscribes to
     // return the instance to its pool; anything else (score, loot, VFX) can too. Death
     // no longer destroys the object itself -- the handler decides its fate. If NOTHING
@@ -77,6 +80,7 @@ public class CombatantHealth : MonoBehaviour, IPoolable
     public void OnSpawn()
     {
         IsDying = false;
+        LastHitPart = BodyPart.Torso;
         cachedMaxVersion = int.MinValue;   // force a fresh max resolve
         RefreshMax();
         currentHealth = cachedMax;
@@ -172,6 +176,7 @@ public class CombatantHealth : MonoBehaviour, IPoolable
     public void TakeDamage(float damage, BodyPart partHit, DamageTypeSO type)
     {
         if (IsDying) return;
+        LastHitPart = partHit;
         RefreshMax();
         currentHealth = Mathf.Clamp(currentHealth - damage, 0f, cachedMax);
         NotifyHealth();

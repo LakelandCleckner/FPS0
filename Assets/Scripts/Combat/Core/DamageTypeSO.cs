@@ -22,6 +22,9 @@ namespace Combat.Core
         [Tooltip("Display name shown in UI. Safe to rename.")]
         public string displayName = "Physical";
 
+        [Tooltip("World colour for this type's pools, blasts and other effects.")]
+        public Color color = Color.white;
+
         [Tooltip("Optional hit/tick sound for this type. May be left empty for now.")]
         public AudioClip hitSound;
 

@@ -16,5 +16,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a4dbb8a9dc900774c83f68eedef9788a, type: 2}
   - {fileID: 11400000, guid: e82ae318e3f8d4b488184333ecbf83d1, type: 2}
   - {fileID: 11400000, guid: c1e7814e2a16f9b4eaec3074f934560c, type: 2}
+  - {fileID: 11400000, guid: c5a0116b08334c90a19ad1bdf8ceb9c9, type: 2}
+  - {fileID: 11400000, guid: 971dad9bc7ff4940aec7e1e625c42bf5, type: 2}
+  - {fileID: 11400000, guid: 7c5d3db4251b4ddb9aca39eca97ee462, type: 2}
   includes: []
   authoredAs: folder=Effect, -Spreading Flame, -Plague Burst, -Wildfire

@@ -259,6 +259,13 @@ public static class EnemyDefinitionReport
 
         if (prefab == null) return list;
 
+        bool hasDeath = arch.deathEffects.Exists(e => e != null);
+        if (!hasDeath && layers != null)
+            foreach (var m in layers)
+                if (m != null && m.deathEffects.Exists(e => e != null)) { hasDeath = true; break; }
+        if (hasDeath && prefab.GetComponentInChildren<Combat.Core.WeaponHitResolver>(true) == null)
+            Note(list, "Has death effects but the body prefab has no WeaponHitResolver, so they won't fire.");
+
         var noShader = new HashSet<string>();
         var noMask = new HashSet<string>();
         var noEmission = new HashSet<string>();

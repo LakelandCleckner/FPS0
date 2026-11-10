@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 136e049eae749a34786eed3ed8b17687, type: 3}
+  m_Name: FireVolatile
+  m_EditorClassIdentifier: 
+  displayName: Fire Volatile
+  namePrefix: Fire Volatile
+  kind: 1
+  element: {fileID: 11400000, guid: bb5cd7710169fec488edfdb57f9d8ade, type: 2}
+  stats: []
+  meleeDamageType: {fileID: 0}
+  meleeHitEffects: []
+  deathEffects:
+  - {fileID: 11400000, guid: a4f3687b33f542218ab0400e2a4e0c0c, type: 2}
+  affixes: []
+  look: {fileID: 0}
+  emission: {r: 0, g: 0, b: 0, a: 1}
+  scale: 1
+  raiseRankTo: 0
+  lootTable: {fileID: 0}
+  guaranteedDrop: 0
+  extraDrops: 0

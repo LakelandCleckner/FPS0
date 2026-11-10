@@ -43,6 +43,7 @@ namespace Combat.Effects
         private readonly float vfxReferenceRadius;   // radius the prefab was authored at
         private readonly bool usePlaceholderVfx;
         private readonly Color placeholderColor;
+        private readonly Color tint;   // damage type colour; clear = leave the VFX as authored
         private readonly List<StatusSO> transferableStatuses;
         private readonly List<(StatusSO, EffectStackPool.TransferEntry)> transferRecords
             = new List<(StatusSO, EffectStackPool.TransferEntry)>();
@@ -64,7 +65,8 @@ namespace Combat.Effects
             float vfxReferenceRadius,
             bool usePlaceholderVfx,
             List<StatusSO> transferableStatuses,
-            Color placeholderColor)
+            Color placeholderColor,
+            Color tint = default)
         {
             this.radius = radius;
             this.layerMask = layerMask;
@@ -77,6 +79,7 @@ namespace Combat.Effects
             this.usePlaceholderVfx = usePlaceholderVfx;
             this.transferableStatuses = transferableStatuses;
             this.placeholderColor = placeholderColor;
+            this.tint = tint;
 
             blastEffects = new List<IHitEffect>(2) { new DamageHitEffect(blastSpec) };
             if (statusToApply != null)
@@ -114,6 +117,7 @@ namespace Combat.Effects
                     fx.transform.localScale = blastVfx.transform.localScale * k;
                 }
 
+                if (tint.a > 0f) VfxTint.Apply(fx, tint);
                 if (vfxLifetime > 0f) Object.Destroy(fx, vfxLifetime);
             }
             else if (usePlaceholderVfx)
@@ -121,8 +125,9 @@ namespace Combat.Effects
                 // No authored VFX yet: a translucent sphere at the real blast radius
                 // that expands and fades. Sized to the radius, so it doubles as a
                 // runtime check that the hit area matches what you expect.
+                var c = tint.a > 0f ? new Color(tint.r, tint.g, tint.b, placeholderColor.a) : placeholderColor;
                 BlastPlaceholderVfx.Spawn(center, radius,
-                    vfxLifetime > 0f ? vfxLifetime : 0.4f, placeholderColor);
+                    vfxLifetime > 0f ? vfxLifetime : 0.4f, c);
             }
 
             // Throws corpses in the radius, including the victim's

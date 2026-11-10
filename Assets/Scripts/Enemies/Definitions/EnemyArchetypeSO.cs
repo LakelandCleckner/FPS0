@@ -28,7 +28,8 @@ namespace Combat.Enemies
         public List<HitEffectSO> meleeHitEffects = new List<HitEffectSO>();
 
         [Header("Death")]
-        public List<HitEffectSO> deathEffects = new List<HitEffectSO>();
+        [Tooltip("Blasts or hazards left behind on death.")]
+        public List<EnemyDeathEffectSO> deathEffects = new List<EnemyDeathEffectSO>();
 
         [Header("Affixes")]
         public List<EnemyAffixSO> affixes = new List<EnemyAffixSO>();

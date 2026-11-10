@@ -95,6 +95,8 @@ namespace Combat.UI
             public readonly List<Image> Ticks = new List<Image>();
             public readonly List<float> TickAt = new List<float>();
             public float TickedMax = -1f;
+            public EnemyRank FilledRank;
+            public string FilledName;
             public float TickedScale = -1f;
             public RectTransform ShieldFrame;
             public RectTransform ShieldFill;
@@ -246,6 +248,8 @@ namespace Combat.UI
                 if (b == null) return false;
                 Fill(b, e);
             }
+            // Definition can land after the bar was handed out (spawned and aimed at the same frame).
+            else if (b.FilledRank != e.Rank || b.FilledName != e.DisplayName) Fill(b, e);
 
             var uiCam = canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay ? canvas.worldCamera : null;
             // Whole screen pixels for the bar's left edge, so thin ticks and text don't shimmer as it moves.
@@ -285,6 +289,8 @@ namespace Combat.UI
         {
             var color = style.RankColor(e.Rank);
             b.Name.text = e.DisplayName;
+            b.FilledRank = e.Rank;
+            b.FilledName = e.DisplayName;
             b.FillImage.color = color;
             b.Underline.color = new Color(color.r, color.g, color.b, 0.8f);
             b.Underline.gameObject.SetActive(rankUnderline);

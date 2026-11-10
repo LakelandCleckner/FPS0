@@ -11,6 +11,7 @@ namespace Combat.Enemies
     // Applies an archetype and its modifier layers to this enemy every life.
     // Runs before other Starts so health and AI read the final stats on the first frame.
     [DefaultExecutionOrder(-100)]
+    [DisallowMultipleComponent]
     [RequireComponent(typeof(CombatantStats))]
     public class EnemyDefinitionApplier : MonoBehaviour, IPoolable
     {
@@ -23,6 +24,7 @@ namespace Combat.Enemies
         private CombatantHealth health;
         private EnemyMeleeAttack melee;
         private EnemyLootDropper loot;
+        private WeaponHitResolver resolver;
         private Renderer[] renderers;
         private MaterialPropertyBlock block;
         private Vector3 authoredScale;
@@ -33,7 +35,7 @@ namespace Combat.Enemies
         private readonly List<object> modifierOwners = new List<object>();
         private readonly Dictionary<StatDefinitionSO, float> authoredBases = new Dictionary<StatDefinitionSO, float>();
         private readonly List<IHitEffect> meleeEffects = new List<IHitEffect>();
-        private readonly List<HitEffectSO> deathEffects = new List<HitEffectSO>();
+        private readonly List<EnemyDeathEffectSO> deathEffects = new List<EnemyDeathEffectSO>();
         private readonly List<EnemyAffix> affixes = new List<EnemyAffix>();
         private EnemyVariantSO affixVariant;
         private EnemyArchetypeSO affixArchetype;
@@ -67,7 +69,7 @@ namespace Combat.Enemies
             }
         }
         public IReadOnlyList<EnemyModifierSO> Layers => layers;
-        public IReadOnlyList<HitEffectSO> DeathEffects => deathEffects;
+        public IReadOnlyList<EnemyDeathEffectSO> DeathEffects => deathEffects;
         public CombatantStats Stats => stats;
         public CombatantHealth Health => health;
 
@@ -77,6 +79,7 @@ namespace Combat.Enemies
             health = GetComponent<CombatantHealth>();
             melee = GetComponent<EnemyMeleeAttack>();
             loot = GetComponent<EnemyLootDropper>();
+            resolver = GetComponentInChildren<WeaponHitResolver>();
             authoredScale = transform.localScale;
             block = new MaterialPropertyBlock();
             renderers = EnemyLook.FindRenderers(gameObject);
@@ -331,6 +334,22 @@ namespace Combat.Enemies
         private void HandleDeath()
         {
             for (int i = 0; i < affixes.Count; i++) affixes[i].OnDeath(this);
+            FireDeathEffects();
+        }
+
+        private void FireDeathEffects()
+        {
+            if (deathEffects.Count == 0) return;
+            if (resolver == null) { Debug.LogWarning($"[EnemyDefinitionApplier] '{name}' has death effects but no WeaponHitResolver."); return; }
+
+            bool precision = health != null && health.LastHitPart == BodyPart.Head;
+            var ctx = new DeathEffectContext(transform.position, stats, resolver);
+            for (int i = 0; i < deathEffects.Count; i++)
+            {
+                var fx = deathEffects[i];
+                if (precision && fx.cancelOnPrecisionKill) continue;
+                fx.Trigger(ctx);
+            }
         }
     }
 }

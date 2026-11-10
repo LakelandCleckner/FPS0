@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bd740303ef9416abfe257fd4af77d92, type: 3}
+  m_Name: IceVolatile_Blast
+  m_EditorClassIdentifier: 
+  hitsPlayer: 1
+  hitsEnemies: 0
+  playerLayers:
+    serializedVersion: 2
+    m_Bits: 256
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 128
+  cancelOnPrecisionKill: 0
+  showDamageNumbers: 1
+  radius: 3
+  fuse: 0.6
+  showWarning: 0
+  heightOffset: 1
+  damage:
+    basis: 0
+    stat: {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
+    coefficient: 0.15
+    tierScaleStat: {fileID: 11400000, guid: 4b85464f9cc196e40ba282e7b615bfbc, type: 2}
+    type: {fileID: 11400000, guid: 4e160728f4591b5449e17a7cceb05c43, type: 2}
+  edgeDamage: 0.5
+  applyStatus: {fileID: 0}
+  color: {r: 1, g: 0.4, b: 0.1, a: 0.35}
+  vfxLifetime: 2
+  blastVfx: {fileID: 2852749916858317326, guid: 7808f6b25f91dae4f9fe9444281616f3, type: 3}
+  vfxReferenceRadius: 0
+  tintVfx: 1

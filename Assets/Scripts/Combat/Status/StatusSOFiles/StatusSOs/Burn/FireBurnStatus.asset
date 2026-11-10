@@ -32,6 +32,5 @@ MonoBehaviour:
   tickTimerMode: 0
   showFloatingNumber: 1
   feedsAccumulator: 1
-  onKillEffects:
-  - {fileID: 11400000, guid: e22eff1903066ed45b588f475a538cb7, type: 2}
+  onKillEffects: []
   transferResetsTickCadence: 1
