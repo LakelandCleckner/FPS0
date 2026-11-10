@@ -538,6 +538,17 @@ public static class EnemyDefinitionGUI
         cache.Clear();
     }
 
+    // Opens the asset in the Enemy Workshop. Hidden when already drawn inside it.
+    public static void WorkshopButton(Object target)
+    {
+        if (EnemyWorkshop.Drawing) return;
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Open in Workshop", EditorStyles.miniButton, GUILayout.Width(120f))) EnemyWorkshop.Open(target);
+        }
+    }
+
     // Plain property list for an object, without its custom editor.
     public static void DrawPlain(SerializedObject so)
     {
@@ -570,6 +581,7 @@ public class EnemyVariantEditor : Editor
 
     public override void OnInspectorGUI()
     {
+        EnemyDefinitionGUI.WorkshopButton(target);
         DrawDefaultInspector();
         var v = (EnemyVariantSO)target;
 
@@ -616,6 +628,7 @@ public class EnemyModifierEditor : Editor
 
     public override void OnInspectorGUI()
     {
+        EnemyDefinitionGUI.WorkshopButton(target);
         DrawDefaultInspector();
         var m = (EnemyModifierSO)target;
         EnemyDefinitionGUI.LookPreset(m, lookEditors);
@@ -658,6 +671,7 @@ public class EnemyArchetypeEditor : Editor
 
     public override void OnInspectorGUI()
     {
+        EnemyDefinitionGUI.WorkshopButton(target);
         DrawDefaultInspector();
         var a = (EnemyArchetypeSO)target;
         EnemyDefinitionGUI.Section(preview, a.StatSourceLabel, a, null, a.bodyPrefab);
