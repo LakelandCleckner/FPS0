@@ -8,6 +8,15 @@ using Combat.Zones;
 
 namespace Combat.Enemies
 {
+    // How much less (or more) damage a layer takes from one damage type.
+    [System.Serializable]
+    public class DamageAffinity
+    {
+        public DamageTypeSO type;
+        [Tooltip("0 = normal, 0.5 = takes half, 1 = immune, -0.5 = takes 1.5x. Adds to the type's resistance stat.")]
+        public float resist;
+    }
+
     // A reusable layer stacked onto any archetype (Elite, Miniboss, Fire, ...).
     [CreateAssetMenu(fileName = "EnemyModifier", menuName = "Combat/Enemies/Enemy Modifier")]
     public class EnemyModifierSO : ScriptableObject, IStatSourceLabel
@@ -21,8 +30,12 @@ namespace Combat.Enemies
         public DamageTypeSO element;
 
         [Header("Stats")]
-        [Tooltip("Applied in order. Resists and weaknesses are stat entries on the resistance stats.")]
+        [Tooltip("Applied in order.")]
         public List<EnemyStatEntry> stats = new List<EnemyStatEntry>();
+
+        [Header("Affinities")]
+        [Tooltip("Resists and weaknesses by damage type.")]
+        public List<DamageAffinity> affinities = new List<DamageAffinity>();
 
         [Header("Melee")]
         [Tooltip("Empty = no change. Last layer that sets one wins.")]

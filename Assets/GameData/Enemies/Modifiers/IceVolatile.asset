@@ -17,12 +17,15 @@ MonoBehaviour:
   kind: 1
   element: {fileID: 11400000, guid: 4e160728f4591b5449e17a7cceb05c43, type: 2}
   stats: []
-  meleeDamageType: {fileID: 0}
+  affinities:
+  - type: {fileID: 11400000, guid: 4e160728f4591b5449e17a7cceb05c43, type: 2}
+    resist: 0
+  meleeDamageType: {fileID: 11400000, guid: 4e160728f4591b5449e17a7cceb05c43, type: 2}
   meleeHitEffects: []
   deathEffects:
   - {fileID: 11400000, guid: d60df4050bfb4a3cabd97eac869b35a7, type: 2}
   affixes: []
-  look: {fileID: 0}
+  look: {fileID: 11400000, guid: 61960a156fcb45a5aeeefd22ddbed21f, type: 2}
   emission: {r: 0, g: 0, b: 0, a: 1}
   scale: 1
   raiseRankTo: 0

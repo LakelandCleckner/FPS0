@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 681c674bb34a42649c585c0b050a9f45, type: 3}
+  m_Name: PoisonVolatile_Pool
+  m_EditorClassIdentifier: 
+  hitsPlayer: 1
+  hitsEnemies: 0
+  playerLayers:
+    serializedVersion: 2
+    m_Bits: 256
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 128
+  cancelOnPrecisionKill: 0
+  showDamageNumbers: 1
+  pool:
+    radius: 2.5
+    height: 2
+    duration: 3
+    tickInterval: 0.5
+    growTime: 0.3
+    groundLayers:
+      serializedVersion: 2
+      m_Bits: 4294966911
+    opacity: 0.45
+    fallbackColor: {r: 1, g: 0.35, b: 0.05, a: 1}
+    slow: 0
+    slowStat: {fileID: 0}
+  damage:
+    basis: 0
+    stat: {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
+    coefficient: 0.02
+    tierScaleStat: {fileID: 11400000, guid: 4b85464f9cc196e40ba282e7b615bfbc, type: 2}
+    type: {fileID: 11400000, guid: 1b2eaa9ee1d78754f9e8def8f252f9e4, type: 2}
+  applyStatus: {fileID: 0}

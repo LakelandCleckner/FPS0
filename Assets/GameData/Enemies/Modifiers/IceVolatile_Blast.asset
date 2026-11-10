@@ -34,6 +34,9 @@ MonoBehaviour:
     type: {fileID: 11400000, guid: 4e160728f4591b5449e17a7cceb05c43, type: 2}
   edgeDamage: 0.5
   applyStatus: {fileID: 0}
+  slow: 0.4
+  slowDuration: 2
+  slowStat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
   color: {r: 1, g: 0.4, b: 0.1, a: 0.35}
   vfxLifetime: 2
   blastVfx: {fileID: 2852749916858317326, guid: 7808f6b25f91dae4f9fe9444281616f3, type: 3}

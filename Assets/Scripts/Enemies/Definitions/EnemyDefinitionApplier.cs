@@ -199,6 +199,13 @@ namespace Combat.Enemies
                     e.AddTo(c, m);
                     added = true;
                 }
+                foreach (var a in m.affinities)
+                {
+                    var res = a != null && a.type != null ? a.type.resistanceStat : null;
+                    if (res == null || a.resist == 0f) continue;
+                    c.AddModifier(new StatModifier(res, StatResolver.FLAT, a.resist), m);
+                    added = true;
+                }
                 if (added) modifierOwners.Add(m);
             }
 

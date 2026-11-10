@@ -22,7 +22,7 @@ MonoBehaviour:
     m_Bits: 128
   cancelOnPrecisionKill: 0
   showDamageNumbers: 1
-  radius: 3
+  radius: 4
   fuse: 0.6
   showWarning: 0
   heightOffset: 1

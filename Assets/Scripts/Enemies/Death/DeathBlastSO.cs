@@ -29,6 +29,13 @@ namespace Combat.Enemies
         [Header("Status (optional)")]
         public StatusSO applyStatus;
 
+        [Header("Slow (optional)")]
+        [Tooltip("Speed taken away from everyone hit (0.4 = 40% slower). 0 = none.")]
+        [Range(0f, 0.95f)] public float slow = 0f;
+        public float slowDuration = 2f;
+        [Tooltip("Stat the slow reduces (move_speed).")]
+        public StatDefinitionSO slowStat;
+
         [Header("Look")]
         [Tooltip("Colour comes from the damage type; this is the fallback, and its alpha sets opacity.")]
         public Color color = new Color(1f, 0.4f, 0.1f, 0.35f);
@@ -71,6 +78,7 @@ namespace Combat.Enemies
                 var effects = new List<IHitEffect>(2) { new DamageHitEffect(dmg.Spec(Mathf.Lerp(1f, edgeDamage, k))) };
                 if (statusEffect != null) effects.Add(statusEffect);
                 DeathEffectTargets.Hit(ctx, this, t, effects, damage.type);
+                if (slow > 0f && !t.Combatant.IsDying) TimedSlow.Apply(t.Combatant.Stats, slowStat, slow, slowDuration, this);
             }
         }
 
