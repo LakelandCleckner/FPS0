@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using Combat.Enemies;
-using GOAPGettingStarted.Behaviours;
+using Combat.AI;
 
 // Temporary: prints what one enemy's movement and attack logic see, twice a second
 public class EnemyDebugProbe : MonoBehaviour
@@ -9,7 +9,7 @@ public class EnemyDebugProbe : MonoBehaviour
     [SerializeField] private float interval = 0.5f;
 
     private NavMeshAgent nav;
-    private AgentBrain brain;
+    private EnemyPerception perception;
     private EnemyMeleeAttack melee;
     private Transform player;
     private float next;
@@ -17,7 +17,7 @@ public class EnemyDebugProbe : MonoBehaviour
     private void Start()
     {
         nav = GetComponent<NavMeshAgent>();
-        brain = GetComponent<AgentBrain>();
+        perception = GetComponent<EnemyPerception>();
         melee = GetComponent<EnemyMeleeAttack>();
         var p = GameObject.FindWithTag("Player");
         player = p != null ? p.transform : null;
@@ -32,7 +32,7 @@ public class EnemyDebugProbe : MonoBehaviour
         Vector3 toDest = nav.destination - player.position; toDest.y = 0f;
         float angle = Vector3.Angle(new Vector3(transform.forward.x, 0f, transform.forward.z), to);
 
-        Debug.Log($"[Probe] {name} state={(brain != null ? brain.State.ToString() : "-")} " +
+        Debug.Log($"[Probe] {name} target={(perception != null && perception.HasTarget)} lastKnown={(perception != null && perception.HasLastKnown)} " +
                   $"dist={to.magnitude:F2} range={(melee != null ? melee.Range : -1f):F2} angle={angle:F0} " +
                   $"swing={(melee != null && melee.IsSwinging)} cd={(melee != null && melee.IsCoolingDown)} " +
                   $"speed={nav.velocity.magnitude:F2} navSpeed={nav.speed:F2} stopDist={nav.stoppingDistance:F2} " +

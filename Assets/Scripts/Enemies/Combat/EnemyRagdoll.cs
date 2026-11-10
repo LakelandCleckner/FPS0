@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using CrashKonijn.Agent.Runtime;
 using CrashKonijn.Goap.Runtime;
-using GOAPGettingStarted.Behaviours;
+using Combat.AI;
 using Combat.Core;
 using Combat.Spawning;
 
@@ -100,10 +100,11 @@ namespace Combat.Enemies
             animator = GetComponentInChildren<Animator>(true);
 
             // Order matters: AI first, then movement, then the agent and animation
-            Add(GetComponent<AgentBrain>());
+            Add(GetComponent<EnemyBrain>());
+            Add(GetComponent<EnemyPerception>());
             Add(GetComponent<GoapActionProvider>());
             Add(GetComponent<AgentBehaviour>());
-            Add(GetComponent<AgentMoveBehaviour>());
+            Add(GetComponent<EnemyMover>());
             Add(GetComponent<EnemyMeleeAttack>());
             if (extraDisable != null) foreach (var b in extraDisable) Add(b);
             Add(nav);

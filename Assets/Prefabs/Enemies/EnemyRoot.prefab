@@ -21,8 +21,6 @@ GameObject:
   - component: {fileID: 4457919424505222122}
   - component: {fileID: 3623431239706443026}
   - component: {fileID: 1021028654358225159}
-  - component: {fileID: 5938237327913932918}
-  - component: {fileID: 4993420078943901302}
   - component: {fileID: 8591141333270702738}
   m_Layer: 7
   m_Name: EnemyRoot
@@ -151,10 +149,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 2780478270126569151}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 908d8b3bf2c908442ab0aa443fdd51ec, type: 3}
+  m_Script: {fileID: 11500000, guid: f7d11e90fad84380801b6d9ff5dde9d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  baseMoveSpeed: 5
+  chaseSpeedMultiplier: 2
+  investigateSpeedMultiplier: 1.5
+  movementKeys: {fileID: 11400000, guid: 6f8048b017eb752408ba18b45be727af, type: 2}
   StoppingDistance: 1.5
+  SettledAvoidancePriority: 30
 --- !u!114 &149718689330863646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,19 +167,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2780478270126569151}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 007da879f49018c4893903ed130f8ab5, type: 3}
+  m_Script: {fileID: 11500000, guid: e06f4ab308ac45629363d3395c0522d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DetectionRange: 25
-  FieldOfViewAngle: 120
-  BaseAwarenessDuration: 3
-  ProximityAwarenessBonus: 4
-  ProximityThreshold: 6
-  baseMoveSpeed: 5
-  chaseSpeedMultiplier: 2
-  investigateSpeedMultiplier: 1.5
-  combatantStats: {fileID: 3623431239706443026}
-  movementKeys: {fileID: 11400000, guid: 6f8048b017eb752408ba18b45be727af, type: 2}
+  agentType: EnemyMelee
+  logState: 0
 --- !u!114 &8478488495213342464
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -186,9 +181,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 2780478270126569151}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e42a8964c20105f4b84d94d828aaf7e8, type: 3}
+  m_Script: {fileID: 11500000, guid: 2a989a95d3004d35a12b051acdfc3817, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DetectionRange: 25
+  FieldOfViewAngle: 120
+  SenseRadius: 10
+  EyeHeight: 1.5
+  TargetAimHeight: 1.2
+  PerceptionInterval: 0.1
+  LoseSightGrace: 5
+  Relentless: 1
+  HearingRadius: 80
 --- !u!114 &2870863443277306071
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,12 +202,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 2780478270126569151}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4af2c47e2bc8954eb785c3ea495e9fa, type: 3}
+  m_Script: {fileID: 11500000, guid: 8c5fe5fec4634daf8ae644eeb6adc143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   RayCount: 30
-  IdleColor: {r: 1, g: 1, b: 0, a: 0.15}
-  AlertColor: {r: 1, g: 0, b: 0, a: 0.25}
+  IdleColor: {r: 1, g: 1, b: 0, a: 0.6}
+  AlertColor: {r: 1, g: 0, b: 0, a: 0.8}
 --- !u!114 &4457919424505222122
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -258,32 +262,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47bde1d4ca7078944a2f99b9d403ebb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &5938237327913932918
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2780478270126569151}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d7eb5d5434ecb94aa69a66437f2faf6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  agentTypeName: FpsAgentTypeFactorySO
---- !u!114 &4993420078943901302
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2780478270126569151}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4e8261dce8ddb6499c6de5f2dce488e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PickFreshTarget: 1
 --- !u!114 &8591141333270702738
 MonoBehaviour:
   m_ObjectHideFlags: 0

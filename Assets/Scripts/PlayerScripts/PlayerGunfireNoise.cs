@@ -1,5 +1,5 @@
 using UnityEngine;
-using GOAPGettingStarted.Behaviours;
+using Combat.AI;
 
 // On the player: every shot from the held weapon is a noise enemies can hear
 public class PlayerGunfireNoise : MonoBehaviour

@@ -5,14 +5,7 @@ namespace Combat.Spawning
 {
     // One pool for one enemy prefab. Same-type enemies are interchangeable, so each
     // TYPE gets its own pool; the spawner owns a pool per registered prefab.
-    //
-    // GOAP INSTANTIATION ORDER matters here. A prefab asset can't serialize a
-    // reference to the scene's GoapBehaviour, so an AgentTypeBehaviour on a clone comes
-    // up with a null runner and NREs in Awake. The fix (see GoapRuntimeInit): remove
-    // AgentTypeBehaviour from the prefab and assign the AgentType in code — but the
-    // provider's Awake still throws in Start if no type is set. So we instantiate
-    // INACTIVE (no Awake yet), assign the type while inactive via GoapRuntimeInit, THEN
-    // activate. The gap between instantiate and activate is where the type gets set.
+    // The enemy binds its own GOAP agent type in Awake (EnemyBrain), so no setup order is needed here.
     public class EnemyPool
     {
         private readonly GameObject prefab;
@@ -34,7 +27,7 @@ namespace Combat.Spawning
         public void Prewarm(int count)
         {
             for (int i = 0; i < count; i++)
-                Return(CreateInactiveAndInit(parent.position, parent.rotation));
+                Return(Create(parent.position, parent.rotation));
         }
 
         public EnemyPoolHandle Rent(Vector3 position, Quaternion rotation)
@@ -43,8 +36,7 @@ namespace Combat.Spawning
 
             if (free.Count > 0)
             {
-                // Reused instance: already initialised (GOAP type assigned) on its
-                // first creation, then deactivated on Return. Move, reactivate, reset.
+                // Reused instance: deactivated on Return. Move, reactivate, reset.
                 handle = free.Pop();
                 var g = handle.GameObject;
                 g.transform.SetPositionAndRotation(position, rotation);
@@ -53,11 +45,9 @@ namespace Combat.Spawning
             }
             else
             {
-                // First creation instantiates active and assigns the GOAP type the
-                // same frame, before the provider's Start runs. No InvokeSpawn here —
-                // components initialise via their own Awake/Start; OnSpawn is the RESET
-                // path for REUSE only.
-                handle = CreateInactiveAndInit(position, rotation);
+                // First creation: components initialise via their own Awake/Start;
+                // OnSpawn is the reset path for reuse only.
+                handle = Create(position, rotation);
             }
 
             return handle;
@@ -78,24 +68,11 @@ namespace Combat.Spawning
             free.Push(handle);
         }
 
-        // Instantiate and assign the GOAP AgentType in the SAME frame. The provider's
-        // Awake is null-safe (it guards `if (AgentTypeBehaviour != null)`), and the
-        // only thing that throws on a missing type is the provider's Start — which
-        // runs the frame AFTER Instantiate. Assigning the type now (same frame as
-        // Instantiate) beats that Start. Requires AgentTypeBehaviour REMOVED from the
-        // prefab so its own Awake can't NRE on the null runner.
-        private EnemyPoolHandle CreateInactiveAndInit(Vector3 position, Quaternion rotation)
+        // setup runs before the instance's first Start (e.g. assigning its enemy variant).
+        private EnemyPoolHandle Create(Vector3 position, Quaternion rotation)
         {
             var go = Object.Instantiate(prefab, position, rotation, parent);
             setup?.Invoke(go);
-
-            var init = go.GetComponent<GoapRuntimeInit>();
-            if (init != null)
-                init.Initialize();
-            else
-                Debug.LogWarning("[EnemyPool] Enemy prefab has no GoapRuntimeInit — " +
-                                 "its AgentType won't be assigned and GOAP will throw.");
-
             return new EnemyPoolHandle(go);
         }
     }
