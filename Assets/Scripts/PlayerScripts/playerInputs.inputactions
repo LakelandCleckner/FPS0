@@ -1002,6 +1002,16 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
+                },
+                {
+                    "name": "ToggleAIDebug",
+                    "type": "Button",
+                    "id": "5da48d16-6e6b-4000-9877-2f1c8edaaec8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -1970,6 +1980,39 @@
                     "processors": "",
                     "groups": ";Default",
                     "action": "SpawnDrop",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Alt",
+                    "id": "d6f83f9e-0e8a-49de-89a4-5dd0ac835e6c",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleAIDebug",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "522b2041-6f8b-414b-ae03-9a2bc8a6ac68",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Default",
+                    "action": "ToggleAIDebug",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "6deefb5c-5e3a-420a-b0dc-46be58f420cf",
+                    "path": "<Keyboard>/equals",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Default",
+                    "action": "ToggleAIDebug",
                     "isComposite": false,
                     "isPartOfComposite": true
                 }

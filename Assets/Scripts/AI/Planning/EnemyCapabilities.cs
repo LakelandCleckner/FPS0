@@ -1,3 +1,4 @@
+using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Core;
 using CrashKonijn.Goap.Runtime;
 
@@ -52,6 +53,43 @@ namespace Combat.AI.Goap
                 .AddCondition<HasTarget>(Comparison.GreaterThanOrEqual, 1)
                 .AddCondition<HasAttackToken>(Comparison.GreaterThanOrEqual, 1)
                 .AddEffect<TargetKilled>(EffectType.Increase)
+                .SetBaseCost(1)
+                .SetValidateConditions(false);
+
+            return b.Build();
+        }
+    }
+
+    // Pick a firing point in the range band with sight of the target, shoot from it, reload when empty.
+    public class RangedCapability : CapabilityFactoryBase
+    {
+        public override ICapabilityConfig Create()
+        {
+            var b = new CapabilityBuilder("Ranged");
+
+            b.AddAction<MoveToFiringPositionAction>()
+                .SetTarget<FiringTarget>()
+                .AddCondition<HasTarget>(Comparison.GreaterThanOrEqual, 1)
+                .AddCondition<InFiringPosition>(Comparison.SmallerThanOrEqual, 0)
+                .AddEffect<InFiringPosition>(EffectType.Increase)
+                .SetBaseCost(1)
+                .SetMoveMode(ActionMoveMode.PerformWhileMoving)
+                .SetValidateConditions(false);
+
+            b.AddAction<ShootTargetAction>()
+                .SetTarget<FiringTarget>()
+                .AddCondition<HasTarget>(Comparison.GreaterThanOrEqual, 1)
+                .AddCondition<InFiringPosition>(Comparison.GreaterThanOrEqual, 1)
+                .AddCondition<NeedsReload>(Comparison.SmallerThanOrEqual, 0)
+                .AddEffect<TargetKilled>(EffectType.Increase)
+                .SetBaseCost(1)
+                .SetValidateConditions(false);
+
+            b.AddAction<ReloadAction>()
+                .SetTarget<FiringTarget>()
+                .SetRequiresTarget(false)
+                .AddCondition<NeedsReload>(Comparison.GreaterThanOrEqual, 1)
+                .AddEffect<NeedsReload>(EffectType.Decrease)
                 .SetBaseCost(1)
                 .SetValidateConditions(false);
 

@@ -1088,6 +1088,16 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""ToggleAIDebug"",
+                    ""type"": ""Button"",
+                    ""id"": ""5da48d16-6e6b-4000-9877-2f1c8edaaec8"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -2058,6 +2068,39 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""action"": ""SpawnDrop"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt"",
+                    ""id"": ""d6f83f9e-0e8a-49de-89a4-5dd0ac835e6c"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleAIDebug"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""522b2041-6f8b-414b-ae03-9a2bc8a6ac68"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ToggleAIDebug"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""6deefb5c-5e3a-420a-b0dc-46be58f420cf"",
+                    ""path"": ""<Keyboard>/equals"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ToggleAIDebug"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -2128,6 +2171,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         m_Debug_SpawnGroup = m_Debug.FindAction("SpawnGroup", throwIfNotFound: true);
         m_Debug_FalloffHud = m_Debug.FindAction("FalloffHud", throwIfNotFound: true);
         m_Debug_SpawnDrop = m_Debug.FindAction("SpawnDrop", throwIfNotFound: true);
+        m_Debug_ToggleAIDebug = m_Debug.FindAction("ToggleAIDebug", throwIfNotFound: true);
     }
 
     ~@PlayerInputs()
@@ -2746,6 +2790,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_Debug_SpawnGroup;
     private readonly InputAction m_Debug_FalloffHud;
     private readonly InputAction m_Debug_SpawnDrop;
+    private readonly InputAction m_Debug_ToggleAIDebug;
     /// <summary>
     /// Provides access to input actions defined in input action map "Debug".
     /// </summary>
@@ -2866,6 +2911,10 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @SpawnDrop => m_Wrapper.m_Debug_SpawnDrop;
         /// <summary>
+        /// Provides access to the underlying input action "Debug/ToggleAIDebug".
+        /// </summary>
+        public InputAction @ToggleAIDebug => m_Wrapper.m_Debug_ToggleAIDebug;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Debug; }
@@ -2972,6 +3021,9 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @SpawnDrop.started += instance.OnSpawnDrop;
             @SpawnDrop.performed += instance.OnSpawnDrop;
             @SpawnDrop.canceled += instance.OnSpawnDrop;
+            @ToggleAIDebug.started += instance.OnToggleAIDebug;
+            @ToggleAIDebug.performed += instance.OnToggleAIDebug;
+            @ToggleAIDebug.canceled += instance.OnToggleAIDebug;
         }
 
         /// <summary>
@@ -3064,6 +3116,9 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @SpawnDrop.started -= instance.OnSpawnDrop;
             @SpawnDrop.performed -= instance.OnSpawnDrop;
             @SpawnDrop.canceled -= instance.OnSpawnDrop;
+            @ToggleAIDebug.started -= instance.OnToggleAIDebug;
+            @ToggleAIDebug.performed -= instance.OnToggleAIDebug;
+            @ToggleAIDebug.canceled -= instance.OnToggleAIDebug;
         }
 
         /// <summary>
@@ -3491,5 +3546,12 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSpawnDrop(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToggleAIDebug" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToggleAIDebug(InputAction.CallbackContext context);
     }
 }

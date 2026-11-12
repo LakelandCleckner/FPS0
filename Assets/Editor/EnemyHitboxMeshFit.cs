@@ -19,6 +19,8 @@ public class EnemyHitboxMeshFit : EditorWindow
     [SerializeField] private float blockerHeight = 0f;
     [SerializeField] private bool disableUncovered = true;
     [SerializeField] private bool splitHandsFeet = true;
+    [SerializeField] private GameObject template;
+    [SerializeField] private bool removeStray = true;
 
     [MenuItem("Tools/Enemy Hitbox Mesh Fit")]
     private static void Open() => GetWindow<EnemyHitboxMeshFit>("Enemy Hitbox Mesh Fit");
@@ -33,6 +35,18 @@ public class EnemyHitboxMeshFit : EditorWindow
         splitHandsFeet = EditorGUILayout.Toggle(new GUIContent("Separate Hands And Feet",
             "Own hulls on hand and foot bones so they follow the wrist and ankle. They still count as their limb's hitbox."),
             splitHandsFeet);
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Hitbox bones (new Humanoid body)", EditorStyles.boldLabel);
+        template = (GameObject)EditorGUILayout.ObjectField(new GUIContent("Template Enemy",
+            "A finished Humanoid enemy (prefab or scene). Its bone hitboxes, ragdoll bodies, joints and colliders are copied by Humanoid bone and rescaled."),
+            template, typeof(GameObject), true);
+        removeStray = EditorGUILayout.Toggle(new GUIContent("Remove Other Hitboxes",
+            "Hitboxes not on a copied bone (e.g. a whole-body one) are removed and their colliders turned off."), removeStray);
+        string copyProblem = CopyProblem();
+        if (copyProblem != null) EditorGUILayout.HelpBox(copyProblem, MessageType.Info);
+        using (new EditorGUI.DisabledScope(copyProblem != null))
+            if (GUILayout.Button("Copy Hitbox Bones From Template")) CopyBones();
 
         string problem = Problem();
         if (problem != null) EditorGUILayout.HelpBox(problem, MessageType.Warning);
@@ -55,7 +69,7 @@ public class EnemyHitboxMeshFit : EditorWindow
         }
 
         EditorGUILayout.HelpBox("Open the BASE enemy prefab in Prefab Mode (variants inherit), drag its root in, " +
-                                "Build Hulls, Add Body Blocker, then save the prefab.", MessageType.None);
+                                "Copy Hitbox Bones (new bodies only), Build Hulls, Add Body Blocker, then save the prefab.", MessageType.None);
     }
 
     private string Problem()
@@ -67,6 +81,36 @@ public class EnemyHitboxMeshFit : EditorWindow
         if (enemyRoot.GetComponentInChildren<SkinnedMeshRenderer>(true) == null) return "No SkinnedMeshRenderer under this root.";
         if (!meshFolder.StartsWith("Assets")) return "Mesh Folder must be under Assets.";
         return null;
+    }
+
+    private string CopyProblem()
+    {
+        if (Application.isPlaying) return "Exit Play mode first.";
+        if (enemyRoot == null || EditorUtility.IsPersistent(enemyRoot)) return "Assign the enemy root from the Hierarchy.";
+        if (template == null) return "Assign a template enemy to copy hitbox bones from.";
+        if (template == enemyRoot) return "Template and enemy are the same object.";
+        return null;
+    }
+
+    // ===== Hitbox bones =====
+
+    private void CopyBones()
+    {
+        Undo.SetCurrentGroupName("Copy Hitbox Bones");
+        int group = Undo.GetCurrentGroup();
+        var report = new List<string>();
+        HitboxBoneCopier.Copy(template, enemyRoot, removeStray, report);
+        Undo.CollapseUndoOperations(group);
+        MarkDirty();
+
+        foreach (var line in report)
+        {
+            string msg = $"[EnemyHitboxMeshFit] {line.TrimStart('!', '?', ' ')}";
+            if (line.StartsWith("!")) Debug.LogError(msg);
+            else if (line.StartsWith("?")) Debug.LogWarning(msg);
+            else Debug.Log(msg);
+        }
+        Select(enemyRoot.GetComponentsInChildren<EnemyHitbox>(true).Select(h => (Object)h.gameObject));
     }
 
     // ===== Hulls =====

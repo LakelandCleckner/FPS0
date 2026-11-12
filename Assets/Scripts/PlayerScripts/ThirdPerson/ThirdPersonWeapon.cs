@@ -403,23 +403,13 @@ public class ThirdPersonWeapon : MonoBehaviour
     {
         if (models.TryGetValue(weapon, out var cached)) return cached;
 
-        var vm = weapon.viewmodel;
-        var prefab = vm != null ? vm.gunPrefab : null;
-        if (prefab == null || rightHand == null)
+        var go = rightHand != null ? SpawnWorldModel(weapon) : null;
+        if (go == null)
         {
             models[weapon] = null;
             return null;
         }
-
-        var go = Instantiate(prefab);
-        go.name = "TP_" + prefab.name;
-        WeaponLoadout.ApplySkin(go, weapon.viewmodelSkin);
-        if (weapon.defaultShader != null) weapon.defaultShader.ApplyTo(go);
-
-        // Static world copy: no gun animation, no colliders, Default layer
-        foreach (var a in go.GetComponentsInChildren<Animator>(true)) a.enabled = false;
-        foreach (var c in go.GetComponentsInChildren<Collider>(true)) c.enabled = false;
-        foreach (var t in go.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = 0;
+        var prefab = weapon.viewmodel.gunPrefab;
 
         var visible = new List<Renderer>();
         foreach (var r in go.GetComponentsInChildren<Renderer>(true))
@@ -434,6 +424,23 @@ public class ThirdPersonWeapon : MonoBehaviour
         go.SetActive(false);
         models[weapon] = model;
         return model;
+    }
+
+    // Static world copy of a weapon's gun prefab: skin and shader, no gun animation, no colliders, Default layer
+    public static GameObject SpawnWorldModel(WeaponSO weapon)
+    {
+        var prefab = weapon != null && weapon.viewmodel != null ? weapon.viewmodel.gunPrefab : null;
+        if (prefab == null) return null;
+
+        var go = Instantiate(prefab);
+        go.name = "TP_" + prefab.name;
+        WeaponLoadout.ApplySkin(go, weapon.viewmodelSkin);
+        if (weapon.defaultShader != null) weapon.defaultShader.ApplyTo(go);
+
+        foreach (var a in go.GetComponentsInChildren<Animator>(true)) a.enabled = false;
+        foreach (var c in go.GetComponentsInChildren<Collider>(true)) c.enabled = false;
+        foreach (var t in go.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = 0;
+        return go;
     }
 
     // Parents a gun to the hand so its TP grip sits on the hand, at the authored scale
@@ -487,21 +494,21 @@ public class ThirdPersonWeapon : MonoBehaviour
         }
     }
 
-    // Turns the spine so the barrel axis points along aimDir; the last bone takes the remainder
     private void AimSpine(Vector3 aimDir, float weight)
-    {
-        var gun = current.Root.transform;
-        Vector3 axis = current.Gun.TpAimAxis;
+        => AimSpine(current.Root.transform, current.Gun.TpAimAxis, spine, pitchWeights, aimDir, weight);
 
+    // Turns the spine so the gun's barrel axis points along aimDir; the last bone takes the remainder
+    public static void AimSpine(Transform gun, Vector3 axis, Transform[] spine, Vector3 weights, Vector3 aimDir, float weight)
+    {
         float remaining = 0f;
-        for (int i = 0; i < spine.Length; i++) if (spine[i] != null) remaining += pitchWeights[i];
+        for (int i = 0; i < spine.Length; i++) if (spine[i] != null) remaining += weights[i];
         if (remaining <= 0f) return;
 
         for (int i = 0; i < spine.Length; i++)
         {
             if (spine[i] == null) continue;
-            float share = pitchWeights[i] / remaining;
-            remaining -= pitchWeights[i];
+            float share = weights[i] / remaining;
+            remaining -= weights[i];
 
             Vector3 barrel = gun.TransformDirection(axis);
             var delta = Quaternion.FromToRotation(barrel, aimDir);

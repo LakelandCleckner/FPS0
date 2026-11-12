@@ -106,6 +106,8 @@ namespace Combat.Enemies
             Add(GetComponent<AgentBehaviour>());
             Add(GetComponent<EnemyMover>());
             Add(GetComponent<EnemyMeleeAttack>());
+            Add(GetComponent<EnemyRangedAttack>());
+            Add(GetComponentInChildren<EnemyShooterAnimator>(true));
             if (extraDisable != null) foreach (var b in extraDisable) Add(b);
             Add(nav);
             Add(animator);

@@ -18,6 +18,11 @@ namespace Combat.AI.Goap
             AddLocalWorldSensor<ShieldRecovered>((agent, refs) => false);
             AddLocalWorldSensor<Searched>((agent, refs) => false);
             AddLocalWorldSensor<IsIdle>((agent, refs) => false);
+            AddLocalWorldSensor<InFiringPosition>((agent, refs) => refs.GetCachedComponent<EnemyBrain>().InFiringPosition);
+            AddLocalWorldSensor<NeedsReload>((agent, refs) => refs.GetCachedComponent<EnemyBrain>().NeedsReload);
+            AddLocalWorldSensor<HasRangedToken>((agent, refs) => refs.GetCachedComponent<EnemyBrain>().HasRangedToken);
+            AddLocalWorldSensor<Defensive>((agent, refs) => (int)refs.GetCachedComponent<EnemyBrain>().Band);
+            AddLocalWorldSensor<Awareness>((agent, refs) => (int)refs.GetCachedComponent<EnemyPerception>().Status);
 
             AddLocalTargetSensor<CombatTarget>((agent, refs, existing) =>
             {
@@ -39,6 +44,14 @@ namespace Combat.AI.Goap
             {
                 var brain = refs.GetCachedComponent<EnemyBrain>();
                 if (brain == null || !brain.TryGetCover(out var point)) return null;
+                if (existing is PositionTarget pt) return pt.SetPosition(point);
+                return new PositionTarget(point);
+            });
+
+            AddLocalTargetSensor<FiringTarget>((agent, refs, existing) =>
+            {
+                var brain = refs.GetCachedComponent<EnemyBrain>();
+                if (brain == null || !brain.TryGetFiringPoint(out var point)) return null;
                 if (existing is PositionTarget pt) return pt.SetPosition(point);
                 return new PositionTarget(point);
             });

@@ -8,6 +8,13 @@ namespace Combat.AI.Goap
     // With a token: chase the target (moving phase) and swing whenever EnemyMeleeAttack allows; a swing holds the plan.
     public class MeleeAttackAction : GoapActionBase<MeleeAttackAction.Data>
     {
+        // Shooters only swing at targets inside their min range
+        public override float GetCost(IActionReceiver agent, IComponentReference references, ITarget target)
+        {
+            var b = references.GetCachedComponent<EnemyBrain>();
+            return b != null && !b.MeleeAllowed ? SearchGoal.Blocked : base.GetCost(agent, references, target);
+        }
+
         public override void Start(IMonoAgent agent, Data data)
         {
             data.Mover = agent.Transform.GetComponent<EnemyMover>();
@@ -51,6 +58,12 @@ namespace Combat.AI.Goap
     public class WaitForTokenAction : GoapActionBase<WaitForTokenAction.Data>
     {
         private const float RingSlack = 2f;
+
+        public override float GetCost(IActionReceiver agent, IComponentReference references, ITarget target)
+        {
+            var b = references.GetCachedComponent<EnemyBrain>();
+            return b != null && !b.MeleeAllowed ? SearchGoal.Blocked : base.GetCost(agent, references, target);
+        }
 
         public override void Start(IMonoAgent agent, Data data)
         {

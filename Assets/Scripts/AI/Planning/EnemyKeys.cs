@@ -20,6 +20,16 @@ namespace Combat.AI.Goap
     public class ShieldRecovered : WorldKeyBase { }
     public class Searched : WorldKeyBase { }
     public class IsIdle : WorldKeyBase { }
+    // At a firing point that has sight of the believed target position.
+    public class InFiringPosition : WorldKeyBase { }
+    // Magazine empty.
+    public class NeedsReload : WorldKeyBase { }
+    // Holds one of the target's ranged attack tokens.
+    public class HasRangedToken : WorldKeyBase { }
+    // DefensiveBand as an int: 0 aggressive, 1 normal, 2 defensive.
+    public class Defensive : WorldKeyBase { }
+    // CombatStatus as an int: 0 idle .. 5 danger.
+    public class Awareness : WorldKeyBase { }
 
     // ---- target keys ----
 
@@ -31,6 +41,8 @@ namespace Combat.AI.Goap
     public class WanderTarget : TargetKeyBase { }
     // Somewhere out of the target's sight.
     public class CoverTarget : TargetKeyBase { }
+    // Where to shoot from (or an advance point when nowhere has sight).
+    public class FiringTarget : TargetKeyBase { }
 
     // ---- goals ----
     // The planner adds travel distance to goal cost, so lower-priority goals price themselves

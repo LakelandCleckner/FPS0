@@ -38,6 +38,7 @@ namespace Combat.AI.Goap
             bool melee = p == null || p.melee;
             bool kamikaze = p != null && p.kamikaze;
             bool cover = p != null && p.shieldCover;
+            bool ranged = p != null && p.ranged;
             bool search = p == null || p.search;
             bool idle = p == null || p.idle;
 
@@ -46,6 +47,7 @@ namespace Combat.AI.Goap
             if (melee) b.AddCapability<MeleeCapability>();
             if (kamikaze) b.AddCapability<KamikazeCapability>();
             if (cover) b.AddCapability<ShieldCoverCapability>();
+            if (ranged) b.AddCapability<RangedCapability>();
             if (search) b.AddCapability<SearchCapability>();
             if (idle) b.AddCapability<IdleCapability>();
             return b.Build();

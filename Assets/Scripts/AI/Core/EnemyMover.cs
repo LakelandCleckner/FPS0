@@ -57,6 +57,17 @@ namespace Combat.AI
         private float holdBearing;
         private float holdDirection = 1f;
 
+        // Look: where the head and aim point (any system may request it); face: turn the body there too
+        private object lookOwner;
+        private Transform lookTransform;
+        private Vector3 lookPoint;
+        private object faceOwner;
+
+        public bool HasLook => lookOwner != null;
+        public Vector3 LookPoint => lookTransform != null ? lookTransform.position : lookPoint;
+        public bool Facing => faceOwner != null;
+        public Vector3 Velocity => nav != null ? nav.velocity : Vector3.zero;
+
         public float BaseMoveSpeed => Stat(movementKeys != null ? movementKeys.moveSpeed : null, baseMoveSpeed);
         public float ChaseFactor => Stat(movementKeys != null ? movementKeys.chaseSpeedMultiplier : null, chaseSpeedMultiplier);
         public float InvestigateFactor => Stat(movementKeys != null ? movementKeys.investigateSpeedMultiplier : null, investigateSpeedMultiplier);
@@ -103,10 +114,14 @@ namespace Combat.AI
             speedFactor = 1f;
             holdOwner = null;
             manualRotation = false;
+            lookOwner = null;
+            lookTransform = null;
+            faceOwner = null;
             currentTarget = null;
             shouldMove = false;
             lastAppliedSpeed = -1f;
             ResetApproach();
+            ApplyRotationMode();
         }
 
         public void OnDespawn() { }
@@ -146,7 +161,43 @@ namespace Combat.AI
         public void SetManualRotation(bool on)
         {
             manualRotation = on;
-            if (nav != null) nav.updateRotation = !on && !facing;
+            ApplyRotationMode();
+        }
+
+        // Last request wins; only the owner that made it can release it.
+        public void RequestLook(object owner, Vector3 point)
+        {
+            lookOwner = owner;
+            lookTransform = null;
+            lookPoint = point;
+        }
+
+        public void RequestLook(object owner, Transform target)
+        {
+            lookOwner = owner;
+            lookTransform = target;
+            if (target != null) lookPoint = target.position;
+        }
+
+        public void ReleaseLook(object owner)
+        {
+            if (lookOwner != owner) return;
+            lookOwner = null;
+            lookTransform = null;
+        }
+
+        // Turn the body toward the look point while the path keeps moving the agent (strafing, shooting).
+        public void RequestFace(object owner)
+        {
+            faceOwner = owner;
+            ApplyRotationMode();
+        }
+
+        public void ReleaseFace(object owner)
+        {
+            if (faceOwner != owner) return;
+            faceOwner = null;
+            ApplyRotationMode();
         }
 
         public void Halt()
@@ -230,8 +281,27 @@ namespace Combat.AI
                 return;
             }
 
+            // A position target can move without a target change (a new firing point): follow it
+            if (shouldMove && currentTarget != null && nav.isActiveAndEnabled && nav.isOnNavMesh)
+            {
+                Vector3 off = nav.destination - currentTarget.Position;
+                off.y = 0f;
+                if (off.sqrMagnitude > 0.25f) nav.SetDestination(currentTarget.Position);
+            }
+
             ResetApproach();
             nav.isStopped = !shouldMove;
+        }
+
+        // Face mode turns the body after the path has moved it
+        private void LateUpdate()
+        {
+            if (faceOwner == null || lookOwner == null || agent.IsPaused) return;
+            if (melee != null && melee.IsSwinging) return;
+            Vector3 to = LookPoint - transform.position;
+            to.y = 0f;
+            if (to.sqrMagnitude < 0.01f) return;
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(to), nav.angularSpeed * Time.deltaTime);
         }
 
         // Back to plain movement: path rotation, normal priority, default stopping distance
@@ -250,7 +320,13 @@ namespace Combat.AI
         {
             if (on == facing) return;
             facing = on;
-            nav.updateRotation = !on && !manualRotation;
+            ApplyRotationMode();
+        }
+
+        // The path turns the agent only when nothing else does
+        private void ApplyRotationMode()
+        {
+            if (nav != null) nav.updateRotation = !facing && !manualRotation && faceOwner == null;
         }
 
         // Rush straight at the target and stop at contact range. Held up short of it (crowded out)

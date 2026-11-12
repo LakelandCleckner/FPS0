@@ -5,6 +5,9 @@ using Combat.Spawning;
 
 namespace Combat.AI
 {
+    // Awareness ladder, lowest to highest.
+    public enum CombatStatus { Idle, Searching, LostSight, Visible, Exposed, Danger }
+
     // What the enemy knows about its target: noticed by sight (cone, or close by in any facing), damage or gunfire.
     // Once engaged, line of sight alone keeps contact. Relentless enemies never lose an engaged target;
     // others lose it after LoseSightGrace out of sight and keep a last known position to search.
@@ -30,6 +33,18 @@ namespace Combat.AI
         [Tooltip("Gunfire within this distance alerts the enemy (m).")]
         public float HearingRadius = 80f;
 
+        [Header("Status")]
+        [Tooltip("Exposed: the target's view is within this many degrees of the enemy.")]
+        public float ExposedAngle = 35f;
+        [Tooltip("Exposed: a visible target this close always counts as seeing the enemy (m).")]
+        public float ExposedDistance = 12f;
+        [Tooltip("Aimed at: the target's view is within this many degrees of the enemy.")]
+        public float AimedAtAngle = 6f;
+        [Tooltip("Danger: target within this distance (m).")]
+        public float DangerDistance = 2.5f;
+        [Tooltip("Danger: seconds after taking damage.")]
+        public float DangerTime = 1f;
+
         // Target state
         public Transform Target { get; private set; }
         public bool HasTarget { get; private set; }
@@ -40,8 +55,24 @@ namespace Combat.AI
         public Vector3 LastKnownPosition { get; private set; }
         public Vector3 LastKnownHeading { get; private set; }
 
+        // Awareness, worked out every frame
+        public CombatStatus Status { get; private set; }
+        public bool TargetSeesMe { get; private set; }
+        public bool AimedAt { get; private set; }
+        public float LastDamagedTime { get; private set; } = float.NegativeInfinity;
+
+        // Where the enemy thinks the target is: its real position only while visible
+        public Vector3 BelievedPosition => TargetVisible && Target != null ? TargetFeet : lastSeenPosition;
+        public Vector3 TargetVelocity => TargetVisible ? currentVelocity : Vector3.zero;
+        public float TimeSinceContact => Time.time - lastContactTime;
+        public Vector3 EyePosition => transform.position + Vector3.up * EyeHeight;
+
+        // Target's ground point: the player root sits at its controller's centre
+        private Vector3 TargetFeet => AITargets.FeetOf(Target);
+
         // Fired when HasTarget or HasLastKnown flips, so the brain can re-plan straight away.
         public event Action Changed;
+        public event Action<CombatStatus> StatusChanged;
 
         private CombatantHealth health;
         private int sightMask;
@@ -49,6 +80,8 @@ namespace Combat.AI
         private float lastContactTime = float.NegativeInfinity;
         private Vector3 lastSeenPosition;
         private Vector3 lastSeenVelocity;
+        private Vector3 currentVelocity;
+        private Transform view;
         private Vector3 previousTargetPosition;
         private float previousSampleTime;
         private float lastHealth = -1f;
@@ -77,8 +110,13 @@ namespace Combat.AI
         {
             lastContactTime = float.NegativeInfinity;
             lastHealth = -1f;
+            LastDamagedTime = float.NegativeInfinity;
             TargetVisible = false;
+            TargetSeesMe = false;
+            AimedAt = false;
+            currentVelocity = Vector3.zero;
             Set(false, false);
+            SetStatus(CombatStatus.Idle);
         }
 
         public void OnDespawn() { }
@@ -93,26 +131,70 @@ namespace Combat.AI
             if (!AITargets.PlayerAlive)
             {
                 TargetVisible = false;
+                TargetSeesMe = false;
+                AimedAt = false;
                 Set(false, false);
+                SetStatus(CombatStatus.Idle);
                 return;
             }
 
-            if (Target != t) { Target = t; previousTargetPosition = t.position; previousSampleTime = Time.time; }
+            if (Target != t) { Target = t; previousTargetPosition = AITargets.FeetOf(t); previousSampleTime = Time.time; }
 
             if (Time.time >= nextPerception)
             {
                 nextPerception = Time.time + PerceptionInterval;
                 Perceive();
+                SenseExposure();
             }
 
             if (HasTarget && !Relentless && Time.time - lastContactTime > LoseSightGrace) LoseTarget();
+            SetStatus(WorkOutStatus());
         }
+
+        // Highest rung that applies
+        private CombatStatus WorkOutStatus()
+        {
+            if (HasTarget)
+            {
+                float d = Target != null ? Flat(TargetFeet - transform.position).magnitude : float.MaxValue;
+                if (Time.time - LastDamagedTime <= DangerTime || d <= DangerDistance) return CombatStatus.Danger;
+                if (!TargetVisible) return CombatStatus.LostSight;
+                return TargetSeesMe ? CombatStatus.Exposed : CombatStatus.Visible;
+            }
+            return HasLastKnown ? CombatStatus.Searching : CombatStatus.Idle;
+        }
+
+        // Whether the target's view covers this enemy; sight is symmetric, so it needs our line of sight too
+        private void SenseExposure()
+        {
+            TargetSeesMe = false;
+            AimedAt = false;
+            if (!TargetVisible) return;
+
+            if (view == null) view = Camera.main != null ? Camera.main.transform : null;
+            Vector3 chest = transform.position + Vector3.up * TargetAimHeight;
+            float d = Flat(TargetFeet - transform.position).magnitude;
+            if (view == null) { TargetSeesMe = d <= ExposedDistance; return; }
+
+            float angle = Vector3.Angle(view.forward, chest - view.position);
+            AimedAt = angle <= AimedAtAngle;
+            TargetSeesMe = angle <= ExposedAngle || d <= ExposedDistance;
+        }
+
+        private void SetStatus(CombatStatus s)
+        {
+            if (s == Status) return;
+            Status = s;
+            StatusChanged?.Invoke(s);
+        }
+
+        private static Vector3 Flat(Vector3 v) { v.y = 0f; return v; }
 
         // One sight check; contact refreshes the last seen data, and noticing engages.
         private void Perceive()
         {
             Vector3 eye = transform.position + Vector3.up * EyeHeight;
-            Vector3 aim = Target.position + Vector3.up * TargetAimHeight;
+            Vector3 aim = TargetFeet + Vector3.up * TargetAimHeight;
             Vector3 to = aim - eye;
             float distance = to.magnitude;
 
@@ -129,7 +211,7 @@ namespace Combat.AI
             // Once engaged, line of sight alone keeps contact
             if (!inCone && !sensed && !HasTarget) return;
 
-            MarkContact(Target.position);
+            MarkContact(TargetFeet);
         }
 
         // Anything on the target (controller, body, hitboxes) counts; triggers ignored
@@ -144,10 +226,11 @@ namespace Combat.AI
         {
             float dt = Time.time - previousSampleTime;
             if (dt <= 0f) return;
-            Vector3 v = (Target.position - previousTargetPosition) / dt;
+            Vector3 v = (TargetFeet - previousTargetPosition) / dt;
             v.y = 0f;
+            currentVelocity = v;
             if (v.sqrMagnitude > 0.04f) lastSeenVelocity = v;
-            previousTargetPosition = Target.position;
+            previousTargetPosition = TargetFeet;
             previousSampleTime = Time.time;
         }
 
@@ -163,7 +246,8 @@ namespace Combat.AI
         {
             bool damaged = lastHealth >= 0f && current < lastHealth - 0.001f && current > 0f;
             lastHealth = current;
-            if (damaged && Target != null && AITargets.PlayerAlive) MarkContact(Target.position);
+            if (damaged) LastDamagedTime = Time.time;
+            if (damaged && Target != null && AITargets.PlayerAlive) MarkContact(TargetFeet);
         }
 
         // Gunfire within hearing range: engage and turn toward it
