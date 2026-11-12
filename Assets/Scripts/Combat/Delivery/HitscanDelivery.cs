@@ -110,6 +110,7 @@ namespace Combat.Delivery
             for (int i = 0; i < n; i++)
             {
                 if (ownerRoot != null && hits[i].collider.transform.IsChildOf(ownerRoot)) continue;
+                if (hits[i].collider is CharacterController) continue;   // movement shell: shots land on the body hitboxes inside
                 if (hits[i].distance >= bestDist) continue;
                 bestDist = hits[i].distance;
                 best = hits[i];
