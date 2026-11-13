@@ -19,10 +19,16 @@ namespace Combat.AI.Goap
             data.Mover = agent.Transform.GetComponent<EnemyMover>();
             data.Brain = agent.Transform.GetComponent<EnemyBrain>();
             data.Perception = agent.Transform.GetComponent<EnemyPerception>();
+            data.Ranged = agent.Transform.GetComponent<EnemyRangedAttack>();
             var p = data.Brain != null ? data.Brain.Profile : null;
             data.Tolerance = p != null ? p.firingPointTolerance : 1.25f;
             data.Face = p != null && p.faceWhileMoving;
-            if (data.Mover != null) data.Mover.RequestSpeed(data, p != null ? p.advanceSpeedFactor : 1f);
+            data.FireWhileWalking = p != null && p.fireWhileWalking;
+            data.Firing = false;
+            data.Profile = p;
+            data.Running = false;
+            data.Factor = -1f;
+            UpdateGait(agent, data);
         }
 
         public override bool IsInRange(IMonoAgent agent, float distance, Data data, IComponentReference references)
@@ -33,15 +39,53 @@ namespace Combat.AI.Goap
         // Runs every frame while moving (PerformWhileMoving); done once in range
         public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
         {
+            UpdateGait(agent, data);
             UpdateFacing(data);
+            UpdateFiring(data);
             return context.IsInRange ? ActionRunState.Completed : ActionRunState.Continue;
         }
 
-        // Keep the target in view while walking, if it's visible
+        // Run long moves, walk short ones; 1 m of hysteresis so a move near the threshold doesn't flip gait
+        private static void UpdateGait(IMonoAgent agent, Data data)
+        {
+            if (data.Mover == null) return;
+            var p = data.Profile;
+            float walk = p != null ? p.walkSpeed : 1.5f;
+            float run = p != null ? p.runSpeed : 3.5f;
+            float runAt = p != null ? p.runDistance : 6f;
+
+            float left = 0f;
+            if (data.Target != null)
+            {
+                Vector3 d = data.Target.Position - agent.Transform.position;
+                d.y = 0f;
+                left = d.magnitude;
+            }
+            if (data.Running ? left < runAt - 1f : left > runAt) data.Running = !data.Running;
+
+            float factor = (data.Running ? run : walk) / Mathf.Max(0.01f, data.Mover.BaseMoveSpeed);
+            if (Mathf.Approximately(factor, data.Factor)) return;
+            data.Mover.RequestSpeed(data, factor);
+            data.Factor = factor;
+        }
+
+        // Walking with the target in sight: keep the rifle up and burst on the move
+        private static void UpdateFiring(Data data)
+        {
+            if (data.Ranged == null || data.Perception == null) return;
+            bool fire = data.FireWhileWalking && !data.Running && data.Perception.TargetVisible
+                        && !data.Ranged.NeedsReload && (data.Brain == null || data.Brain.RangedAllowed);
+            if (fire == data.Firing) return;
+            data.Firing = fire;
+            if (fire) data.Ranged.Engage();
+            else data.Ranged.Disengage();
+        }
+
+        // Strafe facing a visible target while walking; running faces the way it's going
         private static void UpdateFacing(Data data)
         {
             if (data.Mover == null || data.Perception == null) return;
-            if (data.Face && data.Perception.TargetVisible)
+            if (data.Face && !data.Running && data.Perception.TargetVisible)
             {
                 data.Mover.RequestLook(data, data.Perception.BelievedPosition + Vector3.up * 1.4f);
                 data.Mover.RequestFace(data);
@@ -55,6 +99,8 @@ namespace Combat.AI.Goap
 
         public override void End(IMonoAgent agent, Data data)
         {
+            if (data.Firing && data.Ranged != null) data.Ranged.Disengage();
+            data.Firing = false;
             if (data.Mover == null) return;
             data.Mover.ReleaseFace(data);
             data.Mover.ReleaseLook(data);
@@ -69,6 +115,12 @@ namespace Combat.AI.Goap
             public EnemyPerception Perception;
             public float Tolerance;
             public bool Face;
+            public EnemyBehaviourProfileSO Profile;
+            public EnemyRangedAttack Ranged;
+            public bool Running;
+            public float Factor;
+            public bool FireWhileWalking;
+            public bool Firing;
         }
     }
 

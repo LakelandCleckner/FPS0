@@ -74,6 +74,8 @@ namespace Combat.AI
         private bool firingPointValid;
         private Vector3 firingPoint;
         private float nextFiringCheck;
+        private float holdUntil = -1f;   // < 0: not yet settled at the current point
+        private const float BandSlack = 0.05f;
 
         private readonly DecisionRecord[] recent = new DecisionRecord[RecentSize];
         private int recentCount;
@@ -281,11 +283,15 @@ namespace Combat.AI
             d -= p.defDecay * dt;
             Defensiveness = Mathf.Clamp01(d);
 
-            var band = Defensiveness < p.aggressiveBelow ? DefensiveBand.Aggressive
-                     : Defensiveness > p.defensiveAbove ? DefensiveBand.Defensive : DefensiveBand.Normal;
+            // Slack around each threshold so hovering near one doesn't flip the band back and forth
+            float aggressiveAt = Band == DefensiveBand.Aggressive ? p.aggressiveBelow + BandSlack : p.aggressiveBelow - BandSlack;
+            float defensiveAt = Band == DefensiveBand.Defensive ? p.defensiveAbove - BandSlack : p.defensiveAbove + BandSlack;
+            var band = Defensiveness < aggressiveAt ? DefensiveBand.Aggressive
+                     : Defensiveness > defensiveAt ? DefensiveBand.Defensive : DefensiveBand.Normal;
             if (band == Band) return;
             Band = band;
-            Replan();
+            // Shooters re-pick their firing point when the hold allows; no plan reset mid-burst
+            if (!IsRangedProfile) Replan();
         }
 
         private void AddDefensiveness(float amount)
@@ -312,16 +318,24 @@ namespace Combat.AI
             if (hasFiringPoint && !firingPointValid && Flat(transform.position - firingPoint).magnitude <= Profile.firingPointTolerance)
                 nextFiringCheck = 0f;
 
-            if (Time.time < nextFiringCheck) return;
+            // Settled at the point: hold it a while before looking for a better one
+            float now = Time.time;
+            if (holdUntil < 0f && InFiringPosition)
+                holdUntil = now + UnityEngine.Random.Range(Profile.pointHoldMin, Mathf.Max(Profile.pointHoldMin, Profile.pointHoldMax));
+
+            if (now < nextFiringCheck) return;
 
             bool valid = hasFiringPoint && firingPointValid && ValidPoint(firingPoint);
-            if (valid && bandAtEval == Band)
+            bool holding = holdUntil >= 0f && now < holdUntil;
+            bool reconsider = holdUntil >= 0f && now >= holdUntil;
+            if (valid && (holding || (bandAtEval == Band && !reconsider)))
             {
-                nextFiringCheck = Time.time + Profile.firingPointRecheck;
+                nextFiringCheck = now + Profile.firingPointRecheck;
                 return;
             }
             if (!PositionScorer.TryBeginEvaluation()) return;   // over this frame's budget: try next frame
-            nextFiringCheck = Time.time + Profile.firingPointRecheck;
+            nextFiringCheck = now + Profile.firingPointRecheck;
+            holdUntil = -1f;
             EvaluateFiringPoint();
         }
 
@@ -408,6 +422,7 @@ namespace Combat.AI
             firingPointValid = false;
             LastPointSearchFailed = false;
             nextFiringCheck = 0f;
+            holdUntil = -1f;
             PositionScorer.Release(this);
         }
 

@@ -2671,7 +2671,7 @@ MonoBehaviour:
   cancelReturnTime: 0.15
   lowerDegrees: 50
   supportBlend: 0.15
-  supportRotationWeight: 0
+  supportRotationWeight: 1
 --- !u!4 &6007642047172171307 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8028729752870558221, guid: 9b9b3eb1f3f96f94b822abdefb9cba4f, type: 3}

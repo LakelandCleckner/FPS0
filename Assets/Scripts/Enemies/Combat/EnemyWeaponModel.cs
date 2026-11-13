@@ -7,7 +7,7 @@ using Combat.Weapons;
 
 namespace Combat.Enemies
 {
-    // Holds a weapon's world model by its TP grip, same as the player body, and puts the left hand on its support point.
+    // Holds a weapon's world model by its TP grip, same as the player body: barrel onto the animated left hand for long guns, aimed through the spine.
     [DefaultExecutionOrder(120)]
     [RequireComponent(typeof(Animator))]
     public class EnemyWeaponModel : MonoBehaviour
@@ -24,12 +24,20 @@ namespace Combat.Enemies
         [SerializeField] private float targetAimHeight = 1.2f;
 
         [Header("Left hand")]
-        [Tooltip("Seconds to blend the support hand on or off.")]
+        [Tooltip("Seconds to blend the barrel onto the animated left hand.")]
         [SerializeField, Min(0.01f)] private float supportBlend = 0.15f;
-        [Tooltip("0 = keep the clip's wrist rotation, 1 = copy the support point's rotation.")]
-        [SerializeField, Range(0f, 1f)] private float supportRotationWeight = 0f;
-        [Tooltip("Let the reload clip drive the left hand while reloading.")]
-        [SerializeField] private bool releaseOnReload = true;
+
+        [Header("Fire kick")]
+        [Tooltip("Upward upper-body kick per shot (degrees).")]
+        [SerializeField] private float kickDegrees = 3f;
+        [Tooltip("Seconds the kick takes to settle.")]
+        [SerializeField, Min(0.01f)] private float kickTime = 0.12f;
+
+        [Header("Reload")]
+        [Tooltip("Gun roll during a reload (degrees). Flip the sign if it rolls away from the body.")]
+        [SerializeField] private float reloadTilt = 25f;
+        [Tooltip("Seconds to roll the gun in or out.")]
+        [SerializeField, Min(0.01f)] private float tiltTime = 0.15f;
 
         public WeaponSO Weapon => weapon;
         public GunModel Gun { get; private set; }
@@ -41,11 +49,30 @@ namespace Combat.Enemies
         private EnemyPerception perception;
         private readonly Transform[] spine = new Transform[3];
         private float aimWeight;
-        private Transform leftUpper, leftLower, leftHand;
+        private Transform rightHand, leftUpper, leftLower, leftHand, leftMiddle;
+        private float kickClock = -1f, tilt;
+        private Vector3 glueLocalPos;
+        private Quaternion glueLocalRot = Quaternion.identity;
+        private Vector3 baseLocalPos;
+        private Quaternion baseLocalRot;
         private float supportWeight;
         private bool spawned;
 
         private void Awake() => EnsureModel();
+
+        private void OnEnable()
+        {
+            if (ranged != null) ranged.Fired += HandleFired;
+        }
+
+        private void OnDisable()
+        {
+            if (ranged != null) ranged.Fired -= HandleFired;
+            kickClock = -1f;
+            tilt = 0f;
+        }
+
+        private void HandleFired() => kickClock = 0f;
 
         // Spawns and attaches the model once; safe to call from other components' Awake
         public GunModel EnsureModel()
@@ -59,10 +86,11 @@ namespace Combat.Enemies
             perception = GetComponentInParent<EnemyPerception>();
             if (animator == null || !animator.isHuman) return null;
 
-            var rightHand = animator.GetBoneTransform(HumanBodyBones.RightHand);
+            rightHand = animator.GetBoneTransform(HumanBodyBones.RightHand);
             leftUpper = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
             leftLower = animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
             leftHand = animator.GetBoneTransform(HumanBodyBones.LeftHand);
+            leftMiddle = animator.GetBoneTransform(HumanBodyBones.LeftMiddleProximal);
             spine[0] = animator.GetBoneTransform(HumanBodyBones.Spine);
             spine[1] = animator.GetBoneTransform(HumanBodyBones.Chest);
             spine[2] = animator.GetBoneTransform(HumanBodyBones.UpperChest);
@@ -72,25 +100,63 @@ namespace Combat.Enemies
             if (model == null) return null;
             Gun = model.GetComponent<GunModel>();
             ThirdPersonWeapon.Attach(model.transform, Gun, rightHand, weapon.viewmodel.gunPrefab.transform.localScale);
+            baseLocalPos = model.transform.localPosition;
+            baseLocalRot = model.transform.localRotation;
             return Gun;
         }
 
-        // After animation and look-at: barrel onto the aim line, then the left hand onto the gun
+        // After animation and look-at: gun back to its grip, barrel onto the animated left hand, then aimed through the spine
         private void LateUpdate()
         {
             if (Gun == null) return;
             if (stats != null && stats.IsDying) { supportWeight = aimWeight = 0f; return; }
 
+            float dt = Time.deltaTime;
+            supportWeight = Mathf.MoveTowards(supportWeight, animator.enabled ? 1f : 0f, dt / supportBlend);
+            bool reloading = ranged != null && ranged.IsReloading;
+            tilt = Mathf.MoveTowards(tilt, reloading ? 1f : 0f, dt / tiltTime);
+
+            var root = Gun.transform;
+            root.localPosition = baseLocalPos;
+            root.localRotation = baseLocalRot;
+            if (leftHand != null)
+            {
+                ThirdPersonWeapon.AlignToLeftHand(root, Gun, ThirdPersonWeapon.PalmOf(leftHand, leftMiddle), supportWeight);
+                // Where the animation's left palm sits on the gun before the procedural moves
+                glueLocalPos = root.InverseTransformPoint(ThirdPersonWeapon.PalmOf(leftHand, leftMiddle));
+                glueLocalRot = Quaternion.Inverse(root.rotation) * leftHand.rotation;
+            }
+
             UpdateAim();
-            if (Gun.TpSupport == null) return;
+            ApplyKick(dt);
 
-            bool want = animator.enabled && !(releaseOnReload && ranged != null && ranged.IsReloading);
-            supportWeight = Mathf.MoveTowards(supportWeight, want ? 1f : 0f, Time.deltaTime / supportBlend);
-            if (supportWeight <= 0f) return;
+            // Reload: roll the gun about its barrel; the left hand stays with the hold pose
+            if (tilt > 0f && rightHand != null)
+            {
+                Vector3 barrel = root.TransformDirection(Gun.TpAimAxis);
+                rightHand.rotation = Quaternion.AngleAxis(reloadTilt * Mathf.SmoothStep(0f, 1f, tilt), barrel) * rightHand.rotation;
+            }
 
-            var s = Gun.TpSupport;
-            ThirdPersonWeapon.SolveTwoBone(leftUpper, leftLower, leftHand, s.position, s.rotation,
-                                           supportWeight, supportWeight * supportRotationWeight);
+            // Left palm onto TP_Support (when the gun asks for it), else kept where the animation had it on the gun
+            var support = Gun.TpLeftHandIK ? Gun.TpSupport : null;
+            Vector3 palm = support != null ? support.position : root.TransformPoint(glueLocalPos);
+            Quaternion palmRot = support != null ? support.rotation : root.rotation * glueLocalRot;
+            ThirdPersonWeapon.PlaceLeftHand(leftUpper, leftLower, leftHand, leftMiddle, palm, palmRot, supportWeight);
+        }
+
+        // Upper body pitches up on each shot and settles back
+        private void ApplyKick(float dt)
+        {
+            if (kickClock < 0f) return;
+            kickClock += dt;
+            if (kickClock >= kickTime) { kickClock = -1f; return; }
+
+            float degrees = -kickDegrees * (1f - kickClock / kickTime);
+            Vector3 axis = transform.right;
+            float total = spineWeights.x + spineWeights.y + spineWeights.z;
+            if (total <= 0f) return;
+            for (int i = 0; i < spine.Length; i++)
+                if (spine[i] != null) spine[i].rotation = Quaternion.AngleAxis(degrees * spineWeights[i] / total, axis) * spine[i].rotation;
         }
 
         // Raised weapon: turn the spine so the barrel points at the aim point (burst aim, else the believed target)
@@ -140,7 +206,6 @@ namespace Combat.Enemies
             var gun = prefab.GetComponent<GunModel>();
             if (gun == null || gun.TpGrip == null) issues.Add($"Weapon model: '{prefab.name}' has no TP grip (Tools > TP Grip Tool)");
             if (gun != null && gun.Muzzle == null) issues.Add($"Weapon model: '{prefab.name}' has no muzzle");
-            if (gun != null && gun.TpSupport == null) issues.Add($"Weapon model: '{prefab.name}' has no TP support (left hand stays on the clip)");
         }
     }
 }

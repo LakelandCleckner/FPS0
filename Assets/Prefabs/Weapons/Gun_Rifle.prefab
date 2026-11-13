@@ -55,8 +55,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 796979168226152931}
   serializedVersion: 2
-  m_LocalRotation: {x: -9.8232464e-11, y: 5.31734e-10, z: -0.00000002998463, w: 1}
-  m_LocalPosition: {x: -0.2263999, y: -0.10310005, z: -0.09930005}
+  m_LocalRotation: {x: -6.46221e-10, y: 5.300455e-10, z: -0.00000003064528, w: 1}
+  m_LocalPosition: {x: -0.22639847, y: -0.10309994, z: -0.09930027}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -86,8 +86,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1514412654646503019}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.5128816, y: 0.8533825, z: 0.008866034, w: -0.09280164}
-  m_LocalPosition: {x: 0.05627683, y: 0.035047438, z: 0.0188969}
+  m_LocalRotation: {x: -0.51137674, y: 0.85834664, z: -0.04024944, w: -0.010720337}
+  m_LocalPosition: {x: 0.051643703, y: 0.035047285, z: 0.029271517}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -148,8 +148,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8448944463663002116}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.71105903, y: 0.20251247, z: 0.24687587, w: 0.6264472}
-  m_LocalPosition: {x: -0.29700008, y: 0.13300003, z: -0.13099994}
+  m_LocalRotation: {x: -0.46562412, y: -0.2713072, z: -0.21703535, w: -0.81393015}
+  m_LocalPosition: {x: -0.29700154, y: 0.133, z: -0.13099973}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -179,7 +179,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8789065018010013764}
   serializedVersion: 2
-  m_LocalRotation: {x: -9.8232464e-11, y: 5.31734e-10, z: -0.00000002998463, w: 1}
+  m_LocalRotation: {x: -6.46221e-10, y: 5.300455e-10, z: -0.00000003064528, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -388,7 +388,8 @@ MonoBehaviour:
   tpMagWell: {fileID: 253293529621873845}
   tpLoadPort: {fileID: 6835067905941556361}
   tpScale: 1.0191528
-  tpAimAxis: {x: -0.9506652, y: 0.0074719274, z: 0.31012902}
+  tpAimAxis: {x: -0.987463, y: -0.05473051, z: 0.14805879}
+  tpHold: 2
 --- !u!4 &5545090617518222161 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8d97818bdbca1d8498e8fecc45bd96ad, type: 3}

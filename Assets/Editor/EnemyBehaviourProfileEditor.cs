@@ -14,7 +14,7 @@ public class EnemyBehaviourProfileEditor : Editor
     {
         "rangedMinRange", "rangedPreferredRange", "rangedBandShift",
         "firingPointSearchRadius", "firingPointRecheck", "firingPointTolerance", "allySpacing", "fireWeights",
-        "advanceSpeedFactor", "faceWhileMoving",
+        "walkSpeed", "runSpeed", "runDistance", "faceWhileMoving", "fireWhileWalking", "pointHoldMin", "pointHoldMax",
         "aimErrorPerTargetSpeed", "burstSeparationJitter", "flinchDamageFraction", "flinchRecovery", "lowerAfter"
     };
     private static readonly string[] Defensive =

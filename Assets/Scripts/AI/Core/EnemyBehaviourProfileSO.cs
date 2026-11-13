@@ -58,10 +58,19 @@ namespace Combat.AI
         [Tooltip("Other enemies within this distance of a point count against it (m).")]
         public float allySpacing = 2.5f;
         public PointWeights fireWeights = PointWeights.Fire;
-        [Tooltip("Speed factor on move_speed while moving to a firing point.")]
-        public float advanceSpeedFactor = 1f;
-        [Tooltip("Keep facing a visible target while moving between firing points.")]
+        [Tooltip("Speed for short repositions: a combat walk with the rifle up (m/s).")]
+        public float walkSpeed = 1.5f;
+        [Tooltip("Speed for long moves and advances (m/s).")]
+        public float runSpeed = 3.5f;
+        [Tooltip("Moves longer than this run, shorter ones walk (m).")]
+        public float runDistance = 6f;
+        [Tooltip("Face a visible target while walking (strafe). Running always faces the way it's going.")]
         public bool faceWhileMoving = true;
+        [Tooltip("Keep firing bursts while walking between firing points with the target in sight. Running never fires.")]
+        public bool fireWhileWalking = true;
+        [Tooltip("Seconds held at a firing point before looking for a better one (random between min and max). A point that breaks is left at once.")]
+        public float pointHoldMin = 2f;
+        public float pointHoldMax = 4f;
 
         [Header("Ranged: firing feel")]
         [Tooltip("Aim cone growth per m/s of target speed (degrees).")]

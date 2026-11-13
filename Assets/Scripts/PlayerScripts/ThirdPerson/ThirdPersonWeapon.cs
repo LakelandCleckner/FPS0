@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Combat.Weapons;
 
-// Holds the held weapon's world model on the third-person body: aim, fire raise and kick,
-// procedural reload, equip/stow lowering and left-hand IK
+// Holds the held weapon's world model on the third-person body: grip in the right hand, barrel onto the
+// animated left hand for long guns, aim, fire raise and kick, procedural reload and equip/stow lowering
 [DefaultExecutionOrder(120)]
 public class ThirdPersonWeapon : MonoBehaviour
 {
@@ -55,17 +55,16 @@ public class ThirdPersonWeapon : MonoBehaviour
     [SerializeField] private float lowerDegrees = 50f;
 
     [Header("Left hand")]
-    [Tooltip("Seconds to blend the support hand on or off.")]
+    [Tooltip("Seconds to blend the left hand onto the gun (and the barrel onto the left hand) on or off.")]
     [SerializeField] private float supportBlend = 0.15f;
-    [Tooltip("0 = keep the hold pose's own wrist rotation (recommended), 1 = copy the support point's rotation.")]
-    [Range(0f, 1f)]
-    [SerializeField] private float supportRotationWeight = 0f;
 
     private sealed class WorldModel
     {
         public GameObject Root;
         public GunModel Gun;
         public Renderer[] Renderers;
+        public Vector3 BaseLocalPos;
+        public Quaternion BaseLocalRot;
     }
 
     private enum HandState { Hold, Mag, ShellStart, ShellLoad, ShellEnd, Return }
@@ -80,6 +79,11 @@ public class ThirdPersonWeapon : MonoBehaviour
     private int layer = -1;
     private float layerWeight;
     private float supportWeight;
+    private float alignWeight;
+
+    // Where the animated left palm sits on the gun this frame, in the gun's space (fallback when the gun has no TP_Support)
+    private Vector3 glueLocalPos;
+    private Quaternion glueLocalRot = Quaternion.identity;
 
     private float kickTime = -1f;
     private float kickDuration;
@@ -98,7 +102,7 @@ public class ThirdPersonWeapon : MonoBehaviour
     private float lowerTarget;
     private float lowerRate;
 
-    private Transform rightHand, rightUpper, leftUpper, leftLower, leftHand, hips;
+    private Transform rightHand, rightUpper, leftUpper, leftLower, leftHand, leftMiddle, hips;
     private readonly Transform[] spine = new Transform[3];
 
     // Pose aim: ADS or fire raise, whichever is higher
@@ -119,6 +123,7 @@ public class ThirdPersonWeapon : MonoBehaviour
         leftUpper = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
         leftLower = animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
         leftHand = animator.GetBoneTransform(HumanBodyBones.LeftHand);
+        leftMiddle = animator.GetBoneTransform(HumanBodyBones.LeftMiddleProximal);
         hips = animator.GetBoneTransform(HumanBodyBones.Hips);
         spine[0] = animator.GetBoneTransform(HumanBodyBones.Spine);
         spine[1] = animator.GetBoneTransform(HumanBodyBones.Chest);
@@ -225,8 +230,10 @@ public class ThirdPersonWeapon : MonoBehaviour
         PoseAim = Mathf.Max(presentation != null ? presentation.State.AimBlend : 0f, fireRaise);
         animator.SetFloat(AimBlendParam, PoseAim);
 
-        bool hasSupport = current != null && current.Gun != null && current.Gun.TpSupport != null;
-        supportWeight = Mathf.MoveTowards(supportWeight, hasSupport ? 1f : 0f, dt / Mathf.Max(0.01f, supportBlend));
+        float blendRate = dt / Mathf.Max(0.01f, supportBlend);
+        bool hasGun = current != null && current.Gun != null;
+        supportWeight = Mathf.MoveTowards(supportWeight, hasGun ? 1f : 0f, blendRate);
+        alignWeight = Mathf.MoveTowards(alignWeight, hasGun && hand == HandState.Hold ? 1f : 0f, blendRate);
 
         lowered = Mathf.MoveTowards(lowered, lowerTarget, lowerRate * dt);
 
@@ -286,6 +293,7 @@ public class ThirdPersonWeapon : MonoBehaviour
 
         float pitch = Mathf.Clamp(presentation.State.Pitch, -maxPitch, maxPitch) - kick;
         bool holding = current != null && current.Gun != null && layerWeight > 0f;
+        if (holding) HoldGun();
 
         if (holding)
         {
@@ -313,14 +321,31 @@ public class ThirdPersonWeapon : MonoBehaviour
             rightHand.rotation = Quaternion.AngleAxis(reloadTilt * Mathf.SmoothStep(0f, 1f, tilt), barrel) * rightHand.rotation;
         }
 
-        var support = current.Gun.TpSupport;
-        if (supportWeight > 0f && support != null)
+        // Left palm onto TP_Support with its rotation (the clip's own left hand is rolled on these bodies);
+        // without a support point it stays where the animation put it on the gun
+        if (supportWeight > 0f && leftHand != null)
         {
-            Vector3 target = LeftHandTarget(support.position);
+            var root = current.Root.transform;
+            var support = current.Gun.TpLeftHandIK ? current.Gun.TpSupport : null;
+            Vector3 hold = support != null ? support.position : root.TransformPoint(glueLocalPos);
+            Quaternion holdRot = support != null ? support.rotation : root.rotation * glueLocalRot;
+            Vector3 target = LeftHandTarget(hold);
             lastTarget = target;
-            SolveTwoBone(leftUpper, leftLower, leftHand, target, support.rotation,
-                         supportWeight, supportWeight * supportRotationWeight);
+            PlaceLeftHand(leftUpper, leftLower, leftHand, leftMiddle, target, holdRot, supportWeight);
         }
+    }
+
+    // Gun back to its grip pose, turned onto the animated left hand for two-hand guns; notes where that hand sits on it
+    private void HoldGun()
+    {
+        var root = current.Root.transform;
+        root.localPosition = current.BaseLocalPos;
+        root.localRotation = current.BaseLocalRot;
+        if (leftHand == null) return;
+
+        AlignToLeftHand(root, current.Gun, PalmOf(leftHand, leftMiddle), alignWeight);
+        glueLocalPos = root.InverseTransformPoint(PalmOf(leftHand, leftMiddle));
+        glueLocalRot = Quaternion.Inverse(root.rotation) * leftHand.rotation;
     }
 
     // ===== Reload hand path =====
@@ -365,7 +390,7 @@ public class ThirdPersonWeapon : MonoBehaviour
         return origin - body.right * 0.12f + body.forward * 0.1f;
     }
 
-    // Mag reload, p 0..1: support -> mag well -> belt -> mag well (seat) -> support
+    // Mag reload, p 0..1: hold -> mag well -> belt -> mag well (seat) -> hold
     public static Vector3 MagPath(Vector3 sup, Vector3 mag, Vector3 pouch, float p)
     {
         if (p < 0.15f) return Ease(sup, mag, p / 0.15f);
@@ -420,7 +445,11 @@ public class ThirdPersonWeapon : MonoBehaviour
         if (gun == null || gun.TpGrip == null)
             Debug.LogWarning($"[ThirdPersonWeapon] '{prefab.name}' has no TP grip; run Tools > TP Grip Tool.");
 
-        var model = new WorldModel { Root = go, Gun = gun, Renderers = visible.ToArray() };
+        var model = new WorldModel
+        {
+            Root = go, Gun = gun, Renderers = visible.ToArray(),
+            BaseLocalPos = go.transform.localPosition, BaseLocalRot = go.transform.localRotation
+        };
         go.SetActive(false);
         models[weapon] = model;
         return model;
@@ -441,6 +470,37 @@ public class ThirdPersonWeapon : MonoBehaviour
         foreach (var c in go.GetComponentsInChildren<Collider>(true)) c.enabled = false;
         foreach (var t in go.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = 0;
         return go;
+    }
+
+    // Left palm: halfway from the wrist to the middle knuckle
+    public static Vector3 PalmOf(Transform hand, Transform middle)
+        => middle != null ? Vector3.Lerp(hand.position, middle.position, 0.5f) : hand.position;
+
+    // Puts the left palm (not the wrist) on palmTarget with the hand at handRot, elbow kept on the animation's side
+    public static void PlaceLeftHand(Transform upper, Transform lower, Transform hand, Transform middle,
+                                     Vector3 palmTarget, Quaternion handRot, float weight)
+    {
+        if (upper == null || lower == null || hand == null || weight <= 0f) return;
+        Quaternion rot = Quaternion.Slerp(hand.rotation, handRot, weight);
+        Vector3 palmOffset = rot * (Quaternion.Inverse(hand.rotation) * (PalmOf(hand, middle) - hand.position));
+        SolveTwoBone(upper, lower, hand, palmTarget - palmOffset, handRot, weight, weight);
+    }
+
+    // Two Hand only: turns the gun about its grip so the barrel runs toward the left palm. False otherwise.
+    public static bool AlignToLeftHand(Transform root, GunModel gun, Vector3 palm, float weight)
+    {
+        if (gun == null || gun.TpGrip == null || weight <= 0f || gun.TpHold != TpHold.TwoHand) return false;
+
+        Vector3 grip = gun.TpGrip.position;
+        Vector3 toPalm = palm - grip;
+
+        // A palm behind or beside the grip means the hand is off the gun: don't spin the gun round to it
+        Vector3 barrel = root.TransformDirection(gun.TpAimAxis);
+        if (Vector3.Angle(barrel, toPalm) > 75f) return false;
+
+        var delta = Quaternion.Slerp(Quaternion.identity, Quaternion.FromToRotation(barrel, toPalm), weight);
+        root.SetPositionAndRotation(grip + delta * (root.position - grip), delta * root.rotation);
+        return true;
     }
 
     // Parents a gun to the hand so its TP grip sits on the hand, at the authored scale
@@ -523,6 +583,7 @@ public class ThirdPersonWeapon : MonoBehaviour
         if (a == null || b == null || c == null) return;
 
         Vector3 aPos = a.position, bPos = b.position, cPos = c.position;
+        Vector3 hint = bPos;   // the animation's elbow: keep the arm bending to that side
         Vector3 t = Vector3.Lerp(cPos, targetPos, weight);
 
         Vector3 ab = bPos - aPos, bc = cPos - bPos, ac = cPos - aPos, at = t - aPos;
@@ -542,7 +603,16 @@ public class ThirdPersonWeapon : MonoBehaviour
 
         ac = c.position - aPos;
         if (ac.sqrMagnitude > 1e-8f && at.sqrMagnitude > 1e-8f)
+        {
             a.rotation = Quaternion.FromToRotation(ac, at) * a.rotation;
+
+            // Twist about shoulder-to-target (hand stays put) so the elbow returns to the animation's side
+            Vector3 n = at.normalized;
+            Vector3 e = Vector3.ProjectOnPlane(b.position - aPos, n);
+            Vector3 h = Vector3.ProjectOnPlane(hint - aPos, n);
+            if (e.sqrMagnitude > 1e-6f && h.sqrMagnitude > 1e-6f)
+                a.rotation = Quaternion.AngleAxis(Vector3.SignedAngle(e, h, n), n) * a.rotation;
+        }
 
         if (rotationWeight > 0f) c.rotation = Quaternion.Slerp(c.rotation, targetRot, rotationWeight);
     }

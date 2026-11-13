@@ -24,8 +24,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 13040247585192007}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.55732554, y: -0.82076705, z: 0.04671431, w: 0.1163942}
-  m_LocalPosition: {x: 0.11757788, y: -0.03986446, z: 0.021974793}
+  m_LocalRotation: {x: 0.58184695, y: -0.80497617, z: 0.11221038, w: 0.029604204}
+  m_LocalPosition: {x: 0.11436211, y: 0.0064465012, z: 0.03232827}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -55,8 +55,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 354292223783556449}
   serializedVersion: 2
-  m_LocalRotation: {x: 9.47837e-10, y: 0.0000000011184471, z: 0.00000002836413, w: 1}
-  m_LocalPosition: {x: -0.00000002654267, y: -0.08000001, z: -0.0000001192092}
+  m_LocalRotation: {x: -0.00000000443346, y: 0.000000004933748, z: 0.000000026027996, w: 1}
+  m_LocalPosition: {x: -0.00000007054765, y: -0.07999997, z: -0.00000013411034}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -86,8 +86,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1217067583745572319}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.55509454, y: -0.009838533, z: 0.06658592, w: 0.8290595}
-  m_LocalPosition: {x: -0.36320004, y: -0.010100036, z: -0.09329997}
+  m_LocalRotation: {x: 0.5550946, y: -0.009838503, z: 0.066585906, w: 0.8290595}
+  m_LocalPosition: {x: -0.3632001, y: -0.010100085, z: -0.09329999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -179,8 +179,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5233995358235738404}
   serializedVersion: 2
-  m_LocalRotation: {x: 9.47837e-10, y: 0.0000000011184471, z: 0.00000002836413, w: 1}
-  m_LocalPosition: {x: -0.18560007, y: -0.030599969, z: -0.12479996}
+  m_LocalRotation: {x: -0.00000000443346, y: 0.000000004933748, z: 0.000000026027996, w: 1}
+  m_LocalPosition: {x: -0.18560036, y: -0.030599948, z: -0.12479993}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -343,8 +343,10 @@ MonoBehaviour:
   tpSupport: {fileID: 1329267450308636866}
   tpMagWell: {fileID: 519070495632396121}
   tpLoadPort: {fileID: 315916628384509805}
-  tpScale: 1.0000008
-  tpAimAxis: {x: -0.95024204, y: -0.07311117, z: 0.3028116}
+  tpScale: 1.0000006
+  tpAimAxis: {x: -0.997606, y: 0.049758777, z: 0.04802518}
+  tpHold: 0
+  tpLeftHandIK: 0
 --- !u!4 &4430003122803725226 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2aa5bfa75fcc60449b64da8aa3d0a94d, type: 3}

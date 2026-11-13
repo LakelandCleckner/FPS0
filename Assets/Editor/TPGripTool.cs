@@ -17,13 +17,13 @@ public class TPGripTool : EditorWindow
     [SerializeField] private GameObject gunPrefab;
     [SerializeField] private AnimationClip pose;
     [SerializeField] private float poseTime;
-    [SerializeField] private HandPreview handPreview = HandPreview.Support;
+    [SerializeField] private HandPreview handPreview = HandPreview.Off;
     [SerializeField] private float loopSeconds = 2f;
-    [SerializeField] private bool useSupportRotation;
+    [SerializeField] private bool useSupportRotation = true;
 
     private GameObject gun;
     private Transform support, magWell, loadPort, belt;
-    private Transform leftUpper, leftLower, leftHand, hips;
+    private Transform leftUpper, leftLower, leftHand, leftMiddle, hips;
     private bool previewing;
 
     [MenuItem("Tools/TP Grip Tool")]
@@ -62,7 +62,7 @@ public class TPGripTool : EditorWindow
         if (handPreview == HandPreview.MagReload || handPreview == HandPreview.ShellLoad)
             loopSeconds = Mathf.Max(0.2f, EditorGUILayout.FloatField("Loop Seconds", loopSeconds));
         useSupportRotation = EditorGUILayout.Toggle(new GUIContent("Use Support Rotation",
-            "Preview with Support Rotation Weight = 1. Off matches the default (wrist keeps the pose's rotation)."), useSupportRotation);
+            "Preview with Support Rotation Weight = 1 (the default): the left hand takes TP_Support's rotation."), useSupportRotation);
 
         EditorGUILayout.Space();
 
@@ -76,7 +76,7 @@ public class TPGripTool : EditorWindow
         }
 
         EditorGUILayout.HelpBox("1. Move/rotate/scale the gun into the right hand; line the barrel up with the yellow line.\n" +
-                                "2. Move TP_Support onto the foregrip and watch the left hand land.\n" +
+                                "2. Hand At Off shows the animation's own left hand, used in game: rest the handguard in that palm. For guns with Tp Left Hand IK: Snap To Clip Hand, then nudge TP_Support until the palm cups the foregrip (Flip Palm if it faces away).\n" +
                                 "3. Hand At: Mag Well / Load Port / Belt to check each reach; Mag Reload / Shell Load to loop the path.\n" +
                                 "4. Save to Prefab.", MessageType.None);
 
@@ -89,7 +89,10 @@ public class TPGripTool : EditorWindow
             if (GUILayout.Button("Belt")) Selection.activeTransform = belt;
         EditorGUILayout.EndHorizontal();
 
-        if (GUILayout.Button("Reset Support Rotation")) ResetSupportRotation();
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button(new GUIContent("Snap To Clip Hand", "Put TP_Support on the pose's own left palm, rolled to face the gun. Start here, then nudge."))) SnapSupportToClipHand();
+        if (GUILayout.Button(new GUIContent("Flip Palm", "Roll TP_Support 180 degrees around the fingers."))) FlipPalm();
+        EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Save to Prefab", GUILayout.Height(28))) Save();
@@ -117,6 +120,7 @@ public class TPGripTool : EditorWindow
         leftUpper = body.GetBoneTransform(HumanBodyBones.LeftUpperArm);
         leftLower = body.GetBoneTransform(HumanBodyBones.LeftLowerArm);
         leftHand = body.GetBoneTransform(HumanBodyBones.LeftHand);
+        leftMiddle = body.GetBoneTransform(HumanBodyBones.LeftMiddleProximal);
         hips = body.GetBoneTransform(HumanBodyBones.Hips);
         belt = null;
         foreach (var t in body.GetComponentsInChildren<Transform>(true))
@@ -145,6 +149,9 @@ public class TPGripTool : EditorWindow
     {
         EditorApplication.update -= Tick;
         SceneView.duringSceneGui -= DrawMarkers;
+        // Deselect first so the Inspector isn't left showing a destroyed object
+        if (gun != null && Selection.activeTransform != null && Selection.activeTransform.IsChildOf(gun.transform))
+            Selection.activeObject = body != null ? body.gameObject : null;
         if (gun != null) DestroyImmediate(gun);
         gun = null;
         support = magWell = loadPort = belt = null;
@@ -162,8 +169,8 @@ public class TPGripTool : EditorWindow
         if (handPreview != HandPreview.Off && support != null)
         {
             Vector3 target = HandTarget();
-            float rotWeight = useSupportRotation ? 1f : 0f;
-            ThirdPersonWeapon.SolveTwoBone(leftUpper, leftLower, leftHand, target, support.rotation, 1f, rotWeight);
+            Quaternion rot = useSupportRotation ? support.rotation : leftHand.rotation;
+            ThirdPersonWeapon.PlaceLeftHand(leftUpper, leftLower, leftHand, leftMiddle, target, rot, 1f);
         }
         SceneView.RepaintAll();
     }
@@ -195,14 +202,27 @@ public class TPGripTool : EditorWindow
         AnimationMode.EndSampling();
     }
 
-    // Support marker back to the pose's own left hand rotation
-    private void ResetSupportRotation()
+    // Roll the support rotation half a turn about the fingers' axis
+    private void FlipPalm()
     {
-        if (support == null) return;
-        Sample();
-        Undo.RecordObject(support, "Reset Support Rotation");
-        support.rotation = leftHand.rotation;
+        if (support == null || leftHand == null) return;
+        Undo.RecordObject(support, "Flip Palm");
+        support.rotation = support.rotation * Quaternion.AngleAxis(180f, FingerAxis());
     }
+
+    // TP_Support onto the clip's own left palm, rolled half a turn so the palm faces the gun
+    private void SnapSupportToClipHand()
+    {
+        if (support == null || leftHand == null) return;
+        Sample();
+        Undo.RecordObject(support, "Snap To Clip Hand");
+        support.position = ThirdPersonWeapon.PalmOf(leftHand, leftMiddle);
+        support.rotation = leftHand.rotation * Quaternion.AngleAxis(180f, FingerAxis());
+    }
+
+    // Wrist-to-middle-knuckle direction in the hand's local space
+    private Vector3 FingerAxis()
+        => leftMiddle != null ? leftHand.InverseTransformDirection(leftMiddle.position - leftHand.position).normalized : Vector3.up;
 
     // Existing point on the preview copy, or a new one at the default pose
     private Transform Marker(Transform existing, string name, Vector3 pos, Quaternion rot)

@@ -68,7 +68,8 @@ public static class HitboxBoneCopier
             foreach (var r in d.GetComponents<Rigidbody>()) Undo.DestroyObjectImmediate(r);
         }
 
-        int hitboxes = 0, bodies = 0, joints = 0;
+        var dstBoneSet = new HashSet<Transform>(dstBones.Values);
+        int hitboxes = 0, bodies = 0, joints = 0, extras = 0;
         foreach (var id in ids)
         {
             Transform s = srcBones[id], d = dstBones[id];
@@ -79,6 +80,14 @@ public static class HitboxBoneCopier
             d.gameObject.layer = s.gameObject.layer;
 
             foreach (var c in s.GetComponents<Collider>()) CopyCollider(c, s, d, r, k, report);
+
+            // Collider-only children of the bone (e.g. a head capsule on its own object)
+            foreach (Transform child in s)
+            {
+                if (srcIds.ContainsKey(child) || child.name.StartsWith("HB_Hull") || child.GetComponent<Collider>() == null) continue;
+                CopyChild(child, s, d, r, k, combatant, dstBoneSet, report);
+                extras++;
+            }
 
             var rb = s.GetComponent<Rigidbody>();
             if (rb != null) { EditorUtility.CopySerialized(rb, Undo.AddComponent<Rigidbody>(d.gameObject)); bodies++; }
@@ -113,7 +122,7 @@ public static class HitboxBoneCopier
         }
 
         if (removeStray) RemoveStray(dst, ids, dstBones, report);
-        report.Add($"Copied {hitboxes} hitboxes, {bodies} bodies, {joints} joints (body scale {height:F2}).");
+        report.Add($"Copied {hitboxes} hitboxes, {bodies} bodies, {joints} joints, {extras} collider objects (body scale {height:F2}).");
     }
 
     // Hitboxes the copy didn't place (e.g. a whole-body one) would wrap the hulls and catch every shot
@@ -128,6 +137,32 @@ public static class HitboxBoneCopier
             Undo.DestroyObjectImmediate(hb);
             foreach (var c in go.GetComponents<Collider>()) { Undo.RecordObject(c, UndoName); c.enabled = false; }
             report.Add($"? Removed stray hitbox on '{go.name}' and turned off its colliders.");
+        }
+    }
+
+    // Recreates a collider child under the target bone, replacing an earlier copy of the same name
+    private static void CopyChild(Transform c, Transform s, Transform d, Quaternion r, float k, CombatantStats combatant,
+                                  HashSet<Transform> dstBoneSet, List<string> report)
+    {
+        var old = d.Find(c.name);
+        if (old != null && !dstBoneSet.Contains(old)) Undo.DestroyObjectImmediate(old.gameObject);
+
+        var go = new GameObject(c.name);
+        Undo.RegisterCreatedObjectUndo(go, UndoName);
+        var t = go.transform;
+        t.SetParent(d, false);
+        go.layer = c.gameObject.layer;
+        t.localPosition = Point(c.localPosition, s, d, r, k);
+        t.localRotation = r * c.localRotation;
+        t.localScale = c.localScale;
+
+        foreach (var col in c.GetComponents<Collider>()) CopyCollider(col, c, t, Quaternion.identity, k, report);
+        var hb = c.GetComponent<EnemyHitbox>();
+        if (hb != null)
+        {
+            var n = Undo.AddComponent<EnemyHitbox>(go);
+            EditorUtility.CopySerialized(hb, n);
+            n.combatant = combatant;
         }
     }
 

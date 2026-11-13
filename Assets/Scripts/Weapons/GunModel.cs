@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace Combat.Weapons
 {
+    // How the third-person body holds the gun. Auto and One Hand keep the authored grip; Two Hand turns the barrel onto the animated left hand.
+    public enum TpHold { Auto, TwoHand, OneHand }
+
     // Sits on the root of a gun model prefab. The loadout spawns the prefab at
     // runtime, so scene-side components can't reference its parts directly - this
     // is how the spawned model hands them over.
@@ -27,6 +30,10 @@ namespace Combat.Weapons
         [SerializeField] private float tpScale = 1f;
         [Tooltip("Barrel direction in the gun's local space; the body aims this down the camera ray.")]
         [SerializeField] private Vector3 tpAimAxis = Vector3.forward;
+        [Tooltip("Auto / One Hand: fixed at the authored grip (matches the TP hold pose). Two Hand: barrel turns onto the animated left hand, for clips that don't match the grip.")]
+        [SerializeField] private TpHold tpHold = TpHold.Auto;
+        [Tooltip("Pull the left palm onto TP_Support with its rotation. Off: the hold animation's own left hand, kept on the gun through kick, lower and reload roll.")]
+        [SerializeField] private bool tpLeftHandIK = false;
 
         public Transform Muzzle => muzzle;
         public Transform Sight => sight;
@@ -37,5 +44,7 @@ namespace Combat.Weapons
         public Transform TpLoadPort => tpLoadPort;
         public float TpScale => tpScale > 0f ? tpScale : 1f;
         public Vector3 TpAimAxis => tpAimAxis.sqrMagnitude > 1e-6f ? tpAimAxis.normalized : Vector3.forward;
+        public TpHold TpHold => tpHold;
+        public bool TpLeftHandIK => tpLeftHandIK;
     }
 }

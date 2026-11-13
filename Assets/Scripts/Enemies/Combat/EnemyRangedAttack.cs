@@ -68,6 +68,9 @@ namespace Combat.Enemies
 
         public event Action Flinched;
 
+        // Each shot leaving the muzzle (presentation kick)
+        public event Action Fired;
+
         public Phase CurrentPhase { get; private set; }
         public bool Engaged { get; private set; }
         public bool IsReloading => CurrentPhase == Phase.Reloading;
@@ -351,6 +354,7 @@ namespace Combat.Enemies
 
             if (MagazineSize > 0) Rounds--;
             if (animator != null && hasFire) animator.SetTrigger(fireHash);
+            Fired?.Invoke();
             if (logShots) Debug.Log($"[EnemyRangedAttack] {name} shot {burstIndex + 1}/{burstCount} cone {AimCone:F1}", this);
         }
 
@@ -466,9 +470,16 @@ namespace Combat.Enemies
             var anim = animator != null ? animator : GetComponentInChildren<Animator>();
             if (anim == null || anim.runtimeAnimatorController == null) { issues.Add("Ranged: no animator controller"); return; }
             if (!Application.isPlaying) return;
+            if (HasParam(anim, "AimBlend")) return;   // procedural upper body (TP body controller): no fire/reload clips
             if (!hasAiming) issues.Add($"Animator: no '{aimingBool}' bool");
             if (!hasFire) issues.Add($"Animator: no '{fireTrigger}' trigger");
             if (!hasReload) issues.Add($"Animator: no '{reloadTrigger}' trigger");
+        }
+
+        private static bool HasParam(Animator anim, string name)
+        {
+            foreach (var p in anim.parameters) if (p.name == name) return true;
+            return false;
         }
 
         private void PushBases()

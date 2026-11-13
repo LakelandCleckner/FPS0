@@ -17,6 +17,8 @@ public class EnemyShooterSetup : EditorWindow
     private const string Root = "Assets/Animations/Enemies/Shooter";
     private const string ClipFolder = Root + "/Clips";
     private const string ControllerPath = Root + "/Shooter.controller";
+    // The player's third-person controller: same locomotion and hold poses, so TP grips fit
+    private const string BodyControllerPath = "Assets/Animations/Player/ThirdPerson Weapon Packs/TP_Body.controller";
     private const string MaskPath = Root + "/ShooterUpperBody.mask";
     private const string StatFolder = "Assets/GameData/Stats/Definitions/Enemy AI/Ranged";
     private const string KeysPath = "Assets/GameData/Stats/Keys/EnemyRangedStatKeys.asset";
@@ -132,7 +134,7 @@ public class EnemyShooterSetup : EditorWindow
         Section("5. Enemy");
         enemy = (GameObject)EditorGUILayout.ObjectField("Enemy (prefab or scene)", enemy, typeof(GameObject), true);
         weapon = (WeaponSO)EditorGUILayout.ObjectField(new GUIContent("Weapon", "Held model: the viewmodel gun prefab, placed by its TP grip."), weapon, typeof(WeaponSO), false);
-        assignController = EditorGUILayout.Toggle("Assign Shooter Controller", assignController);
+        assignController = EditorGUILayout.Toggle(new GUIContent("Assign TP Body Controller", "The player's third-person controller (" + BodyControllerPath + ")."), assignController);
         GUI.enabled = enemy != null;
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Validate")) Run(Validate);
@@ -537,9 +539,9 @@ public class EnemyShooterSetup : EditorWindow
 
             if (assignController)
             {
-                var ctrl = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
-                if (ctrl != null) { Undo.RecordObject(anim, "Assign Controller"); anim.runtimeAnimatorController = ctrl; report.Add("Assigned " + ControllerPath); }
-                else report.Add("? Shooter controller not built yet.");
+                var ctrl = AssetDatabase.LoadAssetAtPath<AnimatorController>(BodyControllerPath);
+                if (ctrl != null) { Undo.RecordObject(anim, "Assign Controller"); anim.runtimeAnimatorController = ctrl; report.Add("Assigned " + BodyControllerPath); }
+                else report.Add("? No controller at " + BodyControllerPath + ": build it with Tools > TP Body Setup.");
             }
 
             if (prefabPath != null) PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
