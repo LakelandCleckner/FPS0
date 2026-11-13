@@ -8,10 +8,15 @@ namespace Combat.AI.Goap
     // Walk to the brain's firing point (or advance point). Faces a visible target on the way when the profile says so.
     public class MoveToFiringPositionAction : GoapActionBase<MoveToFiringPositionAction.Data>
     {
+        // Extra cost on open-ground shooting while the brain has cover to fight from
+        public const float CoverPreference = 4f;
+
         public override float GetCost(IActionReceiver agent, IComponentReference references, ITarget target)
         {
             var b = references.GetCachedComponent<EnemyBrain>();
-            return b != null && !b.RangedAllowed ? SearchGoal.Blocked : base.GetCost(agent, references, target);
+            if (b != null && !b.RangedAllowed) return SearchGoal.Blocked;
+            float cost = base.GetCost(agent, references, target);
+            return b != null && b.HasCombatCover ? cost + CoverPreference : cost;
         }
 
         public override void Start(IMonoAgent agent, Data data)
@@ -130,7 +135,9 @@ namespace Combat.AI.Goap
         public override float GetCost(IActionReceiver agent, IComponentReference references, ITarget target)
         {
             var b = references.GetCachedComponent<EnemyBrain>();
-            return b != null && !b.RangedAllowed ? SearchGoal.Blocked : base.GetCost(agent, references, target);
+            if (b != null && !b.RangedAllowed) return SearchGoal.Blocked;
+            float cost = base.GetCost(agent, references, target);
+            return b != null && b.HasCombatCover ? cost + MoveToFiringPositionAction.CoverPreference : cost;
         }
 
         public override void Start(IMonoAgent agent, Data data)
@@ -202,7 +209,10 @@ namespace Combat.AI.Goap
             data.Brain = agent.Transform.GetComponent<EnemyBrain>();
             data.Mover = agent.Transform.GetComponent<EnemyMover>();
             data.Perception = agent.Transform.GetComponent<EnemyPerception>();
+            data.Animator = agent.Transform.GetComponentInChildren<EnemyShooterAnimator>();
             if (data.Ranged != null && data.Ranged.StartReload() && data.Brain != null) data.Brain.Raise(EnemyDecision.Reloading);
+            // Behind half cover: get down for it
+            if (data.Animator != null && data.Brain != null && data.Brain.InCover && data.Brain.CombatCover.Half) data.Animator.Crouched = true;
         }
 
         public override bool IsInRange(IMonoAgent agent, float distance, Data data, IComponentReference references) => true;
@@ -219,6 +229,7 @@ namespace Combat.AI.Goap
         public override void End(IMonoAgent agent, Data data)
         {
             if (data.Mover != null) data.Mover.ReleaseLook(data);
+            if (data.Animator != null) data.Animator.Crouched = false;
         }
 
         public class Data : IActionData
@@ -228,6 +239,195 @@ namespace Combat.AI.Goap
             public EnemyBrain Brain;
             public EnemyMover Mover;
             public EnemyPerception Perception;
+            public EnemyShooterAnimator Animator;
+        }
+    }
+
+    // Walk or run to the brain's cover spot (same gait and fire-on-the-move as firing points), arriving exactly on it.
+    public class MoveToCoverAction : MoveToFiringPositionAction
+    {
+        public override float GetCost(IActionReceiver agent, IComponentReference references, ITarget target)
+        {
+            var b = references.GetCachedComponent<EnemyBrain>();
+            if (b == null || !b.RangedAllowed || !b.HasCombatCover) return SearchGoal.Blocked;
+            return 1f;
+        }
+
+        public override void Start(IMonoAgent agent, Data data)
+        {
+            base.Start(agent, data);
+            data.Tolerance = EnemyBrain.CoverTolerance;
+            Steer(data);
+        }
+
+        public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
+        {
+            if (data.Brain == null || !data.Brain.HasCombatCover) return ActionRunState.Stop;
+            Steer(data);
+            return base.Perform(agent, data, context);
+        }
+
+        // The cover can move under us (re-picked): follow it
+        private static void Steer(Data data)
+        {
+            if (data.Mover != null && data.Brain != null && data.Brain.HasCombatCover)
+                data.Mover.RequestPoint(data, data.Brain.CombatCover.Point);
+        }
+
+        public override void End(IMonoAgent agent, Data data)
+        {
+            base.End(agent, data);
+            if (data.Mover != null) data.Mover.ReleasePoint(data);
+        }
+    }
+
+    // At cover: hide (crouched behind half cover), then with a ranged token stand or step out to the peek spot,
+    // fire a burst, and duck back. Reload happens hidden. Leaves when the cover stops hiding or gets re-picked.
+    public class PeekAndShootAction : GoapActionBase<PeekAndShootAction.Data>
+    {
+        internal enum State { Hide, Peek, Return }
+
+        private const float FirstHideMin = 0.2f;
+        private const float FirstHideMax = 0.6f;
+        private const float PeekArrive = 0.3f;
+
+        public override float GetCost(IActionReceiver agent, IComponentReference references, ITarget target)
+        {
+            var b = references.GetCachedComponent<EnemyBrain>();
+            if (b == null || !b.RangedAllowed || !b.HasCombatCover) return SearchGoal.Blocked;
+            return 1f;
+        }
+
+        public override void Start(IMonoAgent agent, Data data)
+        {
+            data.Mover = agent.Transform.GetComponent<EnemyMover>();
+            data.Brain = agent.Transform.GetComponent<EnemyBrain>();
+            data.Perception = agent.Transform.GetComponent<EnemyPerception>();
+            data.Ranged = agent.Transform.GetComponent<EnemyRangedAttack>();
+            data.Animator = agent.Transform.GetComponentInChildren<EnemyShooterAnimator>();
+            data.Profile = data.Brain != null ? data.Brain.Profile : null;
+            data.Spot = data.Brain != null ? data.Brain.CombatCover : default;
+            if (data.Mover != null)
+            {
+                data.Mover.RequestPoint(data, data.Spot.Point);
+                data.Mover.RequestFace(data);
+            }
+            EnterHide(data, Random.Range(FirstHideMin, FirstHideMax));
+        }
+
+        public override bool IsInRange(IMonoAgent agent, float distance, Data data, IComponentReference references)
+        {
+            var b = references.GetCachedComponent<EnemyBrain>();
+            return b != null && b.InCover;
+        }
+
+        public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
+        {
+            var b = data.Brain;
+            if (b == null || data.Ranged == null || data.Perception == null || data.Mover == null) return ActionRunState.Stop;
+            if (!data.Perception.HasTarget) return ActionRunState.Completed;
+            if (!b.HasCombatCover || !b.RangedAllowed) return ActionRunState.Stop;
+
+            // Re-picked cover somewhere else: go there
+            if ((b.CombatCover.Point - data.Spot.Point).sqrMagnitude > EnemyBrain.CoverTolerance * EnemyBrain.CoverTolerance)
+                return ActionRunState.Stop;
+            data.Spot = b.CombatCover;
+
+            data.Mover.RequestLook(data, data.Perception.BelievedPosition + Vector3.up * 1.4f);
+            float now = Time.time;
+
+            switch (data.State)
+            {
+                case State.Hide:
+                    if (data.Ranged.NeedsReload) return ActionRunState.Stop;   // reload here, hidden
+                    if (now < data.HideUntil) return ActionRunState.ContinueOrResolve;
+                    // Only step out holding a ranged token, so the group takes turns
+                    if (!b.HasRangedToken && !b.AcquireRangedToken()) return ActionRunState.ContinueOrResolve;
+                    EnterPeek(data, now);
+                    return ActionRunState.Continue;
+
+                case State.Peek:
+                    if (data.Spot.Half) SetCrouch(data, false);
+                    else data.Mover.RequestPoint(data, data.Spot.Peek);
+
+                    if (data.Spot.Half || data.Mover.AtPoint(data.Spot.Peek, PeekArrive)) data.Ranged.Engage();
+
+                    var phase = data.Ranged.CurrentPhase;
+                    if (phase == EnemyRangedAttack.Phase.Bursting) data.SawBurst = true;
+                    else if (data.SawBurst) { data.SawBurst = false; data.BurstsLeft--; }
+
+                    if (data.BurstsLeft <= 0 || data.Ranged.NeedsReload || now - data.PeekStart > PeekMax(data))
+                        EnterReturn(data);
+                    return ActionRunState.Continue;
+
+                default:
+                    if (data.Spot.Half || data.Mover.AtPoint(data.Spot.Point, EnemyBrain.CoverTolerance))
+                        EnterHide(data, Random.Range(HideMin(data), HideMax(data)));
+                    return ActionRunState.Continue;
+            }
+        }
+
+        private static void EnterHide(Data data, float seconds)
+        {
+            data.State = State.Hide;
+            data.HideUntil = Time.time + seconds;
+            SetCrouch(data, data.Spot.Half);
+        }
+
+        private static void EnterPeek(Data data, float now)
+        {
+            data.State = State.Peek;
+            data.PeekStart = now;
+            data.SawBurst = false;
+            data.BurstsLeft = data.Profile != null ? Mathf.Max(1, data.Profile.peekBursts) : 1;
+            data.Brain.Raise(EnemyDecision.Peeking);
+        }
+
+        // Stop shooting, free the token for the next shooter, get back behind the cover
+        private static void EnterReturn(Data data)
+        {
+            data.State = State.Return;
+            data.Ranged.Disengage();
+            data.Brain.ReleaseRangedToken();
+            data.Mover.RequestPoint(data, data.Spot.Point);
+            if (data.Spot.Half) SetCrouch(data, true);
+        }
+
+        private static void SetCrouch(Data data, bool on)
+        {
+            if (data.Animator != null) data.Animator.Crouched = on;
+        }
+
+        private static float HideMin(Data d) => d.Profile != null ? d.Profile.hideMin : 0.8f;
+        private static float HideMax(Data d) => d.Profile != null ? Mathf.Max(d.Profile.hideMin, d.Profile.hideMax) : 2f;
+        private static float PeekMax(Data d) => d.Profile != null ? d.Profile.peekMaxTime : 3f;
+
+        public override void End(IMonoAgent agent, Data data)
+        {
+            if (data.Ranged != null) data.Ranged.Disengage();
+            if (data.Brain != null) data.Brain.ReleaseRangedToken();
+            SetCrouch(data, false);
+            if (data.Mover == null) return;
+            data.Mover.ReleasePoint(data);
+            data.Mover.ReleaseFace(data);
+            data.Mover.ReleaseLook(data);
+        }
+
+        public class Data : IActionData
+        {
+            public ITarget Target { get; set; }
+            public EnemyMover Mover;
+            public EnemyBrain Brain;
+            public EnemyPerception Perception;
+            public EnemyRangedAttack Ranged;
+            public EnemyShooterAnimator Animator;
+            public EnemyBehaviourProfileSO Profile;
+            public CoverSpot Spot;
+            internal State State;
+            public float HideUntil;
+            public float PeekStart;
+            public bool SawBurst;
+            public int BurstsLeft;
         }
     }
 }

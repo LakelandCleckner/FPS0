@@ -97,6 +97,36 @@ namespace Combat.AI.Goap
         }
     }
 
+    // Fight from cover: move to it, then hide, peek out, burst and duck back. Cheaper than open firing points.
+    public class RangedCoverCapability : CapabilityFactoryBase
+    {
+        public override ICapabilityConfig Create()
+        {
+            var b = new CapabilityBuilder("RangedCover");
+
+            b.AddAction<MoveToCoverAction>()
+                .SetTarget<CombatCoverTarget>()
+                .AddCondition<HasTarget>(Comparison.GreaterThanOrEqual, 1)
+                .AddCondition<HasCombatCover>(Comparison.GreaterThanOrEqual, 1)
+                .AddCondition<InCover>(Comparison.SmallerThanOrEqual, 0)
+                .AddEffect<InCover>(EffectType.Increase)
+                .SetBaseCost(1)
+                .SetMoveMode(ActionMoveMode.PerformWhileMoving)
+                .SetValidateConditions(false);
+
+            b.AddAction<PeekAndShootAction>()
+                .SetTarget<CombatCoverTarget>()
+                .AddCondition<HasTarget>(Comparison.GreaterThanOrEqual, 1)
+                .AddCondition<InCover>(Comparison.GreaterThanOrEqual, 1)
+                .AddCondition<NeedsReload>(Comparison.SmallerThanOrEqual, 0)
+                .AddEffect<TargetKilled>(EffectType.Increase)
+                .SetBaseCost(1)
+                .SetValidateConditions(false);
+
+            return b.Build();
+        }
+    }
+
     // Rush the target and self-detonate. No token needed.
     public class KamikazeCapability : CapabilityFactoryBase
     {

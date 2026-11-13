@@ -63,6 +63,11 @@ namespace Combat.AI
         private Vector3 lookPoint;
         private object faceOwner;
 
+        // Exact spot an action steers to (cover, peek), overriding the GOAP target
+        private const float PointStop = 0.15f;
+        private object pointOwner;
+        private Vector3 steerPoint;
+
         public bool HasLook => lookOwner != null;
         public Vector3 LookPoint => lookTransform != null ? lookTransform.position : lookPoint;
         public bool Facing => faceOwner != null;
@@ -117,6 +122,7 @@ namespace Combat.AI
             lookOwner = null;
             lookTransform = null;
             faceOwner = null;
+            pointOwner = null;
             currentTarget = null;
             shouldMove = false;
             lastAppliedSpeed = -1f;
@@ -200,6 +206,27 @@ namespace Combat.AI
             ApplyRotationMode();
         }
 
+        // Steer to this exact spot until released, whatever the GOAP target is (cover, peek).
+        public void RequestPoint(object owner, Vector3 point)
+        {
+            pointOwner = owner;
+            steerPoint = point;
+        }
+
+        public void ReleasePoint(object owner)
+        {
+            if (pointOwner != owner) return;
+            pointOwner = null;
+            Halt();
+        }
+
+        public bool AtPoint(Vector3 point, float tolerance)
+        {
+            Vector3 d = transform.position - point;
+            d.y = 0f;
+            return d.sqrMagnitude <= tolerance * tolerance;
+        }
+
         public void Halt()
         {
             if (nav.isActiveAndEnabled && nav.isOnNavMesh) nav.ResetPath();
@@ -265,6 +292,12 @@ namespace Combat.AI
             }
             holding = false;
 
+            if (pointOwner != null && nav.isActiveAndEnabled && nav.isOnNavMesh)
+            {
+                SteerToPoint();
+                return;
+            }
+
             if (shouldMove && currentTarget is TransformTarget && nav.isActiveAndEnabled && nav.isOnNavMesh)
             {
                 nav.SetDestination(Destination(currentTarget.Position));
@@ -291,6 +324,22 @@ namespace Combat.AI
 
             ResetApproach();
             nav.isStopped = !shouldMove;
+        }
+
+        // Exact arrival: tight stopping distance, re-path only when the spot moves
+        private void SteerToPoint()
+        {
+            ResetApproach();
+            nav.stoppingDistance = PointStop;
+            if (AtPoint(steerPoint, PointStop))
+            {
+                nav.isStopped = true;
+                return;
+            }
+            Vector3 off = nav.destination - steerPoint;
+            off.y = 0f;
+            if ((!nav.hasPath && !nav.pathPending) || off.sqrMagnitude > 0.04f) nav.SetDestination(steerPoint);
+            nav.isStopped = false;
         }
 
         // Face mode turns the body after the path has moved it

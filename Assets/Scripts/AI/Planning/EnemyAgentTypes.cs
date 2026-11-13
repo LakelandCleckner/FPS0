@@ -48,6 +48,7 @@ namespace Combat.AI.Goap
             if (kamikaze) b.AddCapability<KamikazeCapability>();
             if (cover) b.AddCapability<ShieldCoverCapability>();
             if (ranged) b.AddCapability<RangedCapability>();
+            if (ranged && p.useCover) b.AddCapability<RangedCoverCapability>();
             if (search) b.AddCapability<SearchCapability>();
             if (idle) b.AddCapability<IdleCapability>();
             return b.Build();

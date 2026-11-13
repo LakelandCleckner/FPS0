@@ -17,6 +17,10 @@ public class EnemyBehaviourProfileEditor : Editor
         "walkSpeed", "runSpeed", "runDistance", "faceWhileMoving", "fireWhileWalking", "pointHoldMin", "pointHoldMax",
         "aimErrorPerTargetSpeed", "burstSeparationJitter", "flinchDamageFraction", "flinchRecovery", "lowerAfter"
     };
+    private static readonly string[] RangedCover =
+    {
+        "coverWeights", "coverHoldMin", "coverHoldMax", "hideMin", "hideMax", "peekBursts", "peekMaxTime"
+    };
     private static readonly string[] Defensive =
     {
         "defDamage", "defAimedAt", "defAllyDeath", "defAllyDeathRadius", "defProximity", "defOutranged", "defDecay",
@@ -32,7 +36,13 @@ public class EnemyBehaviourProfileEditor : Editor
         if (p.melee) Draw(Melee);
         if (p.kamikaze) Draw(Kamikaze);
         if (p.shieldCover) Draw(Cover);
-        if (p.ranged) { Draw(Ranged); Draw(Defensive); }
+        if (p.ranged)
+        {
+            Draw(Ranged);
+            Draw(new[] { "useCover" });
+            if (p.useCover) Draw(RangedCover);
+            Draw(Defensive);
+        }
 
         serializedObject.ApplyModifiedProperties();
 
@@ -68,6 +78,8 @@ public class EnemyBehaviourProfileEditor : Editor
                 EditorGUILayout.HelpBox("Firing Point Tolerance must be above 0.", MessageType.Error);
             if (!p.melee)
                 EditorGUILayout.HelpBox("Ranged without melee: inside the min range it backs off instead of swinging.", MessageType.Info);
+            if (p.useCover && (p.hideMin > p.hideMax || p.coverHoldMin > p.coverHoldMax))
+                EditorGUILayout.HelpBox("Cover: a min time is above its max.", MessageType.Warning);
         }
     }
 }

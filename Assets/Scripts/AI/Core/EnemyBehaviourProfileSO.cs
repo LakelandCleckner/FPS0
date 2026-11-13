@@ -72,6 +72,21 @@ namespace Combat.AI
         public float pointHoldMin = 2f;
         public float pointHoldMax = 4f;
 
+        [Header("Ranged: cover")]
+        [Tooltip("Fight from cover when there is some in the range band: hide, peek out, burst, duck back. Falls back to firing points.")]
+        public bool useCover = true;
+        public PointWeights coverWeights = PointWeights.Cover;
+        [Tooltip("Seconds held at a cover spot before looking for a better one (random between min and max). Cover that stops hiding is left at once.")]
+        public float coverHoldMin = 8f;
+        public float coverHoldMax = 15f;
+        [Tooltip("Seconds hidden between peeks (random between min and max).")]
+        public float hideMin = 0.8f;
+        public float hideMax = 2f;
+        [Tooltip("Bursts fired per peek before ducking back.")]
+        [Min(1)] public int peekBursts = 1;
+        [Tooltip("Longest time out of cover per peek (s).")]
+        public float peekMaxTime = 3f;
+
         [Header("Ranged: firing feel")]
         [Tooltip("Aim cone growth per m/s of target speed (degrees).")]
         public float aimErrorPerTargetSpeed = 0.6f;

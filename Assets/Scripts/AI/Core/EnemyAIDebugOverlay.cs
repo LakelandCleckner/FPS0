@@ -142,6 +142,21 @@ namespace Combat.AI
                 Cross(b.FiringPoint + Vector3.up * 0.05f, 0.35f, c);
             }
 
+            // Cover: light blue half cover, dark blue full cover with a line to its peek spot
+            if (b.HasCombatCover)
+            {
+                var cs = b.CombatCover;
+                var c = cs.Half ? new Color(0.35f, 0.65f, 1f) : new Color(0.25f, 0.3f, 1f);
+                Vector3 hide = cs.Point + Vector3.up * 0.05f;
+                Line(feet, hide, c);
+                Cross(hide, 0.35f, c);
+                if (!cs.Half)
+                {
+                    Line(hide, cs.Peek + Vector3.up * 0.05f, c);
+                    Cross(cs.Peek + Vector3.up * 0.05f, 0.2f, c);
+                }
+            }
+
             var r = b.Ranged;
             if (r != null && r.CurrentPhase == EnemyRangedAttack.Phase.Bursting && r.Muzzle != null)
                 Line(r.Muzzle.position, r.LastAimPoint, Color.red);

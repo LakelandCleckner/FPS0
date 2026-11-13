@@ -13,7 +13,7 @@ namespace Combat.AI
     public enum DefensiveBand { Aggressive, Normal, Defensive }
 
     // Decisions an enemy announces (barks, debug, later squads listen to these).
-    public enum EnemyDecision { Spotted, LostTarget, Engaging, Repositioning, Advancing, Reloading, Flinched, Outranged }
+    public enum EnemyDecision { Spotted, LostTarget, Engaging, Repositioning, Advancing, Reloading, Flinched, Outranged, TakingCover, Peeking }
 
     // Binds the GOAP agent type for this enemy's behaviour profile and asks for every goal at once;
     // the planner picks the cheapest one it can reach. Re-plans the moment perception, the shield,
@@ -77,6 +77,15 @@ namespace Combat.AI
         private float holdUntil = -1f;   // < 0: not yet settled at the current point
         private const float BandSlack = 0.05f;
 
+        // Combat cover (ranged): where to hide and where to peek from
+        public const float CoverTolerance = 0.6f;
+        public const float CoverArea = 2.5f;
+        private const float NoCoverRetry = 2f;
+        private bool hasCombatCover;
+        private CoverSpot combatCover;
+        private float nextCombatCoverCheck;
+        private float coverHoldUntil = -1f;   // < 0: not yet settled at the current cover
+
         private readonly DecisionRecord[] recent = new DecisionRecord[RecentSize];
         private int recentCount;
         private int recentHead;
@@ -120,6 +129,13 @@ namespace Combat.AI
         public Vector3 FiringPoint => firingPoint;
         public bool LastPointSearchFailed { get; private set; }
         public List<ScoredPoint> DebugCandidates { get; private set; }
+
+        public bool UsesCover => IsRangedProfile && Profile.useCover;
+        public bool HasCombatCover => hasCombatCover;
+        public CoverSpot CombatCover => combatCover;
+
+        // Within reach of the cover spot (hiding there, at its peek spot or between them)
+        public bool InCover => hasCombatCover && Flat(transform.position - combatCover.Point).magnitude <= CoverArea;
 
         public bool InFiringPosition
             => hasFiringPoint && firingPointValid && Profile != null
@@ -189,6 +205,7 @@ namespace Combat.AI
             Defensiveness = 0f;
             Band = DefensiveBand.Normal;
             ClearFiringPoint();
+            ClearCombatCover();
             recentCount = 0;
             recentHead = 0;
             ReleaseToken();
@@ -304,6 +321,7 @@ namespace Combat.AI
             if (!perception.HasTarget)
             {
                 if (hasFiringPoint) ClearFiringPoint();
+                if (hasCombatCover) ClearCombatCover();
                 return;
             }
 
@@ -313,6 +331,9 @@ namespace Combat.AI
                 insideMinRange = inside;
                 Replan();
             }
+
+            // Fighting from cover: no firing point needed
+            if (UsesCover && UpdateCombatCover()) return;
 
             // Reached an advance point: look again straight away
             if (hasFiringPoint && !firingPointValid && Flat(transform.position - firingPoint).magnitude <= Profile.firingPointTolerance)
@@ -337,6 +358,91 @@ namespace Combat.AI
             nextFiringCheck = now + Profile.firingPointRecheck;
             holdUntil = -1f;
             EvaluateFiringPoint();
+        }
+
+        // Keeps the cover while it hides and its hold lasts; true while there is cover to fight from
+        private bool UpdateCombatCover()
+        {
+            float now = Time.time;
+            if (coverHoldUntil < 0f && hasCombatCover && Flat(transform.position - combatCover.Point).magnitude <= CoverTolerance)
+                coverHoldUntil = now + UnityEngine.Random.Range(Profile.coverHoldMin, Mathf.Max(Profile.coverHoldMin, Profile.coverHoldMax));
+
+            if (now < nextCombatCoverCheck) return hasCombatCover;
+
+            bool valid = hasCombatCover
+                         && CoverFinder.StillCovers(combatCover, perception.BelievedPosition, Profile.rangedMinRange, ranged.MaxRange);
+            bool holding = coverHoldUntil < 0f || now < coverHoldUntil;
+            if (valid && holding)
+            {
+                nextCombatCoverCheck = now + CoverRecheck;
+                return true;
+            }
+            if (!PositionScorer.TryBeginEvaluation()) return hasCombatCover;   // over budget: keep what we have, retry next frame
+            EvaluateCombatCover(now);
+            return hasCombatCover;
+        }
+
+        private void EvaluateCombatCover(float now)
+        {
+            var p = Profile;
+            var cam = Camera.main;
+            Vector3 threat = perception.BelievedPosition;
+            float min = p.rangedMinRange;
+            float max = Mathf.Max(min + 1f, ranged.MaxRange);
+
+            var q = new CoverQuery
+            {
+                Owner = this,
+                Self = transform,
+                From = transform.position,
+                Threat = threat,
+                ThreatViewForward = cam != null ? cam.transform.forward : transform.position - threat,
+                MinRange = min,
+                MaxRange = max,
+                PreferredRange = PreferredRange(min, max),
+                SearchRadius = p.firingPointSearchRadius,
+                AllySpacing = p.allySpacing,
+                Weights = p.coverWeights,
+                HasCurrent = hasCombatCover,
+                Current = combatCover.Point
+            };
+
+            bool had = hasCombatCover;
+            if (!CoverFinder.FindCombat(q, out var spot))
+            {
+                ClearCombatCover();
+                nextCombatCoverCheck = now + NoCoverRetry;
+                if (had) Replan();
+                return;
+            }
+
+            bool moved = !had || Flat(spot.Point - combatCover.Point).magnitude > CoverTolerance;
+            combatCover = spot;
+            hasCombatCover = true;
+            coverHoldUntil = -1f;
+            nextCombatCoverCheck = now + CoverRecheck;
+            if (!moved) return;
+
+            if (ranged != null) ranged.ResetAim();
+            Raise(EnemyDecision.TakingCover);
+            if (hasFiringPoint) ClearFiringPoint();
+            // Switch plans now unless a burst is going; the shoot action resolves after it
+            if (!had && (ranged == null || ranged.CurrentPhase != EnemyRangedAttack.Phase.Bursting)) Replan();
+        }
+
+        private void ClearCombatCover()
+        {
+            hasCombatCover = false;
+            coverHoldUntil = -1f;
+            nextCombatCoverCheck = 0f;
+            CoverFinder.Release(this);
+        }
+
+        // The cover spot for the CombatCoverTarget sensor
+        public bool TryGetCombatCover(out Vector3 point)
+        {
+            point = combatCover.Point;
+            return hasCombatCover && perception.HasTarget;
         }
 
         private bool ValidPoint(Vector3 p)

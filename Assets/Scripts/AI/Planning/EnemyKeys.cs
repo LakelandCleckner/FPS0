@@ -26,6 +26,10 @@ namespace Combat.AI.Goap
     public class NeedsReload : WorldKeyBase { }
     // Holds one of the target's ranged attack tokens.
     public class HasRangedToken : WorldKeyBase { }
+    // The brain picked cover in the range band to fight from.
+    public class HasCombatCover : WorldKeyBase { }
+    // At (or beside) that cover.
+    public class InCover : WorldKeyBase { }
     // DefensiveBand as an int: 0 aggressive, 1 normal, 2 defensive.
     public class Defensive : WorldKeyBase { }
     // CombatStatus as an int: 0 idle .. 5 danger.
@@ -43,6 +47,8 @@ namespace Combat.AI.Goap
     public class CoverTarget : TargetKeyBase { }
     // Where to shoot from (or an advance point when nowhere has sight).
     public class FiringTarget : TargetKeyBase { }
+    // Cover to fight from.
+    public class CombatCoverTarget : TargetKeyBase { }
 
     // ---- goals ----
     // The planner adds travel distance to goal cost, so lower-priority goals price themselves

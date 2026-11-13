@@ -26,6 +26,12 @@ namespace Combat.AI
         {
             range = 1f, travel = 0.4f, allySpacing = 1f, nearCover = 0.4f, exposure = 0.3f, keepCurrent = 0.6f
         };
+
+        // Combat cover: nearCover is unused (every candidate is cover)
+        public static PointWeights Cover => new PointWeights
+        {
+            range = 1f, travel = 0.6f, allySpacing = 1f, nearCover = 0f, exposure = 0.3f, keepCurrent = 0.8f
+        };
     }
 
     public enum PointPurpose { Fire }
