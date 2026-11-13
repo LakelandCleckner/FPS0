@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 907e887aee9b4e73be6a161af175fd16, type: 3}
+  m_Name: Behaviour_Pistoler
+  m_EditorClassIdentifier: 
+  melee: 0
+  kamikaze: 0
+  shieldCover: 0
+  ranged: 1
+  search: 1
+  idle: 1
+  holdDistance: 5
+  holdCircleSpeed: 12
+  kamikazeTriggerRange: 2.5
+  kamikazeSpeedFactor: 2.5
+  coverSearchRadius: 15
+  coverMinTargetDistance: 6
+  retreatDistance: 10
+  rangedMinRange: 4
+  rangedPreferredRange: 10
+  rangedBandShift: 0.35
+  firingPointSearchRadius: 12
+  firingPointRecheck: 0.75
+  firingPointTolerance: 1.25
+  allySpacing: 2.5
+  fireWeights:
+    range: 1
+    travel: 0.4
+    allySpacing: 1
+    nearCover: 0.4
+    exposure: 0.3
+    keepCurrent: 0.6
+  advanceSpeedFactor: 1
+  faceWhileMoving: 1
+  aimErrorPerTargetSpeed: 0.6
+  burstSeparationJitter: 0
+  flinchDamageFraction: 0.1
+  flinchRecovery: 0.6
+  lowerAfter: 2.5
+  defDamage: 1.5
+  defAimedAt: 0.25
+  defAllyDeath: 0.2
+  defAllyDeathRadius: 12
+  defProximity: 0.3
+  defOutranged: 0.35
+  defDecay: 0.1
+  aggressiveBelow: 0.33
+  defensiveAbove: 0.66
+  walkSpeed: 1.6
+  runSpeed: 4
+  runDistance: 5
+  faceWhileMoving: 1
+  fireWhileWalking: 1
+  pointHoldMin: 1.5
+  pointHoldMax: 3
+  strafe: 1
+  strafeDistance: 2.5
+  strafeIntervalMin: 0.9
+  strafeIntervalMax: 1.8
+  suppress: 1
+  suppressTime: 1.5
+  suppressSpread: 3
+  useCover: 1
+  coverHoldMin: 5
+  coverHoldMax: 10
+  hideMin: 0.6
+  hideMax: 1.4
+  peekBursts: 2
+  peekMaxTime: 3
+  dodge: 1
+  dodgeReactTime: 0.2
+  dodgeChanceAimed: 0.6
+  dodgeChanceHit: 0.3
+  dodgeChanceDanger: 0.9
+  dodgeCooldown: 2.5
+  dodgeDistance: 2.5
+  dodgeSpeed: 7.5

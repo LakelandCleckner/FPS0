@@ -192,7 +192,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e06f4ab308ac45629363d3395c0522d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultProfile: {fileID: 11400000, guid: 0d92f6a27ac858f4ead1b52e2856a699, type: 2}
+  defaultProfile: {fileID: 11400000, guid: 306712c6641c4e5086dafec401aba652, type: 2}
   logState: 1
 --- !u!114 &7281014618095773288
 MonoBehaviour:
@@ -468,11 +468,11 @@ MonoBehaviour:
   delivery: {fileID: 11400000, guid: 7e6b18a0f1fb49f4f95e99c049ff8562, type: 2}
   muzzle: {fileID: 0}
   damageType: {fileID: 0}
-  baseDamage: 10
-  baseFireRate: 420
-  baseBurstSize: 3
-  baseBurstSeparation: 1.4
-  baseAimError: 6
+  baseDamage: 14
+  baseFireRate: 240
+  baseBurstSize: 2
+  baseBurstSeparation: 0.9
+  baseAimError: 5
   baseAimErrorMin: 1.5
   baseAimSettleTime: 3
   baseBurstSpread: 1.2
@@ -480,9 +480,9 @@ MonoBehaviour:
   baseTracking: 0.5
   baseLeading: 0.6
   baseProjectileSpeed: 1
-  baseMaxRange: 30
-  baseMagazine: 24
-  baseReloadTime: 2.2
+  baseMaxRange: 22
+  baseMagazine: 12
+  baseReloadTime: 1.5
   baseWindup: 0.35
   targetAimHeight: 1.2
   maxStartAngle: 25

@@ -48,6 +48,8 @@ public class EnemyBehaviourProfileEditor : Editor
             Draw(Ranged);
             Draw(new[] { "useCover" });
             if (p.useCover) Draw(RangedCover);
+            Draw(new[] { "useRankTactics" });
+            if (p.useRankTactics) Draw(new[] { "minorTactics", "majorTactics", "eliteTactics", "minibossTactics", "bossTactics" });
             Draw(Defensive);
         }
 

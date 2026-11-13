@@ -1,7 +1,63 @@
 using UnityEngine;
+using Combat.Enemies;
 
 namespace Combat.AI
 {
+    // How a rank fights on top of its profile: cover use, range, peek rhythm, strafe, dodge and pace.
+    [System.Serializable]
+    public struct RankTactics
+    {
+        [Tooltip("Positive: extra cost on open-ground shooting while cover exists (prefers cover). Negative: extra cost on cover instead (prefers the open).")]
+        public float coverPreference;
+        [Tooltip("Added to the preferred range (m). Negative pushes closer.")]
+        public float rangeShift;
+        [Tooltip("Multiplier on hide times between peeks.")]
+        public float hideScale;
+        [Tooltip("Bursts added per peek.")]
+        public int extraPeekBursts;
+        [Tooltip("Multiplier on cover hold times.")]
+        public float coverHoldScale;
+        [Tooltip("Multiplier on strafe intervals (lower = more often).")]
+        public float strafeIntervalScale;
+        [Tooltip("Multiplier on dodge chances.")]
+        public float dodgeChanceScale;
+        [Tooltip("Multiplier on walk and run speed.")]
+        public float speedScale;
+
+        public static RankTactics Neutral => new RankTactics
+        {
+            coverPreference = 4f, rangeShift = 0f, hideScale = 1f, extraPeekBursts = 0, coverHoldScale = 1f,
+            strafeIntervalScale = 1f, dodgeChanceScale = 1f, speedScale = 1f
+        };
+
+        // Pushes in, takes cover loosely, peeks often
+        public static RankTactics Minor => new RankTactics
+        {
+            coverPreference = 2f, rangeShift = -3f, hideScale = 0.7f, extraPeekBursts = 0, coverHoldScale = 0.7f,
+            strafeIntervalScale = 0.8f, dodgeChanceScale = 1f, speedScale = 1.1f
+        };
+
+        // Holds cover, longer peeks
+        public static RankTactics Major => new RankTactics
+        {
+            coverPreference = 5f, rangeShift = 0f, hideScale = 1f, extraPeekBursts = 1, coverHoldScale = 1.3f,
+            strafeIntervalScale = 1f, dodgeChanceScale = 1f, speedScale = 1f
+        };
+
+        public static RankTactics Elite => new RankTactics
+        {
+            coverPreference = 4f, rangeShift = -1f, hideScale = 0.8f, extraPeekBursts = 1, coverHoldScale = 1f,
+            strafeIntervalScale = 0.8f, dodgeChanceScale = 1.5f, speedScale = 1.1f
+        };
+
+        // Advances while firing, rarely hides, dodges a lot
+        public static RankTactics Miniboss => new RankTactics
+        {
+            coverPreference = -3f, rangeShift = -4f, hideScale = 0.5f, extraPeekBursts = 2, coverHoldScale = 0.6f,
+            strafeIntervalScale = 0.7f, dodgeChanceScale = 2f, speedScale = 1.15f
+        };
+    }
+
     // How an enemy fights: which GOAP capabilities its agent type gets, plus their tuning.
     // Archetypes set a default; modifiers can override it (last layer that sets one wins).
     [CreateAssetMenu(fileName = "BehaviourProfile", menuName = "Combat/Enemies/Behaviour Profile")]
@@ -131,6 +187,28 @@ namespace Combat.AI
         public float dodgeDistance = 2.5f;
         [Tooltip("Dodge speed (m/s).")]
         public float dodgeSpeed = 7f;
+
+        [Header("Rank tactics")]
+        [Tooltip("Adjust tactics by the enemy's rank. Off: every rank fights the same.")]
+        public bool useRankTactics = true;
+        public RankTactics minorTactics = RankTactics.Minor;
+        public RankTactics majorTactics = RankTactics.Major;
+        public RankTactics eliteTactics = RankTactics.Elite;
+        public RankTactics minibossTactics = RankTactics.Miniboss;
+        public RankTactics bossTactics = RankTactics.Miniboss;
+
+        public RankTactics TacticsFor(EnemyRank rank)
+        {
+            if (!useRankTactics) return RankTactics.Neutral;
+            switch (rank)
+            {
+                case EnemyRank.Major: return majorTactics;
+                case EnemyRank.Elite: return eliteTactics;
+                case EnemyRank.Miniboss: return minibossTactics;
+                case EnemyRank.Boss: return bossTactics;
+                default: return minorTactics;
+            }
+        }
 
         [Header("Defensiveness")]
         [Tooltip("Added per fraction of max health lost.")]

@@ -9,15 +9,12 @@ namespace Combat.AI.Goap
     // Walk to the brain's firing point (or advance point). Faces a visible target on the way when the profile says so.
     public class MoveToFiringPositionAction : GoapActionBase<MoveToFiringPositionAction.Data>
     {
-        // Extra cost on open-ground shooting while the brain has cover to fight from
-        public const float CoverPreference = 4f;
-
         public override float GetCost(IActionReceiver agent, IComponentReference references, ITarget target)
         {
             var b = references.GetCachedComponent<EnemyBrain>();
             if (b != null && !b.RangedAllowed) return SearchGoal.Blocked;
             float cost = base.GetCost(agent, references, target);
-            return b != null && b.HasCombatCover ? cost + CoverPreference : cost;
+            return b != null ? cost + b.OpenShootingExtraCost : cost;
         }
 
         public override void Start(IMonoAgent agent, Data data)
@@ -56,8 +53,9 @@ namespace Combat.AI.Goap
         {
             if (data.Mover == null) return;
             var p = data.Profile;
-            float walk = p != null ? p.walkSpeed : 1.5f;
-            float run = p != null ? p.runSpeed : 3.5f;
+            float pace = data.Brain != null ? data.Brain.Tactics.speedScale : 1f;
+            float walk = (p != null ? p.walkSpeed : 1.5f) * pace;
+            float run = (p != null ? p.runSpeed : 3.5f) * pace;
             float runAt = p != null ? p.runDistance : 6f;
 
             float left = 0f;
@@ -138,7 +136,7 @@ namespace Combat.AI.Goap
             var b = references.GetCachedComponent<EnemyBrain>();
             if (b != null && !b.RangedAllowed) return SearchGoal.Blocked;
             float cost = base.GetCost(agent, references, target);
-            return b != null && b.HasCombatCover ? cost + MoveToFiringPositionAction.CoverPreference : cost;
+            return b != null ? cost + b.OpenShootingExtraCost : cost;
         }
 
         public override void Start(IMonoAgent agent, Data data)
@@ -151,8 +149,9 @@ namespace Combat.AI.Goap
             data.Tolerance = p != null ? p.firingPointTolerance : 1.25f;
             data.Engaged = false;
             data.StrafeOffset = 0f;
-            data.NextStrafe = Time.time + (p != null ? Random.Range(p.strafeIntervalMin, Mathf.Max(p.strafeIntervalMin, p.strafeIntervalMax)) : 2f);
-            if (data.Mover != null && p != null) data.Mover.RequestSpeed(data, p.walkSpeed / Mathf.Max(0.01f, data.Mover.BaseMoveSpeed));
+            data.NextStrafe = Time.time + (p != null ? StrafeInterval(data.Brain) : 2f);
+            if (data.Mover != null && p != null)
+                data.Mover.RequestSpeed(data, p.walkSpeed * data.Brain.Tactics.speedScale / Mathf.Max(0.01f, data.Mover.BaseMoveSpeed));
         }
 
         public override bool IsInRange(IMonoAgent agent, float distance, Data data, IComponentReference references)
@@ -186,6 +185,12 @@ namespace Combat.AI.Goap
 
         private const float MinStrafeStep = 0.8f;
 
+        private static float StrafeInterval(EnemyBrain b)
+        {
+            var p = b.Profile;
+            return Random.Range(p.strafeIntervalMin, Mathf.Max(p.strafeIntervalMin, p.strafeIntervalMax)) * b.Tactics.strafeIntervalScale;
+        }
+
         // Every few seconds sidestep to a new spot beside the firing point, across the line to the target, that still sees it
         private static void UpdateStrafe(Data data)
         {
@@ -193,7 +198,7 @@ namespace Combat.AI.Goap
             if (p == null || !p.strafe || !data.Perception.TargetVisible || data.Ranged.IsReloading) return;
             float now = Time.time;
             if (now < data.NextStrafe) return;
-            data.NextStrafe = now + Random.Range(p.strafeIntervalMin, Mathf.Max(p.strafeIntervalMin, p.strafeIntervalMax));
+            data.NextStrafe = now + StrafeInterval(data.Brain);
 
             Vector3 anchor = data.Brain.FiringPoint;
             Vector3 threat = data.Perception.BelievedPosition;
@@ -290,7 +295,7 @@ namespace Combat.AI.Goap
         {
             var b = references.GetCachedComponent<EnemyBrain>();
             if (b == null || !b.RangedAllowed || !b.HasCombatCover) return SearchGoal.Blocked;
-            return 1f;
+            return 1f + b.CoverExtraCost;
         }
 
         public override void Start(IMonoAgent agent, Data data)
@@ -335,7 +340,7 @@ namespace Combat.AI.Goap
         {
             var b = references.GetCachedComponent<EnemyBrain>();
             if (b == null || !b.RangedAllowed || !b.HasCombatCover) return SearchGoal.Blocked;
-            return 1f;
+            return 1f + b.CoverExtraCost;
         }
 
         public override void Start(IMonoAgent agent, Data data)
@@ -420,7 +425,7 @@ namespace Combat.AI.Goap
             data.State = State.Peek;
             data.PeekStart = now;
             data.SawBurst = false;
-            data.BurstsLeft = data.Profile != null ? Mathf.Max(1, data.Profile.peekBursts) : 1;
+            data.BurstsLeft = (data.Profile != null ? Mathf.Max(1, data.Profile.peekBursts) : 1) + data.Brain.Tactics.extraPeekBursts;
             data.Brain.Raise(EnemyDecision.Peeking);
         }
 
@@ -438,8 +443,8 @@ namespace Combat.AI.Goap
             if (data.Animator != null) data.Animator.Crouched = on;
         }
 
-        private static float HideMin(Data d) => d.Profile != null ? d.Profile.hideMin : 0.8f;
-        private static float HideMax(Data d) => d.Profile != null ? Mathf.Max(d.Profile.hideMin, d.Profile.hideMax) : 2f;
+        private static float HideMin(Data d) => (d.Profile != null ? d.Profile.hideMin : 0.8f) * d.Brain.Tactics.hideScale;
+        private static float HideMax(Data d) => (d.Profile != null ? Mathf.Max(d.Profile.hideMin, d.Profile.hideMax) : 2f) * d.Brain.Tactics.hideScale;
         private static float PeekMax(Data d) => d.Profile != null ? d.Profile.peekMaxTime : 3f;
 
         public override void End(IMonoAgent agent, Data data)

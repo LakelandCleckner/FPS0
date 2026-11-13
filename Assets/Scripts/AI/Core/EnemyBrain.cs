@@ -100,6 +100,14 @@ namespace Combat.AI
         public event Action<EnemyDecision> Decided;
 
         public EnemyBehaviourProfileSO Profile { get; private set; }
+
+        // The profile's tactics for this enemy's rank
+        public RankTactics Tactics { get; private set; } = RankTactics.Neutral;
+        public EnemyRank Rank => definition != null ? definition.Rank : EnemyRank.Minor;
+
+        // Cost added to open-ground shooting while there's cover, and to cover actions for ranks that prefer the open
+        public float OpenShootingExtraCost => hasCombatCover ? Mathf.Max(0f, Tactics.coverPreference) : 0f;
+        public float CoverExtraCost => Mathf.Max(0f, -Tactics.coverPreference);
         public GoapActionProvider Provider => provider;
         public AgentBehaviour Agent => agent;
         public EnemyPerception Perception => perception;
@@ -246,6 +254,7 @@ namespace Combat.AI
             var type = EnemyAgentTypes.Get(profile);
             if (type == null) return;
             Profile = profile;
+            Tactics = profile != null ? profile.TacticsFor(Rank) : RankTactics.Neutral;
             if (ranged != null) ranged.ApplyProfile(profile);
             if (bound && provider.AgentType == type) return;
 
@@ -343,7 +352,7 @@ namespace Combat.AI
             if (aimedSince < 0f) aimedSince = now;
             if (aimRolled || now - aimedSince < Profile.dodgeReactTime) return;
             aimRolled = true;
-            TryDodge(Profile.dodgeChanceAimed, Vector3.zero);
+            TryDodge(Profile.dodgeChanceAimed * Tactics.dodgeChanceScale, Vector3.zero);
         }
 
         // Danger at a point (explosives, grenades): enemies in range may dodge away from it
@@ -356,7 +365,7 @@ namespace Combat.AI
                 if (b == null || b.Profile == null || !b.Profile.dodge) continue;
                 Vector3 away = Flat(b.transform.position - point);
                 if (away.sqrMagnitude > r2) continue;
-                b.TryDodge(b.Profile.dodgeChanceDanger, away.sqrMagnitude > 0.01f ? away.normalized : b.transform.right);
+                b.TryDodge(b.Profile.dodgeChanceDanger * b.Tactics.dodgeChanceScale, away.sqrMagnitude > 0.01f ? away.normalized : b.transform.right);
             }
         }
 
@@ -452,7 +461,7 @@ namespace Combat.AI
         {
             float now = Time.time;
             if (coverHoldUntil < 0f && hasCombatCover && Flat(transform.position - combatCover.Point).magnitude <= CoverTolerance)
-                coverHoldUntil = now + UnityEngine.Random.Range(Profile.coverHoldMin, Mathf.Max(Profile.coverHoldMin, Profile.coverHoldMax));
+                coverHoldUntil = now + UnityEngine.Random.Range(Profile.coverHoldMin, Mathf.Max(Profile.coverHoldMin, Profile.coverHoldMax)) * Tactics.coverHoldScale;
 
             if (now < nextCombatCoverCheck) return hasCombatCover;
 
@@ -590,7 +599,7 @@ namespace Combat.AI
         private float PreferredRange(float min, float max)
         {
             float shift = Profile.rangedBandShift * (max - min);
-            float pref = Profile.rangedPreferredRange;
+            float pref = Profile.rangedPreferredRange + Tactics.rangeShift;
             if (Band == DefensiveBand.Aggressive) pref -= shift;
             else if (Band == DefensiveBand.Defensive) pref += shift;
             return Mathf.Clamp(pref, min, max);
@@ -653,7 +662,7 @@ namespace Combat.AI
             if (!damaged || Profile == null) return;
 
             AddDefensiveness(Profile.defDamage * lost);
-            if (perception.HasTarget) TryDodge(Profile.dodgeChanceHit, Vector3.zero);
+            if (perception.HasTarget) TryDodge(Profile.dodgeChanceHit * Tactics.dodgeChanceScale, Vector3.zero);
 
             // Hit from beyond our reach: don't stand there, close in or move
             if (IsRangedProfile && perception.HasTarget && TargetDistance > ranged.MaxRange)
