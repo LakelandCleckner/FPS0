@@ -22,6 +22,10 @@ public class EnemyBehaviourProfileEditor : Editor
     {
         "coverWeights", "coverHoldMin", "coverHoldMax", "hideMin", "hideMax", "peekBursts", "peekMaxTime"
     };
+    private static readonly string[] Dodge =
+    {
+        "dodgeReactTime", "dodgeChanceAimed", "dodgeChanceHit", "dodgeChanceDanger", "dodgeCooldown", "dodgeDistance", "dodgeSpeed"
+    };
     private static readonly string[] Defensive =
     {
         "defDamage", "defAimedAt", "defAllyDeath", "defAllyDeathRadius", "defProximity", "defOutranged", "defDecay",
@@ -37,6 +41,8 @@ public class EnemyBehaviourProfileEditor : Editor
         if (p.melee) Draw(Melee);
         if (p.kamikaze) Draw(Kamikaze);
         if (p.shieldCover) Draw(Cover);
+        Draw(new[] { "dodge" });
+        if (p.dodge) Draw(Dodge);
         if (p.ranged)
         {
             Draw(Ranged);

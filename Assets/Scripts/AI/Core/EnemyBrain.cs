@@ -13,7 +13,7 @@ namespace Combat.AI
     public enum DefensiveBand { Aggressive, Normal, Defensive }
 
     // Decisions an enemy announces (barks, debug, later squads listen to these).
-    public enum EnemyDecision { Spotted, LostTarget, Engaging, Repositioning, Advancing, Reloading, Flinched, Outranged, TakingCover, Peeking, Suppressing }
+    public enum EnemyDecision { Spotted, LostTarget, Engaging, Repositioning, Advancing, Reloading, Flinched, Outranged, TakingCover, Peeking, Suppressing, Dodging }
 
     // Binds the GOAP agent type for this enemy's behaviour profile and asks for every goal at once;
     // the planner picks the cheapest one it can reach. Re-plans the moment perception, the shield,
@@ -64,6 +64,13 @@ namespace Combat.AI
         private bool hasCover;
         private Vector3 coverPoint;
         private float nextCoverCheck;
+
+        private EnemyMover mover;
+        private float aimedSince = -1f;
+        private bool aimRolled;
+        private float nextDodge;
+        private const float DodgeMaxTime = 0.8f;
+        private static readonly float[] DodgeScales = { 1f, 0.6f };
 
         private bool hadTarget;
         private float lastHealth = -1f;
@@ -163,6 +170,7 @@ namespace Combat.AI
             health = GetComponent<CombatantHealth>();
             ranged = GetComponent<EnemyRangedAttack>();
             melee = GetComponent<EnemyMeleeAttack>();
+            mover = GetComponent<EnemyMover>();
             // The provider needs its agent type before its own Start
             Bind(ResolveProfile());
         }
@@ -211,6 +219,9 @@ namespace Combat.AI
             Band = DefensiveBand.Normal;
             ClearFiringPoint();
             ClearCombatCover();
+            aimedSince = -1f;
+            aimRolled = false;
+            nextDodge = 0f;
             recentCount = 0;
             recentHead = 0;
             ReleaseToken();
@@ -274,6 +285,7 @@ namespace Combat.AI
             UpdateShield();
             if (Profile == null) return;
             UpdateDefensiveness(Time.deltaTime);
+            UpdateDodge();
             if (IsRangedProfile) UpdateRanged();
         }
 
@@ -314,6 +326,76 @@ namespace Combat.AI
             Band = band;
             // Shooters re-pick their firing point when the hold allows; no plan reset mid-burst
             if (!IsRangedProfile) Replan();
+        }
+
+        // ---- dodge ----
+
+        // Aimed at long enough: one roll per aim
+        private void UpdateDodge()
+        {
+            if (!Profile.dodge || !perception.HasTarget || !perception.AimedAt)
+            {
+                aimedSince = -1f;
+                aimRolled = false;
+                return;
+            }
+            float now = Time.time;
+            if (aimedSince < 0f) aimedSince = now;
+            if (aimRolled || now - aimedSince < Profile.dodgeReactTime) return;
+            aimRolled = true;
+            TryDodge(Profile.dodgeChanceAimed, Vector3.zero);
+        }
+
+        // Danger at a point (explosives, grenades): enemies in range may dodge away from it
+        public static void Danger(Vector3 point, float radius)
+        {
+            float r2 = radius * radius;
+            for (int i = 0; i < Active.Count; i++)
+            {
+                var b = Active[i];
+                if (b == null || b.Profile == null || !b.Profile.dodge) continue;
+                Vector3 away = Flat(b.transform.position - point);
+                if (away.sqrMagnitude > r2) continue;
+                b.TryDodge(b.Profile.dodgeChanceDanger, away.sqrMagnitude > 0.01f ? away.normalized : b.transform.right);
+            }
+        }
+
+        // Sidestep across the target's line (or along away when given); off cooldown, not mid-swing, not hidden in cover
+        private bool TryDodge(float chance, Vector3 away)
+        {
+            var p = Profile;
+            float now = Time.time;
+            if (p == null || !p.dodge || now < nextDodge || mover == null || mover.Dodging) return false;
+            if (melee != null && melee.IsSwinging) return false;
+            if (away == Vector3.zero && hasCombatCover && Flat(transform.position - combatCover.Point).magnitude <= CoverTolerance) return false;
+            if (UnityEngine.Random.value > chance) return false;
+
+            Vector3 dir = away;
+            if (dir == Vector3.zero)
+            {
+                Vector3 toTarget = Flat(perception.BelievedPosition - transform.position);
+                Vector3 side = toTarget.sqrMagnitude > 0.01f ? Vector3.Cross(Vector3.up, toTarget.normalized) : transform.right;
+                dir = UnityEngine.Random.value < 0.5f ? side : -side;
+            }
+
+            // Try the chosen side, then the other, full length then shorter
+            for (int s = 0; s < 2; s++)
+            {
+                Vector3 d = s == 0 ? dir : (away == Vector3.zero ? -dir : dir);
+                for (int i = 0; i < DodgeScales.Length; i++)
+                {
+                    Vector3 to = transform.position + d * p.dodgeDistance * DodgeScales[i];
+                    if (!NavMesh.SamplePosition(to, out var hit, 0.6f, NavMesh.AllAreas)) continue;
+                    if (NavMesh.Raycast(transform.position, hit.position, out _, NavMesh.AllAreas)) continue;
+                    mover.Dodge(hit.position, p.dodgeSpeed, DodgeMaxTime);
+                    nextDodge = now + p.dodgeCooldown;
+                    if (ranged != null) ranged.ResetAim();
+                    Raise(EnemyDecision.Dodging);
+                    return true;
+                }
+            }
+            nextDodge = now + 0.5f;   // boxed in: try again shortly
+            return false;
         }
 
         private void AddDefensiveness(float amount)
@@ -571,6 +653,7 @@ namespace Combat.AI
             if (!damaged || Profile == null) return;
 
             AddDefensiveness(Profile.defDamage * lost);
+            if (perception.HasTarget) TryDodge(Profile.dodgeChanceHit, Vector3.zero);
 
             // Hit from beyond our reach: don't stand there, close in or move
             if (IsRangedProfile && perception.HasTarget && TargetDistance > ranged.MaxRange)

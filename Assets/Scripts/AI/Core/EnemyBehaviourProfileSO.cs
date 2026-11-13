@@ -114,6 +114,24 @@ namespace Combat.AI
         [Tooltip("Seconds without sight of the target before the weapon is lowered (raising again plays the wind-up).")]
         public float lowerAfter = 2.5f;
 
+        [Header("Dodge")]
+        [Tooltip("Quick sidestep when aimed at, hit, or near announced danger (explosives).")]
+        public bool dodge = false;
+        [Tooltip("Seconds aimed at before it may dodge.")]
+        public float dodgeReactTime = 0.25f;
+        [Tooltip("Chance to dodge each time it is aimed at long enough.")]
+        [Range(0f, 1f)] public float dodgeChanceAimed = 0.5f;
+        [Tooltip("Chance to dodge when hit.")]
+        [Range(0f, 1f)] public float dodgeChanceHit = 0.25f;
+        [Tooltip("Chance to dodge announced danger in range.")]
+        [Range(0f, 1f)] public float dodgeChanceDanger = 0.9f;
+        [Tooltip("Seconds between dodges.")]
+        public float dodgeCooldown = 3f;
+        [Tooltip("Sidestep length (m).")]
+        public float dodgeDistance = 2.5f;
+        [Tooltip("Dodge speed (m/s).")]
+        public float dodgeSpeed = 7f;
+
         [Header("Defensiveness")]
         [Tooltip("Added per fraction of max health lost.")]
         public float defDamage = 1.5f;

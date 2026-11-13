@@ -68,7 +68,13 @@ namespace Combat.AI
         private object pointOwner;
         private Vector3 steerPoint;
 
+        // Dodge: a short burst of speed to a spot, over everything else
+        private Vector3 dodgePoint;
+        private float dodgeSpeed;
+        private float dodgeUntil;
+
         public bool HasLook => lookOwner != null;
+        public bool Dodging => Time.time < dodgeUntil;
         public Vector3 LookPoint => lookTransform != null ? lookTransform.position : lookPoint;
         public bool Facing => faceOwner != null;
         public Vector3 Velocity => nav != null ? nav.velocity : Vector3.zero;
@@ -123,6 +129,7 @@ namespace Combat.AI
             lookTransform = null;
             faceOwner = null;
             pointOwner = null;
+            dodgeUntil = 0f;
             currentTarget = null;
             shouldMove = false;
             lastAppliedSpeed = -1f;
@@ -220,6 +227,15 @@ namespace Combat.AI
             Halt();
         }
 
+        // Dash to this spot at this speed; gives up after maxTime
+        public void Dodge(Vector3 point, float speed, float maxTime)
+        {
+            dodgePoint = point;
+            dodgeSpeed = speed;
+            dodgeUntil = Time.time + maxTime;
+            if (nav.isActiveAndEnabled && nav.isOnNavMesh) nav.SetDestination(point);
+        }
+
         public bool AtPoint(Vector3 point, float tolerance)
         {
             Vector3 d = transform.position - point;
@@ -270,7 +286,9 @@ namespace Combat.AI
             // Wind-up: keep closing at a fraction of speed; plant from the first damage frame
             bool swinging = melee != null && melee.IsSwinging;
             bool windupMove = swinging && melee.InWindup && melee.WindupMoveSpeed > 0f;
-            float desired = BaseMoveSpeed * speedFactor * (windupMove ? melee.WindupMoveSpeed : 1f);
+            bool dodging = Dodging && !swinging;
+            if (dodging && AtPoint(dodgePoint, PointStop)) { dodgeUntil = 0f; dodging = false; }
+            float desired = dodging ? dodgeSpeed : BaseMoveSpeed * speedFactor * (windupMove ? melee.WindupMoveSpeed : 1f);
             if (!Mathf.Approximately(desired, lastAppliedSpeed))
             {
                 nav.speed = desired;
@@ -291,6 +309,17 @@ namespace Combat.AI
                 return;
             }
             holding = false;
+
+            if (dodging && nav.isActiveAndEnabled && nav.isOnNavMesh)
+            {
+                ResetApproach();
+                nav.stoppingDistance = PointStop;
+                Vector3 off = nav.destination - dodgePoint;
+                off.y = 0f;
+                if ((!nav.hasPath && !nav.pathPending) || off.sqrMagnitude > 0.04f) nav.SetDestination(dodgePoint);
+                nav.isStopped = false;
+                return;
+            }
 
             if (pointOwner != null && nav.isActiveAndEnabled && nav.isOnNavMesh)
             {
