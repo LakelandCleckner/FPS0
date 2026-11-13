@@ -39,13 +39,93 @@ MonoBehaviour:
     nearCover: 0.4
     exposure: 0.3
     keepCurrent: 0.6
-  advanceSpeedFactor: 1
+  walkSpeed: 1.5
+  runSpeed: 3.5
+  runDistance: 6
   faceWhileMoving: 1
+  fireWhileWalking: 1
+  pointHoldMin: 2
+  pointHoldMax: 4
+  strafe: 1
+  strafeDistance: 2.5
+  strafeIntervalMin: 1.2
+  strafeIntervalMax: 2.5
+  suppress: 1
+  suppressTime: 2
+  suppressSpread: 3
+  useCover: 1
+  coverWeights:
+    range: 1
+    travel: 0.6
+    allySpacing: 1
+    nearCover: 0
+    exposure: 0.3
+    keepCurrent: 0.8
+  coverHoldMin: 8
+  coverHoldMax: 15
+  hideMin: 0.8
+  hideMax: 2
+  peekBursts: 1
+  peekMaxTime: 3
   aimErrorPerTargetSpeed: 0.6
   burstSeparationJitter: 0
   flinchDamageFraction: 0.1
   flinchRecovery: 0.6
   lowerAfter: 2.5
+  dodge: 1
+  dodgeReactTime: 0.25
+  dodgeChanceAimed: 0.5
+  dodgeChanceHit: 0.25
+  dodgeChanceDanger: 0.9
+  dodgeCooldown: 3
+  dodgeDistance: 2.5
+  dodgeSpeed: 7
+  useRankTactics: 1
+  minorTactics:
+    coverPreference: 2
+    rangeShift: -3
+    hideScale: 0.7
+    extraPeekBursts: 0
+    coverHoldScale: 0.7
+    strafeIntervalScale: 0.8
+    dodgeChanceScale: 1
+    speedScale: 1.1
+  majorTactics:
+    coverPreference: 5
+    rangeShift: 0
+    hideScale: 1
+    extraPeekBursts: 1
+    coverHoldScale: 1.3
+    strafeIntervalScale: 1
+    dodgeChanceScale: 1
+    speedScale: 1
+  eliteTactics:
+    coverPreference: 4
+    rangeShift: -1
+    hideScale: 0.8
+    extraPeekBursts: 1
+    coverHoldScale: 1
+    strafeIntervalScale: 0.8
+    dodgeChanceScale: 1.5
+    speedScale: 1.1
+  minibossTactics:
+    coverPreference: -3
+    rangeShift: -4
+    hideScale: 0.5
+    extraPeekBursts: 2
+    coverHoldScale: 0.6
+    strafeIntervalScale: 0.7
+    dodgeChanceScale: 2
+    speedScale: 1.15
+  bossTactics:
+    coverPreference: -3
+    rangeShift: -4
+    hideScale: 0.5
+    extraPeekBursts: 2
+    coverHoldScale: 0.6
+    strafeIntervalScale: 0.7
+    dodgeChanceScale: 2
+    speedScale: 1.15
   defDamage: 1.5
   defAimedAt: 0.25
   defAllyDeath: 0.2

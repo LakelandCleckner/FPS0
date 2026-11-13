@@ -185,6 +185,12 @@ namespace Combat.AI
             sb.Clear();
             sb.Append(b.name).Append("  [").Append(p.Status).Append(']').Append('\n');
             sb.Append(b.Band).Append(' ').Append(b.Defensiveness.ToString("0.00"));
+            if (b.Squad != null)
+            {
+                sb.Append("  ").Append(b.Role);
+                if (b.Role == SquadRole.Flanker) sb.Append(b.FlankSide > 0 ? " R" : " L");
+                sb.Append(" (").Append(b.Squad.Members.Count).Append(')');
+            }
 
             var action = b.Agent != null ? b.Agent.ActionState.Action : null;
             var plan = b.Provider != null ? b.Provider.CurrentPlan : null;

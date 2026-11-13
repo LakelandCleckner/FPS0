@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8402abc1c81dbb242947a22c3f752b4b, type: 3}
+  m_Name: GunnerSquad_RiflemanMiniboss
+  m_EditorClassIdentifier: 
+  id: 
+  displayName: 
+  members:
+  - variant: {fileID: 11400000, guid: 2637c1cf973f4f4681cfc254ccae9a9d, type: 2}
+    count: 4
+    leader: 0
+  - variant: {fileID: 11400000, guid: 2acc34cf77db46898b4339769e55fee8, type: 2}
+    count: 1
+    leader: 1
+  - variant: {fileID: 11400000, guid: 6fb86ec905774aef8a9d1c42f11c0636, type: 2}
+    count: 2
+    leader: 0
+  - variant: {fileID: 11400000, guid: 2f8a073ed33a4b1ead1deb4425818512, type: 2}
+    count: 2
+    leader: 0
+  spread: 3

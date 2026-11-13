@@ -13,7 +13,7 @@ namespace Combat.AI
     public enum DefensiveBand { Aggressive, Normal, Defensive }
 
     // Decisions an enemy announces (barks, debug, later squads listen to these).
-    public enum EnemyDecision { Spotted, LostTarget, Engaging, Repositioning, Advancing, Reloading, Flinched, Outranged, TakingCover, Peeking, Suppressing, Dodging }
+    public enum EnemyDecision { Spotted, LostTarget, Engaging, Repositioning, Advancing, Reloading, Flinched, Outranged, TakingCover, Peeking, Suppressing, Dodging, LeaderLost }
 
     // Binds the GOAP agent type for this enemy's behaviour profile and asks for every goal at once;
     // the planner picks the cheapest one it can reach. Re-plans the moment perception, the shield,
@@ -101,8 +101,17 @@ namespace Combat.AI
 
         public EnemyBehaviourProfileSO Profile { get; private set; }
 
-        // The profile's tactics for this enemy's rank
+        // The profile's tactics for this enemy's rank, adjusted for its squad role
         public RankTactics Tactics { get; private set; } = RankTactics.Neutral;
+
+        public EnemySquad Squad { get; private set; }
+        public SquadRole Role { get; private set; }
+        public int FlankSide { get; private set; }
+        // Suppressors keep firing at the last known position longer
+        public float SuppressScale => Role == SquadRole.Suppressor ? 2f : 1f;
+        private const float LeaderRangeShift = -2f;
+        private const float SuppressorRangeShift = 2f;
+        private const float SuppressorCoverBias = 2f;
         public EnemyRank Rank => definition != null ? definition.Rank : EnemyRank.Minor;
 
         // Cost added to open-ground shooting while there's cover, and to cover actions for ranks that prefer the open
@@ -187,6 +196,7 @@ namespace Combat.AI
         {
             Active.Add(this);
             perception.Changed += HandlePerceptionChanged;
+            perception.Contact += HandleContact;
             AnyDied += HandleAllyDied;
             if (definition != null) definition.Applied += HandleDefinitionApplied;
             if (health != null) { health.OnDeath += HandleDeath; health.HealthChanged += HandleHealthChanged; }
@@ -198,6 +208,7 @@ namespace Combat.AI
             int i = Active.IndexOf(this);
             if (i >= 0) { Active[i] = Active[Active.Count - 1]; Active.RemoveAt(Active.Count - 1); }
             perception.Changed -= HandlePerceptionChanged;
+            perception.Contact -= HandleContact;
             AnyDied -= HandleAllyDied;
             if (definition != null) definition.Applied -= HandleDefinitionApplied;
             if (health != null) { health.OnDeath -= HandleDeath; health.HealthChanged -= HandleHealthChanged; }
@@ -205,6 +216,7 @@ namespace Combat.AI
             ReleaseToken();
             CoverFinder.Release(this);
             PositionScorer.Release(this);
+            LeaveSquad();
         }
 
         private void Start()
@@ -254,7 +266,7 @@ namespace Combat.AI
             var type = EnemyAgentTypes.Get(profile);
             if (type == null) return;
             Profile = profile;
-            Tactics = profile != null ? profile.TacticsFor(Rank) : RankTactics.Neutral;
+            RefreshTactics();
             if (ranged != null) ranged.ApplyProfile(profile);
             if (bound && provider.AgentType == type) return;
 
@@ -500,7 +512,8 @@ namespace Combat.AI
                 AllySpacing = p.allySpacing,
                 Weights = p.coverWeights,
                 HasCurrent = hasCombatCover,
-                Current = combatCover.Point
+                Current = combatCover.Point,
+                FlankDir = FlankDirection(threat)
             };
 
             bool had = hasCombatCover;
@@ -573,7 +586,8 @@ namespace Combat.AI
                 Weights = p.fireWeights,
                 HasCurrent = hasFiringPoint && firingPointValid,
                 Current = firingPoint,
-                Area = FiringArea
+                Area = FiringArea,
+                FlankDir = FlankDirection(threat)
             };
 
             if (RecordPoints && DebugCandidates == null) DebugCandidates = new List<ScoredPoint>(64);
@@ -637,6 +651,65 @@ namespace Combat.AI
 
         public bool AcquireRangedToken() => AttackTokens.TryAcquire(perception.Target, this, AttackKind.Ranged);
 
+        // ---- squad ----
+
+        internal void JoinSquad(EnemySquad squad) => Squad = squad;
+
+        public void LeaveSquad()
+        {
+            var s = Squad;
+            ClearSquad();
+            if (s != null) s.Remove(this);
+        }
+
+        internal void ClearSquad()
+        {
+            Squad = null;
+            SetRole(SquadRole.None, 0);
+        }
+
+        internal void SetRole(SquadRole role, int side)
+        {
+            Role = role;
+            FlankSide = side;
+            RefreshTactics();
+        }
+
+        // Rank tactics, then the role: leaders push in, suppressors hang back in cover
+        private void RefreshTactics()
+        {
+            var t = Profile != null ? Profile.TacticsFor(Rank) : RankTactics.Neutral;
+            if (Role == SquadRole.Leader) t.rangeShift += LeaderRangeShift;
+            else if (Role == SquadRole.Suppressor)
+            {
+                t.rangeShift += SuppressorRangeShift;
+                if (t.coverPreference >= 0f) t.coverPreference += SuppressorCoverBias;
+            }
+            Tactics = t;
+        }
+
+        // Flankers favour points off to one side of the target, away from the squad's line
+        public Vector3 FlankDirection(Vector3 threat)
+        {
+            if (Role != SquadRole.Flanker || Squad == null) return Vector3.zero;
+            Vector3 d = Flat(Squad.Center - threat);
+            if (d.sqrMagnitude < 0.01f) d = Flat(transform.position - threat);
+            if (d.sqrMagnitude < 0.01f) return Vector3.zero;
+            return Vector3.Cross(Vector3.up, d.normalized) * FlankSide;
+        }
+
+        // Leader down: shaken; Minors break and fall back
+        public void OnLeaderLost()
+        {
+            AddDefensiveness(Rank == EnemyRank.Minor ? 1f : 0.5f);
+            Raise(EnemyDecision.LeaderLost);
+        }
+
+        private void HandleContact(Vector3 position)
+        {
+            if (Squad != null) Squad.ShareContact(this, position);
+        }
+
         public void ReleaseRangedToken() => AttackTokens.Release(perception.Target, this, AttackKind.Ranged);
 
         // ---- events ----
@@ -679,6 +752,8 @@ namespace Combat.AI
         {
             ReleaseToken();
             AnyDied?.Invoke(this);
+            if (Squad != null) Squad.MemberDied(this);
+            LeaveSquad();
         }
 
         private void HandleAllyDied(EnemyBrain other)

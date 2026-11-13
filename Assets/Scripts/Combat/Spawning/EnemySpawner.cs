@@ -197,6 +197,33 @@ namespace Combat.Spawning
                 var h = Spawn(typeId, pos);
                 if (h != null) spawned.Add(h);
             }
+            // A group fights as a squad
+            if (spawned.Count > 1) Combat.AI.EnemySquad.Form(spawned);
+            return spawned;
+        }
+
+        // A mixed squad from a squad asset, scattered around a point; the ticked member leads.
+        public List<EnemyPoolHandle> SpawnSquad(Combat.AI.EnemySquadSO squad, Vector3 center)
+        {
+            var spawned = new List<EnemyPoolHandle>();
+            if (squad == null) return spawned;
+            var brains = new List<Combat.AI.EnemyBrain>();
+            Combat.AI.EnemyBrain leader = null;
+            foreach (var m in squad.members)
+            {
+                if (m.variant == null) continue;
+                for (int i = 0; i < Mathf.Max(1, m.count); i++)
+                {
+                    var h = Spawn(m.variant, center + ScatterOffset(squad.spread));
+                    if (h == null) continue;
+                    spawned.Add(h);
+                    var b = h.GameObject.GetComponent<Combat.AI.EnemyBrain>();
+                    if (b == null) continue;
+                    brains.Add(b);
+                    if (m.leader && leader == null) leader = b;
+                }
+            }
+            Combat.AI.EnemySquad.Form(brains, leader, squad.Label);
             return spawned;
         }
 

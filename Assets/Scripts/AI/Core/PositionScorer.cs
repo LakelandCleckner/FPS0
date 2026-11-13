@@ -62,6 +62,8 @@ namespace Combat.AI
         public bool HasCurrent;
         public Vector3 Current;
         public Collider Area;
+        // Squad flankers: bonus for points off the threat in this direction (zero = none)
+        public Vector3 FlankDir;
     }
 
     // Weighted NavMesh point choice with a per-frame evaluation cap; callers keep their old point and retry next frame.
@@ -75,6 +77,7 @@ namespace Combat.AI
         private const int RingDirections = 10;
         private const int ThreatDirections = 12;
         private const float CoverEdgeDistance = 1.2f;
+        public const float FlankWeight = 0.8f;
 
         private static readonly Dictionary<object, Vector3> reserved = new Dictionary<object, Vector3>();
         private static readonly List<Vector3> candidates = new List<Vector3>(64);
@@ -111,6 +114,14 @@ namespace Combat.AI
         }
 
         public static void Release(object owner) => reserved.Remove(owner);
+
+        // How well a point sits on the flank side of the threat
+        public static float FlankBonus(Vector3 flankDir, Vector3 threat, Vector3 p)
+        {
+            if (flankDir.sqrMagnitude < 0.01f) return 0f;
+            Vector3 off = Flat(p - threat);
+            return off.sqrMagnitude > 0.01f ? FlankWeight * Vector3.Dot(off.normalized, flankDir) : 0f;
+        }
 
         public static bool TryGetReserved(object owner, out Vector3 point) => reserved.TryGetValue(owner, out point);
 
@@ -196,6 +207,7 @@ namespace Combat.AI
             }
 
             if (q.HasCurrent && Flat(p - q.Current).sqrMagnitude < 1f) score += w.keepCurrent;
+            score += FlankBonus(q.FlankDir, q.Threat, p);
             return true;
         }
 

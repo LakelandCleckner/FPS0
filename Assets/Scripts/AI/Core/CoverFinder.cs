@@ -29,6 +29,7 @@ namespace Combat.AI
         public PointWeights Weights;
         public bool HasCurrent;
         public Vector3 Current;
+        public Vector3 FlankDir;
     }
 
     // Finds cover at runtime from the NavMesh and level geometry: NavMesh edge points beside obstacles
@@ -223,6 +224,7 @@ namespace Combat.AI
 
             if (q.HasCurrent && Flat(p - q.Current).sqrMagnitude < SameSpot * SameSpot) score += w.keepCurrent;
             if (spot.Half) score += HalfCoverBonus;
+            score += PositionScorer.FlankBonus(q.FlankDir, q.Threat, p);
             return true;
         }
 

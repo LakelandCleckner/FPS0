@@ -242,7 +242,7 @@ namespace Combat.Enemies
                 return;
             }
 
-            float lowerAfter = profile != null ? profile.lowerAfter : 2.5f;
+            float lowerAfter = (profile != null ? profile.lowerAfter : 2.5f) * SuppressScale;
             bool wantAim = Engaged && perception != null && perception.HasTarget && now - lastVisibleTime <= lowerAfter;
             SetAiming(wantAim);
             if (!aiming) { if (CurrentPhase == Phase.Bursting) EndBurst(); CurrentPhase = Phase.Lowered; return; }
@@ -283,8 +283,10 @@ namespace Combat.Enemies
         private bool CanSuppress(float now)
         {
             if (profile == null || !profile.suppress || perception == null || !perception.HasTarget) return false;
-            return now - lastVisibleTime <= Mathf.Min(profile.suppressTime, profile.lowerAfter);
+            return now - lastVisibleTime <= Mathf.Min(profile.suppressTime, profile.lowerAfter) * SuppressScale;
         }
+
+        private float SuppressScale => brain != null ? brain.SuppressScale : 1f;
 
         private bool CanStartBurst(float now, bool visible)
         {

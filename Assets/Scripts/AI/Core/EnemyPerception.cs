@@ -73,6 +73,8 @@ namespace Combat.AI
         // Fired when HasTarget or HasLastKnown flips, so the brain can re-plan straight away.
         public event Action Changed;
         public event Action<CombatStatus> StatusChanged;
+        // Our own sight, hearing or a hit put the target here (not shared contact)
+        public event Action<Vector3> Contact;
 
         private CombatantHealth health;
         private int sightMask;
@@ -236,6 +238,16 @@ namespace Combat.AI
 
         private void MarkContact(Vector3 position)
         {
+            lastContactTime = Time.time;
+            lastSeenPosition = position;
+            Set(true, false);
+            Contact?.Invoke(position);
+        }
+
+        // A squadmate's contact: engage toward it; never overrides our own sight
+        public void ShareContact(Vector3 position)
+        {
+            if (Target == null || !AITargets.PlayerAlive || TargetVisible) return;
             lastContactTime = Time.time;
             lastSeenPosition = position;
             Set(true, false);

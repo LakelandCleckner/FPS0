@@ -10,6 +10,7 @@ namespace Combat.Testing
 {
     // THROWAWAY spawn tester. Comma spawns one, period spawns a group of the id or variant below.
     // H/J/K/L spawn the current type as Minor/Major/Elite/Miniboss (Shift = group), G/Shift+G cycle the type.
+    // B spawns the current squad asset, Shift+B cycles squads.
     // Spawns in front of this object (or the camera) so they land in view.
     public class SpawnTestProbe : MonoBehaviour
     {
@@ -24,6 +25,10 @@ namespace Combat.Testing
         [Tooltip("Variants for the rank keys. In the editor every variant in the project is used instead.")]
         [SerializeField] private List<EnemyVariantSO> variants = new List<EnemyVariantSO>();
         [SerializeField] private bool showOverlay = true;
+
+        [Header("Squad Key")]
+        [Tooltip("Squads for the B key. In the editor every squad asset in the project is used instead.")]
+        [SerializeField] private List<Combat.AI.EnemySquadSO> squads = new List<Combat.AI.EnemySquadSO>();
 
         [Header("Placement")]
         [Tooltip("How far in front of this object to spawn.")]
@@ -44,6 +49,7 @@ namespace Combat.Testing
 
         private readonly List<SpawnType> types = new List<SpawnType>();
         private int typeIndex;
+        private int squadIndex;
         private string lastMessage = "";
         private PlayerInputRouter input;
         private GUIStyle style;
@@ -68,9 +74,22 @@ namespace Combat.Testing
             }
 
             var kb = Keyboard.current;
-            if (kb == null || types.Count == 0) return;
-
+            if (kb == null) return;
             bool shift = kb.shiftKey.isPressed;
+
+            if (kb[Key.B].wasPressedThisFrame && squads.Count > 0)
+            {
+                if (shift) { squadIndex = (squadIndex + 1) % squads.Count; lastMessage = "Squad: " + squads[squadIndex].Label; }
+                else
+                {
+                    var s = squads[squadIndex];
+                    var list = spawner.SpawnSquad(s, SpawnPoint());
+                    Report(list.Count > 0, s.Label, list.Count);
+                }
+            }
+
+            if (types.Count == 0) return;
+
             if (kb[Key.G].wasPressedThisFrame)
             {
                 typeIndex = (typeIndex + (shift ? types.Count - 1 : 1)) % types.Count;
@@ -116,6 +135,18 @@ namespace Combat.Testing
                 if (v != null) all.Add(v);
             }
 #endif
+#if UNITY_EDITOR
+            squads.Clear();
+            foreach (var guid in UnityEditor.AssetDatabase.FindAssets("t:EnemySquadSO"))
+            {
+                var s = UnityEditor.AssetDatabase.LoadAssetAtPath<Combat.AI.EnemySquadSO>(UnityEditor.AssetDatabase.GUIDToAssetPath(guid));
+                if (s != null) squads.Add(s);
+            }
+#endif
+            squads.RemoveAll(s => s == null);
+            squads.Sort((a, b) => string.CompareOrdinal(a.name, b.name));
+            squadIndex = Mathf.Clamp(squadIndex, 0, Mathf.Max(0, squads.Count - 1));
+
             all.RemoveAll(v => v == null || v.archetype == null);
             all.Sort((a, b) => string.CompareOrdinal(a.name, b.name));
 
@@ -184,9 +215,11 @@ namespace Combat.Testing
                 sb.Append(r < 3 ? "   " : "\n");
             }
             sb.Append("Shift = x").Append(groupCount);
+            if (squads.Count > 0) sb.Append("\n[B] ").Append(squads[squadIndex].Label).Append("  (Shift+B next)");
             if (lastMessage.Length > 0) sb.Append("\n").Append(lastMessage);
 
-            GUI.Box(new Rect(10, 10, 360, lastMessage.Length > 0 ? 78 : 60), sb.ToString(), style);
+            float h = 60f + (squads.Count > 0 ? 18f : 0f) + (lastMessage.Length > 0 ? 18f : 0f);
+            GUI.Box(new Rect(10, 10, 360, h), sb.ToString(), style);
         }
 
         private void OnDrawGizmosSelected()

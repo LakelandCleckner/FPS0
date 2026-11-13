@@ -39,14 +39,19 @@ namespace Combat.AI.Goap
             return distance <= data.Tolerance;
         }
 
-        // Runs every frame while moving (PerformWhileMoving); done once in range
+        // Runs every frame while moving (PerformWhileMoving); done once in range.
+        // Stops when the destination is dropped (e.g. cover picked instead) or the mag runs dry, so the plan moves on
         public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
         {
+            if (!HasDestination(data)) return ActionRunState.Stop;
+            if (data.Ranged != null && data.Ranged.NeedsReload) return ActionRunState.Stop;
             UpdateGait(agent, data);
             UpdateFacing(data);
             UpdateFiring(data);
             return context.IsInRange ? ActionRunState.Completed : ActionRunState.Continue;
         }
+
+        protected virtual bool HasDestination(Data data) => data.Brain == null || data.Brain.HasFiringPoint;
 
         // Run long moves, walk short ones; 1 m of hysteresis so a move near the threshold doesn't flip gait
         private static void UpdateGait(IMonoAgent agent, Data data)
@@ -311,6 +316,8 @@ namespace Combat.AI.Goap
             Steer(data);
             return base.Perform(agent, data, context);
         }
+
+        protected override bool HasDestination(Data data) => data.Brain != null && data.Brain.HasCombatCover;
 
         // The cover can move under us (re-picked): follow it
         private static void Steer(Data data)
