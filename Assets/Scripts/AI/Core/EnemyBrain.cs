@@ -13,7 +13,7 @@ namespace Combat.AI
     public enum DefensiveBand { Aggressive, Normal, Defensive }
 
     // Decisions an enemy announces (barks, debug, later squads listen to these).
-    public enum EnemyDecision { Spotted, LostTarget, Engaging, Repositioning, Advancing, Reloading, Flinched, Outranged, TakingCover, Peeking }
+    public enum EnemyDecision { Spotted, LostTarget, Engaging, Repositioning, Advancing, Reloading, Flinched, Outranged, TakingCover, Peeking, Suppressing }
 
     // Binds the GOAP agent type for this enemy's behaviour profile and asks for every goal at once;
     // the planner picks the cheapest one it can reach. Re-plans the moment perception, the shield,
@@ -140,6 +140,11 @@ namespace Combat.AI
         public bool InFiringPosition
             => hasFiringPoint && firingPointValid && Profile != null
                && Flat(transform.position - firingPoint).magnitude <= Profile.firingPointTolerance;
+
+        // At the firing point or strafing beside it
+        public bool InFiringArea
+            => hasFiringPoint && firingPointValid && Profile != null
+               && Flat(transform.position - firingPoint).magnitude <= Profile.firingPointTolerance + (Profile.strafe ? Profile.strafeDistance : 0f);
 
         public float TargetDistance => perception.HasTarget || perception.HasLastKnown
             ? Flat(perception.BelievedPosition - transform.position).magnitude : float.MaxValue;

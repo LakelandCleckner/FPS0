@@ -15,7 +15,8 @@ public class EnemyBehaviourProfileEditor : Editor
         "rangedMinRange", "rangedPreferredRange", "rangedBandShift",
         "firingPointSearchRadius", "firingPointRecheck", "firingPointTolerance", "allySpacing", "fireWeights",
         "walkSpeed", "runSpeed", "runDistance", "faceWhileMoving", "fireWhileWalking", "pointHoldMin", "pointHoldMax",
-        "aimErrorPerTargetSpeed", "burstSeparationJitter", "flinchDamageFraction", "flinchRecovery", "lowerAfter"
+        "aimErrorPerTargetSpeed", "burstSeparationJitter", "flinchDamageFraction", "flinchRecovery", "lowerAfter",
+        "strafe", "strafeDistance", "strafeIntervalMin", "strafeIntervalMax", "suppress", "suppressTime", "suppressSpread"
     };
     private static readonly string[] RangedCover =
     {
@@ -78,6 +79,8 @@ public class EnemyBehaviourProfileEditor : Editor
                 EditorGUILayout.HelpBox("Firing Point Tolerance must be above 0.", MessageType.Error);
             if (!p.melee)
                 EditorGUILayout.HelpBox("Ranged without melee: inside the min range it backs off instead of swinging.", MessageType.Info);
+            if (p.suppress && p.suppressTime > p.lowerAfter)
+                EditorGUILayout.HelpBox("Suppress Time is past Lower After: the weapon lowers first, so suppression stops at Lower After.", MessageType.Info);
             if (p.useCover && (p.hideMin > p.hideMax || p.coverHoldMin > p.coverHoldMax))
                 EditorGUILayout.HelpBox("Cover: a min time is above its max.", MessageType.Warning);
         }

@@ -18,7 +18,7 @@ namespace Combat.AI.Goap
             AddLocalWorldSensor<ShieldRecovered>((agent, refs) => false);
             AddLocalWorldSensor<Searched>((agent, refs) => false);
             AddLocalWorldSensor<IsIdle>((agent, refs) => false);
-            AddLocalWorldSensor<InFiringPosition>((agent, refs) => refs.GetCachedComponent<EnemyBrain>().InFiringPosition);
+            AddLocalWorldSensor<InFiringPosition>((agent, refs) => refs.GetCachedComponent<EnemyBrain>().InFiringArea);
             AddLocalWorldSensor<NeedsReload>((agent, refs) => refs.GetCachedComponent<EnemyBrain>().NeedsReload);
             AddLocalWorldSensor<HasRangedToken>((agent, refs) => refs.GetCachedComponent<EnemyBrain>().HasRangedToken);
             AddLocalWorldSensor<HasCombatCover>((agent, refs) => refs.GetCachedComponent<EnemyBrain>().HasCombatCover);

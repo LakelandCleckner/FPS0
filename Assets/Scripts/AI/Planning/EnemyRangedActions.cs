@@ -1,6 +1,7 @@
 using CrashKonijn.Agent.Core;
 using CrashKonijn.Goap.Runtime;
 using UnityEngine;
+using UnityEngine.AI;
 using Combat.Enemies;
 
 namespace Combat.AI.Goap
@@ -149,34 +150,69 @@ namespace Combat.AI.Goap
             var p = data.Brain != null ? data.Brain.Profile : null;
             data.Tolerance = p != null ? p.firingPointTolerance : 1.25f;
             data.Engaged = false;
+            data.StrafeOffset = 0f;
+            data.NextStrafe = Time.time + (p != null ? Random.Range(p.strafeIntervalMin, Mathf.Max(p.strafeIntervalMin, p.strafeIntervalMax)) : 2f);
+            if (data.Mover != null && p != null) data.Mover.RequestSpeed(data, p.walkSpeed / Mathf.Max(0.01f, data.Mover.BaseMoveSpeed));
         }
 
         public override bool IsInRange(IMonoAgent agent, float distance, Data data, IComponentReference references)
         {
             var b = references.GetCachedComponent<EnemyBrain>();
-            return (b != null && b.InFiringPosition) || distance <= data.Tolerance;
+            return (b != null && b.InFiringArea) || distance <= data.Tolerance;
         }
 
         public override IActionRunState Perform(IMonoAgent agent, Data data, IActionContext context)
         {
             if (data.Ranged == null || data.Brain == null || data.Perception == null) return ActionRunState.Stop;
             if (!data.Perception.HasTarget) return ActionRunState.Completed;
-            if (!data.Brain.InFiringPosition || data.Ranged.NeedsReload || !data.Brain.RangedAllowed) return ActionRunState.Stop;
+            if (!data.Brain.InFiringArea || data.Ranged.NeedsReload || !data.Brain.RangedAllowed) return ActionRunState.Stop;
 
             if (!data.Engaged)
             {
                 data.Engaged = true;
-                data.Mover.Halt();
+                data.Mover.RequestPoint(data, data.Brain.FiringPoint);
                 data.Mover.RequestFace(data);
                 data.Ranged.Engage();
                 data.Brain.Raise(EnemyDecision.Engaging);
             }
 
             data.Mover.RequestLook(data, data.Perception.BelievedPosition + Vector3.up * 1.4f);
+            UpdateStrafe(data);
 
             // A burst pins the plan; between bursts GOAP may pick something better
             return data.Ranged.CurrentPhase == EnemyRangedAttack.Phase.Bursting
                 ? ActionRunState.Continue : ActionRunState.ContinueOrResolve;
+        }
+
+        private const float MinStrafeStep = 0.8f;
+
+        // Every few seconds sidestep to a new spot beside the firing point, across the line to the target, that still sees it
+        private static void UpdateStrafe(Data data)
+        {
+            var p = data.Brain.Profile;
+            if (p == null || !p.strafe || !data.Perception.TargetVisible || data.Ranged.IsReloading) return;
+            float now = Time.time;
+            if (now < data.NextStrafe) return;
+            data.NextStrafe = now + Random.Range(p.strafeIntervalMin, Mathf.Max(p.strafeIntervalMin, p.strafeIntervalMax));
+
+            Vector3 anchor = data.Brain.FiringPoint;
+            Vector3 threat = data.Perception.BelievedPosition;
+            Vector3 to = threat - anchor;
+            to.y = 0f;
+            if (to.sqrMagnitude < 0.01f) return;
+            Vector3 side = Vector3.Cross(Vector3.up, to.normalized);
+
+            for (int i = 0; i < 3; i++)
+            {
+                float off = Random.Range(-p.strafeDistance, p.strafeDistance);
+                if (Mathf.Abs(off - data.StrafeOffset) < MinStrafeStep) continue;
+                if (!NavMesh.SamplePosition(anchor + side * off, out var hit, 0.5f, NavMesh.AllAreas)) continue;
+                if (NavMesh.Raycast(anchor, hit.position, out _, NavMesh.AllAreas)) continue;
+                if (!PositionScorer.HasLineOfSight(hit.position, threat)) continue;
+                data.StrafeOffset = off;
+                data.Mover.RequestPoint(data, hit.position);
+                return;
+            }
         }
 
         public override void End(IMonoAgent agent, Data data)
@@ -184,6 +220,8 @@ namespace Combat.AI.Goap
             if (data.Ranged != null) data.Ranged.Disengage();
             if (data.Brain != null) data.Brain.ReleaseRangedToken();
             if (data.Mover == null) return;
+            data.Mover.ReleasePoint(data);
+            data.Mover.ReleaseSpeed(data);
             data.Mover.ReleaseFace(data);
             data.Mover.ReleaseLook(data);
         }
@@ -197,6 +235,8 @@ namespace Combat.AI.Goap
             public EnemyRangedAttack Ranged;
             public float Tolerance;
             public bool Engaged;
+            public float StrafeOffset;
+            public float NextStrafe;
         }
     }
 
@@ -339,6 +379,8 @@ namespace Combat.AI.Goap
             switch (data.State)
             {
                 case State.Hide:
+                    // Get down once actually behind the cover, not while still walking in
+                    SetCrouch(data, data.Spot.Half && data.Mover.AtPoint(data.Spot.Point, EnemyBrain.CoverTolerance));
                     if (data.Ranged.NeedsReload) return ActionRunState.Stop;   // reload here, hidden
                     if (now < data.HideUntil) return ActionRunState.ContinueOrResolve;
                     // Only step out holding a ranged token, so the group takes turns
@@ -371,7 +413,6 @@ namespace Combat.AI.Goap
         {
             data.State = State.Hide;
             data.HideUntil = Time.time + seconds;
-            SetCrouch(data, data.Spot.Half);
         }
 
         private static void EnterPeek(Data data, float now)
@@ -390,7 +431,6 @@ namespace Combat.AI.Goap
             data.Ranged.Disengage();
             data.Brain.ReleaseRangedToken();
             data.Mover.RequestPoint(data, data.Spot.Point);
-            if (data.Spot.Half) SetCrouch(data, true);
         }
 
         private static void SetCrouch(Data data, bool on)

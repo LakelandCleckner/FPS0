@@ -72,6 +72,21 @@ namespace Combat.AI
         public float pointHoldMin = 2f;
         public float pointHoldMax = 4f;
 
+        [Header("Ranged: strafe and suppress")]
+        [Tooltip("Sidestep across the target's view while shooting from an open firing point.")]
+        public bool strafe = true;
+        [Tooltip("Furthest sidestep either side of the firing point (m).")]
+        public float strafeDistance = 2.5f;
+        [Tooltip("Seconds between sidesteps (random between min and max).")]
+        public float strafeIntervalMin = 1.2f;
+        public float strafeIntervalMax = 2.5f;
+        [Tooltip("Keep firing at the last known position for a moment after losing sight.")]
+        public bool suppress = true;
+        [Tooltip("Seconds after losing sight that bursts may still start (capped by Lower After).")]
+        public float suppressTime = 2f;
+        [Tooltip("Extra aim cone while suppressing (degrees).")]
+        public float suppressSpread = 3f;
+
         [Header("Ranged: cover")]
         [Tooltip("Fight from cover when there is some in the range band: hide, peek out, burst, duck back. Falls back to firing points.")]
         public bool useCover = true;

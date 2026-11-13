@@ -81,6 +81,8 @@ namespace Combat.Enemies
         public float AimCone { get; private set; }
         public float SettleProgress => Mathf.Clamp01(settle / Mathf.Max(0.01f, AimSettleTime));
         public Vector3 LastAimPoint { get; private set; }
+        // The current burst started without sight of the target
+        public bool Suppressing => CurrentPhase == Phase.Bursting && suppressingBurst;
         public Transform Muzzle => muzzle;
 
         private float FireRate => Mathf.Max(1f, Stat(statKeys != null ? statKeys.fireRate : null, baseFireRate));
@@ -121,6 +123,7 @@ namespace Combat.Enemies
         private int shotId;
         private Vector3 burstAim;
         private bool aiming;
+        private bool suppressingBurst;
         private float lastHealth = -1f;
         private float flinchDamage;
         private float flinchWindowStart;
@@ -231,7 +234,7 @@ namespace Combat.Enemies
             float now = Time.time;
             bool visible = perception != null && perception.HasTarget && perception.TargetVisible;
             UpdateSight(visible, now);
-            UpdateCone(visible);
+            UpdateCone(visible, now);
 
             if (CurrentPhase == Phase.Reloading)
             {
@@ -267,17 +270,25 @@ namespace Combat.Enemies
         }
 
         // Settled cone plus growth from target speed
-        private void UpdateCone(bool visible)
+        private void UpdateCone(bool visible, float now)
         {
             float t = SettleProgress;
             float cone = Mathf.Lerp(AimError, AimErrorMin, t);
             if (visible && profile != null) cone += perception.TargetVelocity.magnitude * profile.aimErrorPerTargetSpeed;
+            else if (CanSuppress(now)) cone += profile.suppressSpread;
             AimCone = cone;
+        }
+
+        // Out of sight but lost only moments ago: bursts at the last known position are allowed
+        private bool CanSuppress(float now)
+        {
+            if (profile == null || !profile.suppress || perception == null || !perception.HasTarget) return false;
+            return now - lastVisibleTime <= Mathf.Min(profile.suppressTime, profile.lowerAfter);
         }
 
         private bool CanStartBurst(float now, bool visible)
         {
-            if (!visible || NeedsReload) return false;
+            if ((!visible && !CanSuppress(now)) || NeedsReload) return false;
             if (now < targetDelayUntil || now < cooldownUntil || now < flinchUntil) return false;
             if (brain != null && !brain.HasRangedToken && !brain.AcquireRangedToken()) return false;
 
@@ -296,11 +307,13 @@ namespace Combat.Enemies
             burstIndex = 0;
             burstAim = PredictAimPoint();
             nextShotAt = now;
+            suppressingBurst = !perception.TargetVisible;
+            if (suppressingBurst && brain != null) brain.Raise(EnemyDecision.Suppressing);
         }
 
         private void TickBurst(float now, bool visible)
         {
-            if (!visible) { EndBurst(); return; }
+            if (!visible && !CanSuppress(now)) { EndBurst(); return; }
             while (shotsLeft > 0 && now >= nextShotAt)
             {
                 Fire();

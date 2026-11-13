@@ -25,6 +25,12 @@ namespace Combat.AI
         [Tooltip("Horizontal speeds below this count as stopped.")]
         [SerializeField, Min(0f)] private float stopThreshold = 0.05f;
 
+        [Header("Crouch")]
+        [Tooltip("Seconds to crouch fully down behind cover.")]
+        [SerializeField, Min(0.01f)] private float crouchDownTime = 0.45f;
+        [Tooltip("Seconds to stand back up (to peek or move off).")]
+        [SerializeField, Min(0.01f)] private float crouchUpTime = 0.3f;
+
         [Header("Weapon pose")]
         [Tooltip("Seconds to raise or lower the weapon pose (AimBlend).")]
         [SerializeField, Min(0.01f)] private float aimBlendTime = 0.2f;
@@ -52,7 +58,7 @@ namespace Combat.AI
         private Transform root;
         private int moveXHash, moveZHash, crouchHash, groundedHash, aimBlendHash;
         private bool hasMoveX, hasMoveZ, hasCrouch, crouchIsFloat, hasGrounded, hasAimBlend;
-        private float lookWeight, aimBlend;
+        private float lookWeight, aimBlend, crouch;
         private Vector3 lookPoint;
         private Vector3 smoothVelocity, smoothAccel;
 
@@ -82,7 +88,7 @@ namespace Combat.AI
 
         private void OnDisable()
         {
-            lookWeight = aimBlend = 0f;
+            lookWeight = aimBlend = crouch = 0f;
             Crouched = false;
             smoothVelocity = smoothAccel = Vector3.zero;
         }
@@ -104,8 +110,10 @@ namespace Combat.AI
             if (hasMoveZ) animator.SetFloat(moveZHash, move.z);
             if (hasCrouch)
             {
-                if (crouchIsFloat) animator.SetFloat(crouchHash, Crouched ? 1f : 0f);
-                else animator.SetBool(crouchHash, Crouched);
+                // Ease into and out of the crouch blend instead of snapping
+                crouch = Mathf.MoveTowards(crouch, Crouched ? 1f : 0f, dt / (Crouched ? crouchDownTime : crouchUpTime));
+                if (crouchIsFloat) animator.SetFloat(crouchHash, Mathf.SmoothStep(0f, 1f, crouch));
+                else animator.SetBool(crouchHash, crouch > 0.5f);
             }
             if (hasGrounded) animator.SetBool(groundedHash, true);
 
