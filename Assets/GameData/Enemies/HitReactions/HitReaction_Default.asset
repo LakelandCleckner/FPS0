@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d733bb2d7bd58954c924b669f1f04f44, type: 3}
+  m_Name: HitReaction_Default
+  m_EditorClassIdentifier: 
+  direct: 1
+  chain: 1
+  shieldDamageStaggers: 0
+  drainDelay: 0.4
+  drainRate: 1
+  staggerTime: 0.55
+  heavyStaggerTime: 1.1
+  fireRecovery: 0.25
+  flinchStopTime: 0
+  immunityTime: 0.8
+  staggerCancelsStrike: 0
+  heavyCancelsReload: 1
+  blendIn: 0.08
+  blendOut: 0.25
+  clipSpeed: 5
+  walkClipSpeed: 0.5
+  runClipSpeed: 2.5
+  kickBase: 3
+  kickPerHealth: 60
+  kickMax: 14
+  kickStiffness: 140
+  kickDamping: 20
+  limbKickScale: 0.6
+  aimJolt: 1.5
+  aimJoltMax: 6
+  aimJoltSettle: 0.4
+  minor:
+    canStagger: 1
+    canHeavyStagger: 1
+    threshold: 0.15
+    overloadMultiple: 2
+    timeScale: 1
+    kickScale: 1
+  major:
+    canStagger: 1
+    canHeavyStagger: 1
+    threshold: 0.2
+    overloadMultiple: 2
+    timeScale: 0.9
+    kickScale: 0.85
+  elite:
+    canStagger: 1
+    canHeavyStagger: 1
+    threshold: 0.25
+    overloadMultiple: 2.5
+    timeScale: 0.8
+    kickScale: 0.7
+  miniboss:
+    canStagger: 1
+    canHeavyStagger: 1
+    threshold: 0.35
+    overloadMultiple: 3
+    timeScale: 0.6
+    kickScale: 0.5
+  boss:
+    canStagger: 1
+    canHeavyStagger: 0
+    threshold: 0.5
+    overloadMultiple: 3
+    timeScale: 0.5
+    kickScale: 0.35

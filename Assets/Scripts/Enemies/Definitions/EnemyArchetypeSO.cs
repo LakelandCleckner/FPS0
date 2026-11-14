@@ -30,6 +30,8 @@ namespace Combat.Enemies
         [Header("Behaviour")]
         [Tooltip("How it fights. Empty = plain melee. Modifiers can override it.")]
         public Combat.AI.EnemyBehaviourProfileSO behaviourProfile;
+        [Tooltip("Flinch and stagger tuning. Empty = the hit reaction component's default.")]
+        public HitReactionProfileSO hitReactionProfile;
 
         [Header("Death")]
         [Tooltip("Blasts or hazards left behind on death.")]

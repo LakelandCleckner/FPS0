@@ -59,13 +59,13 @@ namespace Combat.Enemies
         [SerializeField] private string fireTrigger = "Fire";
         [SerializeField] private string reloadTrigger = "Reload";
         [SerializeField] private string reloadSpeedFloat = "ReloadSpeed";
-        [SerializeField] private string flinchTrigger = "Flinch";
         [Tooltip("Length of the reload clip at speed 1; the reload state is sped up to fit ranged_reload_time.")]
         [SerializeField] private float reloadClipLength = 2.2f;
 
         [Header("Debug")]
         [SerializeField] private bool logShots = false;
 
+        // Staggered: the burst was cut (EnemyHitReaction)
         public event Action Flinched;
 
         // Each shot leaving the muzzle (presentation kick)
@@ -84,6 +84,8 @@ namespace Combat.Enemies
         // The current burst started without sight of the target
         public bool Suppressing => CurrentPhase == Phase.Bursting && suppressingBurst;
         public Transform Muzzle => muzzle;
+        // Mid-stagger: the weapon is off the aim line
+        public bool Staggered => Time.time < staggeredUntil;
 
         private float FireRate => Mathf.Max(1f, Stat(statKeys != null ? statKeys.fireRate : null, baseFireRate));
         private int BurstSize => Mathf.Max(1, Mathf.RoundToInt(Stat(statKeys != null ? statKeys.burstSize : null, baseBurstSize)));
@@ -101,7 +103,6 @@ namespace Combat.Enemies
 
         private EnemyPerception perception;
         private EnemyBrain brain;
-        private CombatantHealth health;
         private EnemyDefinitionApplier definition;
         private EnemyBehaviourProfileSO profile;
         private IDelivery hitscanDelivery;
@@ -114,7 +115,10 @@ namespace Combat.Enemies
         private float targetDelayUntil;
         private float raisedAt;
         private float cooldownUntil;
-        private float flinchUntil;
+        private float holdFireUntil;
+        private float staggeredUntil;
+        private float jolt;
+        private float joltSettle = 0.4f;
         private float reloadUntil;
         private float nextShotAt;
         private int shotsLeft;
@@ -124,14 +128,9 @@ namespace Combat.Enemies
         private Vector3 burstAim;
         private bool aiming;
         private bool suppressingBurst;
-        private float lastHealth = -1f;
-        private float flinchDamage;
-        private float flinchWindowStart;
 
-        private int aimingHash, fireHash, reloadHash, reloadSpeedHash, flinchHash;
-        private bool hasAiming, hasFire, hasReload, hasReloadSpeed, hasFlinch;
-
-        private const float FlinchWindow = 0.5f;
+        private int aimingHash, fireHash, reloadHash, reloadSpeedHash;
+        private bool hasAiming, hasFire, hasReload, hasReloadSpeed;
 
         // ---- IDamageSource ----
         public List<IHitEffect> GetEffects() => effects;
@@ -151,7 +150,6 @@ namespace Combat.Enemies
             if (animator == null) animator = GetComponentInChildren<Animator>();
             perception = GetComponent<EnemyPerception>();
             brain = GetComponent<EnemyBrain>();
-            health = GetComponent<CombatantHealth>();
             definition = GetComponent<EnemyDefinitionApplier>();
             var weaponModel = GetComponentInChildren<EnemyWeaponModel>();
             if (weaponModel != null && weaponModel.EnsureModel() != null && weaponModel.Muzzle != null) muzzle = weaponModel.Muzzle;
@@ -166,16 +164,7 @@ namespace Combat.Enemies
             Rounds = MagazineSize;
         }
 
-        private void OnEnable()
-        {
-            if (health != null) health.HealthChanged += HandleHealthChanged;
-        }
-
-        private void OnDisable()
-        {
-            if (health != null) health.HealthChanged -= HandleHealthChanged;
-            Disengage();
-        }
+        private void OnDisable() => Disengage();
 
         public void OnSpawn()
         {
@@ -185,16 +174,15 @@ namespace Combat.Enemies
             settle = 0f;
             wasVisible = false;
             lastVisibleTime = float.NegativeInfinity;
-            targetDelayUntil = cooldownUntil = flinchUntil = reloadUntil = nextShotAt = 0f;
+            targetDelayUntil = cooldownUntil = holdFireUntil = staggeredUntil = reloadUntil = nextShotAt = 0f;
+            jolt = 0f;
             shotsLeft = 0;
-            lastHealth = -1f;
-            flinchDamage = 0f;
             SetAiming(false);
         }
 
         public void OnDespawn() => Disengage();
 
-        // Behaviour tuning (aim growth, jitter, flinch, lowering) comes from the profile.
+        // Behaviour tuning (aim growth, jitter, lowering) comes from the profile.
         public void ApplyProfile(EnemyBehaviourProfileSO p) => profile = p;
 
         // ---- API for actions ----
@@ -273,7 +261,8 @@ namespace Combat.Enemies
         private void UpdateCone(bool visible, float now)
         {
             float t = SettleProgress;
-            float cone = Mathf.Lerp(AimError, AimErrorMin, t);
+            jolt *= Mathf.Exp(-Time.deltaTime / Mathf.Max(0.01f, joltSettle));
+            float cone = Mathf.Lerp(AimError, AimErrorMin, t) + jolt;
             if (visible && profile != null) cone += perception.TargetVelocity.magnitude * profile.aimErrorPerTargetSpeed;
             else if (CanSuppress(now)) cone += profile.suppressSpread;
             AimCone = cone;
@@ -291,7 +280,7 @@ namespace Combat.Enemies
         private bool CanStartBurst(float now, bool visible)
         {
             if ((!visible && !CanSuppress(now)) || NeedsReload) return false;
-            if (now < targetDelayUntil || now < cooldownUntil || now < flinchUntil) return false;
+            if (now < targetDelayUntil || now < cooldownUntil || now < holdFireUntil) return false;
             if (brain != null && !brain.HasRangedToken && !brain.AcquireRangedToken()) return false;
 
             Vector3 to = perception.BelievedPosition - transform.position;
@@ -405,24 +394,24 @@ namespace Combat.Enemies
 
         private Vector3 MuzzlePosition => muzzle != null ? muzzle.position : transform.position + Vector3.up * 1.4f;
 
-        // ---- flinch ----
+        // ---- hit reactions ----
 
-        private void HandleHealthChanged(float current, float max)
+        // Hit: aim cone grows by degrees (up to max), settling back over settle seconds
+        public void Jolt(float degrees, float max, float settle)
         {
-            bool damaged = lastHealth >= 0f && current < lastHealth - 0.001f && current > 0f;
-            float lost = damaged ? lastHealth - current : 0f;
-            lastHealth = current;
-            if (!damaged || profile == null || max <= 0f) return;
+            jolt = Mathf.Min(jolt + degrees, Mathf.Max(jolt, max));
+            joltSettle = settle;
+        }
 
-            if (Time.time - flinchWindowStart > FlinchWindow) { flinchWindowStart = Time.time; flinchDamage = 0f; }
-            flinchDamage += lost;
-            if (flinchDamage < profile.flinchDamageFraction * max) return;
-
-            flinchDamage = 0f;
+        // Stagger: cut the burst, hold fire, start the aim over; optionally drop a reload
+        public void Interrupt(float staggerTime, float holdFire, bool cancelReload)
+        {
+            float now = Time.time;
             if (CurrentPhase == Phase.Bursting) EndBurst();
-            flinchUntil = Time.time + profile.flinchRecovery;
+            if (cancelReload && IsReloading) CurrentPhase = aiming ? Phase.Ready : Phase.Lowered;
+            staggeredUntil = Mathf.Max(staggeredUntil, now + staggerTime);
+            holdFireUntil = Mathf.Max(holdFireUntil, now + holdFire);
             ResetAim();
-            if (animator != null && hasFlinch) animator.SetTrigger(flinchHash);
             Flinched?.Invoke();
         }
 
@@ -459,7 +448,6 @@ namespace Combat.Enemies
             fireHash = Animator.StringToHash(fireTrigger);
             reloadHash = Animator.StringToHash(reloadTrigger);
             reloadSpeedHash = Animator.StringToHash(reloadSpeedFloat);
-            flinchHash = Animator.StringToHash(flinchTrigger);
             if (animator == null || animator.runtimeAnimatorController == null) return;
             foreach (var p in animator.parameters)
             {
@@ -467,7 +455,6 @@ namespace Combat.Enemies
                 else if (p.nameHash == fireHash) hasFire = true;
                 else if (p.nameHash == reloadHash) hasReload = true;
                 else if (p.nameHash == reloadSpeedHash) hasReloadSpeed = true;
-                else if (p.nameHash == flinchHash) hasFlinch = true;
             }
         }
 

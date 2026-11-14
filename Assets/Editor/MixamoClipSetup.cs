@@ -8,7 +8,7 @@ using UnityEngine;
 public static class MixamoClipSetup
 {
     // Name fragments that mark a one-shot clip
-    private static readonly string[] OneShot = { "jump up", "jump down", "death", "turn", "kneel", " to " };
+    internal static readonly string[] OneShot = { "jump up", "jump down", "death", "turn", "kneel", " to ", "hitreaction", "hit reaction" };
 
     [MenuItem("Tools/Mixamo Clip Setup")]
     private static void Run()
@@ -52,7 +52,7 @@ public static class MixamoClipSetup
     private static bool Validate() => Selection.objects.Length > 0;
 
     // Returns true if anything changed
-    private static bool Apply(ModelImporterClipAnimation c, bool loop)
+    internal static bool Apply(ModelImporterClipAnimation c, bool loop)
     {
         bool same = c.lockRootRotation && !c.keepOriginalOrientation
                     && c.lockRootHeightY && c.keepOriginalPositionY

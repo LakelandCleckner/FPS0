@@ -411,7 +411,7 @@ namespace Combat.AI
         {
             var p = Profile;
             float now = Time.time;
-            if (p == null || !p.dodge || now < nextDodge || mover == null || mover.Dodging) return false;
+            if (p == null || !p.dodge || now < nextDodge || mover == null || mover.Dodging || mover.Stunned) return false;
             if (melee != null && melee.IsSwinging) return false;
             if (away == Vector3.zero && hasCombatCover && Flat(transform.position - combatCover.Point).magnitude <= CoverTolerance) return false;
             if (UnityEngine.Random.value > chance) return false;

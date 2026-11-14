@@ -33,6 +33,7 @@ namespace Combat.Stats
 
         private StatContainer container;
         public StatContainer Container => container;
+        public CombatantHealth Health => health;
 
         // Fired on reuse right after every modifier is stripped, so persistent sources can re-add theirs.
         public event System.Action ModifiersCleared;

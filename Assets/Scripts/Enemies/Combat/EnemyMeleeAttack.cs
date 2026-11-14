@@ -256,6 +256,13 @@ namespace Combat.Enemies
             if (animator != null && animator.isActiveAndEnabled) animator.SetBool(attackingHash, false);
         }
 
+        // Stagger: cancels the wind-up (or any swing with cancelStrike) and holds off new swings
+        public void Interrupt(bool cancelStrike, float lockout)
+        {
+            if (IsSwinging && (cancelStrike || InWindup)) CancelSwing();
+            cooldownUntil = Mathf.Max(cooldownUntil, Time.time + lockout);
+        }
+
         private void Update()
         {
             UpdateArmsLayer();

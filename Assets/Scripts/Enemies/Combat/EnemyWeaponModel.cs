@@ -163,8 +163,9 @@ namespace Combat.Enemies
         private void UpdateAim()
         {
             var phase = ranged != null ? ranged.CurrentPhase : EnemyRangedAttack.Phase.Lowered;
-            bool raised = animator.enabled && (phase == EnemyRangedAttack.Phase.Raising || phase == EnemyRangedAttack.Phase.Ready
-                                               || phase == EnemyRangedAttack.Phase.Bursting);
+            bool raised = animator.enabled && (ranged == null || !ranged.Staggered)
+                          && (phase == EnemyRangedAttack.Phase.Raising || phase == EnemyRangedAttack.Phase.Ready
+                              || phase == EnemyRangedAttack.Phase.Bursting);
             bool hasPoint = perception != null && (perception.HasTarget || perception.HasLastKnown);
             aimWeight = Mathf.MoveTowards(aimWeight, raised && hasPoint ? 1f : 0f, Time.deltaTime / aimBlend);
             if (aimWeight <= 0f || !hasPoint) return;
