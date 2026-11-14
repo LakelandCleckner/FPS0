@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 015cda2f01a984b449f4fc220c254417, type: 3}
+  m_Name: RoomSettings
+  m_EditorClassIdentifier: 
+  widthRange: {x: 24, y: 34}
+  depthRange: {x: 24, y: 34}
+  wallHeight: 5
+  wallThickness: 0.5
+  entranceWidth: 3
+  minDoors: 2
+  maxDoors: 3
+  doorWidth: 3
+  doorHeight: 3.2
+  alcoveDepth: 4
+  coverDensity: 2.2
+  halfCoverChance: 0.6
+  halfHeight: 1.1
+  fullHeight: 2.4
+  coverLength: {x: 1.2, y: 3}
+  coverDepth: 1
+  coverSpacing: 2.5
+  doorClearance: 4.5
+  wallClearance: 1.5
+  ammoPrefab: {fileID: 8645597289248107025, guid: accdf9f34452f8f438fe35adcd9df243, type: 3}
+  ammoCount: 2
+  squadPool:
+  - {fileID: 11400000, guid: 22aed1795eddc33488d553b1b607eebd, type: 2}
+  - {fileID: 11400000, guid: d3582b596a8a1e84e8016dfacd09beea, type: 2}
+  - {fileID: 11400000, guid: d3582b596a8a1e84e8016dfacd09beea, type: 2}
+  budget: 24
+  waveCount: {x: 2, y: 4}
+  remainingForNextWave: 1
+  waveDelay: 2
+  floorMaterial: {fileID: 0}
+  wallMaterial: {fileID: 0}
+  coverMaterial: {fileID: 0}
+  doorMaterial: {fileID: 0}

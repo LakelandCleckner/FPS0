@@ -23,5 +23,5 @@ MonoBehaviour:
     leader: 0
   - variant: {fileID: 11400000, guid: fbf1558d60b890947bc047a1d2a9a802, type: 2}
     count: 1
-    leader: 0
+    leader: 1
   spread: 3

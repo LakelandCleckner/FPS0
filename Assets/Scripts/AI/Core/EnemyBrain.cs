@@ -46,6 +46,8 @@ namespace Combat.AI
         // Any brain's decision, for listeners that don't hold a reference (overlay, barks).
         public static event Action<EnemyBrain, EnemyDecision> AnyDecided;
         private static event Action<EnemyBrain> AnyDied;
+        // Any enemy died (encounters count their waves down with it)
+        public static event Action<EnemyBrain> Killed;
 
         // The debug overlay turns this on to keep scored candidates.
         public static bool RecordPoints;
@@ -144,6 +146,22 @@ namespace Combat.AI
 
         // Optional volume firing points must stay inside (set by encounter logic later).
         public Collider FiringArea { get; set; }
+
+        // Encounter room: firing points and cover stay inside it
+        public bool HasCombatZone { get; private set; }
+        public Bounds CombatZone { get; private set; }
+
+        public void SetCombatZone(Bounds zone)
+        {
+            CombatZone = zone;
+            HasCombatZone = true;
+            if (hasFiringPoint) ClearFiringPoint();
+            if (hasCombatCover) ClearCombatCover();
+        }
+
+        public void ClearCombatZone() => HasCombatZone = false;
+
+        private bool InZone(Vector3 p) => !HasCombatZone || PositionScorer.InZone(CombatZone, p);
 
         public bool IsRangedProfile => Profile != null && Profile.ranged && ranged != null;
         public bool InsideMinRange => insideMinRange;
@@ -245,6 +263,7 @@ namespace Combat.AI
             Band = DefensiveBand.Normal;
             ClearFiringPoint();
             ClearCombatCover();
+            HasCombatZone = false;
             aimedSince = -1f;
             aimRolled = false;
             nextDodge = 0f;
@@ -484,7 +503,7 @@ namespace Combat.AI
             if (now < nextCombatCoverCheck) return hasCombatCover;
 
             bool valid = hasCombatCover
-                         && SquadLeash.Holds(combatCover.Point)
+                         && SquadLeash.Holds(combatCover.Point) && InZone(combatCover.Point)
                          && CoverFinder.StillCovers(combatCover, perception.BelievedPosition, Profile.rangedMinRange, ranged.MaxRange);
             bool holding = coverHoldUntil < 0f || now < coverHoldUntil;
             if (valid && holding)
@@ -521,7 +540,9 @@ namespace Combat.AI
                 HasCurrent = hasCombatCover,
                 Current = combatCover.Point,
                 FlankDir = FlankDirection(threat),
-                Leash = SquadLeash
+                Leash = SquadLeash,
+                HasZone = HasCombatZone,
+                Zone = CombatZone
             };
 
             bool had = hasCombatCover;
@@ -567,7 +588,7 @@ namespace Combat.AI
             Vector3 threat = perception.BelievedPosition;
             float d = Flat(p - threat).magnitude;
             if (d < Profile.rangedMinRange || d > ranged.MaxRange) return false;
-            if (!SquadLeash.Holds(p)) return false;
+            if (!SquadLeash.Holds(p) || !InZone(p)) return false;
             return PositionScorer.HasLineOfSight(p, threat);
         }
 
@@ -597,7 +618,9 @@ namespace Combat.AI
                 Current = firingPoint,
                 Area = FiringArea,
                 FlankDir = FlankDirection(threat),
-                Leash = SquadLeash
+                Leash = SquadLeash,
+                HasZone = HasCombatZone,
+                Zone = CombatZone
             };
 
             if (RecordPoints && DebugCandidates == null) DebugCandidates = new List<ScoredPoint>(64);
@@ -621,6 +644,12 @@ namespace Combat.AI
             {
                 Vector3 off = Flat(ahead - leash.Anchor);
                 ahead = leash.Anchor + (off.sqrMagnitude > 0.01f ? off.normalized : Vector3.zero) * leash.Radius * 0.8f;
+            }
+            // And inside the encounter room
+            if (!InZone(ahead))
+            {
+                Vector3 c = CombatZone.ClosestPoint(new Vector3(ahead.x, CombatZone.center.y, ahead.z));
+                ahead = new Vector3(c.x, ahead.y, c.z);
             }
             if (NavMesh.SamplePosition(ahead, out var hit, 3f, NavMesh.AllAreas)) SetFiringPoint(hit.position, false);
             else ClearFiringPoint();
@@ -780,6 +809,7 @@ namespace Combat.AI
         {
             ReleaseToken();
             AnyDied?.Invoke(this);
+            Killed?.Invoke(this);
             if (Squad != null) Squad.MemberDied(this);
             LeaveSquad();
         }

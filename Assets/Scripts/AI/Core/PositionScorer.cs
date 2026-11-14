@@ -90,6 +90,9 @@ namespace Combat.AI
         // Squad flankers: bonus for points off the threat in this direction (zero = none)
         public Vector3 FlankDir;
         public Leash Leash;
+        // Encounter room: points must be inside it
+        public bool HasZone;
+        public Bounds Zone;
     }
 
     // Weighted NavMesh point choice with a per-frame evaluation cap; callers keep their old point and retry next frame.
@@ -151,6 +154,13 @@ namespace Combat.AI
             return off.sqrMagnitude > 0.01f ? FlankWeight * Vector3.Dot(off.normalized, flankDir) : 0f;
         }
 
+        // Inside the zone's footprint (height ignored)
+        public static bool InZone(in Bounds zone, Vector3 p)
+        {
+            p.y = zone.center.y;
+            return zone.Contains(p);
+        }
+
         public static bool TryGetReserved(object owner, out Vector3 point) => reserved.TryGetValue(owner, out point);
 
         // Best point for the query; record (optional) receives every candidate for debugging.
@@ -184,8 +194,8 @@ namespace Combat.AI
             candidates.Clear();
             if (q.HasCurrent) candidates.Add(q.Current);
 
-            // Leashed: search around the squad's anchor instead of ourselves
-            Vector3 center = q.Leash.Active ? q.Leash.Anchor : q.From;
+            // Leashed: search around the squad's anchor; outside our zone (e.g. still in a doorway): around the zone
+            Vector3 center = q.Leash.Active ? q.Leash.Anchor : q.HasZone && !InZone(q.Zone, q.From) ? q.Zone.center : q.From;
             float reach = q.Leash.Active ? Mathf.Min(q.SearchRadius, q.Leash.Radius) : q.SearchRadius;
 
             for (int r = 0; r < Rings.Length; r++)
@@ -220,6 +230,7 @@ namespace Combat.AI
             if (dist < q.MinRange || dist > q.MaxRange) return false;
             if (q.Area != null && (q.Area.ClosestPoint(p) - p).sqrMagnitude > 0.01f) return false;
             if (!q.Leash.Holds(p)) return false;
+            if (q.HasZone && !InZone(q.Zone, p)) return false;
             if (!HasLineOfSight(p, q.Threat)) return false;
 
             var w = q.Weights;

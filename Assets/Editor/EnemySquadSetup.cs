@@ -35,9 +35,10 @@ public class EnemySquadSetup : EditorWindow
     private void OnFocus() => Refresh();
     private void OnProjectChange() { Refresh(); Repaint(); }
 
+    // In Play, only redraw while there are live squads to show
     private void OnInspectorUpdate()
     {
-        if (Application.isPlaying) Repaint();
+        if (Application.isPlaying && EnemySquad.All.Count > 0) Repaint();
     }
 
     private void Refresh()

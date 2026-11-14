@@ -31,6 +31,8 @@ namespace Combat.AI
         public Vector3 Current;
         public Vector3 FlankDir;
         public Leash Leash;
+        public bool HasZone;
+        public Bounds Zone;
     }
 
     // Finds cover at runtime from the NavMesh and level geometry: NavMesh edge points beside obstacles
@@ -157,8 +159,8 @@ namespace Combat.AI
             candidates.Clear();
             if (q.HasCurrent) candidates.Add(q.Current);
 
-            // Leashed: search around the squad's anchor instead of ourselves
-            Vector3 center = q.Leash.Active ? q.Leash.Anchor : q.From;
+            // Leashed: search around the squad's anchor; outside our zone: around the zone
+            Vector3 center = q.Leash.Active ? q.Leash.Anchor : q.HasZone && !PositionScorer.InZone(q.Zone, q.From) ? q.Zone.center : q.From;
             float reach = Reach(q);
 
             for (int r = 0; r < CombatRings.Length; r++)
@@ -201,6 +203,7 @@ namespace Combat.AI
             float dist = Flat(p - q.Threat).magnitude;
             if (dist < q.MinRange || dist > q.MaxRange) return false;
             if (q.Leash.Active ? !q.Leash.Holds(p) : Flat(p - q.From).magnitude > q.SearchRadius + 1f) return false;
+            if (q.HasZone && !PositionScorer.InZone(q.Zone, p)) return false;
             if (TakenByOther(p, q.Owner)) return false;
 
             Vector3 eye = EyeOf(q.Threat);

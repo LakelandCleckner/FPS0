@@ -26,6 +26,26 @@ namespace Combat.AI
 
         public string Label => string.IsNullOrEmpty(displayName) ? name : displayName;
 
+        // Encounter budget cost: each member by rank (Minor 1, Major 2, Elite 3, Miniboss 5, Boss 8)
+        private static readonly int[] RankCost = { 1, 2, 3, 5, 8 };
+
+        public int Cost
+        {
+            get
+            {
+                int c = 0;
+                foreach (var m in members)
+                {
+                    if (m.variant == null || m.variant.archetype == null) continue;
+                    int rank = (int)m.variant.archetype.rank;
+                    foreach (var mod in m.variant.modifiers)
+                        if (mod != null && (int)mod.raiseRankTo > rank) rank = (int)mod.raiseRankTo;
+                    c += RankCost[Mathf.Clamp(rank, 0, RankCost.Length - 1)] * Mathf.Max(1, m.count);
+                }
+                return c;
+            }
+        }
+
         public int TotalCount
         {
             get
