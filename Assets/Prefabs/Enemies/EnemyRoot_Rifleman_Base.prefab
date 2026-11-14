@@ -406,6 +406,7 @@ GameObject:
   - component: {fileID: 6644941771830329726}
   - component: {fileID: 9096735689435923189}
   - component: {fileID: 6583231121353774216}
+  - component: {fileID: 7211526126761631565}
   m_Layer: 7
   m_Name: EnemyRoot_Rifleman_Base
   m_TagString: Untagged
@@ -816,9 +817,24 @@ MonoBehaviour:
   fireTrigger: Fire
   reloadTrigger: Reload
   reloadSpeedFloat: ReloadSpeed
-  flinchTrigger: Flinch
   reloadClipLength: 2.2
   logShots: 0
+--- !u!114 &7211526126761631565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4067094757114818815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 412c690a69d01dd4a8e0bb41d4b66482, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultProfile: {fileID: 11400000, guid: 583a7c0923879a3438b77ead2fc0c9e8, type: 2}
+  animator: {fileID: 0}
+  layerName: HitReact
+  logStaggers: 0
 --- !u!1 &4177977697457484879
 GameObject:
   m_ObjectHideFlags: 0
@@ -3644,6 +3660,8 @@ MonoBehaviour:
   maxMove: 2
   dampTime: 0.12
   stopThreshold: 0.05
+  crouchDownTime: 0.45
+  crouchUpTime: 0.3
   aimBlendTime: 0.2
   lookAt: 0
   targetLookHeight: 1.4

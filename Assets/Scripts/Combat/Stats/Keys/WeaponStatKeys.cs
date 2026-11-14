@@ -36,6 +36,8 @@ namespace Combat.Weapons
         public StatDefinitionSO aimAssist;    // "aim_assist"  0-100, maps into the archetype's magnetism cone
         [Header("Precision")]
         public StatDefinitionSO precisionDamage; // "precision_damage"  head-hit multiplier (1.9 = x1.9)
+        [Header("Stagger")]
+        public StatDefinitionSO staggerPower;    // "stagger_power"  multiplier on how hard hits stagger (1 = normal)
 
 
         // NOTE (global_damage representation): the legacy StatBlock stores this as a

@@ -73,8 +73,13 @@ namespace Combat.AI
         private float dodgeSpeed;
         private float dodgeUntil;
 
+        // Stun: no movement or turning (staggered)
+        private float stunUntil;
+        private bool stunHeld;
+
         public bool HasLook => lookOwner != null;
         public bool Dodging => Time.time < dodgeUntil;
+        public bool Stunned => Time.time < stunUntil;
         public Vector3 LookPoint => lookTransform != null ? lookTransform.position : lookPoint;
         public bool Facing => faceOwner != null;
         public Vector3 Velocity => nav != null ? nav.velocity : Vector3.zero;
@@ -130,6 +135,8 @@ namespace Combat.AI
             faceOwner = null;
             pointOwner = null;
             dodgeUntil = 0f;
+            stunUntil = 0f;
+            stunHeld = false;
             currentTarget = null;
             shouldMove = false;
             lastAppliedSpeed = -1f;
@@ -236,6 +243,13 @@ namespace Combat.AI
             if (nav.isActiveAndEnabled && nav.isOnNavMesh) nav.SetDestination(point);
         }
 
+        // Stand still until this time; cancels a dodge
+        public void Stun(float until)
+        {
+            stunUntil = Mathf.Max(stunUntil, until);
+            dodgeUntil = 0f;
+        }
+
         public bool AtPoint(Vector3 point, float tolerance)
         {
             Vector3 d = transform.position - point;
@@ -300,6 +314,15 @@ namespace Combat.AI
                 nav.isStopped = true;
                 return;
             }
+
+            if (Stunned)
+            {
+                if (!stunHeld && nav.isActiveAndEnabled && nav.isOnNavMesh) nav.velocity = Vector3.zero;
+                stunHeld = true;
+                nav.isStopped = true;
+                return;
+            }
+            stunHeld = false;
 
             if (swinging && !windupMove)
             {
@@ -374,7 +397,7 @@ namespace Combat.AI
         // Face mode turns the body after the path has moved it
         private void LateUpdate()
         {
-            if (faceOwner == null || lookOwner == null || agent.IsPaused) return;
+            if (faceOwner == null || lookOwner == null || agent.IsPaused || Stunned) return;
             if (melee != null && melee.IsSwinging) return;
             Vector3 to = LookPoint - transform.position;
             to.y = 0f;

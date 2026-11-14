@@ -163,10 +163,6 @@ namespace Combat.AI
         public float aimErrorPerTargetSpeed = 0.6f;
         [Tooltip("Random spread on burst separation (0 = exact, 0.5 = +-50%). 0 lets a group fire together.")]
         [Range(0f, 1f)] public float burstSeparationJitter = 0f;
-        [Tooltip("Damage within the flinch window, as a fraction of max health, that cuts a burst.")]
-        public float flinchDamageFraction = 0.1f;
-        [Tooltip("Seconds before firing again after a flinch.")]
-        public float flinchRecovery = 0.6f;
         [Tooltip("Seconds without sight of the target before the weapon is lowered (raising again plays the wind-up).")]
         public float lowerAfter = 2.5f;
 

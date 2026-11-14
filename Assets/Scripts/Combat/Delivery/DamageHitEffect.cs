@@ -1,5 +1,6 @@
 using UnityEngine;
 using Combat.Core;
+using Combat.Stats;
 
 namespace Combat.Effects
 {
@@ -42,12 +43,32 @@ namespace Combat.Effects
 
             final *= ctx.Target.GetDamageMultiplier(spec.Type, ctx.BodyPartHit);  // defense
 
-            ctx.ApplyStatusTickDamage?.Invoke(final, spec.Type);
+            if (ctx.ApplyStatusTickDamage != null)
+            {
+                ctx.ApplyStatusTickDamage(final, spec.Type);
+                if (ctx.Target is CombatantStats target && target.Health != null)
+                    target.Health.ReportHit(new HitReport(final, ctx.BodyPartHit, spec.Type, ctx.Source,
+                                                          ctx.HitPoint, HitDirection(ctx), StaggerPower(ctx)));
+            }
 
             ctx.DamageDealt += final;
             ctx.WasHeadshot = ctx.BodyPartHit == BodyPart.Head;
             ctx.WasDebuffed = ctx.Target != null && ctx.Target.IsDebuffed;
             ctx.WasKill = ctx.Target.CurrentHealth <= 0f;
         }
+
+        // Shot origin to impact, else attacker to impact
+        private static Vector3 HitDirection(HitContext ctx)
+        {
+            Vector3 from;
+            if (ctx.Shot.HasOrigin) from = ctx.Shot.Origin;
+            else if (ctx.Attacker is Component c && c != null) from = c.transform.position;
+            else return Vector3.zero;
+            Vector3 d = ctx.HitPoint - from;
+            return d.sqrMagnitude > 0.0001f ? d.normalized : Vector3.zero;
+        }
+
+        private static float StaggerPower(HitContext ctx)
+            => ctx.DamageSource is IStaggerSource s ? s.StaggerPower : 1f;
     }
 }

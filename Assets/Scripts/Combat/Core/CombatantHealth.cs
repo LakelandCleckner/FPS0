@@ -54,6 +54,12 @@ public class CombatantHealth : MonoBehaviour, IPoolable
     // (current, max). Fired on damage, heal, spawn and max-health changes.
     public event System.Action<float, float> HealthChanged;
 
+    // A damaging hit that left this combatant alive, after its damage applied
+    public event System.Action<HitReport> Damaged;
+
+    // Damage the last TakeDamage removed from health (after the absorber)
+    private float lastHealthDamage;
+
     private void NotifyHealth() => HealthChanged?.Invoke(currentHealth, cachedMax);
 
     public float MaxHealth { get { RefreshMax(); return cachedMax; } }
@@ -186,12 +192,14 @@ public class CombatantHealth : MonoBehaviour, IPoolable
     {
         if (IsDying) return;
         LastHitPart = partHit;
+        lastHealthDamage = 0f;
         if (Absorber != null)
         {
             damage = Absorber.Absorb(damage, type);
             if (damage <= 0f) return;
         }
         RefreshMax();
+        lastHealthDamage = Mathf.Min(damage, currentHealth);
         currentHealth = Mathf.Clamp(currentHealth - damage, 0f, cachedMax);
         NotifyHealth();
         if (currentHealth == 0f)
@@ -210,6 +218,15 @@ public class CombatantHealth : MonoBehaviour, IPoolable
         NotifyHealth();
         IsDying = true;
         Die();
+    }
+
+    // Called by the damage effect right after its TakeDamage, so HealthDamage is that hit's
+    public void ReportHit(HitReport report)
+    {
+        report.HealthDamage = lastHealthDamage;
+        lastHealthDamage = 0f;
+        if (IsDying) return;
+        Damaged?.Invoke(report);
     }
 
     public void Heal(float amount)

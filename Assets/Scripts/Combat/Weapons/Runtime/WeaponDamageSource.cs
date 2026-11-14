@@ -11,7 +11,7 @@ namespace Combat.Sources
     // live from the container. Exposes the wielder as an ICombatant (now CombatantStats,
     // so crit reads go straight to the stat container -- no health coupling) and its
     // own SourceStats.
-    public class WeaponDamageSource : MonoBehaviour, IDamageSource, IRangeFalloffSource, IPrecisionSource
+    public class WeaponDamageSource : MonoBehaviour, IDamageSource, IRangeFalloffSource, IPrecisionSource, IStaggerSource
     {
         [Header("Weapon Definition")]
         [SerializeField] private WeaponSO weapon;
@@ -141,6 +141,10 @@ namespace Combat.Sources
                 return Mathf.Max(1f, v);
             }
         }
+
+        // Stagger multiplier, 1 without the stat; perks raise it
+        public float StaggerPower => container != null && statKeys != null && statKeys.staggerPower != null
+            ? Mathf.Max(0f, container.Resolve(statKeys.staggerPower)) : 1f;
 
         // Magnetism cone half-angle (deg), hip -> ADS
         public float AssistAngle(float aimBlend)

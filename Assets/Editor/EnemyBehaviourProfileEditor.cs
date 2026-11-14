@@ -15,7 +15,7 @@ public class EnemyBehaviourProfileEditor : Editor
         "rangedMinRange", "rangedPreferredRange", "rangedBandShift",
         "firingPointSearchRadius", "firingPointRecheck", "firingPointTolerance", "allySpacing", "fireWeights",
         "walkSpeed", "runSpeed", "runDistance", "faceWhileMoving", "fireWhileWalking", "pointHoldMin", "pointHoldMax",
-        "aimErrorPerTargetSpeed", "burstSeparationJitter", "flinchDamageFraction", "flinchRecovery", "lowerAfter",
+        "aimErrorPerTargetSpeed", "burstSeparationJitter", "lowerAfter",
         "strafe", "strafeDistance", "strafeIntervalMin", "strafeIntervalMax", "suppress", "suppressTime", "suppressSpread"
     };
     private static readonly string[] RangedCover =
