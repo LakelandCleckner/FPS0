@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8402abc1c81dbb242947a22c3f752b4b, type: 3}
+  m_Name: MeleeSquad_ZombieFireVolatile
+  m_EditorClassIdentifier: 
+  id: 
+  displayName: 
+  members:
+  - variant: {fileID: 11400000, guid: 9ce538415701478cafa1fe9c7e7bd05d, type: 2}
+    count: 5
+    leader: 0
+  - variant: {fileID: 11400000, guid: 6688678af3124c61b94de741acb31c1c, type: 2}
+    count: 2
+    leader: 1
+  spread: 3

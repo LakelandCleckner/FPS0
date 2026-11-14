@@ -112,6 +112,10 @@ namespace Combat.AI
         private const float LeaderRangeShift = -2f;
         private const float SuppressorRangeShift = 2f;
         private const float SuppressorCoverBias = 2f;
+        // How far members may pick points from the squad's anchor
+        private const float SuppressorLeash = 8f;
+        private const float FlankerLeash = 14f;
+        private const float LeaderlessLeash = 10f;
         public EnemyRank Rank => definition != null ? definition.Rank : EnemyRank.Minor;
 
         // Cost added to open-ground shooting while there's cover, and to cover actions for ranks that prefer the open
@@ -131,7 +135,8 @@ namespace Combat.AI
         // Shield broke and hasn't fully recharged yet.
         public bool ShieldDown { get; private set; }
 
-        public bool WantsCover => ShieldDown && Profile != null && Profile.shieldCover;
+        // Shield broke: hide until it recharges (shield-cover profiles, and every ranged profile)
+        public bool WantsCover => ShieldDown && Profile != null && (Profile.shieldCover || Profile.ranged);
 
         // 0 calm .. 1 threatened, and its band
         public float Defensiveness { get; private set; }
@@ -145,7 +150,8 @@ namespace Combat.AI
 
         // Melee only when the profile has no gun or the target is inside the min range
         public bool MeleeAllowed => !IsRangedProfile || insideMinRange;
-        public bool RangedAllowed => IsRangedProfile && !(insideMinRange && Profile.melee && melee != null);
+        // No shooting while hiding for a broken shield
+        public bool RangedAllowed => IsRangedProfile && !WantsCover && !(insideMinRange && Profile.melee && melee != null);
 
         public bool NeedsReload => ranged != null && ranged.NeedsReload;
         public bool HasFiringPoint => hasFiringPoint;
@@ -478,6 +484,7 @@ namespace Combat.AI
             if (now < nextCombatCoverCheck) return hasCombatCover;
 
             bool valid = hasCombatCover
+                         && SquadLeash.Holds(combatCover.Point)
                          && CoverFinder.StillCovers(combatCover, perception.BelievedPosition, Profile.rangedMinRange, ranged.MaxRange);
             bool holding = coverHoldUntil < 0f || now < coverHoldUntil;
             if (valid && holding)
@@ -513,7 +520,8 @@ namespace Combat.AI
                 Weights = p.coverWeights,
                 HasCurrent = hasCombatCover,
                 Current = combatCover.Point,
-                FlankDir = FlankDirection(threat)
+                FlankDir = FlankDirection(threat),
+                Leash = SquadLeash
             };
 
             bool had = hasCombatCover;
@@ -559,6 +567,7 @@ namespace Combat.AI
             Vector3 threat = perception.BelievedPosition;
             float d = Flat(p - threat).magnitude;
             if (d < Profile.rangedMinRange || d > ranged.MaxRange) return false;
+            if (!SquadLeash.Holds(p)) return false;
             return PositionScorer.HasLineOfSight(p, threat);
         }
 
@@ -587,7 +596,8 @@ namespace Combat.AI
                 HasCurrent = hasFiringPoint && firingPointValid,
                 Current = firingPoint,
                 Area = FiringArea,
-                FlankDir = FlankDirection(threat)
+                FlankDir = FlankDirection(threat),
+                Leash = SquadLeash
             };
 
             if (RecordPoints && DebugCandidates == null) DebugCandidates = new List<ScoredPoint>(64);
@@ -605,6 +615,13 @@ namespace Combat.AI
             Vector3 dir = Flat(threat - transform.position);
             float step = Mathf.Min(p.firingPointSearchRadius * 0.5f, Mathf.Max(1f, dir.magnitude - min));
             Vector3 ahead = transform.position + (dir.sqrMagnitude > 0.01f ? dir.normalized : transform.forward) * step;
+            // Leashed: don't wander off; pull the step back inside the squad's reach
+            var leash = q.Leash;
+            if (!leash.Holds(ahead))
+            {
+                Vector3 off = Flat(ahead - leash.Anchor);
+                ahead = leash.Anchor + (off.sqrMagnitude > 0.01f ? off.normalized : Vector3.zero) * leash.Radius * 0.8f;
+            }
             if (NavMesh.SamplePosition(ahead, out var hit, 3f, NavMesh.AllAreas)) SetFiringPoint(hit.position, false);
             else ClearFiringPoint();
         }
@@ -686,6 +703,17 @@ namespace Combat.AI
                 if (t.coverPreference >= 0f) t.coverPreference += SuppressorCoverBias;
             }
             Tactics = t;
+        }
+
+        // Members stay within reach of the leader (or the squad's middle without one); the leader is free
+        public Leash SquadLeash
+        {
+            get
+            {
+                if (Squad == null || Role == SquadRole.None || Role == SquadRole.Leader) return default;
+                float radius = Squad.Leader == null ? LeaderlessLeash : Role == SquadRole.Flanker ? FlankerLeash : SuppressorLeash;
+                return new Leash { Active = true, Anchor = Squad.Anchor, Radius = radius };
+            }
         }
 
         // Flankers favour points off to one side of the target, away from the squad's line
@@ -777,7 +805,10 @@ namespace Combat.AI
             {
                 nextCoverCheck = Time.time + CoverRecheck;
                 var p = Profile;
-                if (!CoverFinder.Find(transform.position, threat, p.coverSearchRadius, p.coverMinTargetDistance, this, out coverPoint))
+                // Already fighting from cover that hides us: stay behind it
+                if (hasCombatCover && CoverFinder.Hidden(combatCover.Point, CoverFinder.EyeOf(threat)))
+                    coverPoint = combatCover.Point;
+                else if (!CoverFinder.Find(transform.position, threat, p.coverSearchRadius, p.coverMinTargetDistance, this, out coverPoint))
                     coverPoint = CoverFinder.AwayFrom(transform.position, threat, p.retreatDistance);
                 hasCover = true;
             }

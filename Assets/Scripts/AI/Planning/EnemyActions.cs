@@ -160,7 +160,10 @@ namespace Combat.AI.Goap
         {
             data.Mover = agent.Transform.GetComponent<EnemyMover>();
             data.Brain = agent.Transform.GetComponent<EnemyBrain>();
+            data.Ranged = agent.Transform.GetComponent<EnemyRangedAttack>();
+            data.Animator = agent.Transform.GetComponentInChildren<EnemyShooterAnimator>();
             if (data.Brain != null) data.Brain.ReleaseToken();
+            if (data.Ranged != null) data.Ranged.Disengage();
             if (data.Mover != null) data.Mover.RequestSpeed(data, data.Mover.ChaseFactor);
         }
 
@@ -173,11 +176,14 @@ namespace Combat.AI.Goap
                 return ActionRunState.Stop;
 
             if (data.Mover != null) data.Mover.Halt();
+            // Get down behind it while the shield recharges
+            if (data.Animator != null) data.Animator.Crouched = true;
             return ActionRunState.ContinueOrResolve;
         }
 
         public override void End(IMonoAgent agent, Data data)
         {
+            if (data.Animator != null) data.Animator.Crouched = false;
             if (data.Mover == null) return;
             data.Mover.ReleaseSpeed(data);
             data.Mover.Halt();
@@ -188,6 +194,8 @@ namespace Combat.AI.Goap
             public ITarget Target { get; set; }
             public EnemyMover Mover;
             public EnemyBrain Brain;
+            public EnemyRangedAttack Ranged;
+            public EnemyShooterAnimator Animator;
         }
     }
 

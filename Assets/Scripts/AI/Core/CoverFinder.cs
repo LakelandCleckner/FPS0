@@ -30,6 +30,7 @@ namespace Combat.AI
         public bool HasCurrent;
         public Vector3 Current;
         public Vector3 FlankDir;
+        public Leash Leash;
     }
 
     // Finds cover at runtime from the NavMesh and level geometry: NavMesh edge points beside obstacles
@@ -156,25 +157,31 @@ namespace Combat.AI
             candidates.Clear();
             if (q.HasCurrent) candidates.Add(q.Current);
 
+            // Leashed: search around the squad's anchor instead of ourselves
+            Vector3 center = q.Leash.Active ? q.Leash.Anchor : q.From;
+            float reach = Reach(q);
+
             for (int r = 0; r < CombatRings.Length; r++)
             {
-                if (CombatRings[r] > q.SearchRadius) break;
+                if (CombatRings[r] > reach) break;
                 for (int d = 0; d < CombatDirections; d++)
                 {
                     float a = (d + r * 0.5f) * Mathf.PI * 2f / CombatDirections;
-                    AddEdge(q.From + new Vector3(Mathf.Sin(a), 0f, Mathf.Cos(a)) * CombatRings[r]);
+                    AddEdge(center + new Vector3(Mathf.Sin(a), 0f, Mathf.Cos(a)) * CombatRings[r]);
                 }
             }
 
-            Vector3 fromThreat = Flat(q.From - q.Threat);
+            Vector3 fromThreat = Flat(center - q.Threat);
             float baseAngle = fromThreat.sqrMagnitude > 0.01f ? Mathf.Atan2(fromThreat.x, fromThreat.z) : 0f;
             for (int d = 0; d < ThreatDirections; d++)
             {
                 float a = baseAngle + (d - ThreatDirections / 2) * Mathf.PI * 2f / ThreatDirections;
                 Vector3 p = q.Threat + new Vector3(Mathf.Sin(a), 0f, Mathf.Cos(a)) * q.PreferredRange;
-                if (Flat(p - q.From).sqrMagnitude <= q.SearchRadius * q.SearchRadius) AddEdge(p);
+                if (Flat(p - center).sqrMagnitude <= reach * reach) AddEdge(p);
             }
         }
+
+        private static float Reach(in CoverQuery q) => q.Leash.Active ? Mathf.Min(q.SearchRadius, q.Leash.Radius) : q.SearchRadius;
 
         private static void AddEdge(Vector3 sample)
         {
@@ -193,7 +200,7 @@ namespace Combat.AI
             score = 0f;
             float dist = Flat(p - q.Threat).magnitude;
             if (dist < q.MinRange || dist > q.MaxRange) return false;
-            if (Flat(p - q.From).magnitude > q.SearchRadius + 1f) return false;
+            if (q.Leash.Active ? !q.Leash.Holds(p) : Flat(p - q.From).magnitude > q.SearchRadius + 1f) return false;
             if (TakenByOther(p, q.Owner)) return false;
 
             Vector3 eye = EyeOf(q.Threat);
@@ -225,6 +232,7 @@ namespace Combat.AI
             if (q.HasCurrent && Flat(p - q.Current).sqrMagnitude < SameSpot * SameSpot) score += w.keepCurrent;
             if (spot.Half) score += HalfCoverBonus;
             score += PositionScorer.FlankBonus(q.FlankDir, q.Threat, p);
+            score -= PositionScorer.CohesionWeight * q.Leash.Stretch(p);
             return true;
         }
 

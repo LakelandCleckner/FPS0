@@ -37,7 +37,7 @@ namespace Combat.AI.Goap
         {
             bool melee = p == null || p.melee;
             bool kamikaze = p != null && p.kamikaze;
-            bool cover = p != null && p.shieldCover;
+            bool cover = p != null && (p.shieldCover || p.ranged);
             bool ranged = p != null && p.ranged;
             bool search = p == null || p.search;
             bool idle = p == null || p.idle;

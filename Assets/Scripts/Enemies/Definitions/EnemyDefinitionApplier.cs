@@ -51,8 +51,9 @@ namespace Combat.Enemies
         // Fired after every apply, so the AI can rebind to a new behaviour profile.
         public event System.Action Applied;
 
-        // Archetype's profile, overridden by the last layer that sets one. Read straight from the
-        // definition so it is valid before the first apply.
+        // Archetype's profile, overridden by the last layer that sets one of the same kind (a melee
+        // modifier profile doesn't turn a ranged enemy melee). Read straight from the definition so
+        // it is valid before the first apply.
         public Combat.AI.EnemyBehaviourProfileSO BehaviourProfile
         {
             get
@@ -62,7 +63,8 @@ namespace Combat.Enemies
                 var p = arch.behaviourProfile;
                 if (variant != null)
                     foreach (var m in variant.modifiers)
-                        if (m != null && m.behaviourProfile != null) p = m.behaviourProfile;
+                        if (m != null && m.behaviourProfile != null && (p == null || p.ranged == m.behaviourProfile.ranged))
+                            p = m.behaviourProfile;
                 return p;
             }
         }

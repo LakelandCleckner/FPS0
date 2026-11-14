@@ -99,6 +99,9 @@ namespace Combat.AI
                 if (m != b) m.OnLeaderLost();
         }
 
+        // Where the squad gathers: the leader, or the middle once it's gone
+        public Vector3 Anchor => Leader != null && Leader.isActiveAndEnabled ? Leader.transform.position : Center;
+
         // Average position of the members
         public Vector3 Center
         {

@@ -44,6 +44,31 @@ namespace Combat.AI
         public bool Rejected;
     }
 
+    // Keeps a squad member's points within reach of the squad's anchor.
+    public struct Leash
+    {
+        public bool Active;
+        public Vector3 Anchor;
+        public float Radius;
+
+        public bool Holds(Vector3 p)
+        {
+            if (!Active) return true;
+            Vector3 d = p - Anchor;
+            d.y = 0f;
+            return d.sqrMagnitude <= Radius * Radius;
+        }
+
+        // 0 at the anchor, 1 at the edge
+        public float Stretch(Vector3 p)
+        {
+            if (!Active || Radius <= 0f) return 0f;
+            Vector3 d = p - Anchor;
+            d.y = 0f;
+            return d.magnitude / Radius;
+        }
+    }
+
     // Everything a point search needs.
     public struct PointQuery
     {
@@ -64,6 +89,7 @@ namespace Combat.AI
         public Collider Area;
         // Squad flankers: bonus for points off the threat in this direction (zero = none)
         public Vector3 FlankDir;
+        public Leash Leash;
     }
 
     // Weighted NavMesh point choice with a per-frame evaluation cap; callers keep their old point and retry next frame.
@@ -78,6 +104,8 @@ namespace Combat.AI
         private const int ThreatDirections = 12;
         private const float CoverEdgeDistance = 1.2f;
         public const float FlankWeight = 0.8f;
+        // Pull toward the squad's anchor, at the leash edge
+        public const float CohesionWeight = 0.5f;
 
         private static readonly Dictionary<object, Vector3> reserved = new Dictionary<object, Vector3>();
         private static readonly List<Vector3> candidates = new List<Vector3>(64);
@@ -156,23 +184,27 @@ namespace Combat.AI
             candidates.Clear();
             if (q.HasCurrent) candidates.Add(q.Current);
 
+            // Leashed: search around the squad's anchor instead of ourselves
+            Vector3 center = q.Leash.Active ? q.Leash.Anchor : q.From;
+            float reach = q.Leash.Active ? Mathf.Min(q.SearchRadius, q.Leash.Radius) : q.SearchRadius;
+
             for (int r = 0; r < Rings.Length; r++)
             {
-                if (Rings[r] > q.SearchRadius) break;
+                if (Rings[r] > reach) break;
                 for (int d = 0; d < RingDirections; d++)
                 {
                     float a = (d + r * 0.5f) * Mathf.PI * 2f / RingDirections;
-                    AddSample(q.From + new Vector3(Mathf.Sin(a), 0f, Mathf.Cos(a)) * Rings[r]);
+                    AddSample(center + new Vector3(Mathf.Sin(a), 0f, Mathf.Cos(a)) * Rings[r]);
                 }
             }
 
-            Vector3 fromThreat = Flat(q.From - q.Threat);
+            Vector3 fromThreat = Flat(center - q.Threat);
             float baseAngle = fromThreat.sqrMagnitude > 0.01f ? Mathf.Atan2(fromThreat.x, fromThreat.z) : 0f;
             for (int d = 0; d < ThreatDirections; d++)
             {
                 float a = baseAngle + (d - ThreatDirections / 2) * Mathf.PI * 2f / ThreatDirections;
                 Vector3 p = q.Threat + new Vector3(Mathf.Sin(a), 0f, Mathf.Cos(a)) * q.PreferredRange;
-                if (Flat(p - q.From).sqrMagnitude <= q.SearchRadius * q.SearchRadius) AddSample(p);
+                if (Flat(p - center).sqrMagnitude <= reach * reach) AddSample(p);
             }
         }
 
@@ -187,6 +219,7 @@ namespace Combat.AI
             float dist = Flat(p - q.Threat).magnitude;
             if (dist < q.MinRange || dist > q.MaxRange) return false;
             if (q.Area != null && (q.Area.ClosestPoint(p) - p).sqrMagnitude > 0.01f) return false;
+            if (!q.Leash.Holds(p)) return false;
             if (!HasLineOfSight(p, q.Threat)) return false;
 
             var w = q.Weights;
@@ -208,6 +241,7 @@ namespace Combat.AI
 
             if (q.HasCurrent && Flat(p - q.Current).sqrMagnitude < 1f) score += w.keepCurrent;
             score += FlankBonus(q.FlankDir, q.Threat, p);
+            score -= CohesionWeight * q.Leash.Stretch(p);
             return true;
         }
 
