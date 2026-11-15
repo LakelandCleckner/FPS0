@@ -9,7 +9,7 @@ public static class EnemyGallerySceneBuilder
     private const string ScenePath = "Assets/Scenes/EnemyGallery.unity";
     private const string FloorPath = "Assets/Scenes/EnemyGallery_Floor.mat";
 
-    [MenuItem("Tools/Enemy Gallery")]
+    [MenuItem("FPS0/Enemies/Gallery Scene", priority = 1)]
     private static void Open()
     {
         if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;

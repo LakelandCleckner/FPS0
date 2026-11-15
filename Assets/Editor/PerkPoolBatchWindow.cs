@@ -52,7 +52,7 @@ public class PerkPoolBatchWindow : EditorWindow
     private Dictionary<string, PerkPoolSO> poolAssets;
     private Dictionary<string, Object> items, groups;
 
-    [MenuItem("Tools/Perk Pool Batch")]
+    [MenuItem("FPS0/Items & Perks/Perk Pools", priority = 520)]
     private static void Open() => GetWindow<PerkPoolBatchWindow>("Perk Pools");
 
     private void OnEnable() => Reparse();

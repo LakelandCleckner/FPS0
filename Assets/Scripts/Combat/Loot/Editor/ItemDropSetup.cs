@@ -24,7 +24,7 @@ namespace Combat.Loot.EditorTools
         private const string PlayerDir = "Assets/Prefabs/Player";
         private const string Tag = "[ItemDropSetup] ";
 
-        [MenuItem("Tools/Loot/Setup Item Drops")]
+        [MenuItem("FPS0/Items & Perks/Item Drops", priority = 501)]
         public static void Run()
         {
             Folder(LootDir);

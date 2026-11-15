@@ -4,7 +4,7 @@ using Combat.Weapons;
 
 // Poses the body, puts a gun prefab in its right hand, previews the left hand live,
 // and saves the third-person grip points onto the prefab
-public class TPGripTool : EditorWindow
+public class GunGripTool : EditorWindow
 {
     private const string GripName = "TP_Grip";
     private const string SupportName = "TP_Support";
@@ -26,8 +26,8 @@ public class TPGripTool : EditorWindow
     private Transform leftUpper, leftLower, leftHand, leftMiddle, hips;
     private bool previewing;
 
-    [MenuItem("Tools/TP Grip Tool")]
-    private static void Open() => GetWindow<TPGripTool>("TP Grip Tool");
+    [MenuItem("FPS0/Weapons/Gun Grip Points", priority = 200)]
+    private static void Open() => GetWindow<GunGripTool>("Gun Grip Points");
 
     private void OnEnable()
     {
@@ -292,7 +292,7 @@ public class TPGripTool : EditorWindow
             so.ApplyModifiedPropertiesWithoutUndo();
 
             PrefabUtility.SaveAsPrefabAsset(root, path);
-            Debug.Log($"[TPGripTool] Saved grip points to '{path}' (scale {tpScale:F3}).");
+            Debug.Log($"[GunGripTool] Saved grip points to '{path}' (scale {tpScale:F3}).");
         }
         finally
         {

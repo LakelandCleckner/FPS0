@@ -18,7 +18,7 @@ public class ClipAvatarFixer : EditorWindow
     private readonly List<string> report = new List<string>();
     private Vector2 scroll;
 
-    [MenuItem("Tools/Fix Clip Avatars")]
+    [MenuItem("FPS0/Animation/Fix Clip Avatars", priority = 401)]
     private static void Open() => GetWindow<ClipAvatarFixer>("Fix Clip Avatars");
 
     // Opens with these files or folders listed

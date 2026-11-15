@@ -12,7 +12,7 @@ namespace Combat.UI.EditorTools
         private const float Height = 5 * 60f;
         private const float Gap = 16f;
 
-        [MenuItem("Tools/UI/Add Pickup Toast")]
+        [MenuItem("FPS0/UI/Add Pickup Toast", priority = 702)]
         private static void Add()
         {
             var existing = Object.FindFirstObjectByType<PickupToast>(FindObjectsInactive.Include);

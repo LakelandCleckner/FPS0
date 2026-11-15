@@ -91,8 +91,8 @@ public class ZoneEditor : EditorWindow
     private int shaderDirtyCount = -1;
     private int setDirtyCount = -1;
 
-    [MenuItem("Tools/Zone Editor")]
-    private static void Open() => GetWindow<ZoneEditor>("Zones");
+    [MenuItem("FPS0/Art/Zone Editor", priority = 600)]
+    private static void Open() => GetWindow<ZoneEditor>("Zone Editor");
 
     private void OnEnable()
     {

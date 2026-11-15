@@ -9,7 +9,7 @@ using Combat.Spawning;
 
 // Generate procedural encounter rooms, edit an encounter's waves, check the scene has what encounters need,
 // and watch a running encounter.
-public class EncounterSetup : EditorWindow
+public class EncounterRoomSetup : EditorWindow
 {
     private const string SettingsFolder = "Assets/GameData/Encounters";
     private const string AmmoPrefabPath = "Assets/Prefabs/Weapons/PrimaryAmmoBoxRoot.prefab";
@@ -24,8 +24,8 @@ public class EncounterSetup : EditorWindow
     private double nextCheck;
     private bool hasPlayer, hasSpawner, hasGoap, hasSurface, hasSquads;
 
-    [MenuItem("Tools/Encounter Setup")]
-    private static void Open() => GetWindow<EncounterSetup>("Encounters");
+    [MenuItem("FPS0/Encounters/Rooms", priority = 101)]
+    private static void Open() => GetWindow<EncounterRoomSetup>("Encounter Rooms");
 
     private void OnEnable()
     {

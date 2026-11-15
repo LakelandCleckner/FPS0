@@ -10,7 +10,7 @@ public static class MixamoClipSetup
     // Name fragments that mark a one-shot clip
     internal static readonly string[] OneShot = { "jump up", "jump down", "death", "turn", "kneel", " to ", "hitreaction", "hit reaction" };
 
-    [MenuItem("Tools/Mixamo Clip Setup")]
+    [MenuItem("FPS0/Animation/Mixamo Clip Setup", priority = 400)]
     private static void Run()
     {
         int changed = 0, skipped = 0;
@@ -48,7 +48,7 @@ public static class MixamoClipSetup
         Debug.Log($"[MixamoClipSetup] {changed} changed, {skipped} skipped (already set or no clips).");
     }
 
-    [MenuItem("Tools/Mixamo Clip Setup", true)]
+    [MenuItem("FPS0/Animation/Mixamo Clip Setup", true, 400)]
     private static bool Validate() => Selection.objects.Length > 0;
 
     // Returns true if anything changed

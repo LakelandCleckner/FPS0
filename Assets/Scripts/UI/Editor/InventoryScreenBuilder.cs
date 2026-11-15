@@ -18,7 +18,7 @@ namespace Combat.UI.EditorTools
     {
         private const string AssetFolder = "Assets/GameData/UI";
 
-        [MenuItem("Tools/UI/Build Inventory Screen")]
+        [MenuItem("FPS0/UI/Build Inventory Screen", priority = 701)]
         private static void Build()
         {
             var existing = Object.FindFirstObjectByType<InventoryScreen>(FindObjectsInactive.Include);

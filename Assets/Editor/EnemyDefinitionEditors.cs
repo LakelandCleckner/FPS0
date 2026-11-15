@@ -396,7 +396,7 @@ public static class EnemySetupFixes
     public static void OpenZoneEditor(GameObject prefab)
     {
         AssetDatabase.OpenAsset(prefab);
-        EditorWindow.GetWindow<ZoneEditor>("Zones");
+        EditorWindow.GetWindow<ZoneEditor>("Zone Editor");
     }
 }
 

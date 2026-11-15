@@ -27,7 +27,7 @@ public class EffectPerkBatchWindow : EditorWindow
     private Dictionary<string, HitEffectSO> effects;
     private HashSet<string> ambiguous;
 
-    [MenuItem("Tools/Effect Perk Batch")]
+    [MenuItem("FPS0/Items & Perks/Effect Perks", priority = 523)]
     private static void Open() => GetWindow<EffectPerkBatchWindow>("Effect Perks");
 
     private void OnEnable() => Reparse();

@@ -6,7 +6,7 @@ using UnityEditor.Animations;
 using UnityEngine;
 
 // Builds the TP_Body controller (base + upper body layers) and wires the body onto the player
-public class TPBodySetup : EditorWindow
+public class TPBodyAnimatorSetup : EditorWindow
 {
     private const string TreePrefix = "TPB_";
     private const string UpperLayer = "UpperBody";
@@ -61,8 +61,8 @@ public class TPBodySetup : EditorWindow
     [SerializeField] private float jumpUpExitTime = 0.8f;
     [SerializeField] private float jumpDownExitTime = 0.5f;
 
-    [MenuItem("Tools/TP Body Setup")]
-    private static void Open() => GetWindow<TPBodySetup>("TP Body Setup");
+    [MenuItem("FPS0/Characters/TP Body Animator", priority = 300)]
+    private static void Open() => GetWindow<TPBodyAnimatorSetup>("TP Body Animator");
 
     private void OnEnable()
     {
@@ -114,7 +114,7 @@ public class TPBodySetup : EditorWindow
         string folder = clipFolder != null ? AssetDatabase.GetAssetPath(clipFolder) : null;
         if (string.IsNullOrEmpty(folder) || !AssetDatabase.IsValidFolder(folder))
         {
-            Debug.LogError("[TPBodySetup] Assign the clip folder.");
+            Debug.LogError("[TPBodyAnimatorSetup] Assign the clip folder.");
             return false;
         }
 
@@ -186,8 +186,8 @@ public class TPBodySetup : EditorWindow
         AssetDatabase.SaveAssets();
 
         if (missing.Count > 0)
-            Debug.LogWarning($"[TPBodySetup] Missing clips (skipped): {string.Join(", ", missing)}");
-        Debug.Log($"[TPBodySetup] Built Base Layer and {UpperLayer} on '{AssetDatabase.GetAssetPath(controller)}'.");
+            Debug.LogWarning($"[TPBodyAnimatorSetup] Missing clips (skipped): {string.Join(", ", missing)}");
+        Debug.Log($"[TPBodyAnimatorSetup] Built Base Layer and {UpperLayer} on '{AssetDatabase.GetAssetPath(controller)}'.");
         return true;
     }
 
@@ -284,19 +284,19 @@ public class TPBodySetup : EditorWindow
     {
         if (controller == null)
         {
-            Debug.LogError("[TPBodySetup] Build or assign the controller first.");
+            Debug.LogError("[TPBodyAnimatorSetup] Build or assign the controller first.");
             return;
         }
 
         string folder = pistolFolder != null ? AssetDatabase.GetAssetPath(pistolFolder) : null;
         if (string.IsNullOrEmpty(folder) || !AssetDatabase.IsValidFolder(folder))
         {
-            Debug.LogError("[TPBodySetup] Assign the pistol clip folder.");
+            Debug.LogError("[TPBodyAnimatorSetup] Assign the pistol clip folder.");
             return;
         }
         if (!LoadClips(folder).TryGetValue(PistolHoldSource, out var pistol))
         {
-            Debug.LogError($"[TPBodySetup] No '{PistolHoldSource}' clip in '{folder}'.");
+            Debug.LogError($"[TPBodyAnimatorSetup] No '{PistolHoldSource}' clip in '{folder}'.");
             return;
         }
 
@@ -305,7 +305,7 @@ public class TPBodySetup : EditorWindow
         var aim = AssetDatabase.LoadAssetAtPath<AnimationClip>($"{dir}/{HoldAim}.anim");
         if (hip == null || aim == null)
         {
-            Debug.LogError("[TPBodySetup] Hold clips missing; run Build Controller first.");
+            Debug.LogError("[TPBodyAnimatorSetup] Hold clips missing; run Build Controller first.");
             return;
         }
 
@@ -327,7 +327,7 @@ public class TPBodySetup : EditorWindow
 
         EditorUtility.SetDirty(aoc);
         AssetDatabase.SaveAssets();
-        Debug.Log($"[TPBodySetup] Pistol override at '{path}'. Assign it as Third Person Controller on pistol viewmodels.");
+        Debug.Log($"[TPBodyAnimatorSetup] Pistol override at '{path}'. Assign it as Third Person Controller on pistol viewmodels.");
     }
 
     private string GeneratedDir()
@@ -432,16 +432,16 @@ public class TPBodySetup : EditorWindow
     {
         if (playerRoot == null || body == null)
         {
-            Debug.LogError("[TPBodySetup] Assign Player Root and Body.");
+            Debug.LogError("[TPBodyAnimatorSetup] Assign Player Root and Body.");
             return;
         }
         if (controller == null)
         {
-            Debug.LogError("[TPBodySetup] Build or assign the controller first.");
+            Debug.LogError("[TPBodyAnimatorSetup] Build or assign the controller first.");
             return;
         }
 
-        const string undo = "TP Body Setup";
+        const string undo = "TP Body Animator";
         GameObject go = body;
         if (EditorUtility.IsPersistent(body))
         {
@@ -475,7 +475,7 @@ public class TPBodySetup : EditorWindow
         if (anim.avatar == null) anim.avatar = FindAvatar(go);
         anim.applyRootMotion = false;
         anim.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-        if (anim.avatar == null) Debug.LogWarning("[TPBodySetup] No avatar found; assign it on the Animator.");
+        if (anim.avatar == null) Debug.LogWarning("[TPBodyAnimatorSetup] No avatar found; assign it on the Animator.");
 
         GetOrAdd<PlayerPresentation>(playerRoot.gameObject);
         GetOrAdd<ThirdPersonBodyAnimator>(go);
@@ -498,9 +498,9 @@ public class TPBodySetup : EditorWindow
         SetArray(so.FindProperty("legs"), legs);
         so.ApplyModifiedProperties();
 
-        if (legs.Length == 0) Debug.LogWarning("[TPBodySetup] No mesh named 'Legs' found under the body.");
+        if (legs.Length == 0) Debug.LogWarning("[TPBodyAnimatorSetup] No mesh named 'Legs' found under the body.");
         Selection.activeGameObject = go;
-        Debug.Log($"[TPBodySetup] Body '{go.name}' set up under '{playerRoot.name}' " +
+        Debug.Log($"[TPBodyAnimatorSetup] Body '{go.name}' set up under '{playerRoot.name}' " +
                   $"({full.Length} full body, {legs.Length} legs renderer(s)).");
     }
 
@@ -511,7 +511,7 @@ public class TPBodySetup : EditorWindow
         var hips = anim.isHuman ? anim.GetBoneTransform(HumanBodyBones.Hips) : null;
         if (hips == null)
         {
-            Debug.LogWarning("[TPBodySetup] No hips bone; TP_Belt not created.");
+            Debug.LogWarning("[TPBodyAnimatorSetup] No hips bone; TP_Belt not created.");
             return;
         }
 

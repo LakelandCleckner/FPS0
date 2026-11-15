@@ -28,7 +28,7 @@ public class EnemySquadSetup : EditorWindow
     private EnemySquadSO current;
     private Vector2 listScroll, editScroll;
 
-    [MenuItem("Tools/Enemy Squad Setup")]
+    [MenuItem("FPS0/Encounters/Squads", priority = 100)]
     private static void Open() => GetWindow<EnemySquadSetup>("Enemy Squads");
 
     private void OnEnable() => Refresh();

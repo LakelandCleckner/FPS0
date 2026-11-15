@@ -34,7 +34,7 @@ public class EnemyHitReactionSetup : EditorWindow
     private readonly List<string> report = new List<string>();
     private Vector2 scroll;
 
-    [MenuItem("Tools/Enemy Hit Reaction Setup")]
+    [MenuItem("FPS0/Enemies/Hit Reactions", priority = 22)]
     private static void Open() => GetWindow<EnemyHitReactionSetup>("Enemy Hit Reactions");
 
     private void OnEnable()

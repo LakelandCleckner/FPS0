@@ -7,7 +7,7 @@ namespace Combat.UI.EditorTools
     // Adds EnemyHealthBars to the HUD canvas as a full-screen layer. Safe to run again.
     public static class EnemyHealthBarsSetup
     {
-        [MenuItem("Tools/UI/Add Enemy Health Bars")]
+        [MenuItem("FPS0/UI/Add Enemy Health Bars", priority = 700)]
         private static void Add()
         {
             var existing = Object.FindFirstObjectByType<EnemyHealthBars>(FindObjectsInactive.Include);

@@ -32,8 +32,8 @@ public class PlayerHitboxSetup : EditorWindow
 
     private Vector2 scroll;
 
-    [MenuItem("Tools/Player Hitbox Setup")]
-    private static void Open() => GetWindow<PlayerHitboxSetup>("Player Hitbox Setup");
+    [MenuItem("FPS0/Characters/Player Hitboxes", priority = 320)]
+    private static void Open() => GetWindow<PlayerHitboxSetup>("Player Hitboxes");
 
     private void OnEnable()
     {

@@ -5,7 +5,7 @@ using UnityEditor.Animations;
 using UnityEngine;
 
 // Builds Attack_0..N states on an enemy controller, driven by Attacking (bool) + AttackIndex (int) + AttackSpeed (float).
-public class EnemyAttackAnimatorSetup : EditorWindow
+public class MeleeAttackAnimatorSetup : EditorWindow
 {
     private AnimatorController controller;
     private int layerIndex;
@@ -20,8 +20,8 @@ public class EnemyAttackAnimatorSetup : EditorWindow
     private bool fixImport = true;
     private Vector2 scroll;
 
-    [MenuItem("Tools/Enemy Attack Animator Setup")]
-    private static void Open() => GetWindow<EnemyAttackAnimatorSetup>("Enemy Attack Setup");
+    [MenuItem("FPS0/Enemies/Melee Attack Animator", priority = 21)]
+    private static void Open() => GetWindow<MeleeAttackAnimatorSetup>("Melee Attack Animator");
 
     private void OnGUI()
     {

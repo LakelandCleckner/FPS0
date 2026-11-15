@@ -8,7 +8,7 @@ using Combat.Core;
 
 // Adds a convex hull, cut from the enemy's skinned mesh, under each EnemyHitbox bone and disables the old
 // capsule/box there (kept for a future ragdoll). Also adds the BodyBlocker capsule on the root.
-public class EnemyHitboxMeshFit : EditorWindow
+public class EnemyHitboxSetup : EditorWindow
 {
     private const string HullName = "HB_Hull";
     private const string BlockerName = "BodyBlocker";
@@ -22,8 +22,8 @@ public class EnemyHitboxMeshFit : EditorWindow
     [SerializeField] private GameObject template;
     [SerializeField] private bool removeStray = true;
 
-    [MenuItem("Tools/Enemy Hitbox Mesh Fit")]
-    private static void Open() => GetWindow<EnemyHitboxMeshFit>("Enemy Hitbox Mesh Fit");
+    [MenuItem("FPS0/Characters/Enemy Hitboxes", priority = 321)]
+    private static void Open() => GetWindow<EnemyHitboxSetup>("Enemy Hitboxes");
 
     private void OnGUI()
     {
@@ -105,7 +105,7 @@ public class EnemyHitboxMeshFit : EditorWindow
 
         foreach (var line in report)
         {
-            string msg = $"[EnemyHitboxMeshFit] {line.TrimStart('!', '?', ' ')}";
+            string msg = $"[EnemyHitboxSetup] {line.TrimStart('!', '?', ' ')}";
             if (line.StartsWith("!")) Debug.LogError(msg);
             else if (line.StartsWith("?")) Debug.LogWarning(msg);
             else Debug.Log(msg);
@@ -170,7 +170,7 @@ public class EnemyHitboxMeshFit : EditorWindow
             HitboxHullCutter.AddHull(go, mesh, false);
             extraCount++;
         }
-        if (extraCount > 0) Debug.Log($"[EnemyHitboxMeshFit] {extraCount} hand/foot hull(s) added under their limb hitboxes.");
+        if (extraCount > 0) Debug.Log($"[EnemyHitboxSetup] {extraCount} hand/foot hull(s) added under their limb hitboxes.");
 
         AssetDatabase.SaveAssets();
         MarkDirty();
@@ -187,7 +187,7 @@ public class EnemyHitboxMeshFit : EditorWindow
         MarkDirty();
 
         string names = string.Join(", ", missed.Select(h => h.name));
-        Debug.Log($"[EnemyHitboxMeshFit] Hulls on {made.Count}/{hitboxes.Length} hitbox bones of '{enemyRoot.name}'." +
+        Debug.Log($"[EnemyHitboxSetup] Hulls on {made.Count}/{hitboxes.Length} hitbox bones of '{enemyRoot.name}'." +
                   (missed.Length > 0
                       ? $" No vertices for: {names} ({(disableUncovered ? "its collider disabled" : "old collider left on")})."
                       : ""));
@@ -248,7 +248,7 @@ public class EnemyHitboxMeshFit : EditorWindow
         int layer = LayerMask.NameToLayer(PhysicsLayers.BodyBlocker);
         if (layer < 0)
         {
-            Debug.LogError($"[EnemyHitboxMeshFit] Add a layer named '{PhysicsLayers.BodyBlocker}' first (Project Settings > Tags and Layers).");
+            Debug.LogError($"[EnemyHitboxSetup] Add a layer named '{PhysicsLayers.BodyBlocker}' first (Project Settings > Tags and Layers).");
             return;
         }
 
@@ -286,7 +286,7 @@ public class EnemyHitboxMeshFit : EditorWindow
 
         MarkDirty();
         Selection.activeGameObject = go;
-        Debug.Log($"[EnemyHitboxMeshFit] Body blocker on '{enemyRoot.name}': radius {blockerRadius}, height {height}.");
+        Debug.Log($"[EnemyHitboxSetup] Body blocker on '{enemyRoot.name}': radius {blockerRadius}, height {height}.");
     }
 
     // ===== Shared =====

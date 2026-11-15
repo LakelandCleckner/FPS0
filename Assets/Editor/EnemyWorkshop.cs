@@ -42,7 +42,7 @@ public class EnemyWorkshop : EditorWindow
     // True while the workshop draws an asset inspector, so it hides its own "Open in Workshop" button.
     public static bool Drawing { get; private set; }
 
-    [MenuItem("Tools/Enemy Workshop")]
+    [MenuItem("FPS0/Enemies/Workshop", priority = 0)]
     public static void Open() => Open(null);
 
     public static void Open(Object select)

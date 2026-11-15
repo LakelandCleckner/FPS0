@@ -16,7 +16,7 @@ using Combat.Weapons;
 //   Weapons:    Name[, Name] | archetype [| key=value ...]
 //   Archetypes: Name[, Name] | type [| key=value ...]
 // Any other key is a field on the asset by name (falloffStartAtMinRange=16). Only written fields are set.
-// Roll columns are assigned with Perk Pool Batch.
+// Roll columns are assigned with Perk Pools.
 public class ItemBatchWindow : EditorWindow
 {
     private enum Kind { Armor, Weapon, Archetype }
@@ -71,7 +71,7 @@ public class ItemBatchWindow : EditorWindow
     private Dictionary<string, DeliverySO> deliveries;
     private Dictionary<string, AmmoPoolSO> pools;
 
-    [MenuItem("Tools/Item Batch")]
+    [MenuItem("FPS0/Items & Perks/Items", priority = 500)]
     private static void Open() => GetWindow<ItemBatchWindow>("Items");
 
     private void OnEnable() => Reparse();
@@ -115,7 +115,7 @@ public class ItemBatchWindow : EditorWindow
         {
             case Kind.Armor:
                 return "Name[, Name] | slot [| intrinsic=Perk, Perk]\n" +
-                       "Saved to " + ArmorRoot + "/<Slot>. Roll columns come from the slot unless set in Perk Pool Batch.";
+                       "Saved to " + ArmorRoot + "/<Slot>. Roll columns come from the slot unless set in Perk Pools.";
             case Kind.Weapon:
                 return "Name[, Name] | archetype [| key=value ...]\n" +
                        "Keys: damage rpm mag reload handling zoom range aa precision (deltas), reserves, element=Type, from=Weapon, intrinsic=Perk, Perk\n" +
@@ -513,7 +513,7 @@ public class ItemBatchWindow : EditorWindow
     {
         var a = AssetDatabase.LoadAssetAtPath<T>(p.Path);
         if (a == null) return CreateInstance<T>();
-        Undo.RecordObject(a, "Item Batch");
+        Undo.RecordObject(a, "Items");
         return a;
     }
 

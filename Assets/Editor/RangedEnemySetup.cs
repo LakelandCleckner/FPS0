@@ -12,7 +12,7 @@ using Combat.Stats;
 using Combat.Weapons;
 
 // Shooter setup in one window: ranged stats, Humanoid clips, controller, content and enemy components, each step validated.
-public class EnemyShooterSetup : EditorWindow
+public class RangedEnemySetup : EditorWindow
 {
     private const string Root = "Assets/Animations/Enemies/Shooter";
     private const string ClipFolder = Root + "/Clips";
@@ -76,8 +76,8 @@ public class EnemyShooterSetup : EditorWindow
     private readonly List<string> report = new List<string>();
     private Vector2 scroll;
 
-    [MenuItem("Tools/Enemy Shooter Setup")]
-    private static void Open() => GetWindow<EnemyShooterSetup>("Enemy Shooter Setup");
+    [MenuItem("FPS0/Enemies/Ranged Setup", priority = 20)]
+    private static void Open() => GetWindow<RangedEnemySetup>("Ranged Enemy Setup");
 
     private static List<ClipSpec> Specs()
     {
@@ -541,7 +541,7 @@ public class EnemyShooterSetup : EditorWindow
             {
                 var ctrl = AssetDatabase.LoadAssetAtPath<AnimatorController>(BodyControllerPath);
                 if (ctrl != null) { Undo.RecordObject(anim, "Assign Controller"); anim.runtimeAnimatorController = ctrl; report.Add("Assigned " + BodyControllerPath); }
-                else report.Add("? No controller at " + BodyControllerPath + ": build it with Tools > TP Body Setup.");
+                else report.Add("? No controller at " + BodyControllerPath + ": build it with FPS0 > Characters > TP Body Animator.");
             }
 
             if (prefabPath != null) PrefabUtility.SaveAsPrefabAsset(root, prefabPath);

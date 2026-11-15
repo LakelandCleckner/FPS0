@@ -37,7 +37,7 @@ public class StatPerkBatchWindow : EditorWindow
     private Dictionary<string, StatDefinitionSO> stats;
     private Dictionary<string, WeaponTypeSO> types;
 
-    [MenuItem("Tools/Stat Perk Batch")]
+    [MenuItem("FPS0/Items & Perks/Stat Perks", priority = 521)]
     private static void Open() => GetWindow<StatPerkBatchWindow>("Stat Perks");
 
     private void OnEnable() => Reparse();

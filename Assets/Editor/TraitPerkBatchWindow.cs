@@ -55,7 +55,7 @@ public class TraitPerkBatchWindow : EditorWindow
     private Dictionary<string, WeaponTypeSO> weaponTypes;
     private readonly Dictionary<string, PerkSO> existingPerks = new Dictionary<string, PerkSO>();
 
-    [MenuItem("Tools/Trait Perk Batch")]
+    [MenuItem("FPS0/Items & Perks/Trait Perks", priority = 522)]
     private static void Open() => GetWindow<TraitPerkBatchWindow>("Trait Perks");
 
     private void OnEnable() => Reparse();
@@ -372,7 +372,7 @@ public class TraitPerkBatchWindow : EditorWindow
                 perk = (PerkSO)CreateInstance(p.Type.Type);
                 CallReset(perk);   // code-created assets skip Reset, which holds type defaults like listen scope
             }
-            else Undo.RecordObject(perk, "Trait Perk Batch");
+            else Undo.RecordObject(perk, "Trait Perks");
 
             perk.displayName = p.Name;
             if (string.IsNullOrEmpty(perk.id)) perk.id = Id(p.Name);
