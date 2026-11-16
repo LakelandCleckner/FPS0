@@ -32,7 +32,7 @@ namespace Combat.UI
         {
             var s = screen.Style;
             var key = new SlotRef(SlotKind.Weapon, slot);
-            var tile = Tile(parent, "Weapon_" + (slot + 1), screen, weapon);
+            var tile = Tile(parent, "Weapon_" + (slot + 1), screen, weapon, wide: true);
             UIKit.Size(tile, height: s.weaponSlotHeight);
             UIKit.HStack(tile, 14f, UIKit.Pad(16f, 16f, 12f, 12f));
             tile.SetSelected(screen.Selected.Is(SlotKind.Weapon, slot));
@@ -55,7 +55,7 @@ namespace Combat.UI
                 return;
             }
 
-            UIKit.Text(info, "Name", s, ItemText.Name(weapon), s.bodySize + 1f, ItemText.NameColor(s, weapon, s.text), lines: 2);
+            UIKit.Text(info, "Name", s, ItemText.Name(weapon), s.bodySize + 1f, ItemText.NameColor(s, weapon, s.text), lines: 2, role: TextRole.Title);
             string kind = ItemText.Kind(weapon);
             string element = ItemText.Element(weapon);
             UIKit.Text(info, "Kind", s, string.IsNullOrEmpty(element) ? kind : kind + "  /  " + element, s.smallSize, s.textMuted, lines: 2);
@@ -66,7 +66,7 @@ namespace Combat.UI
         {
             var s = screen.Style;
             var key = new SlotRef(SlotKind.Armor, index);
-            var tile = Tile(parent, "Armor_" + ItemText.SlotName(slot), screen, piece);
+            var tile = Tile(parent, "Armor_" + ItemText.SlotName(slot), screen, piece, wide: true);
             UIKit.Size(tile, height: s.armorSlotHeight);
             UIKit.HStack(tile, 14f, UIKit.Pad(16f, 16f, 8f, 8f));
             tile.SetSelected(screen.Selected.Is(SlotKind.Armor, index));
@@ -80,18 +80,21 @@ namespace Combat.UI
             UIKit.Size(info, flexWidth: 1f);
             UIKit.Label(info, "Slot", s, ItemText.SlotName(slot));
             UIKit.Text(info, "Name", s, piece != null ? ItemText.Name(piece) : "Empty", s.bodySize - 1f,
-                       piece != null ? ItemText.NameColor(s, piece, s.text) : s.textFaint, lines: piece != null ? 2 : 1);
+                       piece != null ? ItemText.NameColor(s, piece, s.text) : s.textFaint, lines: piece != null ? 2 : 1,
+                       role: piece != null ? TextRole.Title : TextRole.Body);
 
             if (piece != null) ChipGrid(tile.transform, s, piece.Perks);
         }
 
-        // Square item icon; the monogram stands in until icon art exists.
+        // Square item icon with its rarity wash; the monogram stands in until icon art exists.
         public static void Icon(Transform parent, UIStyleSO s, object item, float size)
         {
-            var box = UIKit.Box(parent, "Icon", s, item != null ? s.tileHover : s.tileEmpty, true);
+            var box = UIKit.Box(parent, "Icon", s, item != null ? s.backdrop : s.tileEmpty);
             UIKit.Size(box, width: size, height: size);
+            if (item != null) UIKit.RarityWash(box.rectTransform, s, ItemText.RarityOf(item));
+            UIKit.Outline(box.rectTransform, s, ItemText.BorderColor(s, item));
             if (item == null) return;
-            var t = UIKit.Text(box.transform, "Monogram", s, ItemText.Monogram(item), size * 0.32f, s.text, TextAlignmentOptions.Center, heading: true);
+            var t = UIKit.Text(box.transform, "Monogram", s, ItemText.Monogram(item), size * 0.34f, s.text, TextAlignmentOptions.Center, role: TextRole.Title);
             UIKit.Stretch(t.rectTransform);
         }
 
@@ -119,7 +122,7 @@ namespace Combat.UI
 
         public static void Chip(Transform parent, UIStyleSO s, PerkSO perk)
         {
-            var chip = UIKit.Box(parent, "Chip_" + perk.name, s, s.tileEmpty, true);
+            var chip = UIKit.Box(parent, "Chip_" + perk.name, s, s.tileEmpty, true, small: true);
             UIKit.Size(chip, width: s.chipSize, height: s.chipSize);
             if (perk.icon != null)
             {

@@ -1,9 +1,13 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Combat.Perks;
 
 namespace Combat.UI
 {
+    // Which style font a text uses.
+    public enum TextRole { Body, Heading, Title, Number }
+
     // Code-built UI helpers. Everything made here is marked DontSave while Transient is set (edit-mode previews).
     public static class UIKit
     {
@@ -37,29 +41,75 @@ namespace Combat.UI
             return rt;
         }
 
-        // Rounded fill, optionally with an outline child.
-        public static Image Box(Transform parent, string name, UIStyleSO style, Color color, bool border = false, Color? borderColor = null)
+        // Style-shaped fill, optionally with an outline child. Small = the tighter corner for chips and tags.
+        public static Image Box(Transform parent, string name, UIStyleSO style, Color color, bool border = false, Color? borderColor = null,
+                                bool small = false)
         {
             var rt = Node(parent, name);
             var img = rt.gameObject.AddComponent<Image>();
-            img.sprite = style.Fill;
+            img.sprite = small ? style.SmallFill : style.Fill;
             img.type = Image.Type.Sliced;
             img.color = color;
             img.raycastTarget = false;
-            if (border) Outline(rt, style, borderColor ?? style.tileBorder);
+            if (border) Outline(rt, style, borderColor ?? style.tileBorder, small);
             return img;
         }
 
-        public static Image Outline(RectTransform parent, UIStyleSO style, Color color)
+        public static Image Outline(RectTransform parent, UIStyleSO style, Color color, bool small = false)
         {
             var rt = Stretch(Node(parent, "Border"));
             var img = rt.gameObject.AddComponent<Image>();
-            img.sprite = style.Border;
+            img.sprite = small ? style.SmallBorder : style.Border;
             img.type = Image.Type.Sliced;
             img.color = color;
             img.raycastTarget = false;
-            rt.gameObject.AddComponent<LayoutElement>().ignoreLayout = true;
+            Ignore(rt);
             return img;
+        }
+
+        // Linear colour ramp multiplied over a graphic: from = top (or left), to = bottom (or right).
+        public static UIGradient Gradient(Graphic g, Color from, Color to, bool horizontal = false)
+        {
+            var e = g.GetComponent<UIGradient>();
+            if (e == null) e = g.gameObject.AddComponent<UIGradient>();
+            e.Set(from, to, horizontal);
+            return e;
+        }
+
+        // Darkens toward the bottom by the style's Tile Shade.
+        public static UIGradient Shade(Graphic g, UIStyleSO style)
+        {
+            float k = style.tileShade;
+            return Gradient(g, Color.white, new Color(k, k, k, 1f));
+        }
+
+        // Rarity colour fading from the top (or left) of a style box, plus a band along its top edge.
+        public static void RarityWash(RectTransform target, UIStyleSO style, Rarity? rarity, bool horizontal = false)
+        {
+            if (!rarity.HasValue) return;
+            var c = style.RarityColor(rarity.Value);
+            float k = style.WashStrength(rarity.Value);
+            if (k > 0f)
+            {
+                var wash = Box(target, "RarityWash", style, Color.white);
+                Stretch(wash.rectTransform);
+                Ignore(wash);
+                Gradient(wash, new Color(c.r, c.g, c.b, k), new Color(c.r, c.g, c.b, 0f), horizontal);
+            }
+
+            if (style.rarityBandHeight <= 0f) return;
+            var band = Solid(target, "RarityBand", rarity.Value == Rarity.Common ? new Color(c.r, c.g, c.b, 0.35f) : c);
+            float inset = style.EdgeInset;
+            Anchor(band.rectTransform, new Vector2(0f, 1f), Vector2.one, new Vector2(inset, -style.rarityBandHeight), new Vector2(-inset, 0f));
+            Ignore(band);
+        }
+
+        // Keeps a decoration out of its parent's layout group.
+        public static void Ignore(Component c)
+        {
+            var le = c.GetComponent<LayoutElement>();
+            if (le == null) le = c.gameObject.AddComponent<LayoutElement>();
+            le.ignoreLayout = true;
         }
 
         // Square-cornered solid block (rules, bar segments, accent marks).
@@ -74,11 +124,12 @@ namespace Combat.UI
 
         public static TMP_Text Text(Transform parent, string name, UIStyleSO style, string value, float size, Color color,
                                     TextAlignmentOptions align = TextAlignmentOptions.MidlineLeft, bool heading = false, bool wrap = false,
-                                    int lines = 1)
+                                    int lines = 1, TextRole? role = null)
         {
+            var r = role ?? (heading ? TextRole.Heading : TextRole.Body);
             var rt = Node(parent, name);
             var t = rt.gameObject.AddComponent<TextMeshProUGUI>();
-            t.font = heading ? style.HeadingFont : style.BodyFont;
+            t.font = FontFor(style, r);
             t.text = value ?? "";
             t.fontSize = size;
             t.color = color;
@@ -96,12 +147,25 @@ namespace Combat.UI
                 t.fontSizeMin = Mathf.Max(1f, size * style.minTextScale);
                 if (lines > 1) Size(t, height: LineHeight(size) * lines);
             }
-            if (heading)
+            // Bold is only faked when the role falls back to the body font.
+            if (r == TextRole.Heading)
             {
-                t.fontStyle = FontStyles.UpperCase | FontStyles.Bold;
+                t.fontStyle = FontStyles.UpperCase | (style.HasHeadingFont ? FontStyles.Normal : FontStyles.Bold);
                 t.characterSpacing = style.headingSpacing;
             }
+            else if (r == TextRole.Title && !style.HasTitleFont) t.fontStyle = FontStyles.Bold;
             return t;
+        }
+
+        public static TMP_FontAsset FontFor(UIStyleSO style, TextRole role)
+        {
+            switch (role)
+            {
+                case TextRole.Heading: return style.HeadingFont;
+                case TextRole.Title: return style.TitleFont;
+                case TextRole.Number: return style.NumberFont;
+                default: return style.BodyFont;
+            }
         }
 
         // Height of one line of text at this size, for reserving room in layouts.

@@ -62,7 +62,7 @@ namespace Combat.UI
             // Counts against another slot's cap: say which.
             if (item is WeaponInstance w && slot.Kind == SlotKind.Weapon && w.Definition.InventorySlot != slot.Index)
             {
-                var tag = UIKit.Box(tile.transform, "Tag", s, s.tileEmpty, true);
+                var tag = UIKit.Box(tile.transform, "Tag", s, s.backdrop, true, small: true);
                 UIKit.Anchor(tag.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-40f, -26f), new Vector2(-6f, -6f));
                 var t = UIKit.Text(tag.transform, "Text", s, "S" + (w.Definition.InventorySlot + 1), s.labelSize - 1f, s.textMuted,
                                    TextAlignmentOptions.Center, heading: true);

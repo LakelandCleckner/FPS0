@@ -6,42 +6,50 @@ using Combat.Perks;
 
 namespace Combat.UI
 {
+    public enum CornerStyle { Rounded, Cut }
+
     // Look of the menu screens: type, colours, shape and spacing. Panels rebuild from this.
     [CreateAssetMenu(fileName = "UIStyle", menuName = "Combat/UI/UI Style")]
     public class UIStyleSO : ScriptableObject
     {
         [Header("Type")]
-        [Tooltip("Body and numbers. Empty = TextMeshPro's default font.")]
+        [Tooltip("Body text and descriptions. Empty = TextMeshPro's default font.")]
         public TMP_FontAsset font;
-        [Tooltip("Titles, headings and labels. Empty = Font.")]
+        [Tooltip("Headings and labels. Empty = Font.")]
         public TMP_FontAsset headingFont;
+        [Tooltip("Screen titles and item names. Empty = Heading Font.")]
+        public TMP_FontAsset titleFont;
+        [Tooltip("Stat values, counts and timers. Empty = Font.")]
+        public TMP_FontAsset numberFont;
         public float titleSize = 34f;
         public float headingSize = 14f;
         public float bodySize = 19f;
         public float smallSize = 15f;
         public float labelSize = 12f;
         [Tooltip("Letter spacing on uppercase headings and labels.")]
-        public float headingSpacing = 8f;
+        public float headingSpacing = 2f;
         [Tooltip("Single-line text shrinks to fit, down to this fraction of its size, then truncates.")]
         [Range(0.2f, 1f)] public float minTextScale = 0.4f;
 
         [Header("Surfaces")]
-        public Color backdrop = new Color(0.02f, 0.03f, 0.04f, 0.86f);
-        public Color panel = new Color(0.07f, 0.08f, 0.095f, 0.94f);
-        public Color panelBorder = new Color(1f, 1f, 1f, 0.06f);
-        public Color tile = new Color(0.115f, 0.13f, 0.15f, 1f);
-        public Color tileHover = new Color(0.16f, 0.185f, 0.21f, 1f);
-        public Color tileEmpty = new Color(1f, 1f, 1f, 0.025f);
-        public Color tileBorder = new Color(1f, 1f, 1f, 0.07f);
-        public Color divider = new Color(1f, 1f, 1f, 0.08f);
+        public Color backdrop = new Color(0.015f, 0.014f, 0.016f, 0.9f);
+        public Color panel = new Color(0.055f, 0.053f, 0.058f, 0.96f);
+        public Color panelBorder = new Color(1f, 0.95f, 0.85f, 0.07f);
+        public Color tile = new Color(0.095f, 0.091f, 0.098f, 1f);
+        public Color tileHover = new Color(0.15f, 0.142f, 0.145f, 1f);
+        public Color tileEmpty = new Color(1f, 0.95f, 0.85f, 0.025f);
+        public Color tileBorder = new Color(1f, 0.95f, 0.85f, 0.08f);
+        public Color divider = new Color(1f, 0.95f, 0.85f, 0.1f);
+        [Tooltip("Tile and panel shading: bottom brightness relative to the top.")]
+        [Range(0f, 1f)] public float tileShade = 0.72f;
 
         [Header("Text")]
-        public Color text = new Color(0.93f, 0.94f, 0.95f, 1f);
-        public Color textMuted = new Color(0.6f, 0.65f, 0.69f, 1f);
-        public Color textFaint = new Color(0.4f, 0.44f, 0.48f, 1f);
+        public Color text = new Color(0.94f, 0.92f, 0.88f, 1f);
+        public Color textMuted = new Color(0.66f, 0.63f, 0.58f, 1f);
+        public Color textFaint = new Color(0.45f, 0.43f, 0.4f, 1f);
 
         [Header("Accent and state")]
-        public Color accent = new Color(0.96f, 0.72f, 0.3f, 1f);
+        public Color accent = new Color(0.86f, 0.7f, 0.42f, 1f);
         public Color positive = new Color(0.5f, 0.86f, 0.58f, 1f);
         public Color negative = new Color(0.96f, 0.44f, 0.4f, 1f);
 
@@ -51,8 +59,12 @@ namespace Combat.UI
         public Color rarityRare = new Color(0.38f, 0.62f, 1f, 1f);
         public Color rarityLegendary = new Color(0.72f, 0.45f, 1f, 1f);
         public Color rarityMythic = new Color(1f, 0.85f, 0.35f, 1f);
-        [Tooltip("Tile border strength for Uncommon and up. Common keeps the normal border.")]
+        [Tooltip("Tile border strength for Uncommon to Legendary. Common keeps the normal border, Mythic is solid.")]
         [Range(0f, 1f)] public float rarityBorderAlpha = 0.55f;
+        [Tooltip("Rarity colour strength at the top (or left) of an item, fading out. Scales up per tier; Common gets none.")]
+        [Range(0f, 1f)] public float rarityWash = 0.42f;
+        [Tooltip("Rarity band along the top edge of items.")]
+        public float rarityBandHeight = 3f;
 
         [Header("Enemy ranks")]
         public Color rankMinor = new Color(0.86f, 0.25f, 0.22f, 1f);
@@ -77,7 +89,12 @@ namespace Combat.UI
         public float barHeight = 8f;
 
         [Header("Shape")]
+        public CornerStyle corners = CornerStyle.Cut;
         [Range(0, 24)] public int cornerRadius = 6;
+        [Tooltip("Corner cut on panels, tiles and cards.")]
+        [Range(0, 32)] public int cutSize = 12;
+        [Tooltip("Corner cut on chips, key caps and tags.")]
+        [Range(0, 16)] public int cutSizeSmall = 5;
         [Range(1, 4)] public int borderWidth = 1;
 
         [Header("Spacing")]
@@ -95,8 +112,20 @@ namespace Combat.UI
         [Tooltip("Perk chips per row on the equipped cards.")]
         [Min(1)] public int chipsPerRow = 4;
 
-        private readonly Dictionary<int, Sprite> fills = new Dictionary<int, Sprite>();
-        private readonly Dictionary<long, Sprite> borders = new Dictionary<long, Sprite>();
+        private readonly Dictionary<long, Sprite> sprites = new Dictionary<long, Sprite>();
+
+        // Wash strength per tier, from Rarity Wash.
+        public float WashStrength(Rarity r)
+        {
+            switch (r)
+            {
+                case Rarity.Uncommon: return rarityWash * 0.6f;
+                case Rarity.Rare: return rarityWash * 0.75f;
+                case Rarity.Legendary: return rarityWash * 0.9f;
+                case Rarity.Mythic: return rarityWash;
+                default: return 0f;
+            }
+        }
 
         public Color RarityColor(Rarity r)
         {
@@ -136,37 +165,41 @@ namespace Combat.UI
 
         public TMP_FontAsset BodyFont => font != null ? font : TMP_Settings.defaultFontAsset;
         public TMP_FontAsset HeadingFont => headingFont != null ? headingFont : BodyFont;
+        public TMP_FontAsset TitleFont => titleFont != null ? titleFont : HeadingFont;
+        public TMP_FontAsset NumberFont => numberFont != null ? numberFont : BodyFont;
 
-        public Sprite Fill => FillSprite(cornerRadius);
-        public Sprite Border => BorderSprite(cornerRadius, borderWidth);
+        // True when the role has a real font of its own, so it isn't faked bold.
+        public bool HasHeadingFont => headingFont != null;
+        public bool HasTitleFont => titleFont != null || headingFont != null;
 
-        private void OnValidate()
+        private bool Cut => corners == CornerStyle.Cut;
+        public Sprite Fill => Cut ? CutFillSprite(cutSize) : FillSprite(cornerRadius);
+        public Sprite Border => Cut ? CutBorderSprite(cutSize, borderWidth) : BorderSprite(cornerRadius, borderWidth);
+        public Sprite SmallFill => Cut ? CutFillSprite(cutSizeSmall) : FillSprite(cornerRadius);
+        public Sprite SmallBorder => Cut ? CutBorderSprite(cutSizeSmall, borderWidth) : BorderSprite(cornerRadius, borderWidth);
+
+        // Distance from the box edge to where a straight top edge starts.
+        public float EdgeInset => Cut ? cutSize : cornerRadius;
+
+        private void OnValidate() => sprites.Clear();
+
+        public Sprite FillSprite(int radius) => Get(false, radius, -1);
+        public Sprite BorderSprite(int radius, int width) => Get(false, radius, width);
+        public Sprite CutFillSprite(int cut) => Get(true, cut, -1);
+        public Sprite CutBorderSprite(int cut, int width) => Get(true, cut, width);
+
+        private Sprite Get(bool cut, int size, int width)
         {
-            fills.Clear();
-            borders.Clear();
-        }
-
-        public Sprite FillSprite(int radius)
-        {
-            radius = Mathf.Max(0, radius);
-            if (fills.TryGetValue(radius, out var s) && s != null) return s;
-            s = MakeSprite(radius, -1);
-            fills[radius] = s;
+            size = Mathf.Max(0, size);
+            long key = (cut ? 1L << 40 : 0L) | ((long)size << 8) | (uint)(width < 0 ? 255 : width);
+            if (sprites.TryGetValue(key, out var s) && s != null) return s;
+            s = MakeSprite(size, width, cut);
+            sprites[key] = s;
             return s;
         }
 
-        public Sprite BorderSprite(int radius, int width)
-        {
-            radius = Mathf.Max(0, radius);
-            long key = ((long)radius << 8) | (uint)width;
-            if (borders.TryGetValue(key, out var s) && s != null) return s;
-            s = MakeSprite(radius, width);
-            borders[key] = s;
-            return s;
-        }
-
-        // Rounded rect as a 9-slice sprite; width < 0 = filled, else an outline that many pixels thick.
-        private static Sprite MakeSprite(int radius, int width)
+        // Rounded or corner-cut rect as a 9-slice sprite; width < 0 = filled, else an outline that many pixels thick.
+        private static Sprite MakeSprite(int radius, int width, bool cut)
         {
             int edge = Mathf.Max(radius, Mathf.Max(width, 1)) + 2;
             int size = edge * 2 + 2;
@@ -183,7 +216,8 @@ namespace Combat.UI
             {
                 for (int x = 0; x < size; x++)
                 {
-                    float d = RoundedRectDistance(x + 0.5f - half, y + 0.5f - half, half - 0.5f, radius);
+                    float lx = x + 0.5f - half, ly = y + 0.5f - half;
+                    float d = cut ? CutRectDistance(lx, ly, half - 0.5f, radius) : RoundedRectDistance(lx, ly, half - 0.5f, radius);
                     float outer = Mathf.Clamp01(0.5f - d);
                     float a = width < 0 ? outer : outer - Mathf.Clamp01(0.5f - (d + width));
                     px[y * size + x] = new Color32(255, 255, 255, (byte)Mathf.RoundToInt(Mathf.Clamp01(a) * 255f));
@@ -196,6 +230,15 @@ namespace Combat.UI
                                        SpriteMeshType.FullRect, new Vector4(edge, edge, edge, edge));
             sprite.hideFlags = HideFlags.DontSave;
             return sprite;
+        }
+
+        // Square with 45-degree cuts of size c at each corner.
+        private static float CutRectDistance(float px, float py, float halfSize, float c)
+        {
+            float ax = Mathf.Abs(px), ay = Mathf.Abs(py);
+            float box = Mathf.Max(ax, ay) - halfSize;
+            float diag = (ax + ay - (2f * halfSize - c)) * 0.70710678f;
+            return Mathf.Max(box, diag);
         }
 
         private static float RoundedRectDistance(float px, float py, float halfSize, float r)

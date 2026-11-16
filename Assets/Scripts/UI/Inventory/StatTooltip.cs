@@ -118,7 +118,7 @@ namespace Combat.UI
             var head = UIKit.Node(box, "Head");
             UIKit.HStack(head, 10f);
             UIKit.Size(UIKit.Text(head, "Name", s, entry.Label, s.headingSize + 1f, s.text, heading: true), flexWidth: 1f);
-            UIKit.Text(head, "Final", s, StatFormat.Value(entry, final), s.bodySize + 3f, s.text, TextAlignmentOptions.MidlineRight);
+            UIKit.Text(head, "Final", s, StatFormat.Value(entry, final), s.bodySize + 3f, s.text, TextAlignmentOptions.MidlineRight, role: TextRole.Number);
 
             Row(box, s, "Base", StatFormat.Value(entry, baseValue), s.textMuted);
 
@@ -174,7 +174,7 @@ namespace Combat.UI
             var row = UIKit.Node(parent, "Row");
             UIKit.HStack(row, 10f);
             UIKit.Size(UIKit.Text(row, "Label", s, label, s.smallSize, s.textMuted), flexWidth: 1f);
-            UIKit.Text(row, "Value", s, value, s.smallSize, valueColor, TextAlignmentOptions.MidlineRight);
+            UIKit.Text(row, "Value", s, value, s.smallSize, valueColor, TextAlignmentOptions.MidlineRight, role: TextRole.Number);
         }
 
         private static void Rule(RectTransform parent, UIStyleSO s)

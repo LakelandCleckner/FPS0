@@ -52,7 +52,7 @@ namespace Combat.UI
             var row = UIKit.Node(parent, "Hint_" + action);
             UIKit.HStack(row, 8f);
 
-            var cap = UIKit.Box(row, "Key", s, s.tileHover, true);
+            var cap = UIKit.Box(row, "Key", s, s.tileHover, true, small: true);
             UIKit.HStack(cap, 0f, UIKit.Pad(8f, 8f, 3f, 3f), TextAnchor.MiddleCenter);
             UIKit.Size(cap, height: s.chipSize);
             var k = UIKit.Text(cap.transform, "Text", s, key, s.labelSize, s.text, TextAlignmentOptions.Center, heading: true);

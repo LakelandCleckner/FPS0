@@ -125,8 +125,8 @@ namespace Combat.UI
         private void Chip(Transform row, UIStyleSO s, string label, bool active, Color? color, Action onClick)
         {
             Color c = color ?? s.accent;
-            var fill = UIKit.Box(row, "Chip_" + label, s, active ? new Color(c.r, c.g, c.b, 0.18f) : s.tileEmpty);
-            var border = UIKit.Outline(fill.rectTransform, s, active ? c : s.tileBorder);
+            var fill = UIKit.Box(row, "Chip_" + label, s, active ? new Color(c.r, c.g, c.b, 0.18f) : s.tileEmpty, small: true);
+            var border = UIKit.Outline(fill.rectTransform, s, active ? c : s.tileBorder, small: true);
             UIKit.HStack(fill, 0f, UIKit.Pad(10f, 10f, 3f, 3f), TextAnchor.MiddleCenter);
             UIKit.Size(fill, height: s.chipSize);
             var t = UIKit.Text(fill.transform, "Text", s, label, s.labelSize, active ? (color ?? s.text) : s.textMuted,
@@ -168,7 +168,7 @@ namespace Combat.UI
                 var rt = UIKit.Node(transform, "Search");
                 rt.gameObject.SetActive(false);
                 var bg = rt.gameObject.AddComponent<Image>();
-                bg.sprite = s.Fill;
+                bg.sprite = s.SmallFill;
                 bg.type = Image.Type.Sliced;
 
                 var area = UIKit.Stretch(UIKit.Node(rt, "TextArea"), 12f, 2f, 12f, 2f);

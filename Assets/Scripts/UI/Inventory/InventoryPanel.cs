@@ -1,4 +1,5 @@
 using UnityEngine;
+using Combat.Perks;
 
 namespace Combat.UI
 {
@@ -27,26 +28,26 @@ namespace Combat.UI
 
         protected abstract void Build(InventoryScreen screen, RectTransform root);
 
-        // Panel surface with an outline, filling the root.
+        // Shaded panel surface with an outline, filling the root.
         protected static RectTransform Surface(RectTransform root, UIStyleSO style)
         {
             var bg = UIKit.Box(root, "Surface", style, style.panel, border: true, borderColor: style.panelBorder);
+            UIKit.Shade(bg, style);
             UIKit.Stretch(bg.rectTransform);
             return bg.rectTransform;
         }
 
-        // Uppercase heading with an accent tick and an optional right-side note.
+        // Uppercase heading, a rule running out to the right, and an optional note at the end.
         protected static RectTransform Heading(Transform parent, UIStyleSO style, string title, string note = null, Color? noteColor = null)
         {
             var row = UIKit.Node(parent, "Heading");
-            UIKit.HStack(row, 10f);
+            UIKit.HStack(row, 12f);
             UIKit.Size(row, height: style.headingSize + 10f);
 
-            var tick = UIKit.Solid(row, "Tick", style.accent);
-            UIKit.Size(tick, width: 3f, height: style.headingSize);
+            UIKit.Text(row, "Title", style, title, style.headingSize, style.text, heading: true);
 
-            var t = UIKit.Text(row, "Title", style, title, style.headingSize, style.text, heading: true);
-            UIKit.Size(t, flexWidth: 1f);
+            var rule = UIKit.Solid(row, "Rule", style.divider);
+            UIKit.Size(rule, height: 1f, flexWidth: 1f);
 
             if (!string.IsNullOrEmpty(note))
             {
@@ -57,17 +58,21 @@ namespace Combat.UI
             return row;
         }
 
-        // Tile with fill, outline, selection mark and hover handling wired to the screen.
-        protected static UITile Tile(Transform parent, string name, InventoryScreen screen, object item, bool interactable = true)
+        // Tile with shaded fill, rarity wash, outline, selection mark and hover handling wired to the screen.
+        // Wide = a card: the wash runs from the left instead of the top.
+        protected static UITile Tile(Transform parent, string name, InventoryScreen screen, object item, bool interactable = true, bool wide = false)
         {
             var style = screen.Style;
             var fill = UIKit.Box(parent, name, style, style.tile);
+            UIKit.Shade(fill, style);
+            UIKit.RarityWash(fill.rectTransform, style, ItemText.RarityOf(item), wide);
             var borderColor = ItemText.BorderColor(style, item);
             var border = UIKit.Outline(fill.rectTransform, style, borderColor);
 
+            float inset = style.EdgeInset;
             var mark = UIKit.Solid(fill.rectTransform, "SelectedMark", style.accent);
-            UIKit.Anchor(mark.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(0f, 6f), new Vector2(3f, -6f));
-            mark.gameObject.AddComponent<UnityEngine.UI.LayoutElement>().ignoreLayout = true;
+            UIKit.Anchor(mark.rectTransform, Vector2.zero, new Vector2(1f, 0f), new Vector2(inset, 0f), new Vector2(-inset, 2f));
+            UIKit.Ignore(mark);
 
             var tile = fill.gameObject.AddComponent<UITile>();
             tile.Item = item;
@@ -77,19 +82,28 @@ namespace Combat.UI
             return tile;
         }
 
-        // Grid tile for an owned item: monogram, name in its rarity colour, and the delete-hold fill.
+        // Grid loot card for an owned item: rarity tag, monogram, name in its rarity colour, and the delete-hold fill.
         protected static UITile ItemTile(Transform grid, InventoryScreen screen, object item)
         {
             var s = screen.Style;
             var tile = Tile(grid, "Item", screen, item);
 
-            var mono = UIKit.Text(tile.transform, "Monogram", s, ItemText.Monogram(item), s.gridTileSize * 0.26f, s.text,
-                                  TMPro.TextAlignmentOptions.Center, heading: true);
-            UIKit.Anchor(mono.rectTransform, new Vector2(0f, 0.3f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
+            var rarity = ItemText.RarityOf(item);
+            if (rarity.HasValue)
+            {
+                var tag = UIKit.Text(tile.transform, "Rarity", s, rarity.Value.ToString(), s.labelSize - 2f,
+                                     rarity.Value == Rarity.Common ? s.textFaint : s.RarityColor(rarity.Value), TMPro.TextAlignmentOptions.TopLeft, heading: true);
+                tag.characterSpacing = 1f;
+                UIKit.Anchor(tag.rectTransform, new Vector2(0f, 1f), new Vector2(0.7f, 1f), new Vector2(10f, -24f), new Vector2(0f, -8f));
+            }
 
-            var name = UIKit.Text(tile.transform, "Name", s, ItemText.Name(item), s.labelSize + 1f, ItemText.NameColor(s, item, s.textMuted),
-                                  TMPro.TextAlignmentOptions.Center, lines: 2);
-            UIKit.Anchor(name.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.3f), new Vector2(8f, 6f), new Vector2(-8f, 0f));
+            var mono = UIKit.Text(tile.transform, "Monogram", s, ItemText.Monogram(item), s.gridTileSize * 0.28f, s.text,
+                                  TMPro.TextAlignmentOptions.Center, role: TextRole.Title);
+            UIKit.Anchor(mono.rectTransform, new Vector2(0f, 0.34f), new Vector2(1f, 0.86f), Vector2.zero, Vector2.zero);
+
+            var name = UIKit.Text(tile.transform, "Name", s, ItemText.Name(item), s.labelSize + 2f, ItemText.NameColor(s, item, s.textMuted),
+                                  TMPro.TextAlignmentOptions.Center, lines: 2, role: TextRole.Title);
+            UIKit.Anchor(name.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.34f), new Vector2(8f, 6f), new Vector2(-8f, 0f));
 
             var fill = UIKit.Box(tile.transform, "DeleteFill", s, new Color(s.negative.r, s.negative.g, s.negative.b, 0.35f));
             fill.gameObject.AddComponent<UnityEngine.UI.LayoutElement>().ignoreLayout = true;

@@ -154,18 +154,19 @@ namespace Combat.UI
             }
             else UIKit.Spacer(row);
 
-            var value = UIKit.Text(row, "Value", s, StatFormat.Value(e, v.WithArmor), s.bodySize - 1f, s.text, TextAlignmentOptions.MidlineRight);
+            var value = UIKit.Text(row, "Value", s, StatFormat.Value(e, v.WithArmor), s.bodySize - 1f, s.text, TextAlignmentOptions.MidlineRight,
+                                   role: TextRole.Number);
             UIKit.Size(value, width: 72f);
 
             var d = UIKit.Text(row, "Delta", s, StatFormat.Delta(e, delta), s.labelSize + 1f, better ? s.positive : s.negative,
-                               TextAlignmentOptions.MidlineLeft);
+                               TextAlignmentOptions.MidlineLeft, role: TextRole.Number);
             UIKit.Size(d, width: 52f);
         }
 
         // Base fill, then perk and armor gains, then any loss carved back out.
         private static void DrawBar(RectTransform bar, UIStyleSO s, StatLayers v, float max)
         {
-            var track = UIKit.Box(bar, "Track", s, s.barTrack);
+            var track = UIKit.Box(bar, "Track", s, s.barTrack, small: true);
             UIKit.Stretch(track.rectTransform);
 
             float b = Mathf.Clamp01(v.Base / max);
@@ -194,13 +195,16 @@ namespace Combat.UI
 
         // ------------------------------------------------------------------ parts
 
-        // Name in its rarity colour; the kind line leads with the rarity.
+        // Banner with the rarity wash: name in its rarity colour, the kind line led by the rarity.
         private static void Title(RectTransform body, UIStyleSO s, object item, string kind, string element)
         {
-            var block = UIKit.Node(body, "TitleBlock");
-            UIKit.VStack(block, 6f);
-            UIKit.Text(block, "Name", s, ItemText.Name(item), s.titleSize - 4f, ItemText.NameColor(s, item, s.text), heading: true);
             var rarity = ItemText.RarityOf(item);
+            var banner = UIKit.Box(body, "TitleBlock", s, s.backdrop);
+            UIKit.RarityWash(banner.rectTransform, s, rarity, horizontal: true);
+            UIKit.Outline(banner.rectTransform, s, ItemText.BorderColor(s, item));
+            var block = banner.rectTransform;
+            UIKit.VStack(block, 6f, UIKit.Pad(18f, 18f, 16f, 14f));
+            UIKit.Text(block, "Name", s, ItemText.Name(item), s.titleSize - 4f, ItemText.NameColor(s, item, s.text), lines: 2, role: TextRole.Title);
             if (rarity.HasValue) kind = rarity.Value + "  /  " + kind;
 
             var line = UIKit.Node(block, "Kind");
@@ -209,7 +213,7 @@ namespace Combat.UI
             if (!string.IsNullOrEmpty(element))
             {
                 var pill = UIKit.Box(line, "Element", s, new Color(s.accent.r, s.accent.g, s.accent.b, 0.12f), true,
-                                     new Color(s.accent.r, s.accent.g, s.accent.b, 0.5f));
+                                     new Color(s.accent.r, s.accent.g, s.accent.b, 0.5f), small: true);
                 UIKit.HStack(pill, 0f, UIKit.Pad(10f, 10f, 3f, 3f), TextAnchor.MiddleCenter);
                 UIKit.Text(pill.transform, "Text", s, element, s.labelSize, s.accent, TextAlignmentOptions.Center, heading: true);
             }
@@ -218,7 +222,7 @@ namespace Combat.UI
         private static void SlotChip(Transform parent, UIStyleSO s, string label, bool on)
         {
             var chip = UIKit.Box(parent, "Slot_" + label, s, on ? new Color(s.accent.r, s.accent.g, s.accent.b, 0.16f) : s.tileEmpty,
-                                 true, on ? s.accent : s.tileBorder);
+                                 true, on ? s.accent : s.tileBorder, small: true);
             UIKit.Size(chip, width: s.chipSize, height: s.chipSize);
             var t = UIKit.Text(chip.transform, "Text", s, label, s.labelSize, on ? s.accent : s.textFaint, TextAlignmentOptions.Center, heading: true);
             t.characterSpacing = 0f;
@@ -230,7 +234,7 @@ namespace Combat.UI
             var row = UIKit.Node(parent, "Perk_" + perk.name);
             UIKit.HStack(row, 14f, UIKit.Pad(0f, 0f, 4f, 4f), TextAnchor.UpperLeft);
 
-            var icon = UIKit.Box(row, "Icon", s, s.tileHover, true);
+            var icon = UIKit.Box(row, "Icon", s, s.tileHover, true, small: true);
             UIKit.Size(icon, width: s.perkIconSize, height: s.perkIconSize);
             if (perk.icon != null)
             {
@@ -251,7 +255,7 @@ namespace Combat.UI
             UIKit.VStack(text, 3f);
             UIKit.Size(text, flexWidth: 1f);
             UIKit.Label(text, "Column", s, column, s.textFaint);
-            UIKit.Text(text, "Name", s, ItemText.PerkName(perk), s.bodySize, s.text);
+            UIKit.Text(text, "Name", s, ItemText.PerkName(perk), s.bodySize, s.text, role: TextRole.Title);
             if (!string.IsNullOrWhiteSpace(perk.description))
                 UIKit.Text(text, "Description", s, perk.description, s.smallSize, s.textMuted, wrap: true);
         }

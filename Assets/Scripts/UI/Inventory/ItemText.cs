@@ -52,7 +52,7 @@ namespace Combat.UI
             var r = RarityOf(item);
             if (!r.HasValue || r.Value == Rarity.Common) return s.tileBorder;
             var c = s.RarityColor(r.Value);
-            c.a = s.rarityBorderAlpha;
+            c.a = r.Value == Rarity.Mythic ? 1f : s.rarityBorderAlpha;
             return c;
         }
 

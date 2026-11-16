@@ -140,14 +140,14 @@ namespace Combat.UI
             {
                 var bar = UIKit.Node(row, "Bar");
                 UIKit.Size(bar, width: 110f, height: s.barHeight);
-                UIKit.Stretch(UIKit.Box(bar, "Track", s, s.barTrack).rectTransform);
+                UIKit.Stretch(UIKit.Box(bar, "Track", s, s.barTrack, small: true).rectTransform);
                 r.Fill = UIKit.Solid(bar, "Fill", s.barBase).rectTransform;
                 UIKit.Anchor(r.Fill, Vector2.zero, new Vector2(0f, 1f), Vector2.zero, Vector2.zero);
             }
 
-            r.Value = UIKit.Text(row, "Value", s, "", s.bodySize - 1f, s.text, TextAlignmentOptions.MidlineRight);
+            r.Value = UIKit.Text(row, "Value", s, "", s.bodySize - 1f, s.text, TextAlignmentOptions.MidlineRight, role: TextRole.Number);
             UIKit.Size(r.Value, width: 132f);
-            r.Delta = UIKit.Text(row, "Delta", s, "", s.labelSize + 1f, s.textMuted, TextAlignmentOptions.MidlineLeft);
+            r.Delta = UIKit.Text(row, "Delta", s, "", s.labelSize + 1f, s.textMuted, TextAlignmentOptions.MidlineLeft, role: TextRole.Number);
             UIKit.Size(r.Delta, width: 60f);
             rows.Add(r);
 
@@ -216,7 +216,7 @@ namespace Combat.UI
 
         private void ArmorCard(Transform parent, UIStyleSO s, ArmorSlotSO slot, ArmorInstance piece)
         {
-            var card = UIKit.Box(parent, "Armor_" + ItemText.SlotName(slot), s, piece != null ? s.tile : s.tileEmpty, true, ItemText.BorderColor(s, piece));
+            var card = Card(parent, "Armor_" + ItemText.SlotName(slot), s, piece);
             UIKit.VStack(card, 6f, UIKit.Pad(14f, 14f, 10f, 10f));
 
             var top = UIKit.Node(card.transform, "Top");
@@ -226,7 +226,8 @@ namespace Combat.UI
             UIKit.VStack(info, 2f, null, TextAnchor.MiddleLeft);
             UIKit.Size(info, flexWidth: 1f);
             UIKit.Label(info, "Slot", s, ItemText.SlotName(slot));
-            UIKit.Text(info, "Name", s, piece != null ? ItemText.Name(piece) : "Empty", s.bodySize - 1f, piece != null ? ItemText.NameColor(s, piece, s.text) : s.textFaint);
+            UIKit.Text(info, "Name", s, piece != null ? ItemText.Name(piece) : "Empty", s.bodySize - 1f, piece != null ? ItemText.NameColor(s, piece, s.text) : s.textFaint,
+                       role: piece != null ? TextRole.Title : TextRole.Body);
             if (piece == null) return;
 
             effects.Clear();
@@ -272,7 +273,7 @@ namespace Combat.UI
                 UIKit.Text(info, "Name", s, ItemText.PerkName(rt.Perk), s.smallSize, s.text);
                 UIKit.Text(info, "Source", s, ItemText.Name(rt.SourceItem), s.smallSize - 2f, s.textFaint);
 
-                var text = UIKit.Text(row, "Status", s, "", s.smallSize, s.accent, TextAlignmentOptions.MidlineRight);
+                var text = UIKit.Text(row, "Status", s, "", s.smallSize, s.accent, TextAlignmentOptions.MidlineRight, role: TextRole.Number);
                 UIKit.Size(text, width: 72f);
                 var a = new ActiveRow { Status = st, Text = text };
                 active.Add(a);
@@ -312,10 +313,10 @@ namespace Combat.UI
             Heading(body, s, "Overview");
 
             GroupLabel(body, s, "Health");
-            healthText = UIKit.Text(body, "Health", s, "", s.titleSize - 6f, s.text);
+            healthText = UIKit.Text(body, "Health", s, "", s.titleSize - 6f, s.text, role: TextRole.Number);
             var bar = UIKit.Node(body, "HealthBar");
             UIKit.Size(bar, height: s.barHeight + 2f);
-            UIKit.Stretch(UIKit.Box(bar, "Track", s, s.barTrack).rectTransform);
+            UIKit.Stretch(UIKit.Box(bar, "Track", s, s.barTrack, small: true).rectTransform);
             healthFill = UIKit.Solid(bar, "Fill", s.positive).rectTransform;
             UIKit.Anchor(healthFill, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
 
@@ -332,7 +333,7 @@ namespace Combat.UI
 
         private static void WeaponCard(Transform parent, UIStyleSO s, int slot, WeaponInstance w)
         {
-            var card = UIKit.Box(parent, "Weapon_" + (slot + 1), s, w != null ? s.tile : s.tileEmpty, true, ItemText.BorderColor(s, w));
+            var card = Card(parent, "Weapon_" + (slot + 1), s, w);
             UIKit.HStack(card, 12f, UIKit.Pad(12f, 12f, 8f, 8f));
             UIKit.Size(card, height: s.armorSlotHeight + 6f);
 
@@ -343,7 +344,8 @@ namespace Combat.UI
             var info = UIKit.Node(card.transform, "Info");
             UIKit.VStack(info, 2f, null, TextAnchor.MiddleLeft);
             UIKit.Size(info, flexWidth: 1f);
-            UIKit.Text(info, "Name", s, w != null ? ItemText.Name(w) : "Empty", s.bodySize - 1f, w != null ? ItemText.NameColor(s, w, s.text) : s.textFaint);
+            UIKit.Text(info, "Name", s, w != null ? ItemText.Name(w) : "Empty", s.bodySize - 1f, w != null ? ItemText.NameColor(s, w, s.text) : s.textFaint,
+                       role: w != null ? TextRole.Title : TextRole.Body);
             if (w != null) UIKit.Text(info, "Kind", s, ItemText.Kind(w), s.smallSize - 1f, s.textMuted);
         }
 
@@ -369,6 +371,19 @@ namespace Combat.UI
         }
 
         // ------------------------------------------------------------------ parts
+
+        // Shaded item card with its rarity wash from the left; empty slots stay flat.
+        private static Image Card(Transform parent, string name, UIStyleSO s, object item)
+        {
+            var card = UIKit.Box(parent, name, s, item != null ? s.tile : s.tileEmpty);
+            if (item != null)
+            {
+                UIKit.Shade(card, s);
+                UIKit.RarityWash(card.rectTransform, s, ItemText.RarityOf(item), horizontal: true);
+            }
+            UIKit.Outline(card.rectTransform, s, ItemText.BorderColor(s, item));
+            return card;
+        }
 
         private static void GroupLabel(Transform parent, UIStyleSO s, string label)
         {
