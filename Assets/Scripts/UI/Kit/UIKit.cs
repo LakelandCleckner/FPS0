@@ -252,6 +252,31 @@ namespace Combat.UI
             return content;
         }
 
+        // Vertical scroll area whose content is laid out by a SlideLayout; returns that layout.
+        public static SlideLayout SlideScroll(RectTransform parent)
+        {
+            var viewport = Stretch(Node(parent, "Viewport"));
+            viewport.gameObject.AddComponent<RectMask2D>();
+            var hit = viewport.gameObject.AddComponent<Image>();
+            hit.color = new Color(0f, 0f, 0f, 0f);
+
+            var content = Node(viewport, "Content");
+            content.anchorMin = new Vector2(0f, 1f);
+            content.anchorMax = new Vector2(1f, 1f);
+            content.pivot = new Vector2(0.5f, 1f);
+            content.offsetMin = Vector2.zero;
+            content.offsetMax = Vector2.zero;
+
+            var scroll = parent.gameObject.GetComponent<ScrollRect>();
+            if (scroll == null) scroll = parent.gameObject.AddComponent<ScrollRect>();
+            scroll.viewport = viewport;
+            scroll.content = content;
+            scroll.horizontal = false;
+            scroll.movementType = ScrollRect.MovementType.Clamped;
+            scroll.scrollSensitivity = 30f;
+            return content.gameObject.AddComponent<SlideLayout>();
+        }
+
         public static void Destroy(Object o)
         {
             if (o == null) return;

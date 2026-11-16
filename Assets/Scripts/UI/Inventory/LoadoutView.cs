@@ -133,6 +133,28 @@ namespace Combat.UI
                 if (a.Slot == armorSlot) into.Add(a);
         }
 
+        // Carried items that count against this slot's cap: weapons by their carried slot, armor by its slot.
+        public void CarriedIn(SlotRef slot, List<object> into)
+        {
+            into.Clear();
+            if (slot.Kind == SlotKind.Weapon)
+            {
+                foreach (var w in CarriedWeapons)
+                    if (w.Definition != null && w.Definition.InventorySlot == slot.Index) into.Add(w);
+                return;
+            }
+            var armorSlot = slot.Index >= 0 && slot.Index < ArmorSlots.Count ? ArmorSlots[slot.Index] : null;
+            foreach (var a in CarriedArmor) if (a.Slot == armorSlot) into.Add(a);
+        }
+
+        // Still somewhere on the player: equipped, carried or vaulted.
+        public bool Owns(object item)
+        {
+            if (item == null) return false;
+            if (IsCarried(item) || IsVaulted(item)) return true;
+            return item is WeaponInstance w ? System.Array.IndexOf(Weapons, w) >= 0 : item is ArmorInstance a && Armor.Contains(a);
+        }
+
         // How many carried items count against this slot's cap.
         public int CarriedCount(SlotRef slot)
         {

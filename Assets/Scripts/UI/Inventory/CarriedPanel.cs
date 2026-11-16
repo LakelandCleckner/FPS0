@@ -1,79 +1,122 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-using Combat.Weapons;
 
 namespace Combat.UI
 {
-    // Carried items that fit the selected slot, with that slot's carried cap. Click one to equip it.
+    // Everything carried, in a section per carried slot with its cap; the selected slot's section first.
+    // Click an item to equip it. Tiles persist between refreshes and slide to their new places.
     public class CarriedPanel : InventoryPanel
     {
+        private sealed class Section
+        {
+            public RectTransform Row;
+            public TMP_Text Title, Count;
+        }
+
         private readonly List<object> items = new List<object>();
+        private readonly List<SlotRef> order = new List<SlotRef>();
+        private readonly Dictionary<long, Section> sections = new Dictionary<long, Section>();
+        private SlideLayout layout;
+        private TMP_Text hint;
+
+        protected override bool CanRefresh => layout != null;
 
         protected override void Build(InventoryScreen screen, RectTransform root)
         {
             var s = screen.Style;
-            var view = screen.View;
-            var slot = screen.Selected;
+            sections.Clear();
             Surface(root, s);
-
-            view.CarriedFor(slot, items);
-            int own = view.CarriedCount(slot);
-            int cap = view.Cap(slot);
-            bool full = own >= cap;
 
             var body = UIKit.Stretch(UIKit.Node(root, "Body"));
             UIKit.VStack(body, s.gap, UIKit.Pad(s.padding));
-
-            string slotName = slot.Kind == SlotKind.Weapon ? "Slot " + (slot.Index + 1)
-                : slot.Index < view.ArmorSlots.Count ? ItemText.SlotName(view.ArmorSlots[slot.Index]) : "";
-            Heading(body, s, "Carried", own + " / " + cap, full ? s.negative : s.textMuted);
-            UIKit.Text(body, "Hint", s, "Equip into " + slotName, s.smallSize, s.textMuted);
+            Heading(body, s, "Carried");
+            hint = UIKit.Text(body, "Hint", s, "", s.smallSize, s.textMuted);
 
             var area = UIKit.Node(body, "Area");
             UIKit.Size(area, flexHeight: 1f);
-            var content = UIKit.Scroll(area, 0f);
-
-            int columns = Mathf.Max(1, s.gridColumns);
-            int empties = Mathf.Max(0, cap - own);
-            int total = items.Count + empties;
-            int rows = Mathf.Max(1, Mathf.CeilToInt(total / (float)columns));
-
-            var grid = UIKit.Node(content, "Grid");
-            var g = grid.gameObject.AddComponent<GridLayoutGroup>();
-            g.cellSize = new Vector2(s.gridTileSize, s.gridTileSize);
-            g.spacing = new Vector2(s.gap, s.gap);
-            g.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-            g.constraintCount = columns;
-            g.childAlignment = TextAnchor.UpperLeft;
-            UIKit.Size(grid, height: rows * s.gridTileSize + (rows - 1) * s.gap);
-
-            foreach (var item in items) ItemTile(grid, screen, item, slot);
-            for (int i = 0; i < empties; i++) EmptyTile(grid, s);
+            layout = UIKit.SlideScroll(area);
+            Refresh(screen, root);
         }
 
-        private static void ItemTile(Transform grid, InventoryScreen screen, object item, SlotRef slot)
+        protected override void Refresh(InventoryScreen screen, RectTransform root)
         {
             var s = screen.Style;
-            var tile = ItemTile(grid, screen, item);
-            tile.LeftClick += t => screen.EquipToSelected(t.Item);
+            var view = screen.View;
+            hint.text = view.CarriedWeapons.Count + view.CarriedArmor.Count == 0 ? "Nothing carried." : "Click an item to equip it";
 
-            // Counts against another slot's cap: say which.
-            if (item is WeaponInstance w && slot.Kind == SlotKind.Weapon && w.Definition.InventorySlot != slot.Index)
+            float width = layout.Width > 0f ? layout.Width : root.rect.width - 2f * s.padding;
+            int columns = width > 0f ? Mathf.Max(1, Mathf.FloorToInt((width + s.gap) / (s.gridTileSize + s.gap))) : Mathf.Max(1, s.gridColumns);
+            float headHeight = s.headingSize + 12f;
+
+            Order(screen);
+            layout.Begin();
+            float y = 0f;
+            foreach (var slot in order)
             {
-                var tag = UIKit.Box(tile.transform, "Tag", s, s.backdrop, true, small: true);
-                UIKit.Anchor(tag.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-40f, -26f), new Vector2(-6f, -6f));
-                var t = UIKit.Text(tag.transform, "Text", s, "S" + (w.Definition.InventorySlot + 1), s.labelSize - 1f, s.textMuted,
-                                   TextAlignmentOptions.Center, heading: true);
-                t.characterSpacing = 0f;
-                UIKit.Stretch(t.rectTransform);
+                var sec = SectionFor(screen, slot);
+                bool selected = slot.Kind == screen.Selected.Kind && slot.Index == screen.Selected.Index;
+                int own = view.CarriedCount(slot), cap = view.Cap(slot);
+                sec.Title.color = selected ? s.accent : s.text;
+                sec.Count.text = own + " / " + cap;
+                sec.Count.color = own >= cap ? s.negative : s.textMuted;
+                layout.Place(Key(slot), sec.Row, new Vector2(0f, -y), new Vector2(width, headHeight));
+                y += headHeight + s.gap * 0.6f;
+
+                view.CarriedIn(slot, items);
+                for (int i = 0; i < items.Count; i++)
+                {
+                    var item = items[i];
+                    var rect = layout.Get(item);
+                    if (rect == null)
+                    {
+                        var tile = ItemTile(layout.transform, screen, item);
+                        tile.LeftClick += t => screen.EquipAuto(t.Item);
+                        rect = (RectTransform)tile.transform;
+                    }
+                    int col = i % columns, row = i / columns;
+                    layout.Place(item, rect, new Vector2(col * (s.gridTileSize + s.gap), -(y + row * (s.gridTileSize + s.gap))),
+                                 new Vector2(s.gridTileSize, s.gridTileSize));
+                }
+                int rows = Mathf.CeilToInt(items.Count / (float)columns);
+                y += rows * (s.gridTileSize + s.gap) + (rows > 0 ? s.sectionGap - s.gap : s.gap);
             }
+            layout.End(y, screen.LastDeleted, new Color(s.negative.r, s.negative.g, s.negative.b, 0.55f));
         }
 
-        private static void EmptyTile(Transform grid, UIStyleSO s)
+        // Selected slot first, then weapon slots, then armor slots.
+        private void Order(InventoryScreen screen)
         {
-            UIKit.Box(grid, "Empty", s, s.tileEmpty, true, new Color(s.tileBorder.r, s.tileBorder.g, s.tileBorder.b, s.tileBorder.a * 0.6f));
+            var view = screen.View;
+            order.Clear();
+            var sel = screen.Selected;
+            bool selValid = sel.Kind == SlotKind.Weapon ? sel.Index < view.Weapons.Length : sel.Index < view.ArmorSlots.Count;
+            if (selValid) order.Add(sel);
+            for (int i = 0; i < view.Weapons.Length; i++)
+                if (!(selValid && sel.Is(SlotKind.Weapon, i))) order.Add(new SlotRef(SlotKind.Weapon, i));
+            for (int i = 0; i < view.ArmorSlots.Count; i++)
+                if (!(selValid && sel.Is(SlotKind.Armor, i))) order.Add(new SlotRef(SlotKind.Armor, i));
         }
+
+        private Section SectionFor(InventoryScreen screen, SlotRef slot)
+        {
+            long key = Key(slot);
+            if (sections.TryGetValue(key, out var sec) && sec.Row != null) return sec;
+
+            var s = screen.Style;
+            var view = screen.View;
+            string name = slot.Kind == SlotKind.Weapon ? "Slot " + (slot.Index + 1) : ItemText.SlotName(view.ArmorSlots[slot.Index]);
+            var row = UIKit.Node(layout.transform, "Section_" + name);
+            UIKit.HStack(row, 12f);
+            sec = new Section { Row = row };
+            sec.Title = UIKit.Text(row, "Title", s, name, s.headingSize, s.text, heading: true);
+            var rule = UIKit.Solid(row, "Rule", s.divider);
+            UIKit.Size(rule, height: 1f, flexWidth: 1f);
+            sec.Count = UIKit.Text(row, "Count", s, "", s.labelSize + 1f, s.textMuted, TextAlignmentOptions.MidlineRight, role: TextRole.Number);
+            sections[key] = sec;
+            return sec;
+        }
+
+        private static long Key(SlotRef slot) => ((long)slot.Kind << 32) | (uint)slot.Index;
     }
 }

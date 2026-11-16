@@ -9,24 +9,45 @@ namespace Combat.UI
     {
         public const string GeneratedName = "_Generated";
 
+        private RectTransform current;
+
+        // Updates in place when the panel supports it (play mode only), else builds from scratch.
         public void Rebuild(InventoryScreen screen)
         {
+            if (screen == null || screen.Style == null) { Clear(); return; }
+            if (current != null && Application.isPlaying && !screen.FullRebuild && CanRefresh)
+            {
+                Refresh(screen, current);
+                return;
+            }
+            BeforeClear();
             Clear();
-            if (screen == null || screen.Style == null) return;
-            var root = UIKit.Stretch(UIKit.Node(transform, GeneratedName));
-            Build(screen, root);
+            current = UIKit.Stretch(UIKit.Node(transform, GeneratedName));
+            Build(screen, current);
         }
 
         public void Clear()
         {
+            current = null;
             for (int i = transform.childCount - 1; i >= 0; i--)
             {
                 var c = transform.GetChild(i);
-                if (c.name == GeneratedName) UIKit.Destroy(c.gameObject);
+                if (c.name != GeneratedName) continue;
+                c.name = "_Removed";
+                c.gameObject.SetActive(false);
+                UIKit.Destroy(c.gameObject);
             }
         }
 
         protected abstract void Build(InventoryScreen screen, RectTransform root);
+
+        // True when the content built last time can be updated by Refresh.
+        protected virtual bool CanRefresh => false;
+
+        protected virtual void Refresh(InventoryScreen screen, RectTransform root) { }
+
+        // Last look at the old content before a full rebuild throws it away.
+        protected virtual void BeforeClear() { }
 
         // Shaded panel surface with an outline, filling the root.
         protected static RectTransform Surface(RectTransform root, UIStyleSO style)

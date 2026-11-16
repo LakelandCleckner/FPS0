@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using Combat.Armor;
@@ -7,28 +8,88 @@ using Combat.Weapons;
 namespace Combat.UI
 {
     // Equipped weapons and armor. Click to choose a slot, right-click to unequip it.
+    // Cards stay between refreshes; only a slot whose item changed is rebuilt, with a flash.
     public class LoadoutSlotsPanel : InventoryPanel
     {
+        private readonly List<UITile> weaponCards = new List<UITile>();
+        private readonly List<UITile> armorCards = new List<UITile>();
+        private readonly List<object> weaponItems = new List<object>();
+        private readonly List<object> armorItems = new List<object>();
+        private RectTransform body;
+
+        protected override bool CanRefresh => body != null;
+
         protected override void Build(InventoryScreen screen, RectTransform root)
         {
             var s = screen.Style;
             var view = screen.View;
+            weaponCards.Clear(); armorCards.Clear(); weaponItems.Clear(); armorItems.Clear();
             Surface(root, s);
 
             var area = UIKit.Stretch(UIKit.Node(root, "Area"));
-            var body = UIKit.Scroll(area, s.gap, UIKit.Pad(s.padding));
+            body = UIKit.Scroll(area, s.gap, UIKit.Pad(s.padding));
 
             Heading(body, s, "Weapons");
-            for (int i = 0; i < view.Weapons.Length; i++) WeaponCard(body, screen, i, view.Weapons[i]);
+            for (int i = 0; i < view.Weapons.Length; i++)
+            {
+                weaponCards.Add(WeaponCard(body, screen, i, view.Weapons[i]));
+                weaponItems.Add(view.Weapons[i]);
+            }
 
             var gap = UIKit.Node(body, "Gap");
             UIKit.Size(gap, height: s.sectionGap - s.gap);
 
             Heading(body, s, "Armor");
-            for (int i = 0; i < view.ArmorSlots.Count; i++) ArmorCard(body, screen, i, view.ArmorSlots[i], view.Armor[i]);
+            for (int i = 0; i < view.ArmorSlots.Count; i++)
+            {
+                armorCards.Add(ArmorCard(body, screen, i, view.ArmorSlots[i], view.Armor[i]));
+                armorItems.Add(view.Armor[i]);
+            }
         }
 
-        private static void WeaponCard(Transform parent, InventoryScreen screen, int slot, WeaponInstance weapon)
+        protected override void Refresh(InventoryScreen screen, RectTransform root)
+        {
+            var view = screen.View;
+            if (weaponCards.Count != view.Weapons.Length || armorCards.Count != view.ArmorSlots.Count)
+            {
+                body = null;
+                Rebuild(screen);
+                return;
+            }
+
+            for (int i = 0; i < weaponCards.Count; i++)
+            {
+                if (weaponItems[i] != view.Weapons[i])
+                {
+                    weaponCards[i] = Replace(weaponCards[i], WeaponCard(body, screen, i, view.Weapons[i]), screen);
+                    weaponItems[i] = view.Weapons[i];
+                }
+                weaponCards[i].SetSelected(screen.Selected.Is(SlotKind.Weapon, i));
+            }
+            for (int i = 0; i < armorCards.Count; i++)
+            {
+                if (armorItems[i] != view.Armor[i])
+                {
+                    armorCards[i] = Replace(armorCards[i], ArmorCard(body, screen, i, view.ArmorSlots[i], view.Armor[i]), screen);
+                    armorItems[i] = view.Armor[i];
+                }
+                armorCards[i].SetSelected(screen.Selected.Is(SlotKind.Armor, i));
+            }
+        }
+
+        // New card takes the old one's place in the list, then flashes.
+        private static UITile Replace(UITile old, UITile fresh, InventoryScreen screen)
+        {
+            int index = old.transform.GetSiblingIndex();
+            old.gameObject.SetActive(false);
+            UIKit.Destroy(old.gameObject);
+            fresh.transform.SetSiblingIndex(index);
+            var s = screen.Style;
+            UIFlash.Play((RectTransform)fresh.transform, s, new Color(s.accent.r, s.accent.g, s.accent.b, 0.45f));
+            return fresh;
+        }
+
+        private static UITile WeaponCard(Transform parent, InventoryScreen screen, int slot, WeaponInstance weapon)
         {
             var s = screen.Style;
             var key = new SlotRef(SlotKind.Weapon, slot);
@@ -51,8 +112,8 @@ namespace Combat.UI
             if (weapon == null)
             {
                 UIKit.Text(info, "Name", s, "Empty", s.bodySize, s.textFaint);
-                UIKit.Text(info, "Kind", s, "Pick a carried weapon to equip", s.smallSize, s.textFaint, lines: 2);
-                return;
+                UIKit.Text(info, "Kind", s, "Click a carried weapon to equip", s.smallSize, s.textFaint, lines: 2);
+                return tile;
             }
 
             UIKit.Text(info, "Name", s, ItemText.Name(weapon), s.bodySize + 1f, ItemText.NameColor(s, weapon, s.text), lines: 2, role: TextRole.Title);
@@ -60,9 +121,10 @@ namespace Combat.UI
             string element = ItemText.Element(weapon);
             UIKit.Text(info, "Kind", s, string.IsNullOrEmpty(element) ? kind : kind + "  /  " + element, s.smallSize, s.textMuted, lines: 2);
             ChipGrid(tile.transform, s, weapon.Perks);
+            return tile;
         }
 
-        private static void ArmorCard(Transform parent, InventoryScreen screen, int index, ArmorSlotSO slot, ArmorInstance piece)
+        private static UITile ArmorCard(Transform parent, InventoryScreen screen, int index, ArmorSlotSO slot, ArmorInstance piece)
         {
             var s = screen.Style;
             var key = new SlotRef(SlotKind.Armor, index);
@@ -84,6 +146,7 @@ namespace Combat.UI
                        role: piece != null ? TextRole.Title : TextRole.Body);
 
             if (piece != null) ChipGrid(tile.transform, s, piece.Perks);
+            return tile;
         }
 
         // Square item icon with its rarity wash; the monogram stands in until icon art exists.

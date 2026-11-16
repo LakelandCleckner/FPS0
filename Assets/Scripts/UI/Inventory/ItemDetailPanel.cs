@@ -9,10 +9,19 @@ using Combat.Weapons;
 
 namespace Combat.UI
 {
-    // Everything about the hovered item, or the selected slot's item: stats, slot rules and perks.
+    // Everything about the focused item: stats, slot rules and perks. Keeps its scroll while the same item is shown.
     public class ItemDetailPanel : InventoryPanel
     {
         private readonly List<ModifierEntry> effects = new List<ModifierEntry>();
+        private UnityEngine.UI.ScrollRect scroll;
+        private object shownItem, savedItem;
+        private float savedScroll = 1f;
+
+        protected override void BeforeClear()
+        {
+            savedItem = shownItem;
+            savedScroll = scroll != null ? scroll.verticalNormalizedPosition : 1f;
+        }
 
         protected override void Build(InventoryScreen screen, RectTransform root)
         {
@@ -20,11 +29,19 @@ namespace Combat.UI
             Surface(root, s);
             var area = UIKit.Stretch(UIKit.Node(root, "Area"));
             var body = UIKit.Scroll(area, s.gap, UIKit.Pad(s.padding + 4f, s.padding + 4f, s.padding, s.padding));
+            scroll = area.GetComponent<UnityEngine.UI.ScrollRect>();
 
             var item = screen.Focus;
+            shownItem = item;
             if (item is WeaponInstance w && w.Definition != null) Weapon(body, screen, w);
             else if (item is ArmorInstance a && a.Definition != null) Armor(body, screen, a);
             else Empty(body, screen);
+
+            if (item != null && item == savedItem && scroll != null)
+            {
+                UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(body);
+                scroll.verticalNormalizedPosition = savedScroll;
+            }
         }
 
         // ------------------------------------------------------------------ sections
@@ -33,8 +50,8 @@ namespace Combat.UI
         {
             var s = screen.Style;
             Heading(body, s, "Details");
-            string hint = screen.Tab == InventoryTab.Vault ? "Hover an item to see it here. Click it to move it between carried and the vault."
-                : "This slot is empty. Hover a carried item to see it here, then click it to equip.";
+            string hint = screen.Tab == InventoryTab.Vault ? "Hover or click an item to see it here. Double-click or press Store to move it."
+                : "This slot is empty. Click a carried item to equip it.";
             UIKit.Text(body, "Hint", s, hint, s.smallSize, s.textMuted, wrap: true);
         }
 

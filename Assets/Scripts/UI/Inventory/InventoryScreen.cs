@@ -90,6 +90,13 @@ namespace Combat.UI
         public InventoryTab Tab { get; private set; } = InventoryTab.Loadout;
         public SlotRef Selected { get; private set; } = new SlotRef(SlotKind.Weapon, 0);
         public object Hovered { get; private set; }
+        // Last item hovered; the detail panel keeps showing it after the pointer leaves.
+        public object Shown { get; private set; }
+        // Vault tab selection: pinned in the detail panel, and what Store and delete act on.
+        public object Picked { get; private set; }
+        // Removed by the last delete, so its tile can flash red on the way out.
+        public object LastDeleted { get; private set; }
+        public bool FullRebuild { get; private set; }
         public string Message { get; private set; } = "";
         public bool IsOpen => open;
         public PlayerInputRouter Input => input;
@@ -99,7 +106,19 @@ namespace Combat.UI
         public bool Compare { get; private set; }
 
         // The item the detail panel describes: hovered, else (loadout tab) what's in the selected slot.
-        public object Focus => Hovered ?? (Tab == InventoryTab.Loadout ? view.Equipped(Selected) : null);
+        public object Focus
+        {
+            get
+            {
+                if (Hovered != null) return Hovered;
+                if (Tab == InventoryTab.Vault) return Picked ?? Shown;
+                if (Tab == InventoryTab.Loadout) return Shown ?? view.Equipped(Selected);
+                return null;
+            }
+        }
+
+        // What Store and delete act on: the hovered item, else the vault selection.
+        public object ActionTarget => Hovered ?? (Tab == InventoryTab.Vault ? Picked : null);
 
         // ------------------------------------------------------------------ lifecycle
 
@@ -209,7 +228,7 @@ namespace Combat.UI
             if (open)
             {
                 if (input != null) input.PushUI(uiOwner);
-                Hovered = null;
+                Hovered = Shown = null;
                 RebuildAll();
             }
             else
@@ -217,7 +236,7 @@ namespace Combat.UI
                 if (input != null) input.PopUI(uiOwner);
                 if (tooltip != null) tooltip.Hide();
                 if (filterBar != null) filterBar.Unfocus();
-                Hovered = null;
+                Hovered = Shown = null;
                 Message = "";
                 ResetHold();
             }
@@ -225,10 +244,10 @@ namespace Combat.UI
 
         // ------------------------------------------------------------------ store and delete
 
-        // Store moves the hovered item between carried and vault; holding Delete removes it.
+        // Store moves the target between carried and vault; holding Delete removes it.
         private void ItemKeys()
         {
-            var item = Hovered;
+            var item = ActionTarget;
             if (input.UI.Store.WasPressedThisFrame() && item != null)
             {
                 if (view.IsCarried(item)) MoveToVault(item);
@@ -280,8 +299,6 @@ namespace Combat.UI
 
             if (item is WeaponInstance w && inventory.RemoveWeapon(w)) vault.TryAddWeapon(w);
             else if (item is ArmorInstance a && inventory.RemoveArmor(a)) vault.TryAddArmor(a);
-            else return;
-            Hovered = null;
         }
 
         public void MoveToCarried(object item)
@@ -298,8 +315,21 @@ namespace Combat.UI
                 if (!inventory.HasArmorSpace(a.Slot)) { Say("Carried " + ItemText.SlotName(a.Slot) + " is full."); return; }
                 if (vault.RemoveArmor(a)) inventory.TryAddArmor(a);
             }
-            else return;
-            Hovered = null;
+        }
+
+        // Vault tab double-click: to the other side.
+        public void MoveAcross(object item)
+        {
+            if (view.IsCarried(item)) MoveToVault(item);
+            else if (view.IsVaulted(item)) MoveToCarried(item);
+        }
+
+        // Vault tab click: select it and pin it in the detail panel.
+        public void Pick(object item)
+        {
+            if (item == null || Picked == item) return;
+            Picked = item;
+            Request();
         }
 
         public void Delete(object item)
@@ -313,7 +343,10 @@ namespace Combat.UI
             else if (item is ArmorInstance a) gone = inventory.RemoveArmor(a) || (vault != null && vault.RemoveArmor(a));
             if (!gone) return;
 
-            Hovered = null;
+            LastDeleted = item;
+            if (Hovered == item) Hovered = null;
+            if (Shown == item) Shown = null;
+            if (Picked == item) Picked = null;
             Say("Deleted " + ItemText.Name(item));
         }
 
@@ -323,7 +356,7 @@ namespace Combat.UI
         {
             if (Tab == tab) return;
             Tab = tab;
-            Hovered = null;
+            Hovered = Shown = null;
             if (tooltip != null) tooltip.Hide();
             Request();
         }
@@ -331,7 +364,7 @@ namespace Combat.UI
         public void Select(SlotRef slot)
         {
             Selected = slot;
-            Hovered = null;
+            Shown = null;
             Request();
         }
 
@@ -344,25 +377,56 @@ namespace Combat.UI
             if (!ok) Say(reason);
         }
 
-        // Left-click on a carried item: equip it into the selected slot.
-        public void EquipToSelected(object item)
+        // Click on a carried item: equip into the selected slot if allowed, else its carried slot, else its first allowed slot.
+        // Armor goes to its own slot. The slot it lands in becomes the selection.
+        public void EquipAuto(object item)
         {
             if (!IsLive || loadout == null) return;
             string reason = null;
             bool ok = false;
-            if (item is WeaponInstance w && Selected.Kind == SlotKind.Weapon) ok = loadout.TryEquip(Selected.Index, w, out reason);
-            else if (item is ArmorInstance a) ok = loadout.TryEquipArmor(a, out reason);
-            if (ok) Hovered = null;
-            else Say(reason);
+            SlotRef landed = Selected;
+            if (item is WeaponInstance w && w.Definition != null)
+            {
+                int slot = WeaponSlotFor(w);
+                if (slot < 0) reason = "Not allowed in any loadout slot.";
+                else
+                {
+                    ok = loadout.TryEquip(slot, w, out reason);
+                    landed = new SlotRef(SlotKind.Weapon, slot);
+                }
+            }
+            else if (item is ArmorInstance a)
+            {
+                ok = loadout.TryEquipArmor(a, out reason);
+                landed = new SlotRef(SlotKind.Armor, Mathf.Max(0, view.ArmorSlots.IndexOf(a.Slot)));
+            }
+            if (!ok) { Say(reason); return; }
+            Hovered = Shown = null;
+            Select(landed);
+        }
+
+        private int WeaponSlotFor(WeaponInstance w)
+        {
+            var allowed = w.Definition.AllowedSlots;
+            if (Selected.Kind == SlotKind.Weapon && LoadoutSlots.Allows(allowed, Selected.Index)) return Selected.Index;
+            int own = w.Definition.InventorySlot;
+            if (own >= 0 && own < LoadoutSlots.Count && LoadoutSlots.Allows(allowed, own)) return own;
+            for (int i = 0; i < LoadoutSlots.Count; i++) if (LoadoutSlots.Allows(allowed, i)) return i;
+            return -1;
         }
 
         public void OnTileHover(UITile tile, bool on)
         {
             if (building || tile == null) return;
-            if (on) Hovered = tile.Item;
+            var before = Focus;
+            if (on)
+            {
+                Hovered = tile.Item;
+                if (tile.Item != null) Shown = tile.Item;
+            }
             else if (Hovered == tile.Item) Hovered = null;
             else return;
-            detailDirty = true;
+            if (Focus != before) detailDirty = true;
             if (!Application.isPlaying) Request();
         }
 
@@ -456,6 +520,10 @@ namespace Combat.UI
 
             if (Application.isPlaying) view.FromLoadout(loadout);
             ClampSelection();
+            if (!view.Owns(Hovered)) Hovered = null;
+            if (!view.Owns(Shown)) Shown = null;
+            if (!view.Owns(Picked)) Picked = null;
+            if (FullRebuild) ClearAll();
 
             if (tooltip != null && !tooltip.IsPinned) tooltip.Hide();
             if (backdrop != null) backdrop.color = style.backdrop;
@@ -479,6 +547,8 @@ namespace Combat.UI
             }
             else Build(characterPanel);
             Build(footer);
+            FullRebuild = false;
+            LastDeleted = null;
         }
 
         private void RebuildDetail()
@@ -530,7 +600,7 @@ namespace Combat.UI
 
         private void OnValidate()
         {
-            if (Application.isPlaying) { dirty = true; return; }
+            if (Application.isPlaying) { dirty = FullRebuild = true; return; }
             previewBuilt = false;
             QueueEditorRebuild();
         }

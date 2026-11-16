@@ -25,14 +25,15 @@ namespace Combat.UI
             string delete = "Hold " + Key(input != null ? input.UI.Delete : null, "X");
             if (screen.Tab == InventoryTab.Loadout)
             {
-                Hint(root, s, "LMB", "Select / Equip");
+                Hint(root, s, "LMB", "Select slot / Equip");
                 Hint(root, s, "RMB", "Unequip");
                 Hint(root, s, store, "Store");
                 Hint(root, s, delete, "Delete");
             }
             else if (screen.Tab == InventoryTab.Vault)
             {
-                Hint(root, s, "LMB", "Move");
+                Hint(root, s, "LMB", "Select");
+                Hint(root, s, "Double-click", "Move");
                 Hint(root, s, store, "Move");
                 Hint(root, s, delete, "Delete");
             }

@@ -5,11 +5,12 @@ using UnityEngine.UI;
 
 namespace Combat.UI
 {
-    // Clickable tile: hover and selected visuals, left/right click, submit for gamepad later.
+    // Clickable tile: hover and selected visuals, left/right/double click, submit for gamepad later.
     public class UITile : Selectable, IPointerClickHandler, ISubmitHandler
     {
         public event Action<UITile> LeftClick;
         public event Action<UITile> RightClick;
+        public event Action<UITile> DoubleClick;
         public event Action<UITile, bool> HoverChanged;
 
         public object Item { get; set; }
@@ -53,7 +54,11 @@ namespace Combat.UI
         public void OnPointerClick(PointerEventData e)
         {
             if (!IsInteractable()) return;
-            if (e.button == PointerEventData.InputButton.Left) LeftClick?.Invoke(this);
+            if (e.button == PointerEventData.InputButton.Left)
+            {
+                LeftClick?.Invoke(this);
+                if (e.clickCount == 2) DoubleClick?.Invoke(this);
+            }
             else if (e.button == PointerEventData.InputButton.Right) RightClick?.Invoke(this);
         }
 
