@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 054cdea1faa5b3b47b9b39f56f7c1c9c, type: 3}
   m_Name: UIStyle
   m_EditorClassIdentifier: 
-  font: {fileID: 11400000, guid: 74df113c32a185f419de37663947f238, type: 2}
+  font: {fileID: 11400000, guid: 9250c76e591110b459aa884228d9389a, type: 2}
   headingFont: {fileID: 11400000, guid: f5b067ba75d334b4b93c17681a114d52, type: 2}
   titleFont: {fileID: 11400000, guid: 1f8e0b8bbfde34041aca624753b0849f, type: 2}
   numberFont: {fileID: 11400000, guid: 9250c76e591110b459aa884228d9389a, type: 2}

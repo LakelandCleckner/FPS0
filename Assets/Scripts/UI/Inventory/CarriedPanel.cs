@@ -36,6 +36,7 @@ namespace Combat.UI
             var area = UIKit.Node(body, "Area");
             UIKit.Size(area, flexHeight: 1f);
             layout = UIKit.SlideScroll(area);
+            UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(root);
             Refresh(screen, root);
         }
 
@@ -45,7 +46,8 @@ namespace Combat.UI
             var view = screen.View;
             hint.text = view.CarriedWeapons.Count + view.CarriedArmor.Count == 0 ? "Nothing carried." : "Click an item to equip it";
 
-            float width = layout.Width > 0f ? layout.Width : root.rect.width - 2f * s.padding;
+            // The scroll area's width, or the panel's when the area isn't laid out yet.
+            float width = layout.Width >= s.gridTileSize ? layout.Width : root.rect.width - 2f * s.padding;
             int columns = width > 0f ? Mathf.Max(1, Mathf.FloorToInt((width + s.gap) / (s.gridTileSize + s.gap))) : Mathf.Max(1, s.gridColumns);
             float headHeight = s.headingSize + 12f;
 

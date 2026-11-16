@@ -35,6 +35,7 @@ namespace Combat.UI
             var area = UIKit.Node(body, "Area");
             UIKit.Size(area, flexHeight: 1f);
             layout = UIKit.SlideScroll(area);
+            UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(root);
             empty = null;
             Refresh(screen, root);
         }
@@ -51,7 +52,8 @@ namespace Combat.UI
             if (note != null) note.text = items.Count == total ? total.ToString() : items.Count + " / " + total;
             hint.text = vault ? "Click to select. Double-click or press Store to take it out." : Caps(view);
 
-            float width = layout.Width > 0f ? layout.Width : root.rect.width - 2f * s.padding;
+            // The scroll area's width, or the panel's when the area isn't laid out yet.
+            float width = layout.Width >= s.gridTileSize ? layout.Width : root.rect.width - 2f * s.padding;
             int columns = width > 0f ? Mathf.Max(1, Mathf.FloorToInt((width + s.gap) / (s.gridTileSize + s.gap))) : Mathf.Max(1, s.gridColumns);
 
             layout.Begin();
