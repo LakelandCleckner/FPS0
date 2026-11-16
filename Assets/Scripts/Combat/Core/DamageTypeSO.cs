@@ -49,6 +49,10 @@ namespace Combat.Core
          "negative (from a debuff) = takes more. Leave null for no type resistance.")]
         public Combat.Stats.StatDefinitionSO resistanceStat;
 
+        [Header("Info")]
+        [Tooltip("Keyword this element shows as in descriptions. Empty = plain name.")]
+        public Combat.Info.KeywordSO keyword;
+
 
         // Picks the gradient for the current modifier combination. Falls back to
         // the normal gradient if a slot was left at default (incremental authoring).

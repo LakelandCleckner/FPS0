@@ -38,3 +38,4 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 0.70389724, b: 0, a: 1}
     bottomRight: {r: 1, g: 0.70389724, b: 0, a: 1}
   resistanceStat: {fileID: 11400000, guid: f5a8c623ad3a88c48bda3be493dbf950, type: 2}
+  keyword: {fileID: 11400000, guid: 8222aa6b56e64f24a9a91d5ce5c29067, type: 2}

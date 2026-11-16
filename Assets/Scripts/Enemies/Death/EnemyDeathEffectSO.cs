@@ -1,6 +1,7 @@
 using UnityEngine;
 using Combat.Core;
 using Combat.Stats;
+using Combat.Info;
 
 namespace Combat.Enemies
 {
@@ -60,6 +61,16 @@ namespace Combat.Enemies
 
         public bool Any => coefficient > 0f;
 
+        // "15% of the target's max health as Fire, higher on stronger ranks".
+        public void Describe(Describer d, string token = "damage")
+        {
+            if (stat == null) d.Num(Describer.Trim(coefficient), token).Add(" damage");
+            else d.Percent(coefficient, token).Add(basis == DeathDamageBasis.TargetStat ? " of the target's " : " of its own ")
+                  .Add(Describer.StatName(stat).ToLowerInvariant());
+            if (type != null) d.Add(" as ").Element(type);
+            if (tierScaleStat != null) d.Add(", higher on stronger ranks");
+        }
+
         // Everything read off the dead enemy, taken at the moment of death.
         public Resolved Resolve(in DeathEffectContext ctx)
         {
@@ -90,7 +101,7 @@ namespace Combat.Enemies
     }
 
     // Something an enemy leaves behind when it dies: a blast, a hazard pool.
-    public abstract class EnemyDeathEffectSO : ScriptableObject
+    public abstract class EnemyDeathEffectSO : ScriptableObject, IDescribable
     {
         [Header("Targets")]
         public bool hitsPlayer = true;
@@ -111,5 +122,18 @@ namespace Combat.Enemies
         public int EnemyMask => hitsEnemies ? enemyLayers.value : 0;
 
         public abstract void Trigger(in DeathEffectContext ctx);
+
+        public void Describe(Describer d) => DescribeAs(d, "On death: ");
+
+        // Lead is the condition, e.g. "On death: " or "When broken: ".
+        public virtual void DescribeAs(Describer d, string lead) { }
+
+        // Who it hurts and whether a precision kill stops it.
+        protected void DescribeTargets(Describer d)
+        {
+            if (hitsPlayer && hitsEnemies) d.Next().Add("Hurts you and other enemies.");
+            else if (hitsEnemies) d.Next().Add("Hurts other enemies.");
+            if (cancelOnPrecisionKill) d.Next().Add("A ").Keyword("precision", "precision").Add(" kill stops it.");
+        }
     }
 }

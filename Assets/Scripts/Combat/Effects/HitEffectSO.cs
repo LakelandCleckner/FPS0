@@ -14,8 +14,11 @@ namespace Combat.Effects
     //
     // Rare opt-out: an effect that genuinely needs mutable state ON ITSELF can
     // override RequiresFreshInstance to true and will be rebuilt each call.
-    public abstract class HitEffectSO : ScriptableObject
+    public abstract class HitEffectSO : ScriptableObject, Combat.Info.IDescribable
     {
+        // Player-facing text for what this effect does. Empty by default.
+        public virtual void Describe(Combat.Info.Describer d) { }
+
         private IHitEffect cached;
 
         protected virtual bool RequiresFreshInstance => false;

@@ -1,6 +1,7 @@
 using UnityEngine;
 using Combat.Core;
 using Combat.Stats;
+using Combat.Info;
 
 namespace Combat.Status
 {
@@ -11,8 +12,12 @@ namespace Combat.Status
 
     // Stateless status recipe. Phase 2i-b: the tick's derivation is authored as a
     // KIND + owner scope + stat/quantity, matching the data-driven DamageSpec.
-    public abstract class StatusSO : ScriptableObject
+    public abstract class StatusSO : ScriptableObject, IDescribable
     {
+        [Header("Info")]
+        [Tooltip("Keyword this status shows as in descriptions (Burn, Chill). Empty = the asset name, no popup.")]
+        public KeywordSO keyword;
+
         [Header("Stat Modifier (while active)")]
         [Tooltip("Stat this status modifies while active (e.g. Move Speed for a slow). " +
          "null = no modifier (damage-only statuses like burn).")]
@@ -87,6 +92,31 @@ namespace Combat.Status
         public bool transferResetsTickCadence = false;
 
 
+
+        // Numbers for this status: damage per tick and in total, stat change, duration and stacking.
+        public virtual void Describe(Describer d)
+        {
+            bool deals = coefficient > 0f && (derivationKind != DerivationKind.PercentOfStat || stat != null);
+            if (deals)
+            {
+                int ticks = tickInterval > 0f ? Mathf.Max(1, Mathf.FloorToInt(duration / tickInterval + 0.001f)) : 1;
+                d.Add("Deals ").Damage(derivationKind, stat, quantity, owner, coefficient, "tick");
+                if (damageType != null) d.Add(" as ").Element(damageType);
+                d.Add(" every ").Seconds(tickInterval, "interval").Add(" for ").Seconds(duration, "duration")
+                 .Add(" (").Damage(derivationKind, stat, quantity, owner, coefficient * ticks, "total").Add(" total).");
+            }
+            if (modifierTargetStat != null && Mathf.Abs(modifierPerIntensity) > 0f)
+            {
+                d.Next();
+                bool mult = modifierBucket == "mult";
+                string amount = mult ? Describer.Pct(Mathf.Abs(modifierPerIntensity)) : Describer.StatValue(modifierTargetStat, Mathf.Abs(modifierPerIntensity));
+                d.Add(modifierPerIntensity < 0f ? "Lowers " : "Raises ").Add(Describer.StatName(modifierTargetStat)).Add(" by ").Num(amount, "amount");
+                d.Add(" for ").Seconds(duration, "duration").Add(maxEntries > 1 ? " per stack." : ".");
+            }
+            if (maxEntries > 1) d.Next().Add("Stacks up to ").Count(maxEntries, "stacks").Add(" times.");
+            else if (maxEntries == 0 && deals) d.Next().Add("Stacks without limit.");
+            if (d.IsEmpty) d.Add(name);
+        }
 
         // Build the tick's DamageSpec from the authored derivation.
         public DamageSpec BuildTickSpec()

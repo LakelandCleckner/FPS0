@@ -95,6 +95,20 @@ namespace Combat.Effects
             = new System.Collections.Generic.List<Combat.Status.StatusSO>();
 
 
+        public override void Describe(Combat.Info.Describer d)
+        {
+            d.Add("Kills ").Keyword("explode", "explode").Add(" in a ").Meters(radius, "radius").Add(" radius for ")
+             .StatPercent(damageStat, damageCoefficient, "damage");
+            if (damageType != null) d.Add(" as ").Element(damageType);
+            if (applyStatus != null)
+            {
+                d.Add(", applying ").StatusLink(applyStatus).Add(" to everything hit (");
+                applyStatus.Describe(d);
+                d.Add(")");
+            }
+            d.Add(".");
+        }
+
         protected override IHitEffect Build()
         {
             var spec = new DamageSpec(

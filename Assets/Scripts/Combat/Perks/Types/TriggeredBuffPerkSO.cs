@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Combat.Events;
 using Combat.Loadout;
+using Combat.Info;
 
 namespace Combat.Perks
 {
@@ -32,6 +33,22 @@ namespace Combat.Perks
         public List<ModifierEntry> modifiers = new List<ModifierEntry>();
 
         private void Reset() => listenScope = PerkListenScope.Always;
+        protected override void DescribeAuto(Describer d)
+        {
+            d.When(trigger, sources, anyWeapon);
+            if (everyN > 1)
+            {
+                d.Add("every ").Count(everyN, "count");
+                if (window > 0f) d.Add(" within ").Seconds(window, "window");
+                d.Add(", ");
+            }
+            d.Add("gain ").Modifiers(modifiers);
+            if (duration > 0f) d.Add(" for ").Seconds(duration, "duration");
+            d.Add(".");
+            if (maxStacks > 1) d.Next().Add("Stacks up to ").Count(maxStacks, "stacks").Add(" times; each stack refreshes the timer.");
+            if (endOnStow) d.Next().Add("Ends when the weapon is stowed.");
+        }
+
 
         public override PerkRuntime CreateRuntime() => new Runtime();
 

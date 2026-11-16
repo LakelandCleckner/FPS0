@@ -1,5 +1,6 @@
 using UnityEngine;
 using Combat.Events;
+using Combat.Info;
 
 namespace Combat.Perks
 {
@@ -11,6 +12,13 @@ namespace Combat.Perks
         [Min(1)] public int rounds = 1;
         [Tooltip("Take the rounds from reserves instead of granting them free.")]
         public bool fromReserves = false;
+        protected override void DescribeAuto(Describer d)
+        {
+            d.Add("Every ").Count(everyN, "count").Add(" ").Keyword("precision", "precision").Add(everyN == 1 ? " hit returns " : " hits return ")
+             .Count(rounds, "rounds").Add(rounds == 1 ? " round to the magazine" : " rounds to the magazine")
+             .Add(fromReserves ? " from reserves." : ".");
+        }
+
 
         public override PerkRuntime CreateRuntime() => new Runtime();
 

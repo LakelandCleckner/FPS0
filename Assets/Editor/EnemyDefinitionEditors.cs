@@ -584,6 +584,7 @@ public class EnemyVariantEditor : Editor
         EnemyDefinitionGUI.WorkshopButton(target);
         DrawDefaultInspector();
         var v = (EnemyVariantSO)target;
+        DescriptionPreview.Draw(v);
 
         layers.Clear();
         foreach (var m in v.modifiers) layers.Add(m);
@@ -631,6 +632,7 @@ public class EnemyModifierEditor : Editor
         EnemyDefinitionGUI.WorkshopButton(target);
         DrawDefaultInspector();
         var m = (EnemyModifierSO)target;
+        DescriptionPreview.Draw(m);
         EnemyDefinitionGUI.LookPreset(m, lookEditors);
 
         EditorGUILayout.Space(8f);

@@ -1,4 +1,5 @@
 using UnityEngine;
+using Combat.Info;
 
 namespace Combat.Perks
 {
@@ -10,6 +11,11 @@ namespace Combat.Perks
         [Min(0f)] public float delay = 3f;
 
         private void Reset() => listenScope = PerkListenScope.StowedOnly;
+        protected override void DescribeAuto(Describer d)
+        {
+            d.Add("Reloads itself after being stowed for ").Seconds(delay, "delay").Add(".");
+        }
+
 
         public override PerkRuntime CreateRuntime() => new Runtime();
 

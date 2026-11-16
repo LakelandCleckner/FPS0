@@ -4,6 +4,7 @@ using Combat.Core;
 using Combat.Effects;
 using Combat.Hazards;
 using Combat.Status;
+using Combat.Info;
 
 namespace Combat.Enemies
 {
@@ -19,6 +20,19 @@ namespace Combat.Enemies
         [Header("Status (optional)")]
         [Tooltip("Applied on every tick to everyone inside.")]
         public StatusSO applyStatus;
+
+        public override void DescribeAs(Describer d, string lead)
+        {
+            d.Add(lead).Add("leaves ").Keyword("pool", "a pool");
+            if (damage.type != null) d.Add(" of ").Element(damage.type);
+            d.Add(" (").Meters(pool.radius, "radius").Add(" radius, lasts ").Seconds(pool.duration, "duration").Add(")");
+            bool dealt = damage.Any;
+            if (dealt) { d.Add(" that deals "); damage.Describe(d); d.Add(" every ").Seconds(pool.tickInterval, "tick"); }
+            if (pool.slow > 0f) d.Add(dealt ? " and " : " that ").Keyword("slow", "slows").Add(" everyone inside by ").Percent(pool.slow, "slow");
+            if (applyStatus != null) d.Add(", applying ").StatusLink(applyStatus).Add(" each tick");
+            d.Add(".");
+            DescribeTargets(d);
+        }
 
         public override void Trigger(in DeathEffectContext ctx)
         {

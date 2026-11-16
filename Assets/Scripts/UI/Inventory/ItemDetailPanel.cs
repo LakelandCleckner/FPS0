@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using Combat.Armor;
+using Combat.Info;
 using Combat.Loadout;
 using Combat.Perks;
 using Combat.Weapons;
@@ -55,9 +56,10 @@ namespace Combat.UI
             Divider(body, s);
             StatBlock(body, screen, w);
 
+            var ctx = screen.ContextFor(w);
             Divider(body, s);
             Heading(body, s, "Perks");
-            foreach (var p in def.intrinsicPerks) if (p != null) PerkRow(body, s, p, "Intrinsic");
+            foreach (var p in def.intrinsicPerks) if (p != null) PerkRow(body, screen, p, "Intrinsic", ctx);
 
             var columns = def.ResolvedPerkColumns;
             bool any = false;
@@ -67,7 +69,7 @@ namespace Combat.UI
                 if (p == null) continue;
                 string col = columns != null && i < columns.Count && !string.IsNullOrWhiteSpace(columns[i].label)
                     ? columns[i].label : "Column " + (i + 1);
-                PerkRow(body, s, p, col);
+                PerkRow(body, screen, p, col, ctx);
                 any = true;
             }
             if (!any && def.intrinsicPerks.Count == 0) UIKit.Text(body, "None", s, "No perks.", s.smallSize, s.textFaint);
@@ -78,25 +80,19 @@ namespace Combat.UI
             var s = screen.Style;
             Title(body, s, a, ItemText.Kind(a), null);
 
-            effects.Clear();
-            foreach (var p in a.AllPerks()) p.CollectStaticModifiers(effects);
-            if (effects.Count > 0)
+            Effects(body, s, a, "Effects", CompareChip(screen));
+
+            if (screen.Compare)
             {
-                Divider(body, s);
-                Heading(body, s, "Effects");
-                foreach (var e in effects)
-                {
-                    var row = UIKit.Node(body, "Effect");
-                    UIKit.HStack(row, 10f);
-                    var dot = UIKit.Solid(row, "Dot", ItemText.IsGood(e) ? s.positive : s.negative);
-                    UIKit.Size(dot, width: 6f, height: 6f);
-                    UIKit.Size(UIKit.Text(row, "Text", s, ItemText.Effect(e), s.bodySize - 2f, s.text), flexWidth: 1f);
-                }
+                var other = screen.CompareTargetFor(a);
+                if (other != null) Effects(body, s, other, "Equipped: " + ItemText.Name(other), null);
+                else UIKit.Label(body, "CompareNote", s, "Nothing else equipped in this slot", s.textFaint);
             }
 
+            var ctx = screen.ContextFor(a);
             Divider(body, s);
             Heading(body, s, "Perks");
-            foreach (var p in a.Definition.intrinsicPerks) if (p != null) PerkRow(body, s, p, "Intrinsic");
+            foreach (var p in a.Definition.intrinsicPerks) if (p != null) PerkRow(body, screen, p, "Intrinsic", ctx);
             var columns = a.Definition.ResolvedPerkColumns;
             for (int i = 0; i < a.Perks.Count; i++)
             {
@@ -104,9 +100,45 @@ namespace Combat.UI
                 if (p == null) continue;
                 string col = columns != null && i < columns.Count && !string.IsNullOrWhiteSpace(columns[i].label)
                     ? columns[i].label : "Column " + (i + 1);
-                PerkRow(body, s, p, col);
+                PerkRow(body, screen, p, col, ctx);
             }
         }
+
+        // Static stat changes from an armor piece's perks.
+        private void Effects(RectTransform body, UIStyleSO s, ArmorInstance a, string title, System.Action<RectTransform> decorate)
+        {
+            effects.Clear();
+            foreach (var p in a.AllPerks()) p.CollectStaticModifiers(effects);
+            Divider(body, s);
+            var head = Heading(body, s, title);
+            decorate?.Invoke(head);
+            if (effects.Count == 0) { UIKit.Text(body, "None", s, "No stat changes.", s.smallSize, s.textFaint); return; }
+            foreach (var e in effects)
+            {
+                var row = UIKit.Node(body, "Effect");
+                UIKit.HStack(row, 10f);
+                var dot = UIKit.Solid(row, "Dot", ItemText.IsGood(e) ? s.positive : s.negative);
+                UIKit.Size(dot, width: 6f, height: 6f);
+                UIKit.Size(UIKit.Text(row, "Text", s, ItemText.Effect(e), s.bodySize - 2f, s.text), flexWidth: 1f);
+            }
+        }
+
+        // Toggle on a heading row: compare against the equipped item. Off by default.
+        private static System.Action<RectTransform> CompareChip(InventoryScreen screen) => head =>
+        {
+            var s = screen.Style;
+            bool on = screen.Compare;
+            var fill = UIKit.Box(head, "Compare", s, on ? new Color(s.accent.r, s.accent.g, s.accent.b, 0.18f) : s.tileEmpty, small: true);
+            var border = UIKit.Outline(fill.rectTransform, s, on ? s.accent : s.tileBorder, small: true);
+            UIKit.HStack(fill, 0f, UIKit.Pad(10f, 10f, 3f, 3f), TextAnchor.MiddleCenter);
+            UIKit.Size(fill, height: s.chipSize);
+            var t = UIKit.Text(fill.transform, "Text", s, "Compare", s.labelSize, on ? s.accent : s.textMuted, TextAlignmentOptions.Center, heading: true);
+            t.characterSpacing = 1f;
+            var tile = fill.gameObject.AddComponent<UITile>();
+            tile.navigation = new UnityEngine.UI.Navigation { mode = UnityEngine.UI.Navigation.Mode.None };
+            tile.Setup(fill, border, null, fill.color, s.tileHover, border.color, s.accent);
+            tile.LeftClick += _ => screen.ToggleCompare();
+        };
 
         // ------------------------------------------------------------------ stats
 
@@ -118,6 +150,19 @@ namespace Combat.UI
             var head = Heading(body, s, "Stats");
             Legend(head, s, "Perks", s.barPerk);
             Legend(head, s, "Armor", s.barArmor);
+            CompareChip(screen)(head);
+
+            WeaponStatPreview compare = null;
+            if (screen.Compare)
+            {
+                var other = screen.CompareTargetFor(w);
+                if (other != null)
+                {
+                    compare = screen.ComparePreviewFor(other);
+                    UIKit.Label(body, "CompareNote", s, "Last column: vs " + ItemText.Name(other), s.accent);
+                }
+                else UIKit.Label(body, "CompareNote", s, "Nothing else equipped to compare with", s.textFaint);
+            }
 
             var preview = screen.PreviewFor(w);
             if (sheet == null || !preview.IsBuilt)
@@ -131,11 +176,12 @@ namespace Combat.UI
             {
                 if (!string.IsNullOrWhiteSpace(group.label)) UIKit.Label(body, "Group", s, group.label, s.textFaint);
                 foreach (var e in group.entries)
-                    if (e != null && e.stat != null) StatRow(body, s, e, preview.Get(e.stat));
+                    if (e != null && e.stat != null)
+                        StatRow(body, s, e, preview.Get(e.stat), compare != null && compare.IsBuilt ? compare.Get(e.stat) : (StatLayers?)null);
             }
         }
 
-        private static void StatRow(Transform parent, UIStyleSO s, StatSheetSO.Entry e, StatLayers v)
+        private static void StatRow(Transform parent, UIStyleSO s, StatSheetSO.Entry e, StatLayers v, StatLayers? other)
         {
             var row = UIKit.Node(parent, "Stat_" + e.Label);
             UIKit.HStack(row, 14f);
@@ -160,7 +206,14 @@ namespace Combat.UI
 
             var d = UIKit.Text(row, "Delta", s, StatFormat.Delta(e, delta), s.labelSize + 1f, better ? s.positive : s.negative,
                                TextAlignmentOptions.MidlineLeft, role: TextRole.Number);
-            UIKit.Size(d, width: 52f);
+            UIKit.Size(d, width: 60f);
+
+            if (!other.HasValue) return;
+            float vs = v.WithArmor - other.Value.WithArmor;
+            bool wins = vs > 0f != e.LowerIsBetter;
+            var c = UIKit.Text(row, "Compare", s, Mathf.Abs(vs) < 0.0005f ? "=" : StatFormat.Delta(e, vs), s.smallSize,
+                               Mathf.Abs(vs) < 0.0005f ? s.textFaint : wins ? s.positive : s.negative, TextAlignmentOptions.MidlineRight, role: TextRole.Number);
+            UIKit.Size(c, width: 70f);
         }
 
         // Base fill, then perk and armor gains, then any loss carved back out.
@@ -229,8 +282,10 @@ namespace Combat.UI
             UIKit.Stretch(t.rectTransform);
         }
 
-        private static void PerkRow(Transform parent, UIStyleSO s, PerkSO perk, string column)
+        // Icon, column, name, and the generated description with live keyword links.
+        private static void PerkRow(Transform parent, InventoryScreen screen, PerkSO perk, string column, DescribeContext ctx)
         {
+            var s = screen.Style;
             var row = UIKit.Node(parent, "Perk_" + perk.name);
             UIKit.HStack(row, 14f, UIKit.Pad(0f, 0f, 4f, 4f), TextAnchor.UpperLeft);
 
@@ -256,8 +311,12 @@ namespace Combat.UI
             UIKit.Size(text, flexWidth: 1f);
             UIKit.Label(text, "Column", s, column, s.textFaint);
             UIKit.Text(text, "Name", s, ItemText.PerkName(perk), s.bodySize, s.text, role: TextRole.Title);
-            if (!string.IsNullOrWhiteSpace(perk.description))
-                UIKit.Text(text, "Description", s, perk.description, s.smallSize, s.textMuted, wrap: true);
+            var links = new List<KeywordLink>();
+            string desc = Describer.Build(perk, ctx, links);
+            if (string.IsNullOrWhiteSpace(desc)) return;
+            var d = UIKit.Text(text, "Description", s, desc, s.smallSize, s.textMuted, wrap: true);
+            d.richText = true;
+            if (links.Count > 0) d.gameObject.AddComponent<TextLinkHover>().Setup(screen, links, ctx);
         }
 
         private static void Divider(Transform parent, UIStyleSO s)

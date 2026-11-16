@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Combat.Events;
 using Combat.Loadout;
+using Combat.Info;
 
 namespace Combat.Perks
 {
@@ -17,6 +18,12 @@ namespace Combat.Perks
         public List<ModifierEntry> modifiers = new List<ModifierEntry>();
 
         private void Reset() => listenScope = PerkListenScope.Always;
+        protected override void DescribeAuto(Describer d)
+        {
+            d.Add(invert ? "Grows as the magazine empties, up to " : "Grows with how full the magazine is, up to ")
+             .Modifiers(modifiers).Add(invert ? " on an empty magazine." : " on a full magazine.");
+        }
+
 
         public override PerkRuntime CreateRuntime() => new Runtime();
 

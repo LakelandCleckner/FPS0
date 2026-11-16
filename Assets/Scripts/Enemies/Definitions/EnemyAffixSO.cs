@@ -1,12 +1,16 @@
 using UnityEngine;
+using Combat.Info;
 
 namespace Combat.Enemies
 {
     // An ability recipe. Shared asset; per-enemy state lives in the runtime it creates.
-    public abstract class EnemyAffixSO : ScriptableObject
+    public abstract class EnemyAffixSO : ScriptableObject, IDescribable
     {
         public string displayName = "";
         [TextArea] public string description = "";
+
+        // Generated text for affixes that have one; the authored description otherwise.
+        public virtual void Describe(Describer d) => d.Add(description);
 
         public abstract EnemyAffix CreateRuntime();
     }

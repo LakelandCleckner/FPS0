@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Combat.Loadout;
+using Combat.Info;
 
 namespace Combat.Perks
 {
@@ -11,6 +12,8 @@ namespace Combat.Perks
         [Tooltip("Weapon perk: Weapons = this weapon; Player = gated by this weapon (InLoadout slotted, InHands held).\n" +
                  "Armor perk: Weapons = loadout weapons matching the type filter; Player = always.")]
         public List<ModifierEntry> modifiers = new List<ModifierEntry>();
+        protected override void DescribeAuto(Describer d) => d.Modifiers(modifiers).Add(".");
+
 
         public override PerkRuntime CreateRuntime() => new StatPerkRuntime();
 

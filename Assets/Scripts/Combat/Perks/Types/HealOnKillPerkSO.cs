@@ -1,6 +1,7 @@
 using UnityEngine;
 using Combat.Core;
 using Combat.Events;
+using Combat.Info;
 
 namespace Combat.Perks
 {
@@ -16,6 +17,11 @@ namespace Combat.Perks
         public bool anyWeapon = false;
 
         private void Reset() => listenScope = PerkListenScope.Always;
+        protected override void DescribeAuto(Describer d)
+        {
+            d.When(Combat.Events.WeaponEventType.Kill, sources, anyWeapon).Add("heal ").Percent(healFraction, "heal").Add(" of max health.");
+        }
+
 
         public override PerkRuntime CreateRuntime() => new Runtime();
 

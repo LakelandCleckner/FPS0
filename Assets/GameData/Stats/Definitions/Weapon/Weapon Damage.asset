@@ -20,4 +20,4 @@ MonoBehaviour:
   useMax: 0
   maxValue: 0
   isPercent: 0
-  displayDecimals: 3
+  displayDecimals: 1

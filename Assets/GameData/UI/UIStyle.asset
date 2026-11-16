@@ -16,12 +16,14 @@ MonoBehaviour:
   headingFont: {fileID: 11400000, guid: f5b067ba75d334b4b93c17681a114d52, type: 2}
   titleFont: {fileID: 11400000, guid: 1f8e0b8bbfde34041aca624753b0849f, type: 2}
   numberFont: {fileID: 11400000, guid: 9250c76e591110b459aa884228d9389a, type: 2}
+  keywords: {fileID: 11400000, guid: 52b04b97884331f4c91f7a1e88f1ed5c, type: 2}
   titleSize: 34
   headingSize: 14
   bodySize: 19
   smallSize: 15
   labelSize: 12
   headingSpacing: 2
+  minTextScale: 0.4
   backdrop: {r: 0.015, g: 0.014, b: 0.016, a: 0.9}
   panel: {r: 0.055, g: 0.053, b: 0.058, a: 0.96}
   panelBorder: {r: 1, g: 0.95, b: 0.85, a: 0.07}
@@ -37,6 +39,24 @@ MonoBehaviour:
   accent: {r: 0.86, g: 0.7, b: 0.42, a: 1}
   positive: {r: 0.5, g: 0.86, b: 0.58, a: 1}
   negative: {r: 0.96, g: 0.44, b: 0.4, a: 1}
+  rarityCommon: {r: 0.72, g: 0.76, b: 0.8, a: 1}
+  rarityUncommon: {r: 0.42, g: 0.82, b: 0.45, a: 1}
+  rarityRare: {r: 0.38, g: 0.62, b: 1, a: 1}
+  rarityLegendary: {r: 0.72, g: 0.45, b: 1, a: 1}
+  rarityMythic: {r: 1, g: 0.85, b: 0.35, a: 1}
+  rarityBorderAlpha: 0.55
+  rarityWash: 0.42
+  rarityBandHeight: 3
+  rankMinor: {r: 0.86, g: 0.25, b: 0.22, a: 1}
+  rankMajor: {r: 1, g: 0.66, b: 0.2, a: 1}
+  rankElite: {r: 0.78, g: 0.42, b: 1, a: 1}
+  rankMiniboss: {r: 1, g: 0.86, b: 0.35, a: 1}
+  rankBoss: {r: 1, g: 0.86, b: 0.35, a: 1}
+  rankIconMinor: {fileID: 0}
+  rankIconMajor: {fileID: 0}
+  rankIconElite: {fileID: 0}
+  rankIconMiniboss: {fileID: 0}
+  enemyShield: {r: 0.45, g: 0.8, b: 1, a: 1}
   barTrack: {r: 1, g: 1, b: 1, a: 0.07}
   barBase: {r: 0.86, g: 0.89, b: 0.91, a: 1}
   barPerk: {r: 0.47, g: 0.76, b: 1, a: 1}
@@ -57,3 +77,4 @@ MonoBehaviour:
   gridColumns: 3
   perkIconSize: 46
   chipSize: 26
+  chipsPerRow: 4

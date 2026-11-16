@@ -21,6 +21,8 @@ namespace Combat.UI
         public TMP_FontAsset titleFont;
         [Tooltip("Stat values, counts and timers. Empty = Font.")]
         public TMP_FontAsset numberFont;
+        [Tooltip("Built-in keywords (slow, pool, explode...) for generated descriptions.")]
+        public Combat.Info.KeywordLibrarySO keywords;
         public float titleSize = 34f;
         public float headingSize = 14f;
         public float bodySize = 19f;

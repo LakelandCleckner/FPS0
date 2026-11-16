@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using Combat.Info;
 
 namespace Combat.Enemies
 {
     // An archetype plus ordered modifier layers, e.g. Grunt + Elite + Fire.
     [CreateAssetMenu(fileName = "EnemyVariant", menuName = "Combat/Enemies/Enemy Variant")]
-    public class EnemyVariantSO : ScriptableObject
+    public class EnemyVariantSO : ScriptableObject, IDescribable
     {
         [Tooltip("Stable id. Don't change once spawners reference it.")]
         public string id = "";
@@ -30,6 +31,17 @@ namespace Combat.Enemies
                     if (m != null && !string.IsNullOrEmpty(m.namePrefix)) sb.Append(m.namePrefix).Append(' ');
                 sb.Append(archetype != null ? archetype.StatSourceLabel : name);
                 return sb.ToString();
+            }
+        }
+
+        // Every layer in order, each under its name.
+        public void Describe(Describer d)
+        {
+            foreach (var m in modifiers)
+            {
+                if (m == null) continue;
+                d.Line().Add(d.Context.Rich ? "<b>" : "").Add(m.StatSourceLabel).Add(d.Context.Rich ? "</b>" : "");
+                m.Describe(d);
             }
         }
 

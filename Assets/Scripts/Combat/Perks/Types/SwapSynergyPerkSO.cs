@@ -4,6 +4,7 @@ using Combat.Events;
 using Combat.Loadout;
 using Combat.Sources;
 using Combat.Weapons;
+using Combat.Info;
 
 namespace Combat.Perks
 {
@@ -17,6 +18,12 @@ namespace Combat.Perks
         public List<ModifierEntry> modifiers = new List<ModifierEntry>();
 
         private void Reset() => listenScope = PerkListenScope.Always;
+        protected override void DescribeAuto(Describer d)
+        {
+            d.Add("Hit with every other loadout weapon within ").Seconds(window, "window").Add(": this weapon gets ")
+             .Modifiers(modifiers).Add(" for ").Seconds(duration, "duration").Add(".");
+        }
+
 
         public override PerkRuntime CreateRuntime() => new Runtime();
 

@@ -12,6 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9e46ea5383849d418754e91729a8cdd, type: 3}
   m_Name: FireBurnStatus
   m_EditorClassIdentifier: 
+  keyword: {fileID: 11400000, guid: d2efe690607ed554189dd53a537c3460, type: 2}
+  modifierTargetStat: {fileID: 0}
+  modifierBucket: mult
+  modifierPerIntensity: 0
   derivationKind: 1
   owner: 1
   stat: {fileID: 11400000, guid: 74e01aed325cce348acbd5d421549c4f, type: 2}

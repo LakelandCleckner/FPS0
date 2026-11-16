@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4c0eaea2e938714d99377d58b47e825, type: 3}
+  m_Name: Pool
+  m_EditorClassIdentifier: 
+  id: pool
+  displayName: Pool
+  color: {r: 0.75, g: 0.75, b: 0.6, a: 1}
+  icon: {fileID: 0}
+  description: A patch on the ground that hits everyone standing in it at a steady
+    rate until it fades.

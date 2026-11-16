@@ -1,11 +1,12 @@
 using UnityEngine;
 using Combat.Core;
+using Combat.Info;
 
 namespace Combat.Enemies
 {
     // A recharging shield layer an enemy modifier can grant.
     [CreateAssetMenu(fileName = "EnemyShield", menuName = "Combat/Enemies/Enemy Shield")]
-    public class EnemyShieldSO : ScriptableObject
+    public class EnemyShieldSO : ScriptableObject, IDescribable
     {
         [Tooltip("Shield element. Also sets the bar and break colour.")]
         public DamageTypeSO element;
@@ -33,5 +34,20 @@ namespace Combat.Enemies
         public Color fallbackColor = new Color(0.4f, 0.8f, 1f, 1f);
 
         public Color Color => element != null ? element.color : fallbackColor;
+
+        public void Describe(Describer d)
+        {
+            if (element != null) d.Element(element).Add(" ");
+            d.Keyword("shield", "shield").Add(" worth ").Percent(percentOfMaxHealth, "size").Add(" of max health.");
+            if (element != null) d.Next().Add("Takes ").Num("x" + Describer.Trim(matchingMultiplier), "matching").Add(" damage from ").Element(element)
+                                         .Add(", ").Num("x" + Describer.Trim(otherMultiplier), "other").Add(" from everything else.");
+            if (rechargeDelay > 0f) d.Next().Add("Refills after ").Seconds(rechargeDelay, "delay").Add(" without damage, over ").Seconds(rechargeTime, "refill").Add(".");
+            else d.Next().Add("Never refills.");
+            if (breakEffect != null)
+            {
+                d.Next();
+                breakEffect.DescribeAs(d, breakEffectOnlyOnMatch && element != null ? "Broken with its element: " : "When broken: ");
+            }
+        }
     }
 }

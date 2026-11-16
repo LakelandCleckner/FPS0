@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9e46ea5383849d418754e91729a8cdd, type: 3}
   m_Name: PoisonBurnStatus
   m_EditorClassIdentifier: 
+  keyword: {fileID: 11400000, guid: 27cfd5db291b3864daaab2e3bc1b8a59, type: 2}
   modifierTargetStat: {fileID: 0}
   modifierBucket: mult
   modifierPerIntensity: 0

@@ -3,10 +3,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Combat.Stats;
+using Combat.Info;
 
 namespace Combat.UI
 {
-    // Stat breakdown that follows the cursor. Click a stat to pin it in place, click it again to release.
+    // Stat breakdown or keyword popup that follows the cursor. Click to pin it in place, click again to release.
     [RequireComponent(typeof(RectTransform))]
     public class StatTooltip : MonoBehaviour
     {
@@ -22,6 +23,9 @@ namespace Combat.UI
         private RectTransform box;
         private int builtVersion = int.MinValue;
         private bool builtPinned;
+        private KeywordLink keyword;
+        private DescribeContext keywordContext;
+        private bool hasKeyword;
 
         public bool IsPinned { get; private set; }
 
@@ -52,9 +56,37 @@ namespace Combat.UI
             IsPinned = true;
         }
 
+        public void HoverKeyword(InventoryScreen owner, KeywordLink link, DescribeContext ctx, bool on)
+        {
+            if (IsPinned || link.Keyword == null) return;
+            if (on) ShowKeyword(owner, link, ctx);
+            else if (SameKeyword(link)) Hide();
+        }
+
+        public void ToggleKeywordPin(InventoryScreen owner, KeywordLink link, DescribeContext ctx)
+        {
+            if (link.Keyword == null) return;
+            if (IsPinned && SameKeyword(link)) { IsPinned = false; return; }
+            if (!SameKeyword(link)) ShowKeyword(owner, link, ctx);
+            IsPinned = true;
+        }
+
+        private bool SameKeyword(KeywordLink link) => hasKeyword && keyword.Keyword == link.Keyword && keyword.Detail == link.Detail;
+
+        private void ShowKeyword(InventoryScreen owner, KeywordLink link, DescribeContext ctx)
+        {
+            screen = owner;
+            entry = null;
+            keyword = link;
+            keywordContext = ctx;
+            hasKeyword = true;
+            builtVersion = int.MinValue;
+        }
+
         public void Hide()
         {
             IsPinned = false;
+            hasKeyword = false;
             entry = null;
             Kill(box);
             box = null;
@@ -72,12 +104,27 @@ namespace Combat.UI
         {
             screen = owner;
             entry = e;
+            hasKeyword = false;
             builtVersion = int.MinValue;
         }
 
         private void LateUpdate()
         {
-            if (!Application.isPlaying || entry == null || screen == null) return;
+            if (!Application.isPlaying || screen == null) return;
+            if (hasKeyword)
+            {
+                if (screen.Style == null) { Hide(); return; }
+                bool shown = box != null;
+                if (!shown || builtVersion == int.MinValue || builtPinned != IsPinned)
+                {
+                    BuildKeyword(screen.Style);
+                    builtVersion = 0;
+                    builtPinned = IsPinned;
+                }
+                if (!IsPinned || !shown) Place();
+                return;
+            }
+            if (entry == null) return;
 
             var stats = screen.PlayerStats;
             var c = stats != null ? stats.Container : null;
@@ -130,6 +177,42 @@ namespace Combat.UI
             Rule(box, s);
             UIKit.Text(box, "Formula", s, Formula(stat), s.smallSize - 2f, s.textFaint, wrap: true);
             if (IsPinned) UIKit.Label(box, "Pinned", s, "Pinned  -  click the stat to release", s.accent);
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(box);
+        }
+
+        // Keyword name, its general rule, then the numbers for the source that linked it.
+        private void BuildKeyword(UIStyleSO s)
+        {
+            Vector2 keep = box != null ? box.anchoredPosition : Vector2.zero;
+            Kill(box);
+
+            var k = keyword.Keyword;
+            var edge = new Color(k.color.r, k.color.g, k.color.b, 0.6f);
+            var bg = UIKit.Box(transform, "Box", s, s.panel, true, IsPinned ? s.accent : edge);
+            box = bg.rectTransform;
+            box.anchorMin = box.anchorMax = new Vector2(0.5f, 0.5f);
+            box.pivot = new Vector2(0f, 1f);
+            box.sizeDelta = new Vector2(width, 0f);
+            box.anchoredPosition = keep;
+            UIKit.VStack(bg, 6f, UIKit.Pad(s.padding * 0.75f));
+            var fit = bg.gameObject.AddComponent<ContentSizeFitter>();
+            fit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            UIKit.Text(box, "Name", s, k.Name, s.headingSize + 2f, k.color, heading: true);
+            if (!string.IsNullOrWhiteSpace(k.description))
+                UIKit.Text(box, "Rule", s, k.description, s.smallSize, s.textMuted, wrap: true);
+
+            if (keyword.Detail != null)
+            {
+                string detail = Describer.Build(keyword.Detail, keywordContext);
+                if (!string.IsNullOrWhiteSpace(detail))
+                {
+                    Rule(box, s);
+                    UIKit.Text(box, "Detail", s, detail, s.smallSize, s.text, wrap: true).richText = true;
+                }
+            }
+            if (IsPinned) UIKit.Label(box, "Pinned", s, "Pinned  -  click the word to release", s.accent);
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(box);
         }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Combat.Core;
 using Combat.Effects;
+using Combat.Info;
 
 namespace Combat.Perks
 {
@@ -10,6 +11,17 @@ namespace Combat.Perks
     public class EffectPerkSO : PerkSO
     {
         public List<HitEffectSO> effects = new List<HitEffectSO>();
+        protected override void DescribeAuto(Describer d)
+        {
+            foreach (var e in effects)
+            {
+                if (e == null) continue;
+                d.Next();
+                e.Describe(d);
+            }
+            if (d.IsEmpty) d.Add(description);
+        }
+
 
         public override PerkRuntime CreateRuntime() => new EffectPerkRuntime();
 

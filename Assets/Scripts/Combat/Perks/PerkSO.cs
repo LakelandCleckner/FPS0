@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Combat.Info;
 using Combat.Loadout;
 
 namespace Combat.Perks
@@ -20,11 +21,13 @@ namespace Combat.Perks
     public enum Rarity { Common, Uncommon, Rare, Legendary, Mythic }
 
     // A perk recipe: parameters and wiring. CreateRuntime builds the per-item instance that holds state.
-    public abstract class PerkSO : ScriptableObject
+    public abstract class PerkSO : ScriptableObject, IDescribable
     {
         [Tooltip("Stable id for lookups/saves. Set once, don't rename.")]
         public string id = "";
         public string displayName = "";
+        [Tooltip("Off: the description is generated from this perk's data. On: the text below is used; {auto} inserts the generated text and {duration}, {value} etc. its numbers.")]
+        public bool customDescription = false;
         [TextArea] public string description = "";
 
         [Header("HUD")]
@@ -40,6 +43,17 @@ namespace Combat.Perks
 
         // Unconditional modifiers, for stat previews of items not in the loadout. Conditional perks add nothing.
         public virtual void CollectStaticModifiers(List<ModifierEntry> into) { }
+
+        public void Describe(Describer d)
+        {
+            if (!customDescription || string.IsNullOrWhiteSpace(description)) { DescribeAuto(d); return; }
+            var auto = new Describer(d.Context, d.Links);
+            DescribeAuto(auto);
+            d.Template(description, auto);
+        }
+
+        // Generated text from this perk's data. Types without a generator fall back to the description.
+        protected virtual void DescribeAuto(Describer d) => d.Add(description);
 
         public string ShortLabel
         {

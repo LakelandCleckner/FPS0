@@ -7,6 +7,7 @@ using Combat.Hazards;
 using Combat.Stats;
 using Combat.Status;
 using Combat.Weapons;
+using Combat.Info;
 
 namespace Combat.Perks
 {
@@ -39,6 +40,19 @@ namespace Combat.Perks
         public StatusSO applyStatus;
 
         private void Reset() => listenScope = PerkListenScope.Always;
+        protected override void DescribeAuto(Describer d)
+        {
+            d.When(trigger, sources, anyWeapon).Add("leave ").Keyword("pool", "a pool");
+            if (damageType != null) d.Add(" of ").Element(damageType);
+            d.Add(" (").Meters(pool.radius, "radius").Add(" radius, lasts ").Seconds(pool.duration, "duration").Add(")");
+            bool dealt = damageCoefficient > 0f;
+            if (dealt) d.Add(" that deals ").StatPercent(damageStat, damageCoefficient, "damage").Add(" every ").Seconds(pool.tickInterval, "tick")
+                          .Add(" (").PerSecond(damageStat, damageCoefficient, pool.tickInterval, "dps").Add(")");
+            if (pool.slow > 0f) d.Add(dealt ? " and " : " that ").Keyword("slow", "slows").Add(" enemies inside by ").Percent(pool.slow, "slow");
+            if (applyStatus != null) d.Add(", applying ").StatusLink(applyStatus).Add(" each tick");
+            d.Add(". Up to ").Count(maxActive, "pools").Add(maxActive == 1 ? " pool at once." : " pools at once.");
+        }
+
 
         public override PerkRuntime CreateRuntime() => new Runtime();
 

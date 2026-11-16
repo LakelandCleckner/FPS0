@@ -11,6 +11,13 @@ namespace Combat.Effects
     {
         public StatusSO status;
 
+        public override void Describe(Combat.Info.Describer d)
+        {
+            if (status == null) return;
+            d.Add("Hits apply ").StatusLink(status).Add(": ");
+            status.Describe(d);
+        }
+
         protected override IHitEffect Build()
         {
             return new ApplyStatusHitEffect(status);

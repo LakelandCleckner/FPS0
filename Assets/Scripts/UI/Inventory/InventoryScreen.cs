@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Combat.Armor;
+using Combat.Info;
 using Combat.Loadout;
 using Combat.Perks;
 using Combat.Stats;
@@ -68,6 +69,7 @@ namespace Combat.UI
 
         private readonly LoadoutView view = new LoadoutView();
         private readonly WeaponStatPreview statPreview = new WeaponStatPreview();
+        private readonly WeaponStatPreview comparePreview = new WeaponStatPreview();
         private readonly object uiOwner = new object();
         private PlayerInputRouter input;
         private PlayerInventory inventory;
@@ -93,6 +95,8 @@ namespace Combat.UI
         public PlayerInputRouter Input => input;
         public bool IsLive => Application.isPlaying && !view.IsPreview;
         public ItemFilter Filter { get; } = new ItemFilter();
+        public WeaponStatKeys StatKeys => statKeys;
+        public bool Compare { get; private set; }
 
         // The item the detail panel describes: hovered, else (loadout tab) what's in the selected slot.
         public object Focus => Hovered ?? (Tab == InventoryTab.Loadout ? view.Equipped(Selected) : null);
@@ -375,6 +379,62 @@ namespace Combat.UI
             if (!Application.isPlaying) StatBootstrap.EnsureRegistry();
             statPreview.Build(weapon, view.EquippedArmor(), statKeys);
             return statPreview;
+        }
+
+        // Second preview, for the item being compared against.
+        public WeaponStatPreview ComparePreviewFor(WeaponInstance weapon)
+        {
+            if (!Application.isPlaying) StatBootstrap.EnsureRegistry();
+            comparePreview.Build(weapon, view.EquippedArmor(), statKeys);
+            return comparePreview;
+        }
+
+        public void ToggleCompare()
+        {
+            Compare = !Compare;
+            Request();
+        }
+
+        // The equipped weapon it would replace: the selected slot on the loadout tab if allowed, else its carried slot.
+        public WeaponInstance CompareTargetFor(WeaponInstance w)
+        {
+            if (w == null || w.Definition == null) return null;
+            int slot = w.Definition.InventorySlot;
+            if (Tab == InventoryTab.Loadout && Selected.Kind == SlotKind.Weapon && LoadoutSlots.Allows(w.Definition.AllowedSlots, Selected.Index))
+                slot = Selected.Index;
+            var other = slot >= 0 && slot < view.Weapons.Length ? view.Weapons[slot] : null;
+            return other == w ? null : other;
+        }
+
+        public ArmorInstance CompareTargetFor(ArmorInstance a)
+        {
+            if (a == null) return null;
+            int i = view.ArmorSlots.IndexOf(a.Slot);
+            var other = i >= 0 && i < view.Armor.Count ? view.Armor[i] : null;
+            return other == a ? null : other;
+        }
+
+        // Description context: style colours, keywords, and this weapon's live damage for real numbers.
+        public DescribeContext ContextFor(object item)
+        {
+            var ctx = new DescribeContext();
+            if (style != null)
+            {
+                ctx.Keywords = style.keywords;
+                ctx.Number = style.text;
+                ctx.Good = style.positive;
+                ctx.Bad = style.negative;
+            }
+            if (item is WeaponInstance w && statKeys != null && statKeys.weaponDamage != null)
+            {
+                var p = PreviewFor(w);
+                if (p.IsBuilt)
+                {
+                    ctx.DamageStat = statKeys.weaponDamage;
+                    ctx.DamageValue = p.Get(statKeys.weaponDamage).WithArmor;
+                }
+            }
+            return ctx;
         }
 
         // ------------------------------------------------------------------ building

@@ -5,6 +5,7 @@ using Combat.Effects;
 using Combat.Hazards;
 using Combat.Stats;
 using Combat.Status;
+using Combat.Info;
 
 namespace Combat.Enemies
 {
@@ -49,6 +50,18 @@ namespace Combat.Enemies
 
         private ApplyStatusHitEffect statusEffect;
         private StatusSO statusFor;
+
+        public override void DescribeAs(Describer d, string lead)
+        {
+            d.Add(lead);
+            if (fuse > 0f) d.Add("after ").Seconds(fuse, "fuse").Add(", ");
+            d.Keyword("explode", "explodes").Add(" in a ").Meters(radius, "radius").Add(" radius");
+            if (damage.Any) { d.Add(" for "); damage.Describe(d); if (edgeDamage < 1f) d.Add(" (").Percent(edgeDamage, "edge").Add(" at the edge)"); }
+            if (applyStatus != null) d.Add(", applying ").StatusLink(applyStatus);
+            if (slow > 0f) d.Add(", ").Keyword("slow", "slowing").Add(" by ").Percent(slow, "slow").Add(" for ").Seconds(slowDuration, "slowTime");
+            d.Add(".");
+            DescribeTargets(d);
+        }
 
         public override void Trigger(in DeathEffectContext ctx)
         {
