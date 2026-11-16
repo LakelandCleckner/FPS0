@@ -339,8 +339,12 @@ namespace Combat.Enemies
             ApplyLook(EnemyLook.Resolve(layers));
         }
 
+        // Height relative to the authored enemy (1 = normal); cover and sight heights scale with it
+        public float SizeScale { get; private set; } = 1f;
+
         private void ApplyLook(EnemyLook look)
         {
+            SizeScale = look.Scale;
             transform.localScale = authoredScale * look.Scale;
             if (look.IsPlain && !overridden) return;
             overridden = !look.IsPlain;

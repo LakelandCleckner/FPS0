@@ -68,8 +68,6 @@ namespace Combat.AI
         private float nextCoverCheck;
 
         private EnemyMover mover;
-        private float aimedSince = -1f;
-        private bool aimRolled;
         private float nextDodge;
         private const float DodgeMaxTime = 0.8f;
         private static readonly float[] DodgeScales = { 1f, 0.6f };
@@ -119,6 +117,7 @@ namespace Combat.AI
         private const float FlankerLeash = 14f;
         private const float LeaderlessLeash = 10f;
         public EnemyRank Rank => definition != null ? definition.Rank : EnemyRank.Minor;
+        public float SizeScale => definition != null ? definition.SizeScale : 1f;
 
         // Cost added to open-ground shooting while there's cover, and to cover actions for ranks that prefer the open
         public float OpenShootingExtraCost => hasCombatCover ? Mathf.Max(0f, Tactics.coverPreference) : 0f;
@@ -147,7 +146,7 @@ namespace Combat.AI
         // Optional volume firing points must stay inside (set by encounter logic later).
         public Collider FiringArea { get; set; }
 
-        // Encounter room: firing points and cover stay inside it
+        // Encounter room: every spot an enemy picks (firing points, cover, dodges, strafes, wander) stays inside it
         public bool HasCombatZone { get; private set; }
         public Bounds CombatZone { get; private set; }
 
@@ -161,7 +160,20 @@ namespace Combat.AI
 
         public void ClearCombatZone() => HasCombatZone = false;
 
-        private bool InZone(Vector3 p) => !HasCombatZone || PositionScorer.InZone(CombatZone, p);
+        public bool InZone(Vector3 p) => !HasCombatZone || PositionScorer.InZone(CombatZone, p);
+
+        private const float ZoneInset = 1f;
+
+        // Pull a point back inside the encounter room (ZoneInset in from its edge), on the NavMesh
+        private Vector3 IntoZone(Vector3 p)
+        {
+            if (InZone(p)) return p;
+            var z = CombatZone;
+            z.Expand(new Vector3(-ZoneInset * 2f, 0f, -ZoneInset * 2f));
+            Vector3 c = z.ClosestPoint(new Vector3(p.x, z.center.y, p.z));
+            Vector3 q = new Vector3(c.x, p.y, c.z);
+            return NavMesh.SamplePosition(q, out var hit, 3f, NavMesh.AllAreas) && InZone(hit.position) ? hit.position : q;
+        }
 
         public bool IsRangedProfile => Profile != null && Profile.ranged && ranged != null;
         public bool InsideMinRange => insideMinRange;
@@ -264,8 +276,6 @@ namespace Combat.AI
             ClearFiringPoint();
             ClearCombatCover();
             HasCombatZone = false;
-            aimedSince = -1f;
-            aimRolled = false;
             nextDodge = 0f;
             recentCount = 0;
             recentHead = 0;
@@ -331,7 +341,6 @@ namespace Combat.AI
             UpdateShield();
             if (Profile == null) return;
             UpdateDefensiveness(Time.deltaTime);
-            UpdateDodge();
             if (IsRangedProfile) UpdateRanged();
         }
 
@@ -376,22 +385,6 @@ namespace Combat.AI
 
         // ---- dodge ----
 
-        // Aimed at long enough: one roll per aim
-        private void UpdateDodge()
-        {
-            if (!Profile.dodge || !perception.HasTarget || !perception.AimedAt)
-            {
-                aimedSince = -1f;
-                aimRolled = false;
-                return;
-            }
-            float now = Time.time;
-            if (aimedSince < 0f) aimedSince = now;
-            if (aimRolled || now - aimedSince < Profile.dodgeReactTime) return;
-            aimRolled = true;
-            TryDodge(Profile.dodgeChanceAimed * Tactics.dodgeChanceScale, Vector3.zero);
-        }
-
         // Danger at a point (explosives, grenades): enemies in range may dodge away from it
         public static void Danger(Vector3 point, float radius)
         {
@@ -432,6 +425,7 @@ namespace Combat.AI
                 {
                     Vector3 to = transform.position + d * p.dodgeDistance * DodgeScales[i];
                     if (!NavMesh.SamplePosition(to, out var hit, 0.6f, NavMesh.AllAreas)) continue;
+                    if (!InZone(hit.position)) continue;
                     if (NavMesh.Raycast(transform.position, hit.position, out _, NavMesh.AllAreas)) continue;
                     mover.Dodge(hit.position, p.dodgeSpeed, DodgeMaxTime);
                     nextDodge = now + p.dodgeCooldown;
@@ -504,7 +498,7 @@ namespace Combat.AI
 
             bool valid = hasCombatCover
                          && SquadLeash.Holds(combatCover.Point) && InZone(combatCover.Point)
-                         && CoverFinder.StillCovers(combatCover, perception.BelievedPosition, Profile.rangedMinRange, ranged.MaxRange);
+                         && CoverFinder.StillCovers(combatCover, perception.BelievedPosition, Profile.rangedMinRange, ranged.MaxRange, SizeScale);
             bool holding = coverHoldUntil < 0f || now < coverHoldUntil;
             if (valid && holding)
             {
@@ -542,7 +536,8 @@ namespace Combat.AI
                 FlankDir = FlankDirection(threat),
                 Leash = SquadLeash,
                 HasZone = HasCombatZone,
-                Zone = CombatZone
+                Zone = CombatZone,
+                Size = SizeScale
             };
 
             bool had = hasCombatCover;
@@ -589,7 +584,7 @@ namespace Combat.AI
             float d = Flat(p - threat).magnitude;
             if (d < Profile.rangedMinRange || d > ranged.MaxRange) return false;
             if (!SquadLeash.Holds(p) || !InZone(p)) return false;
-            return PositionScorer.HasLineOfSight(p, threat);
+            return PositionScorer.HasLineOfSight(p, threat, SizeScale);
         }
 
         private void EvaluateFiringPoint()
@@ -620,7 +615,8 @@ namespace Combat.AI
                 FlankDir = FlankDirection(threat),
                 Leash = SquadLeash,
                 HasZone = HasCombatZone,
-                Zone = CombatZone
+                Zone = CombatZone,
+                Size = SizeScale
             };
 
             if (RecordPoints && DebugCandidates == null) DebugCandidates = new List<ScoredPoint>(64);
@@ -646,12 +642,8 @@ namespace Combat.AI
                 ahead = leash.Anchor + (off.sqrMagnitude > 0.01f ? off.normalized : Vector3.zero) * leash.Radius * 0.8f;
             }
             // And inside the encounter room
-            if (!InZone(ahead))
-            {
-                Vector3 c = CombatZone.ClosestPoint(new Vector3(ahead.x, CombatZone.center.y, ahead.z));
-                ahead = new Vector3(c.x, ahead.y, c.z);
-            }
-            if (NavMesh.SamplePosition(ahead, out var hit, 3f, NavMesh.AllAreas)) SetFiringPoint(hit.position, false);
+            ahead = IntoZone(ahead);
+            if (NavMesh.SamplePosition(ahead, out var hit, 3f, NavMesh.AllAreas) && InZone(hit.position)) SetFiringPoint(hit.position, false);
             else ClearFiringPoint();
         }
 
@@ -739,7 +731,8 @@ namespace Combat.AI
         {
             get
             {
-                if (Squad == null || Role == SquadRole.None || Role == SquadRole.Leader) return default;
+                // In an encounter the room keeps the squad together, so members spread across it
+                if (Squad == null || Role == SquadRole.None || Role == SquadRole.Leader || HasCombatZone) return default;
                 float radius = Squad.Leader == null ? LeaderlessLeash : Role == SquadRole.Flanker ? FlankerLeash : SuppressorLeash;
                 return new Leash { Active = true, Anchor = Squad.Anchor, Radius = radius };
             }
@@ -830,16 +823,16 @@ namespace Combat.AI
             if (!WantsCover || perception.Target == null) return false;
 
             Vector3 threat = AITargets.FeetOf(perception.Target);
-            bool recheck = !hasCover || (Time.time >= nextCoverCheck && !CoverFinder.Hidden(coverPoint, CoverFinder.EyeOf(threat)));
+            bool recheck = !hasCover || (Time.time >= nextCoverCheck && !CoverFinder.Hidden(coverPoint, CoverFinder.EyeOf(threat), SizeScale));
             if (recheck)
             {
                 nextCoverCheck = Time.time + CoverRecheck;
                 var p = Profile;
                 // Already fighting from cover that hides us: stay behind it
-                if (hasCombatCover && CoverFinder.Hidden(combatCover.Point, CoverFinder.EyeOf(threat)))
+                if (hasCombatCover && CoverFinder.Hidden(combatCover.Point, CoverFinder.EyeOf(threat), SizeScale))
                     coverPoint = combatCover.Point;
-                else if (!CoverFinder.Find(transform.position, threat, p.coverSearchRadius, p.coverMinTargetDistance, this, out coverPoint))
-                    coverPoint = CoverFinder.AwayFrom(transform.position, threat, p.retreatDistance);
+                else if (!CoverFinder.Find(transform.position, threat, p.coverSearchRadius, p.coverMinTargetDistance, this, HasCombatZone, CombatZone, SizeScale, out coverPoint))
+                    coverPoint = IntoZone(CoverFinder.AwayFrom(transform.position, threat, p.retreatDistance));
                 hasCover = true;
             }
             point = coverPoint;

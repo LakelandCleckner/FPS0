@@ -24,7 +24,7 @@ public class EnemyBehaviourProfileEditor : Editor
     };
     private static readonly string[] Dodge =
     {
-        "dodgeReactTime", "dodgeChanceAimed", "dodgeChanceHit", "dodgeChanceDanger", "dodgeCooldown", "dodgeDistance", "dodgeSpeed"
+        "dodgeChanceHit", "dodgeChanceDanger", "dodgeCooldown", "dodgeDistance", "dodgeSpeed"
     };
     private static readonly string[] Defensive =
     {

@@ -167,12 +167,8 @@ namespace Combat.AI
         public float lowerAfter = 2.5f;
 
         [Header("Dodge")]
-        [Tooltip("Quick sidestep when aimed at, hit, or near announced danger (explosives).")]
+        [Tooltip("Quick sidestep when hit, or near announced danger (explosives).")]
         public bool dodge = false;
-        [Tooltip("Seconds aimed at before it may dodge.")]
-        public float dodgeReactTime = 0.25f;
-        [Tooltip("Chance to dodge each time it is aimed at long enough.")]
-        [Range(0f, 1f)] public float dodgeChanceAimed = 0.5f;
         [Tooltip("Chance to dodge when hit.")]
         [Range(0f, 1f)] public float dodgeChanceHit = 0.25f;
         [Tooltip("Chance to dodge announced danger in range.")]

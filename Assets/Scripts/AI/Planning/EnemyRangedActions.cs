@@ -217,8 +217,9 @@ namespace Combat.AI.Goap
                 float off = Random.Range(-p.strafeDistance, p.strafeDistance);
                 if (Mathf.Abs(off - data.StrafeOffset) < MinStrafeStep) continue;
                 if (!NavMesh.SamplePosition(anchor + side * off, out var hit, 0.5f, NavMesh.AllAreas)) continue;
+                if (!data.Brain.InZone(hit.position)) continue;
                 if (NavMesh.Raycast(anchor, hit.position, out _, NavMesh.AllAreas)) continue;
-                if (!PositionScorer.HasLineOfSight(hit.position, threat)) continue;
+                if (!PositionScorer.HasLineOfSight(hit.position, threat, data.Brain.SizeScale)) continue;
                 data.StrafeOffset = off;
                 data.Mover.RequestPoint(data, hit.position);
                 return;

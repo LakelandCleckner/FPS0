@@ -38,8 +38,6 @@ namespace Combat.AI
         public float ExposedAngle = 35f;
         [Tooltip("Exposed: a visible target this close always counts as seeing the enemy (m).")]
         public float ExposedDistance = 12f;
-        [Tooltip("Aimed at: the target's view is within this many degrees of the enemy.")]
-        public float AimedAtAngle = 6f;
         [Tooltip("Danger: target within this distance (m).")]
         public float DangerDistance = 2.5f;
         [Tooltip("Danger: seconds after taking damage.")]
@@ -179,8 +177,34 @@ namespace Combat.AI
             if (view == null) { TargetSeesMe = d <= ExposedDistance; return; }
 
             float angle = Vector3.Angle(view.forward, chest - view.position);
-            AimedAt = angle <= AimedAtAngle;
+            AimedAt = UnderCrosshair(view, Target) == this;
             TargetSeesMe = angle <= ExposedAngle || d <= ExposedDistance;
+        }
+
+        private const float AimRange = 200f;
+        private static readonly RaycastHit[] aimHits = new RaycastHit[16];
+        private static int aimFrame = -1;
+        private static EnemyPerception underCrosshair;
+
+        // One camera ray per frame, shared by every enemy: only the enemy under the crosshair is aimed at
+        private static EnemyPerception UnderCrosshair(Transform view, Transform player)
+        {
+            if (aimFrame == Time.frameCount) return underCrosshair;
+            aimFrame = Time.frameCount;
+            underCrosshair = null;
+
+            int n = Physics.RaycastNonAlloc(view.position, view.forward, aimHits, AimRange,
+                                            Combat.Core.PhysicsLayers.ShotMask(Physics.DefaultRaycastLayers));
+            Collider nearest = null;
+            float best = float.MaxValue;
+            for (int i = 0; i < n; i++)
+            {
+                var c = aimHits[i].collider;
+                if (player != null && c.transform.IsChildOf(player)) continue;
+                if (aimHits[i].distance < best) { best = aimHits[i].distance; nearest = c; }
+            }
+            if (nearest != null) underCrosshair = nearest.GetComponentInParent<EnemyPerception>();
+            return underCrosshair;
         }
 
         private void SetStatus(CombatStatus s)

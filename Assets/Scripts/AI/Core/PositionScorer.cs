@@ -93,6 +93,8 @@ namespace Combat.AI
         // Encounter room: points must be inside it
         public bool HasZone;
         public Bounds Zone;
+        // Enemy height relative to normal (0 counts as 1)
+        public float Size;
     }
 
     // Weighted NavMesh point choice with a per-frame evaluation cap; callers keep their old point and retry next frame.
@@ -136,11 +138,12 @@ namespace Combat.AI
             return true;
         }
 
-        public static bool HasLineOfSight(Vector3 point, Vector3 threat)
+        // From the eye of an enemy of this size at the point
+        public static bool HasLineOfSight(Vector3 point, Vector3 threat, float size = 1f)
         {
             Tick();
             RaysThisFrame++;
-            return !Physics.Linecast(point + Vector3.up * EyeHeight, threat + Vector3.up * TargetHeight,
+            return !Physics.Linecast(point + Vector3.up * EyeHeight * size, threat + Vector3.up * TargetHeight,
                                      GeometryMask, QueryTriggerInteraction.Ignore);
         }
 
@@ -231,7 +234,7 @@ namespace Combat.AI
             if (q.Area != null && (q.Area.ClosestPoint(p) - p).sqrMagnitude > 0.01f) return false;
             if (!q.Leash.Holds(p)) return false;
             if (q.HasZone && !InZone(q.Zone, p)) return false;
-            if (!HasLineOfSight(p, q.Threat)) return false;
+            if (!HasLineOfSight(p, q.Threat, q.Size > 0f ? q.Size : 1f)) return false;
 
             var w = q.Weights;
             float band = Mathf.Max(1f, q.MaxRange - q.MinRange);

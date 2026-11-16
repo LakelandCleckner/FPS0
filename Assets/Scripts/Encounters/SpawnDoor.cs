@@ -9,7 +9,8 @@ using Combat.Spawning;
 namespace Combat.Encounters
 {
     // A door enemies come in through: opens, spawns a squad behind it out of sight, walks them in one by one
-    // to the entry point, then closes once they're through.
+    // to the entry point, then closes once they're all out in the room. While closed the leaf carves the NavMesh,
+    // so nothing can path back into the spawn room.
     public class SpawnDoor : MonoBehaviour
     {
         [SerializeField] private Transform spawnPoint;
@@ -20,7 +21,7 @@ namespace Combat.Encounters
         [SerializeField] private float doorSpeed = 5f;
         [Tooltip("Seconds between members coming through.")]
         [SerializeField] private float fileInterval = 0.5f;
-        [Tooltip("Longest a member walks in before it's left to fight (s).")]
+        [Tooltip("Longest a member walks toward the entry point once inside the room before it's left to fight (s).")]
         [SerializeField] private float entryTimeout = 8f;
         [SerializeField] private float closeDelay = 1.5f;
 
@@ -28,8 +29,11 @@ namespace Combat.Encounters
         private const float EntryArrive = 0.8f;
         private const float EntrySpacing = 1.6f;
         private const float SpawnSpacing = 0.7f;
+        // A member counts as through once this far into the room from the door
+        private const float ClearOfDoor = 2f;
 
         private Vector3 closedPos;
+        private NavMeshObstacle blocker;
         private bool open;
         private int walking;
 
@@ -48,7 +52,16 @@ namespace Combat.Encounters
 
         private void Awake()
         {
-            if (door != null) closedPos = door.localPosition;
+            if (door == null) return;
+            closedPos = door.localPosition;
+            blocker = door.GetComponent<NavMeshObstacle>();
+            if (blocker == null) blocker = door.gameObject.AddComponent<NavMeshObstacle>();
+            blocker.shape = NavMeshObstacleShape.Box;
+            var box = door.GetComponent<BoxCollider>();
+            blocker.center = box != null ? box.center : Vector3.zero;
+            blocker.size = box != null ? box.size : Vector3.one;
+            blocker.carving = true;
+            blocker.carveOnlyStationary = false;
         }
 
         private void Update()
@@ -56,6 +69,8 @@ namespace Combat.Encounters
             if (door == null) return;
             Vector3 target = closedPos + (open ? Vector3.up * openHeight : Vector3.zero);
             door.localPosition = Vector3.MoveTowards(door.localPosition, target, doorSpeed * Time.deltaTime);
+            // Carve only once fully shut; opening frees the doorway straight away
+            if (blocker != null) blocker.enabled = !open && (door.localPosition - closedPos).sqrMagnitude < 0.0001f;
         }
 
         public void Close() { StopAllCoroutines(); open = false; walking = 0; }
@@ -100,7 +115,8 @@ namespace Combat.Encounters
             open = false;
         }
 
-        // Steer to the entry point until there, out of time, or the target is seen from inside the room
+        // Steer to the entry point; never let go before the member is out in the room. Once through, stops at the
+        // entry point, on sight of the target, or when out of time.
         private IEnumerator WalkIn(EnemyBrain b, Vector3 spot, Encounter encounter)
         {
             walking++;
@@ -108,14 +124,22 @@ namespace Combat.Encounters
             var perception = b.Perception;
             if (mover != null) mover.RequestPoint(this, spot);
             float until = Time.time + entryTimeout;
-            while (b != null && b.isActiveAndEnabled && Time.time < until)
+            while (mover != null && b != null && b.isActiveAndEnabled)
             {
-                if (mover == null || mover.AtPoint(spot, EntryArrive)) break;
-                if (perception != null && perception.TargetVisible && encounter.Contains(b.transform.position)) break;
+                if (Through(b.transform.position, encounter)
+                    && (mover.AtPoint(spot, EntryArrive) || Time.time >= until || (perception != null && perception.TargetVisible)))
+                    break;
                 yield return null;
             }
             if (mover != null) mover.ReleasePoint(this);
             walking--;
+        }
+
+        private bool Through(Vector3 p, Encounter encounter)
+        {
+            Vector3 off = p - transform.position;
+            off.y = 0f;
+            return encounter.Contains(p) && off.sqrMagnitude >= ClearOfDoor * ClearOfDoor;
         }
 
         private Quaternion Facing()

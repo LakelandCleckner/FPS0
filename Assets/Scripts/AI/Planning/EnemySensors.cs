@@ -77,7 +77,7 @@ namespace Combat.AI.Goap
                 if (!reroll && existing is PositionTarget held && Vector3.Distance(origin, held.Position) > MinPickDistance)
                     return held;
 
-                Vector3 point = RandomNavMeshPoint(origin);
+                Vector3 point = RandomNavMeshPoint(origin, brain);
                 if (existing is PositionTarget pt) return pt.SetPosition(point);
                 return new PositionTarget(point);
             });
@@ -89,12 +89,14 @@ namespace Combat.AI.Goap
         public override void Created() { }
         public override void Update() { }
 
-        private static Vector3 RandomNavMeshPoint(Vector3 origin)
+        // Inside the encounter room when the enemy belongs to one
+        private static Vector3 RandomNavMeshPoint(Vector3 origin, EnemyBrain brain)
         {
             for (int i = 0; i < 5; i++)
             {
                 var c = Random.insideUnitCircle * WanderRadius;
-                if (NavMesh.SamplePosition(origin + new Vector3(c.x, 0f, c.y), out var hit, 3f, NavMesh.AllAreas))
+                if (NavMesh.SamplePosition(origin + new Vector3(c.x, 0f, c.y), out var hit, 3f, NavMesh.AllAreas)
+                    && (brain == null || brain.InZone(hit.position)))
                 {
                     // Keep the agent's height so GOAP's distance check isn't thrown by terrain
                     var p = hit.position;

@@ -33,6 +33,8 @@ namespace Combat.AI
         public Leash Leash;
         public bool HasZone;
         public Bounds Zone;
+        // Enemy height relative to normal (0 counts as 1)
+        public float Size;
     }
 
     // Finds cover at runtime from the NavMesh and level geometry: NavMesh edge points beside obstacles
@@ -69,8 +71,8 @@ namespace Combat.AI
             }
         }
 
-        // Best cover within radius; false when nothing blocks the threat.
-        public static bool Find(Vector3 from, Vector3 threat, float radius, float minThreatDistance, object owner, out Vector3 cover)
+        // Best cover within radius (inside the zone when given); false when nothing blocks the threat.
+        public static bool Find(Vector3 from, Vector3 threat, float radius, float minThreatDistance, object owner, bool hasZone, Bounds zone, float size, out Vector3 cover)
         {
             cover = from;
             float best = float.MaxValue;
@@ -89,9 +91,10 @@ namespace Combat.AI
 
                     Vector3 p = edge.position;
                     if ((p - from).sqrMagnitude > radius * radius) continue;
+                    if (hasZone && !PositionScorer.InZone(zone, p)) continue;
                     float threatDist = Vector3.Distance(Flat(p), Flat(threat));
                     if (threatDist < minThreatDistance) continue;
-                    if (!Hidden(p, threatEye)) continue;
+                    if (!Hidden(p, threatEye, size)) continue;
                     if (TakenByOther(p, owner)) continue;
 
                     // Nearer is better; cover that also puts more distance on the threat breaks ties.
@@ -126,14 +129,14 @@ namespace Combat.AI
         }
 
         // The spot still hides from the threat, is in the band, and its peek still sees the threat
-        public static bool StillCovers(in CoverSpot s, Vector3 threat, float minRange, float maxRange)
+        public static bool StillCovers(in CoverSpot s, Vector3 threat, float minRange, float maxRange, float size)
         {
             float d = Flat(s.Point - threat).magnitude;
             if (d < minRange || d > maxRange) return false;
             Vector3 eye = EyeOf(threat);
-            if (!Blocked(eye, s.Point + Vector3.up * CrouchHeight)) return false;
-            if (!s.Half && !Blocked(eye, s.Point + Vector3.up * HeadHeight)) return false;
-            return PositionScorer.HasLineOfSight(s.Peek, threat);
+            if (!Blocked(eye, s.Point + Vector3.up * CrouchHeight * size)) return false;
+            if (!s.Half && !Blocked(eye, s.Point + Vector3.up * HeadHeight * size)) return false;
+            return PositionScorer.HasLineOfSight(s.Peek, threat, size);
         }
 
         // Straight away from the threat, on the NavMesh.
@@ -145,9 +148,11 @@ namespace Combat.AI
             return NavMesh.SamplePosition(p, out var hit, 4f, NavMesh.AllAreas) ? hit.position : from;
         }
 
-        // True while the threat can't see a standing enemy at this point.
-        public static bool Hidden(Vector3 point, Vector3 threatEye)
-            => Physics.Linecast(threatEye, point + Vector3.up * StandHeight, GeometryMask, QueryTriggerInteraction.Ignore);
+        // True while the threat can't see a standing enemy of this size at this point.
+        public static bool Hidden(Vector3 point, Vector3 threatEye, float size)
+            => Physics.Linecast(threatEye, point + Vector3.up * StandHeight * size, GeometryMask, QueryTriggerInteraction.Ignore);
+
+        private static float SizeOf(in CoverQuery q) => q.Size > 0f ? q.Size : 1f;
 
         public static Vector3 EyeOf(Vector3 threat) => threat + Vector3.up * ThreatEyeHeight;
 
@@ -207,12 +212,13 @@ namespace Combat.AI
             if (TakenByOther(p, q.Owner)) return false;
 
             Vector3 eye = EyeOf(q.Threat);
-            if (!Blocked(eye, p + Vector3.up * CrouchHeight)) return false;
+            float size = SizeOf(q);
+            if (!Blocked(eye, p + Vector3.up * CrouchHeight * size)) return false;
 
             spot.Point = p;
-            if (!Blocked(eye, p + Vector3.up * HeadHeight))
+            if (!Blocked(eye, p + Vector3.up * HeadHeight * size))
             {
-                if (!PositionScorer.HasLineOfSight(p, q.Threat)) return false;
+                if (!PositionScorer.HasLineOfSight(p, q.Threat, size)) return false;
                 spot.Half = true;
                 spot.Peek = p;
             }
@@ -250,7 +256,7 @@ namespace Combat.AI
             for (int i = 0; i < PeekSteps.Length; i++)
             {
                 if (!NavMesh.SamplePosition(p + side * PeekSteps[i], out var hit, 0.6f, NavMesh.AllAreas)) continue;
-                if (!NavMesh.Raycast(p, hit.position, out _, NavMesh.AllAreas) && PositionScorer.HasLineOfSight(hit.position, q.Threat))
+                if (!NavMesh.Raycast(p, hit.position, out _, NavMesh.AllAreas) && PositionScorer.HasLineOfSight(hit.position, q.Threat, SizeOf(q)))
                 {
                     peek = hit.position;
                     return true;
