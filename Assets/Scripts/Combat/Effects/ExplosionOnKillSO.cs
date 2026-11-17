@@ -95,6 +95,8 @@ namespace Combat.Effects
             = new System.Collections.Generic.List<Combat.Status.StatusSO>();
 
 
+        public override DamageTypeSO Element => damageType != null ? damageType : applyStatus != null ? applyStatus.damageType : null;
+
         public override void Describe(Combat.Info.Describer d)
         {
             d.Add("Kills ").Keyword("explode", "explode").Add(" in a ").Meters(radius, "radius").Add(" radius for ")

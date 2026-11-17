@@ -13,6 +13,8 @@ namespace Combat.Perks
         [Range(0f, 1f)] public float threshold = 0.3f;
         [Tooltip("e.g. damage_taken, Flat, -0.3 for 30% damage reduction.")]
         public List<ModifierEntry> modifiers = new List<ModifierEntry>();
+        public override string TriggerGroup => "Low health";
+
         protected override void DescribeAuto(Describer d)
         {
             d.Add("While at or below ").Percent(threshold, "threshold").Add(" health: ").Modifiers(modifiers).Add(".");

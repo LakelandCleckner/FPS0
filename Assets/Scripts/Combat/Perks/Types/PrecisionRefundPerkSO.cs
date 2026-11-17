@@ -12,6 +12,8 @@ namespace Combat.Perks
         [Min(1)] public int rounds = 1;
         [Tooltip("Take the rounds from reserves instead of granting them free.")]
         public bool fromReserves = false;
+        public override string TriggerGroup => "On precision hit";
+
         protected override void DescribeAuto(Describer d)
         {
             d.Add("Every ").Count(everyN, "count").Add(" ").Keyword("precision", "precision").Add(everyN == 1 ? " hit returns " : " hits return ")

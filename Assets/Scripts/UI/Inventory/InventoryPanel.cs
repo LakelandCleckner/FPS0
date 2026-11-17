@@ -131,6 +131,7 @@ namespace Combat.UI
             UIKit.Anchor(fill.rectTransform, Vector2.zero, new Vector2(1f, 0f), Vector2.zero, Vector2.zero);
             fill.enabled = false;
             fill.gameObject.AddComponent<DeleteHoldFill>().Setup(screen, item, fill);
+            tile.gameObject.AddComponent<DragItem>().Setup(screen, item, null);
             return tile;
         }
 

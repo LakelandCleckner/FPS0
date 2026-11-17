@@ -40,6 +40,14 @@ namespace Combat.Perks
         public StatusSO applyStatus;
 
         private void Reset() => listenScope = PerkListenScope.Always;
+        public override string TriggerGroup => Combat.Info.Describer.Trigger(trigger);
+
+        public override void CollectElements(List<DamageTypeSO> into)
+        {
+            if (damageType != null) into.Add(damageType);
+            if (applyStatus != null && applyStatus.damageType != null) into.Add(applyStatus.damageType);
+        }
+
         protected override void DescribeAuto(Describer d)
         {
             d.When(trigger, sources, anyWeapon).Add("leave ").Keyword("pool", "a pool");

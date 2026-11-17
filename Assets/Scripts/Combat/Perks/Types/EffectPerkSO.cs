@@ -11,6 +11,13 @@ namespace Combat.Perks
     public class EffectPerkSO : PerkSO
     {
         public List<HitEffectSO> effects = new List<HitEffectSO>();
+        public override string TriggerGroup => "On hit";
+
+        public override void CollectElements(List<Combat.Core.DamageTypeSO> into)
+        {
+            foreach (var e in effects) if (e != null && e.Element != null) into.Add(e.Element);
+        }
+
         protected override void DescribeAuto(Describer d)
         {
             foreach (var e in effects)

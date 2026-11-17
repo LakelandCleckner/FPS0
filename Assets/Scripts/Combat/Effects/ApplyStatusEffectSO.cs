@@ -11,6 +11,8 @@ namespace Combat.Effects
     {
         public StatusSO status;
 
+        public override DamageTypeSO Element => status != null ? status.damageType : null;
+
         public override void Describe(Combat.Info.Describer d)
         {
             if (status == null) return;

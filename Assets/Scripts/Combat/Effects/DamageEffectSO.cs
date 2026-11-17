@@ -29,6 +29,8 @@ namespace Combat.Effects
         public bool overrideChainFalloff = false;
         public bool affectedByChainFalloff = true;
 
+        public override DamageTypeSO Element => damageType;
+
         public override void Describe(Combat.Info.Describer d)
         {
             d.Add("Hits deal an extra ").Damage(derivationKind, stat, quantity, owner, coefficient, "damage");

@@ -19,6 +19,9 @@ namespace Combat.Effects
         // Player-facing text for what this effect does. Empty by default.
         public virtual void Describe(Combat.Info.Describer d) { }
 
+        // Element this effect deals or applies, if any.
+        public virtual DamageTypeSO Element => null;
+
         private IHitEffect cached;
 
         protected virtual bool RequiresFreshInstance => false;

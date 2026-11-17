@@ -18,6 +18,8 @@ namespace Combat.Perks
         public List<ModifierEntry> modifiers = new List<ModifierEntry>();
 
         private void Reset() => listenScope = PerkListenScope.Always;
+        public override string TriggerGroup => "Magazine";
+
         protected override void DescribeAuto(Describer d)
         {
             d.Add(invert ? "Grows as the magazine empties, up to " : "Grows with how full the magazine is, up to ")

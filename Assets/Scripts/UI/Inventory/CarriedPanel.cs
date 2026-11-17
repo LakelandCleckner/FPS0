@@ -36,6 +36,7 @@ namespace Combat.UI
             var area = UIKit.Node(body, "Area");
             UIKit.Size(area, flexHeight: 1f);
             layout = UIKit.SlideScroll(area);
+            DropTarget.Attach(root, screen, DropKind.LoadoutCarried);
             UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(root);
             Refresh(screen, root);
         }

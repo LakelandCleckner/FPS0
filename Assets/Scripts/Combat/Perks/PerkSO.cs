@@ -52,6 +52,12 @@ namespace Combat.Perks
             d.Template(description, auto);
         }
 
+        // When it does its thing, for grouping on the character sheet ("Always", "On kill", "Low health").
+        public virtual string TriggerGroup => "Always";
+
+        // Elements this perk deals or applies.
+        public virtual void CollectElements(List<Combat.Core.DamageTypeSO> into) { }
+
         // Generated text from this perk's data. Types without a generator fall back to the description.
         protected virtual void DescribeAuto(Describer d) => d.Add(description);
 

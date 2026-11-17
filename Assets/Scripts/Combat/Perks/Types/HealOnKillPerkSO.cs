@@ -17,6 +17,8 @@ namespace Combat.Perks
         public bool anyWeapon = false;
 
         private void Reset() => listenScope = PerkListenScope.Always;
+        public override string TriggerGroup => "On kill";
+
         protected override void DescribeAuto(Describer d)
         {
             d.When(Combat.Events.WeaponEventType.Kill, sources, anyWeapon).Add("heal ").Percent(healFraction, "heal").Add(" of max health.");

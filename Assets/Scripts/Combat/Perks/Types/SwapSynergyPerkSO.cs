@@ -18,6 +18,8 @@ namespace Combat.Perks
         public List<ModifierEntry> modifiers = new List<ModifierEntry>();
 
         private void Reset() => listenScope = PerkListenScope.Always;
+        public override string TriggerGroup => "Weapon swap";
+
         protected override void DescribeAuto(Describer d)
         {
             d.Add("Hit with every other loadout weapon within ").Seconds(window, "window").Add(": this weapon gets ")

@@ -100,6 +100,7 @@ namespace Combat.UI
             tile.SetSelected(screen.Selected.Is(SlotKind.Weapon, slot));
             tile.LeftClick += _ => screen.Select(key);
             tile.RightClick += _ => screen.Unequip(key);
+            DragTargets(tile, screen, weapon, key);
 
             var num = UIKit.Text(tile.transform, "Slot", s, (slot + 1).ToString(), s.titleSize * 0.8f, s.textFaint, TextAlignmentOptions.Center, heading: true);
             UIKit.Size(num, width: 28f);
@@ -135,6 +136,7 @@ namespace Combat.UI
             tile.SetSelected(screen.Selected.Is(SlotKind.Armor, index));
             tile.LeftClick += _ => screen.Select(key);
             tile.RightClick += _ => screen.Unequip(key);
+            DragTargets(tile, screen, piece, key);
 
             Icon(tile.transform, s, piece, s.armorSlotHeight - 18f);
 
@@ -148,6 +150,13 @@ namespace Combat.UI
 
             if (piece != null) ChipGrid(tile.transform, screen, piece.Perks, screen.ContextFor(piece));
             return tile;
+        }
+
+        // A card can be dragged out to unequip, and takes carried items dropped on it.
+        private static void DragTargets(UITile tile, InventoryScreen screen, object item, SlotRef key)
+        {
+            if (item != null) tile.gameObject.AddComponent<DragItem>().Setup(screen, item, key);
+            DropTarget.Attach((RectTransform)tile.transform, screen, DropKind.Slot, key);
         }
 
         // Square item icon with its rarity wash; the monogram stands in until icon art exists.

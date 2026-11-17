@@ -239,6 +239,7 @@ namespace Combat.UI
             else
             {
                 if (input != null) input.PopUI(uiOwner);
+                EndDrag();
                 if (tooltip != null) tooltip.Hide();
                 if (filterBar != null) filterBar.Unfocus();
                 Hovered = Shown = null;
@@ -454,6 +455,137 @@ namespace Combat.UI
             if (own >= 0 && own < LoadoutSlots.Count && LoadoutSlots.Allows(allowed, own)) return own;
             for (int i = 0; i < LoadoutSlots.Count; i++) if (LoadoutSlots.Allows(allowed, i)) return i;
             return -1;
+        }
+
+        // ------------------------------------------------------------------ drag and drop
+
+        public object Dragging { get; private set; }
+        private SlotRef? dragFrom;
+        private RectTransform ghost, dragSource;
+        private CanvasGroup sourceGroup;
+        private DropTarget litTarget;
+
+        public bool BeginDrag(object item, SlotRef? from, RectTransform source, Vector2 pointer)
+        {
+            if (!IsLive || item == null || content == null || style == null) return false;
+            EndDrag();
+            Dragging = item;
+            dragFrom = from;
+            dragSource = source;
+            sourceGroup = source.GetComponent<CanvasGroup>();
+            if (sourceGroup == null) sourceGroup = source.gameObject.AddComponent<CanvasGroup>();
+            sourceGroup.alpha = 0.4f;
+            ghost = Ghost(item);
+            MoveDrag(pointer);
+            if (tooltip != null && !tooltip.IsPinned) tooltip.Hide();
+            return true;
+        }
+
+        public void MoveDrag(Vector2 pointer)
+        {
+            if (ghost == null) return;
+            var parent = (RectTransform)ghost.parent;
+            var canvas = parent.GetComponentInParent<Canvas>();
+            Camera cam = canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay ? canvas.worldCamera : null;
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, pointer, cam, out var local))
+                ghost.anchoredPosition = local;
+        }
+
+        public void EndDrag()
+        {
+            if (ghost != null) UIKit.Destroy(ghost.gameObject);
+            ghost = null;
+            if (sourceGroup != null) sourceGroup.alpha = 1f;
+            sourceGroup = null;
+            dragSource = null;
+            if (litTarget != null) litTarget.SetLit(false);
+            litTarget = null;
+            Dragging = null;
+            dragFrom = null;
+        }
+
+        public void HoverDrop(DropTarget t)
+        {
+            if (Dragging == null) return;
+            if (litTarget != null && litTarget != t) litTarget.SetLit(false);
+            litTarget = t;
+            t.SetLit(true);
+        }
+
+        public void LeaveDrop(DropTarget t)
+        {
+            if (litTarget != t) return;
+            t.SetLit(false);
+            litTarget = null;
+        }
+
+        // Whether the dragged item can land here.
+        public bool CanDrop(DropKind kind, SlotRef slot)
+        {
+            var item = Dragging;
+            if (item == null) return false;
+            switch (kind)
+            {
+                case DropKind.VaultGrid: return dragFrom == null && view.IsCarried(item);
+                case DropKind.CarriedGrid: return dragFrom == null && view.IsVaulted(item);
+                case DropKind.LoadoutCarried: return dragFrom != null;
+                default:
+                    if (dragFrom != null || !view.IsCarried(item)) return false;
+                    if (item is WeaponInstance w)
+                        return slot.Kind == SlotKind.Weapon && w.Definition != null && LoadoutSlots.Allows(w.Definition.AllowedSlots, slot.Index);
+                    return item is ArmorInstance a && slot.Kind == SlotKind.Armor && view.ArmorSlots.IndexOf(a.Slot) == slot.Index;
+            }
+        }
+
+        public void Drop(DropKind kind, SlotRef slot)
+        {
+            var item = Dragging;
+            if (item == null) return;
+            if (!CanDrop(kind, slot))
+            {
+                if (kind == DropKind.Slot && dragFrom == null) Say("It doesn't fit that slot.");
+                return;
+            }
+            switch (kind)
+            {
+                case DropKind.VaultGrid: MoveToVault(item); break;
+                case DropKind.CarriedGrid: MoveToCarried(item); break;
+                case DropKind.LoadoutCarried: Unequip(dragFrom.Value); break;
+                default: EquipInto(item, slot); break;
+            }
+        }
+
+        // Equips into one exact slot; the slot it lands in becomes the selection.
+        public void EquipInto(object item, SlotRef slot)
+        {
+            if (!IsLive || loadout == null) return;
+            string reason = null;
+            bool ok = item is WeaponInstance w ? loadout.TryEquip(slot.Index, w, out reason)
+                    : item is ArmorInstance a && loadout.TryEquipArmor(a, out reason);
+            if (!ok) { Say(reason); return; }
+            Hovered = Shown = null;
+            Select(slot);
+        }
+
+        // Small copy of the item tile that follows the pointer.
+        private RectTransform Ghost(object item)
+        {
+            var s = style;
+            float size = s.gridTileSize * 0.8f;
+            var box = UIKit.Box(content.transform, "DragGhost", s, s.tile, true, ItemText.BorderColor(s, item));
+            var rt = box.rectTransform;
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(size, size);
+            UIKit.RarityWash(rt, s, ItemText.RarityOf(item));
+            var t = UIKit.Text(rt, "Monogram", s, ItemText.Monogram(item), size * 0.3f, s.text, TMPro.TextAlignmentOptions.Center, role: TextRole.Title);
+            UIKit.Stretch(t.rectTransform);
+            var g = box.gameObject.AddComponent<CanvasGroup>();
+            g.alpha = 0.85f;
+            g.blocksRaycasts = false;
+            g.interactable = false;
+            rt.SetAsLastSibling();
+            return rt;
         }
 
         public void OnTileHover(UITile tile, bool on)

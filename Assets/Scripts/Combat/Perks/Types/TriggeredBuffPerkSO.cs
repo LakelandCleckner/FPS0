@@ -33,6 +33,8 @@ namespace Combat.Perks
         public List<ModifierEntry> modifiers = new List<ModifierEntry>();
 
         private void Reset() => listenScope = PerkListenScope.Always;
+        public override string TriggerGroup => Combat.Info.Describer.Trigger(trigger);
+
         protected override void DescribeAuto(Describer d)
         {
             d.When(trigger, sources, anyWeapon);

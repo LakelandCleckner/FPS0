@@ -11,6 +11,8 @@ namespace Combat.Perks
         [Min(0f)] public float delay = 3f;
 
         private void Reset() => listenScope = PerkListenScope.StowedOnly;
+        public override string TriggerGroup => "While stowed";
+
         protected override void DescribeAuto(Describer d)
         {
             d.Add("Reloads itself after being stowed for ").Seconds(delay, "delay").Add(".");
