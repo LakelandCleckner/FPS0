@@ -27,25 +27,37 @@ namespace Combat.Perks
         [Tooltip("Seconds. Each new stack restarts it. 0 = until removed.")]
         [Min(0f)] public float duration = 5f;
         [Min(1)] public int maxStacks = 1;
+        [Tooltip("Weapon perk: the buff ends after this many shots of this weapon. 0 = timer only.")]
+        [Min(0)] public int charges = 0;
         [Tooltip("Weapon perk: the buff ends when this weapon starts being stowed.")]
         public bool endOnStow = false;
         [Tooltip("Per stack; values add up across stacks.")]
         public List<ModifierEntry> modifiers = new List<ModifierEntry>();
 
         private void Reset() => listenScope = PerkListenScope.Always;
+        private bool UsesCharges => charges > 0 && trigger != WeaponEventType.ShotFired;
         public override string TriggerGroup => Combat.Info.Describer.Trigger(trigger);
+
+        // Short buffs on shots read as sustained fire.
+        private bool Sustained => trigger == WeaponEventType.ShotFired && duration > 0f && duration <= 1f;
 
         protected override void DescribeAuto(Describer d)
         {
-            d.When(trigger, sources, anyWeapon);
-            if (everyN > 1)
+            if (Sustained)
             {
-                d.Add("every ").Count(everyN, "count");
-                if (window > 0f) d.Add(" within ").Seconds(window, "window");
-                d.Add(", ");
+                d.Add("While firing, every ").Count(everyN, "count").Add(everyN == 1 ? " shot" : " shots").Add(" grants ").Modifiers(modifiers).Add(".");
+                d.Next().Add(maxStacks > 1 ? "Stacks up to " : "");
+                if (maxStacks > 1) d.Count(maxStacks, "stacks").Add(" times. Stacks fall off ");
+                else d.Add("Ends ");
+                d.Seconds(duration, "duration").Add(" after you stop firing.");
+                if (endOnStow) d.Next().Add("Ends when the weapon is stowed.");
+                return;
             }
+
+            d.Every(everyN, trigger, window, sources, anyWeapon);
             d.Add("gain ").Modifiers(modifiers);
-            if (duration > 0f) d.Add(" for ").Seconds(duration, "duration");
+            if (UsesCharges) d.Add(" for the next ").Count(charges, "charges").Add(charges == 1 ? " shot" : " shots");
+            if (duration > 0f) d.Add(UsesCharges ? " or " : " for ").Seconds(duration, "duration");
             d.Add(".");
             if (maxStacks > 1) d.Next().Add("Stacks up to ").Count(maxStacks, "stacks").Add(" times; each stack refreshes the timer.");
             if (endOnStow) d.Next().Add("Ends when the weapon is stowed.");
@@ -61,6 +73,7 @@ namespace Combat.Perks
             private int count;
             private int lastShot = -1;
             private object lastShotSource;
+            private int shotsLeft;
 
             private TriggeredBuffPerkSO Def => (TriggeredBuffPerkSO)Definition;
 
@@ -81,6 +94,7 @@ namespace Combat.Perks
             {
                 buff = new TimedBuff(this, Def.modifiers, Def.duration, Def.maxStacks);
                 Listen(Def.trigger, Def.sources, Def.anyWeapon);
+                if (Def.UsesCharges) Listen(WeaponEventType.ShotFired);
             }
 
             protected override void OnDetach() => buff.Clear();
@@ -92,6 +106,13 @@ namespace Combat.Perks
 
             protected override void OnEvent(in WeaponEvent evt)
             {
+                // Charges: each shot of this weapon spends one while the buff is up.
+                if (Def.UsesCharges && evt.Type == WeaponEventType.ShotFired)
+                {
+                    if (buff.Stacks > 0 && --shotsLeft <= 0) buff.Clear();
+                    return;
+                }
+
                 if (Def.oncePerShot && evt.IsHitEvent)
                 {
                     var hit = evt.Hit;
@@ -103,6 +124,7 @@ namespace Combat.Perks
 
                 if (!Counted()) { NotifyStatus(); return; }
                 buff.AddStack();
+                shotsLeft = Def.charges;
             }
 
             // True when this trigger completes a set of N.

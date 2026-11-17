@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: kill_mobility_gun
   displayName: Kill Mobility
-  description: Kills grant 15% increased move speed for 4 seconds.
+  description: Kills grant 20% increased move speed and +20 handling for 4 seconds.
   listenScope: 1
   trigger: 2
   sources: 3
@@ -28,7 +28,13 @@ MonoBehaviour:
   modifiers:
   - stat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
     bucket: 2
-    value: 0.15
+    value: 0.2
     target: 0
+    weaponTypes: []
+    scope: 0
+  - stat: {fileID: 11400000, guid: 1af39531c4c9d474f810115fd25ae295, type: 2}
+    bucket: 0
+    value: 20
+    target: 1
     weaponTypes: []
     scope: 0

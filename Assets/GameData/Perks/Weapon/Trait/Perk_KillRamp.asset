@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: kill_ramp
   displayName: Kill Ramp
-  description: Kills grant 10% increased weapon damage for 6 seconds, stacking up
-    to 3 times. Each kill refreshes the duration.
+  description: Kills grant 12% increased weapon damage for 6 seconds, stacking up to 3 times. Each kill refreshes the duration.
   listenScope: 1
   trigger: 2
   sources: 3
@@ -29,7 +28,7 @@ MonoBehaviour:
   modifiers:
   - stat: {fileID: 11400000, guid: 74e01aed325cce348acbd5d421549c4f, type: 2}
     bucket: 1
-    value: 0.1
+    value: 0.12
     target: 1
     weaponTypes: []
     scope: 0

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponType: {fileID: 11400000, guid: da0d96b685ab47c42b674412116a8621, type: 2}
   id: spraying_smg
-  displayName: SprayingSMG
+  displayName: Spraying SMG
   baseAdsTime: 0.3
   adsZoom: 1.15
   adsCurve:
@@ -60,7 +60,7 @@ MonoBehaviour:
   assistAngleAtMax: 1.5
   assistHipMultiplier: 0.8
   assistDistanceMultiplier: 1
-  stability: 55
+  stability: 60
   recoilDirection: 80
   kickAtMinStability: 0.8
   kickAtMaxStability: 0.28
@@ -73,18 +73,18 @@ MonoBehaviour:
   centreSpeed: 11
   recenterPercent: 1
   residualError: 0.03
-  weaponDamage: 12
-  precisionMultiplier: 1.35
+  weaponDamage: 12.5
+  precisionMultiplier: 1.4
   roundsPerMinute: 600
   reloadStyle: 0
   shellStartFraction: 0.15
   shellEndFraction: 0.2
   interruptReadyFraction: 0.3
-  magazineSize: 35
-  reloadTime: 1.3
+  magazineSize: 36
+  reloadTime: 1.4
   infiniteReserves: 0
   ammoPool: {fileID: 0}
-  handling: 26
+  handling: 45
   baseEquipTime: 0.5
   baseStowTime: 0.4
   primaryFire:

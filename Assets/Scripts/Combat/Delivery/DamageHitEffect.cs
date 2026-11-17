@@ -24,6 +24,7 @@ namespace Combat.Effects
 
             float final = raw * ctx.HitboxMultiplier;   // precision
             final *= ctx.CritMultiplier;                 // crit (rolled at resolver)
+            final *= ctx.ConditionMultiplier;            // conditional perk damage
 
             // Pellet split, weapon precision and range falloff: direct hits only
             if (ctx.Source == HitSource.Direct)

@@ -16,7 +16,7 @@ MonoBehaviour:
   id: rapid_smg
   displayName: Rapid SMG
   baseAdsTime: 0.2
-  adsZoom: 1.15
+  adsZoom: 1.1
   adsCurve:
     serializedVersion: 2
     m_Curve:
@@ -43,7 +43,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   adsExitFraction: 1
   adsMoveSpeedMultiplier: 0.8
-  range: 30
+  range: 25
   falloffStartAtMinRange: 8
   falloffStartAtMaxRange: 14
   falloffEndMultiplier: 1.6
@@ -55,36 +55,62 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  aimAssist: 70
+  aimAssist: 75
   assistAngleAtMin: 0.5
   assistAngleAtMax: 1.5
   assistHipMultiplier: 0.8
   assistDistanceMultiplier: 1
-  stability: 45
-  recoilDirection: 70
+  stability: 40
+  recoilDirection: 65
   kickAtMinStability: 0.75
   kickAtMaxStability: 0.25
   sideKickScale: 0.8
   patternVariance: 0.15
   firstShotMultiplier: 1
+  kickRamp:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0.020833334
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 12
+      value: 1.25
+      inSlope: 0.020833334
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   adsRecoilMultiplier: 0.85
   kickTime: 0.03
   centreDelay: 0.05
   centreSpeed: 12
   recenterPercent: 1
   residualError: 0.03
-  weaponDamage: 9
+  recoilPattern: []
+  patternLoopFrom: 0
+  weaponDamage: 9.5
   precisionMultiplier: 1.25
   roundsPerMinute: 900
   reloadStyle: 0
   shellStartFraction: 0.15
   shellEndFraction: 0.2
   interruptReadyFraction: 0.3
-  magazineSize: 45
-  reloadTime: 1.5
+  magazineSize: 48
+  reloadTime: 1.7
   infiniteReserves: 0
   ammoPool: {fileID: 0}
-  handling: 40
+  handling: 65
   baseEquipTime: 0.4
   baseStowTime: 0.3
   primaryFire:

@@ -82,6 +82,7 @@ namespace Combat.Diagnostics
         {
             "CritMultiplier",   // WeaponHitResolver.RollCrit, top of every resolution
             "WasCrit",          // ditto
+            "ConditionMultiplier", // ditto: reset with crit at the top of every resolution
         };
 
         // Deliberately left at construction defaults for this site. A tick has no hit
@@ -142,6 +143,7 @@ namespace Combat.Diagnostics
         {
             "CritMultiplier",
             "WasCrit",
+            "ConditionMultiplier",
         };
 
         // Status-only presentation. Direct hits want the construction defaults
@@ -239,6 +241,7 @@ namespace Combat.Diagnostics
         {
             "CritMultiplier",   // WeaponHitResolver.RollCrit, top of every resolution
             "WasCrit",          // ditto
+            "ConditionMultiplier", // ditto: reset with crit at the top of every resolution
         };
 
         // Explicitly nulled in Rent because a chain link never uses them: it routes

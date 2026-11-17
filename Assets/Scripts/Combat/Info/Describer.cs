@@ -205,15 +205,51 @@ namespace Combat.Info
         {
             Add(Trigger(t));
             if (anyWeapon) Add(" with any weapon");
+            return Who(t, sources).Add(": ");
+        }
+
+        // Counted trigger: "Every 3 precision hits within 2s: ". One trigger falls back to When.
+        public Describer Every(int n, WeaponEventType t, float window, HitSourceMask sources, bool anyWeapon)
+        {
+            if (n <= 1) return When(t, sources, anyWeapon);
+            Add("Every ").Count(n, "count").Add(" " + Noun(t));
+            if (window > 0f) Add(" within ").Seconds(window, "window");
+            if (anyWeapon) Add(" with any weapon");
+            return Who(t, sources).Add(": ");
+        }
+
+        // Which hit sources count, for hit-family triggers.
+        private Describer Who(WeaponEventType t, HitSourceMask sources)
+        {
             bool hitFamily = t == WeaponEventType.Hit || t == WeaponEventType.PrecisionHit || t == WeaponEventType.Kill || t == WeaponEventType.PrecisionKill;
-            if (hitFamily)
+            if (!hitFamily) return this;
+            bool ticks = (sources & HitSourceMask.StatusTick) != 0, chains = (sources & HitSourceMask.Chain) != 0;
+            if (ticks && chains) return Add(" (status and chain hits count)");
+            if (ticks) return Add(" (status ticks count)");
+            if (chains) return Add(" (chain hits count)");
+            return this;
+        }
+
+        // Plural noun for a counted trigger: "shots", "precision hits".
+        public static string Noun(WeaponEventType t)
+        {
+            switch (t)
             {
-                bool ticks = (sources & HitSourceMask.StatusTick) != 0, chains = (sources & HitSourceMask.Chain) != 0;
-                if (ticks && chains) Add(" (status and chain hits count)");
-                else if (ticks) Add(" (status ticks count)");
-                else if (chains) Add(" (chain hits count)");
+                case WeaponEventType.Hit: return "hits";
+                case WeaponEventType.PrecisionHit: return "precision hits";
+                case WeaponEventType.Kill: return "kills";
+                case WeaponEventType.PrecisionKill: return "precision kills";
+                case WeaponEventType.ShotFired: return "shots";
+                case WeaponEventType.DryFire: return "dry fires";
+                case WeaponEventType.ReloadStart: return "reloads started";
+                case WeaponEventType.ReloadComplete: return "reloads";
+                case WeaponEventType.ReloadCancelled: return "cancelled reloads";
+                case WeaponEventType.MagEmpty: return "empty magazines";
+                case WeaponEventType.Equip: return "equips";
+                case WeaponEventType.Stow: return "stows";
+                case WeaponEventType.DamageTaken: return "hits taken";
+                default: return "triggers";
             }
-            return Add(": ");
         }
 
         public static string Pct(float fraction) => Trim(fraction * 100f) + "%";

@@ -123,7 +123,7 @@ namespace Combat.UI
             string kind = ItemText.Kind(weapon);
             string element = ItemText.Element(weapon);
             UIKit.Text(info, "Kind", s, string.IsNullOrEmpty(element) ? kind : kind + "  /  " + element, s.smallSize, s.textMuted);
-            ChipGrid(tile.transform, screen, weapon.Perks, screen.ContextFor(weapon));
+            ChipGrid(tile.transform, screen, weapon.Definition.intrinsicPerks, weapon.Perks, screen.ContextFor(weapon));
             return tile;
         }
 
@@ -150,7 +150,7 @@ namespace Combat.UI
                        piece != null ? ItemText.NameColor(s, piece, s.text) : s.textFaint,
                        role: piece != null ? TextRole.Title : TextRole.Body);
 
-            if (piece != null) ChipGrid(tile.transform, screen, piece.Perks, screen.ContextFor(piece));
+            if (piece != null) ChipGrid(tile.transform, screen, piece.Definition.intrinsicPerks, piece.Perks, screen.ContextFor(piece));
             return tile;
         }
 
@@ -173,11 +173,12 @@ namespace Combat.UI
             UIKit.Stretch(t.rectTransform);
         }
 
-        // Perk chips on the card's right, wrapping to a new row every Chips Per Row.
-        private static void ChipGrid(Transform parent, InventoryScreen screen, IReadOnlyList<PerkSO> perks, DescribeContext ctx)
+        // Perk chips on the card's right, intrinsics first with an accent border, wrapping every Chips Per Row.
+        private static void ChipGrid(Transform parent, InventoryScreen screen, IReadOnlyList<PerkSO> intrinsic, IReadOnlyList<PerkSO> perks, DescribeContext ctx)
         {
             var s = screen.Style;
             int count = 0;
+            if (intrinsic != null) foreach (var p in intrinsic) if (p != null) count++;
             foreach (var p in perks) if (p != null) count++;
             if (count == 0) return;
 
@@ -194,15 +195,17 @@ namespace Combat.UI
             g.constraintCount = perRow;
             g.childAlignment = TextAnchor.MiddleRight;
             UIKit.Size(grid, width: perRow * size + (perRow - 1) * gap, height: rows * size + (rows - 1) * gap);
+            if (intrinsic != null) foreach (var p in intrinsic) if (p != null) Chip(grid, s, p, screen, ctx, size, true);
             foreach (var p in perks) if (p != null) Chip(grid, s, p, screen, ctx, size);
         }
 
         // Perk chip; with a screen it shows the perk's name and description on hover.
-        public static void Chip(Transform parent, UIStyleSO s, PerkSO perk, InventoryScreen screen = null, DescribeContext ctx = null, float size = -1f)
+        public static void Chip(Transform parent, UIStyleSO s, PerkSO perk, InventoryScreen screen = null, DescribeContext ctx = null, float size = -1f, bool intrinsic = false)
         {
             if (size <= 0f) size = s.chipSize;
-            var chip = UIKit.Box(parent, "Chip_" + perk.name, s, s.tileEmpty, true, small: true);
-            if (screen != null) InfoHover.Attach(chip, screen, ItemText.PerkName(perk), s.accent, perk, ctx ?? screen.ContextFor(null));
+            var chip = UIKit.Box(parent, "Chip_" + perk.name, s, s.tileEmpty, true, intrinsic ? s.accent : (Color?)null, small: true);
+            string title = intrinsic ? ItemText.PerkName(perk) + "  (Intrinsic)" : ItemText.PerkName(perk);
+            if (screen != null) InfoHover.Attach(chip, screen, title, s.accent, perk, ctx ?? screen.ContextFor(null));
             UIKit.Size(chip, width: size, height: size);
             if (perk.icon != null)
             {
@@ -214,7 +217,7 @@ namespace Combat.UI
             }
             else
             {
-                var t = UIKit.Text(chip.transform, "Label", s, perk.ShortLabel, s.labelSize - 1f, s.textMuted, TextAlignmentOptions.Center, heading: true);
+                var t = UIKit.Text(chip.transform, "Label", s, perk.ShortLabel, s.labelSize - 1f, intrinsic ? s.accent : s.textMuted, TextAlignmentOptions.Center, heading: true);
                 t.characterSpacing = 0f;
                 UIKit.Stretch(t.rectTransform);
             }

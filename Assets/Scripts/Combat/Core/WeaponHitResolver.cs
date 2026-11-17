@@ -185,6 +185,8 @@ namespace Combat.Core
             // Because this precedes the effect loop, a perk-contributed effect can
             // never influence crit for the hit it joins. See IHitEffectContributor.
             RollCrit(ctx);
+            // Conditional perk damage starts clean every resolution; contributed effects multiply it.
+            ctx.ConditionMultiplier = 1f;
 
             var effects = RentBuffer();
             try

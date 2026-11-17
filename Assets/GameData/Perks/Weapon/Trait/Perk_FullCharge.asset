@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: full_charge
   displayName: Full Charge
-  description: Deals up to 20% more damage the fuller the magazine.
+  description: Deals up to 25% more damage the fuller the magazine.
   listenScope: 1
   invert: 0
   curve:
@@ -26,7 +26,7 @@ MonoBehaviour:
   modifiers:
   - stat: {fileID: 11400000, guid: 74e01aed325cce348acbd5d421549c4f, type: 2}
     bucket: 1
-    value: 0.2
+    value: 0.25
     target: 1
     weaponTypes: []
     scope: 0

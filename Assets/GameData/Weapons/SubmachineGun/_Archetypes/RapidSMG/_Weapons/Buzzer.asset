@@ -27,9 +27,9 @@ MonoBehaviour:
   roundsPerMinuteDelta: 0
   magazineSizeDelta: 0
   reloadTimeDelta: 0
-  handlingDelta: 0
+  handlingDelta: 10
   adsZoomDelta: 0
-  rangeDelta: 0
+  rangeDelta: -5
   aimAssistDelta: 0
   startingReserves: 250
   infiniteReservesOverride: 0
@@ -37,7 +37,8 @@ MonoBehaviour:
   emptyClip: {fileID: 8300000, guid: 08eb29cab0988c349bc1c4de52aaf72c, type: 3}
   reloadClip: {fileID: 8300000, guid: 49af6209dec94aa4a9216b5a301d0a88, type: 3}
   riderEffects: []
-  intrinsicPerks: []
+  intrinsicPerks:
+  - {fileID: 11400000, guid: 962b76e0eb32479e95779f3ca3ee6b4c, type: 2}
   perkColumns: []
   curatedRoll: []
   faction: 0

@@ -19,7 +19,7 @@ MonoBehaviour:
   modifiers:
   - stat: {fileID: 11400000, guid: 1af39531c4c9d474f810115fd25ae295, type: 2}
     bucket: 0
-    value: 20
+    value: 24
     target: 1
     weaponTypes: []
     scope: 1
