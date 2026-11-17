@@ -203,7 +203,7 @@ namespace Combat.UI
             var s = screen.Style;
             var view = screen.View;
             Heading(body, s, "Armor");
-            for (int i = 0; i < view.ArmorSlots.Count; i++) ArmorCard(body, s, view.ArmorSlots[i], view.Armor[i]);
+            for (int i = 0; i < view.ArmorSlots.Count; i++) ArmorCard(body, screen, view.ArmorSlots[i], view.Armor[i]);
 
             Gap(body, s);
             Heading(body, s, "Active now");
@@ -214,8 +214,9 @@ namespace Combat.UI
             else UIKit.Text(activeRoot, "Hint", s, "Shown in play mode.", s.smallSize, s.textFaint);
         }
 
-        private void ArmorCard(Transform parent, UIStyleSO s, ArmorSlotSO slot, ArmorInstance piece)
+        private void ArmorCard(Transform parent, InventoryScreen owner, ArmorSlotSO slot, ArmorInstance piece)
         {
+            var s = owner.Style;
             var card = Card(parent, "Armor_" + ItemText.SlotName(slot), s, piece);
             UIKit.VStack(card, 6f, UIKit.Pad(14f, 14f, 10f, 10f));
 
@@ -235,7 +236,7 @@ namespace Combat.UI
             {
                 var row = UIKit.Node(card.transform, "Perk_" + p.name);
                 UIKit.HStack(row, 10f);
-                LoadoutSlotsPanel.Chip(row, s, p);
+                LoadoutSlotsPanel.Chip(row, s, p, owner, owner.ContextFor(piece));
                 UIKit.Size(UIKit.Text(row, "Name", s, ItemText.PerkName(p), s.smallSize, s.text), flexWidth: 1f);
                 p.CollectStaticModifiers(effects);
             }
@@ -266,7 +267,7 @@ namespace Combat.UI
                 UIKit.HStack(row, 10f, UIKit.Pad(0f, 0f, 2f, 2f));
                 row.gameObject.AddComponent<CanvasGroup>().alpha = rt.InHand ? 1f : stowedAlpha;
 
-                if (rt.Perk != null) LoadoutSlotsPanel.Chip(row, s, rt.Perk);
+                if (rt.Perk != null) LoadoutSlotsPanel.Chip(row, s, rt.Perk, screen, screen.ContextFor(rt.SourceItem));
                 var info = UIKit.Node(row, "Info");
                 UIKit.VStack(info, 1f, null, TextAnchor.MiddleLeft);
                 UIKit.Size(info, flexWidth: 1f);

@@ -23,12 +23,15 @@ namespace Combat.UI
 
             string store = Key(input != null ? input.UI.Store : null, "V");
             string delete = "Hold " + Key(input != null ? input.UI.Delete : null, "X");
+            string compare = Key(input != null ? input.UI.Compare : null, "C");
+            string tabs = Key(input != null ? input.UI.PrevTab : null, "Q") + " / " + Key(input != null ? input.UI.NextTab : null, "E");
             if (screen.Tab == InventoryTab.Loadout)
             {
                 Hint(root, s, "LMB", "Select slot / Equip");
                 Hint(root, s, "RMB", "Unequip");
                 Hint(root, s, store, "Store");
                 Hint(root, s, delete, "Delete");
+                Hint(root, s, compare, "Compare");
             }
             else if (screen.Tab == InventoryTab.Vault)
             {
@@ -36,7 +39,9 @@ namespace Combat.UI
                 Hint(root, s, "Double-click", "Move");
                 Hint(root, s, store, "Move");
                 Hint(root, s, delete, "Delete");
+                Hint(root, s, compare, "Compare");
             }
+            Hint(root, s, tabs, "Tabs");
             Hint(root, s, string.IsNullOrEmpty(close) ? "Tab" : close, "Close");
             if (!string.IsNullOrEmpty(back) && back != close) Hint(root, s, back, "Back");
         }

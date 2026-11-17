@@ -17,6 +17,33 @@ namespace Combat.UI.EditorTools
     public static class InventoryScreenBuilder
     {
         private const string AssetFolder = "Assets/GameData/UI";
+        private const float CompactBar = 40f;
+
+        // Shrinks the vault filter bar to its one-row height and moves the panels below up into the space.
+        [MenuItem("FPS0/UI/Fit Vault To Compact Filters", priority = 702)]
+        private static void FitVault()
+        {
+            var screen = Object.FindFirstObjectByType<InventoryScreen>(FindObjectsInactive.Include);
+            if (screen == null) { Debug.LogWarning("[InventoryBuilder] No inventory screen in the open scene."); return; }
+            var so = new SerializedObject(screen);
+            var bar = so.FindProperty("filterBar").objectReferenceValue as Component;
+            if (bar != null)
+            {
+                var rt = (RectTransform)bar.transform;
+                Undo.RecordObject(rt, "Fit Vault");
+                rt.offsetMin = new Vector2(rt.offsetMin.x, -CompactBar);
+            }
+            foreach (var field in new[] { "vaultCarriedPanel", "vaultPanel", "vaultDetailPanel" })
+            {
+                var c = so.FindProperty(field).objectReferenceValue as Component;
+                if (c == null) continue;
+                var rt = (RectTransform)c.transform;
+                Undo.RecordObject(rt, "Fit Vault");
+                rt.offsetMax = new Vector2(rt.offsetMax.x, -CompactBar - 16f);
+            }
+            EditorSceneManager.MarkSceneDirty(screen.gameObject.scene);
+            Debug.Log("[InventoryBuilder] Vault filter bar set to " + CompactBar + " px; panels below moved up.");
+        }
 
         [MenuItem("FPS0/UI/Build Inventory Screen", priority = 701)]
         private static void Build()
@@ -161,7 +188,7 @@ namespace Combat.UI.EditorTools
                 added.Add("VaultTab");
             }
 
-            const float bar = 158f;
+            const float bar = CompactBar;
             var t = tab.transform;
             Part<VaultFilterBar>(so, "filterBar", t, "Filters", new Vector2(0f, 1f), Vector2.one, new Vector2(0f, -bar), Vector2.zero, added);
             var carried = Part<ItemGridPanel>(so, "vaultCarriedPanel", t, "Carried", Vector2.zero, new Vector2(0f, 1f), Vector2.zero, new Vector2(440f, -bar - 16f), added);

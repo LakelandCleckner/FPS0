@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using Combat.Armor;
+using Combat.Info;
 using Combat.Perks;
 using Combat.Weapons;
 
@@ -120,7 +121,7 @@ namespace Combat.UI
             string kind = ItemText.Kind(weapon);
             string element = ItemText.Element(weapon);
             UIKit.Text(info, "Kind", s, string.IsNullOrEmpty(element) ? kind : kind + "  /  " + element, s.smallSize, s.textMuted, lines: 2);
-            ChipGrid(tile.transform, s, weapon.Perks);
+            ChipGrid(tile.transform, screen, weapon.Perks, screen.ContextFor(weapon));
             return tile;
         }
 
@@ -145,7 +146,7 @@ namespace Combat.UI
                        piece != null ? ItemText.NameColor(s, piece, s.text) : s.textFaint, lines: piece != null ? 2 : 1,
                        role: piece != null ? TextRole.Title : TextRole.Body);
 
-            if (piece != null) ChipGrid(tile.transform, s, piece.Perks);
+            if (piece != null) ChipGrid(tile.transform, screen, piece.Perks, screen.ContextFor(piece));
             return tile;
         }
 
@@ -162,8 +163,9 @@ namespace Combat.UI
         }
 
         // Perk chips on the card's right, wrapping to a new row every Chips Per Row.
-        private static void ChipGrid(Transform parent, UIStyleSO s, System.Collections.Generic.IReadOnlyList<PerkSO> perks)
+        private static void ChipGrid(Transform parent, InventoryScreen screen, IReadOnlyList<PerkSO> perks, DescribeContext ctx)
         {
+            var s = screen.Style;
             int count = 0;
             foreach (var p in perks) if (p != null) count++;
             if (count == 0) return;
@@ -180,12 +182,14 @@ namespace Combat.UI
             g.constraintCount = perRow;
             g.childAlignment = TextAnchor.MiddleRight;
             UIKit.Size(grid, width: perRow * s.chipSize + (perRow - 1) * gap, height: rows * s.chipSize + (rows - 1) * gap);
-            foreach (var p in perks) if (p != null) Chip(grid, s, p);
+            foreach (var p in perks) if (p != null) Chip(grid, s, p, screen, ctx);
         }
 
-        public static void Chip(Transform parent, UIStyleSO s, PerkSO perk)
+        // Perk chip; with a screen it shows the perk's name and description on hover.
+        public static void Chip(Transform parent, UIStyleSO s, PerkSO perk, InventoryScreen screen = null, DescribeContext ctx = null)
         {
             var chip = UIKit.Box(parent, "Chip_" + perk.name, s, s.tileEmpty, true, small: true);
+            if (screen != null) InfoHover.Attach(chip, screen, ItemText.PerkName(perk), s.accent, perk, ctx ?? screen.ContextFor(null));
             UIKit.Size(chip, width: s.chipSize, height: s.chipSize);
             if (perk.icon != null)
             {

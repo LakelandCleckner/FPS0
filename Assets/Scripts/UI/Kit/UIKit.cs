@@ -277,6 +277,24 @@ namespace Combat.UI
             return content.gameObject.AddComponent<SlideLayout>();
         }
 
+        // Scrolls the nearest scroll view so the target is fully visible.
+        public static void ScrollIntoView(RectTransform target, float margin = 12f)
+        {
+            if (target == null) return;
+            var scroll = target.GetComponentInParent<ScrollRect>();
+            if (scroll == null || scroll.content == null || scroll.viewport == null) return;
+            var b = RectTransformUtility.CalculateRelativeRectTransformBounds(scroll.viewport, target);
+            var view = scroll.viewport.rect;
+            float shift = 0f;
+            if (b.max.y > view.yMax) shift = b.max.y - view.yMax + margin;
+            else if (b.min.y < view.yMin) shift = b.min.y - view.yMin - margin;
+            if (Mathf.Abs(shift) < 0.5f) return;
+            var p = scroll.content.anchoredPosition;
+            p.y -= shift;
+            scroll.content.anchoredPosition = p;
+            scroll.velocity = Vector2.zero;
+        }
+
         public static void Destroy(Object o)
         {
             if (o == null) return;

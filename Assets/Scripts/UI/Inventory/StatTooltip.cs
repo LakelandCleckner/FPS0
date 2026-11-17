@@ -23,9 +23,13 @@ namespace Combat.UI
         private RectTransform box;
         private int builtVersion = int.MinValue;
         private bool builtPinned;
-        private KeywordLink keyword;
-        private DescribeContext keywordContext;
-        private bool hasKeyword;
+        // Info mode: a titled popup (keyword, perk) with an optional rule and generated detail.
+        private string infoTitle, infoRule, infoPinNote;
+        private Color infoColor;
+        private object infoKey;
+        private IDescribable infoDetail;
+        private DescribeContext infoContext;
+        private bool hasInfo;
 
         public bool IsPinned { get; private set; }
 
@@ -58,35 +62,52 @@ namespace Combat.UI
 
         public void HoverKeyword(InventoryScreen owner, KeywordLink link, DescribeContext ctx, bool on)
         {
-            if (IsPinned || link.Keyword == null) return;
-            if (on) ShowKeyword(owner, link, ctx);
-            else if (SameKeyword(link)) Hide();
+            if (link.Keyword == null) return;
+            HoverInfo(owner, KeyOf(link), link.Keyword.Name, link.Keyword.color, link.Keyword.description, link.Detail, ctx, on);
         }
 
         public void ToggleKeywordPin(InventoryScreen owner, KeywordLink link, DescribeContext ctx)
         {
             if (link.Keyword == null) return;
-            if (IsPinned && SameKeyword(link)) { IsPinned = false; return; }
-            if (!SameKeyword(link)) ShowKeyword(owner, link, ctx);
+            var key = KeyOf(link);
+            if (IsPinned && SameInfo(key)) { IsPinned = false; return; }
+            if (!SameInfo(key)) ShowInfo(owner, key, link.Keyword.Name, link.Keyword.color, link.Keyword.description, link.Detail, ctx);
+            infoPinNote = "Pinned  -  click the word to release";
             IsPinned = true;
         }
 
-        private bool SameKeyword(KeywordLink link) => hasKeyword && keyword.Keyword == link.Keyword && keyword.Detail == link.Detail;
+        // Hover popup for anything describable: title, optional rule line, and its generated text.
+        public void HoverInfo(InventoryScreen owner, object key, string title, Color color, string rule, IDescribable detail, DescribeContext ctx, bool on)
+        {
+            if (IsPinned || key == null) return;
+            if (on) ShowInfo(owner, key, title, color, rule, detail, ctx);
+            else if (SameInfo(key)) Hide();
+        }
 
-        private void ShowKeyword(InventoryScreen owner, KeywordLink link, DescribeContext ctx)
+        private static object KeyOf(KeywordLink link) => link.Detail != null ? (object)(link.Keyword, link.Detail) : link.Keyword;
+
+        private bool SameInfo(object key) => hasInfo && Equals(infoKey, key);
+
+        private void ShowInfo(InventoryScreen owner, object key, string title, Color color, string rule, IDescribable detail, DescribeContext ctx)
         {
             screen = owner;
             entry = null;
-            keyword = link;
-            keywordContext = ctx;
-            hasKeyword = true;
+            infoKey = key;
+            infoTitle = title;
+            infoColor = color;
+            infoRule = rule;
+            infoDetail = detail;
+            infoContext = ctx;
+            infoPinNote = null;
+            hasInfo = true;
             builtVersion = int.MinValue;
         }
 
         public void Hide()
         {
             IsPinned = false;
-            hasKeyword = false;
+            hasInfo = false;
+            infoKey = null;
             entry = null;
             Kill(box);
             box = null;
@@ -104,20 +125,20 @@ namespace Combat.UI
         {
             screen = owner;
             entry = e;
-            hasKeyword = false;
+            hasInfo = false;
             builtVersion = int.MinValue;
         }
 
         private void LateUpdate()
         {
             if (!Application.isPlaying || screen == null) return;
-            if (hasKeyword)
+            if (hasInfo)
             {
                 if (screen.Style == null) { Hide(); return; }
                 bool shown = box != null;
                 if (!shown || builtVersion == int.MinValue || builtPinned != IsPinned)
                 {
-                    BuildKeyword(screen.Style);
+                    BuildInfo(screen.Style);
                     builtVersion = 0;
                     builtPinned = IsPinned;
                 }
@@ -181,14 +202,13 @@ namespace Combat.UI
             LayoutRebuilder.ForceRebuildLayoutImmediate(box);
         }
 
-        // Keyword name, its general rule, then the numbers for the source that linked it.
-        private void BuildKeyword(UIStyleSO s)
+        // Title, its general rule, then the generated numbers for the source.
+        private void BuildInfo(UIStyleSO s)
         {
             Vector2 keep = box != null ? box.anchoredPosition : Vector2.zero;
             Kill(box);
 
-            var k = keyword.Keyword;
-            var edge = new Color(k.color.r, k.color.g, k.color.b, 0.6f);
+            var edge = new Color(infoColor.r, infoColor.g, infoColor.b, 0.6f);
             var bg = UIKit.Box(transform, "Box", s, s.panel, true, IsPinned ? s.accent : edge);
             box = bg.rectTransform;
             box.anchorMin = box.anchorMax = new Vector2(0.5f, 0.5f);
@@ -199,20 +219,20 @@ namespace Combat.UI
             var fit = bg.gameObject.AddComponent<ContentSizeFitter>();
             fit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            UIKit.Text(box, "Name", s, k.Name, s.headingSize + 2f, k.color, heading: true);
-            if (!string.IsNullOrWhiteSpace(k.description))
-                UIKit.Text(box, "Rule", s, k.description, s.smallSize, s.textMuted, wrap: true);
+            UIKit.Text(box, "Name", s, infoTitle, s.headingSize + 2f, infoColor, heading: true);
+            if (!string.IsNullOrWhiteSpace(infoRule))
+                UIKit.Text(box, "Rule", s, infoRule, s.smallSize, s.textMuted, wrap: true);
 
-            if (keyword.Detail != null)
+            if (infoDetail != null)
             {
-                string detail = Describer.Build(keyword.Detail, keywordContext);
+                string detail = Describer.Build(infoDetail, infoContext);
                 if (!string.IsNullOrWhiteSpace(detail))
                 {
-                    Rule(box, s);
+                    if (!string.IsNullOrWhiteSpace(infoRule)) Rule(box, s);
                     UIKit.Text(box, "Detail", s, detail, s.smallSize, s.text, wrap: true).richText = true;
                 }
             }
-            if (IsPinned) UIKit.Label(box, "Pinned", s, "Pinned  -  click the word to release", s.accent);
+            if (IsPinned && infoPinNote != null) UIKit.Label(box, "Pinned", s, infoPinNote, s.accent);
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(box);
         }

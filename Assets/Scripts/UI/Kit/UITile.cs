@@ -44,15 +44,25 @@ namespace Combat.UI
         protected override void DoStateTransition(SelectionState state, bool instant)
         {
             base.DoStateTransition(state, instant);
-            bool now = state == SelectionState.Highlighted || state == SelectionState.Pressed;
+            // Keyboard or gamepad focus counts as hover, so the detail panel and item keys follow it.
+            bool now = state == SelectionState.Highlighted || state == SelectionState.Pressed || state == SelectionState.Selected;
             if (now == hovered) return;
             hovered = now;
             Apply();
             HoverChanged?.Invoke(this, hovered);
         }
 
+        public override void OnSelect(BaseEventData e)
+        {
+            base.OnSelect(e);
+            if (!(e is PointerEventData)) UIKit.ScrollIntoView((RectTransform)transform);
+        }
+
         public void OnPointerClick(PointerEventData e)
         {
+            // A mouse click must not leave the tile focused, or it would stay "hovered" after the pointer leaves.
+            if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject == gameObject)
+                EventSystem.current.SetSelectedGameObject(null);
             if (!IsInteractable()) return;
             if (e.button == PointerEventData.InputButton.Left)
             {

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Combat.Armor;
 using Combat.Info;
@@ -196,7 +197,11 @@ namespace Combat.UI
                 else if (input.Menu.Inventory.WasPressedThisFrame()) SetOpen(!open);
                 else if (open && input.UI.Cancel.WasPressedThisFrame()) SetOpen(false);
 
-                if (open && !typing) ItemKeys();
+                if (open && !typing)
+                {
+                    MenuKeys();
+                    ItemKeys();
+                }
                 else ResetHold();
             }
 
@@ -240,6 +245,42 @@ namespace Combat.UI
                 Message = "";
                 ResetHold();
             }
+        }
+
+        // Tab cycling, compare, and the first focus for keyboard and gamepad navigation.
+        private void MenuKeys()
+        {
+            if (input.UI.PrevTab.WasPressedThisFrame()) SetTab(Cycle(-1));
+            else if (input.UI.NextTab.WasPressedThisFrame()) SetTab(Cycle(1));
+            if (input.UI.Compare.WasPressedThisFrame()) ToggleCompare();
+
+            var es = EventSystem.current;
+            if (es == null || !input.UI.Navigate.WasPerformedThisFrame()) return;
+            var current = es.currentSelectedGameObject;
+            if (current != null && current.activeInHierarchy) return;
+            var first = FirstFocus();
+            if (first != null) es.SetSelectedGameObject(first.gameObject);
+        }
+
+        private InventoryTab Cycle(int step)
+        {
+            int n = System.Enum.GetValues(typeof(InventoryTab)).Length;
+            return (InventoryTab)(((int)Tab + step + n) % n);
+        }
+
+        // Where keyboard focus starts: the selected slot card, else the first tile on the open tab.
+        private UITile FirstFocus()
+        {
+            var tab = Tab == InventoryTab.Loadout ? loadoutTab : Tab == InventoryTab.Vault ? vaultTab : characterTab;
+            if (tab == null) return null;
+            UITile first = null;
+            foreach (var t in tab.GetComponentsInChildren<UITile>())
+            {
+                if (!t.IsInteractable() || t.navigation.mode == Navigation.Mode.None) continue;
+                if (first == null) first = t;
+                if (Tab == InventoryTab.Loadout && t.Item != null && t.Item == view.Equipped(Selected)) return t;
+            }
+            return first;
         }
 
         // ------------------------------------------------------------------ store and delete

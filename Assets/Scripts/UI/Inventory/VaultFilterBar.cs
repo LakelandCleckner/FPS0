@@ -17,6 +17,7 @@ namespace Combat.UI
 
         private TMP_InputField search;
         private InventoryScreen owner;
+        private bool expanded;
 
         public bool SearchFocused => search != null && search.isFocused;
 
@@ -34,10 +35,11 @@ namespace Combat.UI
             var s = screen.Style;
             var f = screen.Filter;
             var view = screen.View;
-            UIKit.VStack(root, s.gap * 0.8f);
+            float rowHeight = s.chipSize + 6f;
 
-            // Show, sort, clear
+            // One row: show, sort, the filters toggle, clear, search.
             var top = Row(root, s, "Show");
+            UIKit.Anchor(top, new Vector2(0f, 1f), Vector2.one, new Vector2(0f, -rowHeight), Vector2.zero);
             Chip(top, s, "All", f.Kind == ItemKindFilter.All, null, () => f.Kind = ItemKindFilter.All);
             Chip(top, s, "Weapons", f.Kind == ItemKindFilter.Weapons, null, () => f.Kind = ItemKindFilter.Weapons);
             Chip(top, s, "Armor", f.Kind == ItemKindFilter.Armor, null, () => f.Kind = ItemKindFilter.Armor);
@@ -45,6 +47,9 @@ namespace Combat.UI
             UIKit.Label(top, "SortLabel", s, "Sort");
             Chip(top, s, ItemFilter.SortLabel(f.Sort), true, null, f.NextSort);
             Chip(top, s, ItemFilter.DirectionLabel(f.Sort, f.Descending), false, null, () => f.Descending = !f.Descending);
+            Gap(top, s);
+            int active = f.Rarities.Count + f.WeaponTypes.Count + f.WeaponSlots.Count + f.Elements.Count + f.ArmorSlots.Count;
+            Chip(top, s, active > 0 ? "Filters (" + active + ")" : "Filters", expanded || active > 0, null, () => expanded = !expanded);
             if (!f.IsDefault)
             {
                 Gap(top, s);
@@ -57,8 +62,36 @@ namespace Combat.UI
             UIKit.Spacer(top);
             UIKit.Size(UIKit.Node(top, "SearchSpace"), width: searchWidth);
 
-            // Rarity
-            var rar = Row(root, s, "Rarity");
+            if (expanded) Dropdown(screen, root, rowHeight);
+            EnsureSearch(s, f);
+        }
+
+        // Rarity, weapon and armor rows in a panel that drops over the grids below.
+        private void Dropdown(InventoryScreen screen, RectTransform root, float rowHeight)
+        {
+            var s = screen.Style;
+            var f = screen.Filter;
+            var view = screen.View;
+
+            var bg = UIKit.Box(root, "Dropdown", s, s.panel, true, s.panelBorder);
+            var panel = bg.rectTransform;
+            panel.anchorMin = new Vector2(0f, 1f);
+            panel.anchorMax = Vector2.one;
+            panel.pivot = new Vector2(0.5f, 1f);
+            panel.offsetMin = new Vector2(0f, -rowHeight - 6f);
+            panel.offsetMax = new Vector2(0f, -rowHeight - 6f);
+            UIKit.VStack(bg, s.gap * 0.8f, UIKit.Pad(s.padding * 0.6f));
+            bg.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            bg.raycastTarget = true;
+
+            // Its own canvas so it draws, and takes clicks, above the panels below.
+            var parentCanvas = GetComponentInParent<Canvas>();
+            var canvas = bg.gameObject.AddComponent<Canvas>();
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = (parentCanvas != null ? parentCanvas.sortingOrder : 0) + 5;
+            bg.gameObject.AddComponent<GraphicRaycaster>();
+
+            var rar = Row(panel, s, "Rarity");
             foreach (Rarity r in Enum.GetValues(typeof(Rarity)))
             {
                 var rr = r;
@@ -73,7 +106,7 @@ namespace Combat.UI
                 Collect(view.CarriedWeapons, types, elements);
                 Collect(view.VaultWeapons, types, elements);
 
-                var wr = Row(root, s, "Weapons");
+                var wr = Row(panel, s, "Weapons");
                 foreach (var t in types)
                 {
                     var tt = t;
@@ -97,15 +130,13 @@ namespace Combat.UI
             // Armor slots
             if (f.Kind != ItemKindFilter.Weapons && view.ArmorSlots.Count > 0)
             {
-                var ar = Row(root, s, "Armor");
+                var ar = Row(panel, s, "Armor");
                 foreach (var slot in view.ArmorSlots)
                 {
                     var sl = slot;
                     Chip(ar, s, ItemText.SlotName(slot), f.ArmorSlots.Contains(slot), null, () => ItemFilter.Toggle(f.ArmorSlots, sl));
                 }
             }
-
-            EnsureSearch(s, f);
         }
 
         // ------------------------------------------------------------------ parts
