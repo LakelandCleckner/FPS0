@@ -1,4 +1,5 @@
 using UnityEngine;
+using Combat.Weapons;
 
 public class MouseLook : MonoBehaviour
 {
@@ -18,13 +19,27 @@ public class MouseLook : MonoBehaviour
 
     private float verticalRotation;
     private Vector2 lookInput;
+    private WeaponRecoil recoil;
 
     // Set every frame by PlayerAim (1 at hip). Follows the live FOV, so it's
     // correct mid-transition, not just at full ADS.
     public float SensitivityScale { get; set; } = 1f;
 
-    // Camera pitch in degrees, positive looks down
-    public float Pitch => verticalRotation;
+    // Camera pitch in degrees including recoil, positive looks down
+    public float Pitch => Mathf.Clamp(verticalRotation - (recoil != null ? recoil.Offset.x : 0f), -upDownRange, upDownRange);
+
+    private void Awake()
+    {
+        recoil = GetComponent<WeaponRecoil>();
+        if (recoil == null) recoil = gameObject.AddComponent<WeaponRecoil>();
+    }
+
+    // Moves the look itself (degrees up and right); recoil uses it to keep whatever didn't recentre.
+    public void AddLook(float right, float up)
+    {
+        playerBody.Rotate(Vector3.up * right);
+        verticalRotation = Mathf.Clamp(verticalRotation - up, -upDownRange, upDownRange);
+    }
 
     /// <summary>
     /// Called by PlayerMovement when look input is received.
@@ -46,6 +61,9 @@ public class MouseLook : MonoBehaviour
         float mouseX = lookInput.x * sens;
         float mouseY = lookInput.y * sens;
 
+        // Pulling against recoil counters it before it moves the look
+        if (recoil != null) recoil.Absorb(ref mouseX, ref mouseY);
+
         // Horizontal rotation (yaw)
         playerBody.Rotate(Vector3.up * mouseX);
 
@@ -53,8 +71,9 @@ public class MouseLook : MonoBehaviour
         verticalRotation -= mouseY;
         verticalRotation = Mathf.Clamp(verticalRotation, -upDownRange, upDownRange);
 
+        Vector2 kick = recoil != null ? recoil.Offset : Vector2.zero;
         playerCamera.transform.localRotation =
-            Quaternion.Euler(verticalRotation, 0f, 0f);
+            Quaternion.Euler(Mathf.Clamp(verticalRotation - kick.x, -upDownRange, upDownRange), kick.y, 0f);
     }
 
     // ===== UI / Settings hooks =====

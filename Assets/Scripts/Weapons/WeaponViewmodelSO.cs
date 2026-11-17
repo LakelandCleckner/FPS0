@@ -25,5 +25,27 @@ namespace Combat.Weapons
         [Tooltip("Tilt of the aimed pose in degrees around the front sight (x pitch, + raises the muzzle; y yaw, + turns right). " +
                  "Use it to centre the front post in the rear sight, then fix the height with the nudge.")]
         public Vector2 adsTiltDeg = Vector2.zero;
+
+        [Header("Recoil (visual)")]
+        [Tooltip("Play the arms fire clip. Off = the procedural kick below does the visual recoil.")]
+        public bool playArmsFireClip = false;
+        [Tooltip("Play the gun model's own fire clip (bolt, slide).")]
+        public bool playGunFireClip = true;
+        [Tooltip("Push back toward the camera per shot (mm).")]
+        public float kickBackMm = 22f;
+        [Tooltip("Muzzle rise per shot (deg).")]
+        public float kickPitchDeg = 2.5f;
+        [Tooltip("Random sideways turn per shot (deg).")]
+        public float kickYawDeg = 0.6f;
+        [Tooltip("Random roll per shot (deg).")]
+        public float kickRollDeg = 1.5f;
+        [Tooltip("Kick scale while fully aimed, so the sights stay readable.")]
+        [Range(0f, 1f)] public float adsKickScale = 0.35f;
+        [Tooltip("Kick scale at 100 stability (0 stability = full kick).")]
+        [Range(0f, 1f)] public float kickAtMaxStability = 0.45f;
+        [Tooltip("Spring stiffness. Higher snaps back faster.")]
+        [Min(1f)] public float springStiffness = 320f;
+        [Tooltip("Spring damping. About 2 x sqrt(stiffness) settles without wobble.")]
+        [Min(0f)] public float springDamping = 30f;
     }
 }

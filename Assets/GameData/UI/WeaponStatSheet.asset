@@ -36,6 +36,13 @@ MonoBehaviour:
       lowerIsBetter: 0
       unit: 
       decimals: -1
+    - stat: {fileID: 11400000, guid: cd293aa7bcdb499a9c8134c2be854f37, type: 2}
+      label: Stability
+      display: 0
+      barMax: 100
+      lowerIsBetter: 0
+      unit: 
+      decimals: -1
     - stat: {fileID: 11400000, guid: c7a4bb871b6f29f4bbf9c509365f5b26, type: 2}
       label: Aim assist
       display: 0
@@ -85,3 +92,10 @@ MonoBehaviour:
       lowerIsBetter: 0
       unit: x
       decimals: 2
+    - stat: {fileID: 11400000, guid: cffe40ffbb34436792f1ee3b2d41d4e7, type: 2}
+      label: Recoil direction
+      display: 1
+      barMax: 100
+      lowerIsBetter: 0
+      unit: 
+      decimals: -1

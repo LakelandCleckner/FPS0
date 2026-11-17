@@ -41,6 +41,7 @@ namespace Combat.Weapons
         private PlayerAudio playerAudio;
         private PlayerAim playerAim;
         private PlayerInputRouter input;
+        private WeaponRecoil recoil;
         private readonly Collider[] assistHits = new Collider[32];
 
         public event Action OnFired;
@@ -89,6 +90,7 @@ namespace Combat.Weapons
             playerAudio = GetComponentInParent<PlayerAudio>();
             playerAim = GetComponentInParent<PlayerAim>();
             input = PlayerInputRouter.For(this);
+            recoil = WeaponRecoil.For(this);
         }
 
         private void Start()
@@ -231,6 +233,9 @@ namespace Combat.Weapons
             if (fire != null && playerAudio != null) playerAudio.Play3D(fire);
 
             SelectDelivery(in stamped).Fire(ray.origin, direction, damageSource, in stamped);
+
+            // Kick after the shot, so the first round lands where you aimed
+            if (recoil != null) recoil.Kick(damageSource, aimBlend);
 
             OnFired?.Invoke();
         }

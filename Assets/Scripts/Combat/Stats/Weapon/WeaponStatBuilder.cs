@@ -59,6 +59,8 @@ namespace Combat.Weapons
             if (keys.range != null) container.SetBase(keys.range, a.range + weapon.rangeDelta);
             if (keys.aimAssist != null) container.SetBase(keys.aimAssist, a.aimAssist + weapon.aimAssistDelta);
             if (keys.precisionDamage != null) container.SetBase(keys.precisionDamage, a.precisionMultiplier + weapon.precisionDelta);
+            if (keys.stability != null) container.SetBase(keys.stability, a.stability + weapon.stabilityDelta);
+            if (keys.recoilDirection != null) container.SetBase(keys.recoilDirection, a.recoilDirection + weapon.recoilDirectionDelta);
 
             RegisterHandlingDerivations(container, weapon, keys);
         }

@@ -60,6 +60,19 @@ MonoBehaviour:
   assistAngleAtMax: 1.5
   assistHipMultiplier: 0.8
   assistDistanceMultiplier: 1
+  stability: 45
+  recoilDirection: 70
+  kickAtMinStability: 0.75
+  kickAtMaxStability: 0.25
+  sideKickScale: 0.8
+  patternVariance: 0.15
+  firstShotMultiplier: 1
+  adsRecoilMultiplier: 0.85
+  kickTime: 0.03
+  centreDelay: 0.05
+  centreSpeed: 12
+  recenterPercent: 1
+  residualError: 0.03
   weaponDamage: 9
   precisionMultiplier: 1.25
   roundsPerMinute: 900

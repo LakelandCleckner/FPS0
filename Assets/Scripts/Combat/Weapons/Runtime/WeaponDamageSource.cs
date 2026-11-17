@@ -130,6 +130,30 @@ namespace Combat.Sources
             }
         }
 
+        // Stability stat, hard-capped 0-100
+        public float ResolvedStability
+        {
+            get
+            {
+                float v = container != null && statKeys != null && statKeys.stability != null
+                    ? container.Resolve(statKeys.stability)
+                    : (weapon != null && weapon.archetype != null ? weapon.archetype.stability + weapon.stabilityDelta : 50f);
+                return Mathf.Clamp(v, 0f, 100f);
+            }
+        }
+
+        // Recoil direction stat, hard-capped 0-100
+        public float ResolvedRecoilDirection
+        {
+            get
+            {
+                float v = container != null && statKeys != null && statKeys.recoilDirection != null
+                    ? container.Resolve(statKeys.recoilDirection)
+                    : (weapon != null && weapon.archetype != null ? weapon.archetype.recoilDirection + weapon.recoilDirectionDelta : 75f);
+                return Mathf.Clamp(v, 0f, 100f);
+            }
+        }
+
         // Precision stat, floored at 1 so a head hit never does less than a body hit
         public float PrecisionMultiplier
         {

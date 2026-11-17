@@ -294,8 +294,10 @@ namespace Combat.Weapons
                 }
             }
 
-            gun.Trigger(FireTrigger);
-            if (DrivesArms) arms.Trigger(FireTrigger);
+            // The procedural kick on the rig replaces the arms clip unless the viewmodel asks for it
+            var vm = damageSource != null && damageSource.Weapon != null ? damageSource.Weapon.viewmodel : null;
+            if (vm == null || vm.playGunFireClip) gun.Trigger(FireTrigger);
+            if (DrivesArms && (vm == null || vm.playArmsFireClip)) arms.Trigger(FireTrigger);
         }
 
         private void HandleReloadStarted()

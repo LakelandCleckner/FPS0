@@ -38,6 +38,9 @@ namespace Combat.Weapons
         public StatDefinitionSO precisionDamage; // "precision_damage"  head-hit multiplier (1.9 = x1.9)
         [Header("Stagger")]
         public StatDefinitionSO staggerPower;    // "stagger_power"  multiplier on how hard hits stagger (1 = normal)
+        [Header("Recoil")]
+        public StatDefinitionSO stability;       // "weapon_stability"  0-100, size of each kick and the visual bounce
+        public StatDefinitionSO recoilDirection; // "weapon_recoil_direction"  0-100, sideways bias and bounce intensity
 
 
         // NOTE (global_damage representation): the legacy StatBlock stores this as a

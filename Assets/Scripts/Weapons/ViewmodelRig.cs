@@ -70,6 +70,9 @@ namespace Combat.Weapons
         private WeaponViewmodelSO viewmodel;
         private Transform sightPoint;
         private Quaternion baseRotation;
+        private WeaponFireController firing;
+        private Vector3 kickPos, kickPosVel;   // metres in camera space: x right, y up, z forward
+        private Vector3 kickRot, kickRotVel;   // degrees in camera space: pitch up, yaw right, roll
         public int ArmsEmptyStateHash { get; private set; }
         public int GunRestStateHash { get; private set; }
 
@@ -91,6 +94,55 @@ namespace Combat.Weapons
             transform.localPosition = basePosition + (aimOffset + Nudge()) * blend;
             transform.localRotation = baseRotation;
             Tilt(blend);
+            ApplyKick();
+        }
+
+        private void OnDestroy()
+        {
+            if (firing != null) firing.OnFired -= HandleFired;
+        }
+
+        // Per-shot visual kick from the current viewmodel, smaller with stability and while aimed.
+        private void HandleFired()
+        {
+            if (viewmodel == null) return;
+            var source = Current != null ? Current.DamageSource : null;
+            float stability = source != null ? source.ResolvedStability / 100f : 0.5f;
+            float scale = Mathf.Lerp(1f, viewmodel.kickAtMaxStability, stability);
+            scale *= Mathf.Lerp(1f, viewmodel.adsKickScale, playerAim != null ? playerAim.Blend : 0f);
+
+            // Impulse sized so a critically damped spring peaks at the authored size (v = size x sqrt(k) x e).
+            float w = Mathf.Sqrt(viewmodel.springStiffness) * 2.718f;
+            kickPosVel += new Vector3(0f, 0f, -viewmodel.kickBackMm * 0.001f) * w * scale;
+            kickRotVel += new Vector3(viewmodel.kickPitchDeg,
+                                      UnityEngine.Random.Range(-1f, 1f) * viewmodel.kickYawDeg,
+                                      UnityEngine.Random.Range(-1f, 1f) * viewmodel.kickRollDeg) * w * scale;
+        }
+
+        private void ApplyKick()
+        {
+            float k = viewmodel != null ? viewmodel.springStiffness : 320f;
+            float c = viewmodel != null ? viewmodel.springDamping : 30f;
+            float dt = Mathf.Min(Time.deltaTime, 0.05f);
+            // Two substeps keep the spring stable at low frame rates.
+            for (int i = 0; i < 2; i++)
+            {
+                float h = dt * 0.5f;
+                kickPosVel += (-k * kickPos - c * kickPosVel) * h;
+                kickPos += kickPosVel * h;
+                kickRotVel += (-k * kickRot - c * kickRotVel) * h;
+                kickRot += kickRotVel * h;
+            }
+            // Camera axes, not the rig's: the rig is rotated in the prefab, so its own axes push sideways.
+            var cam = viewmodelCamera != null ? viewmodelCamera.transform : transform;
+            Vector3 world = cam.right * kickPos.x + cam.up * kickPos.y + cam.forward * kickPos.z;
+            transform.localPosition += transform.parent != null ? transform.parent.InverseTransformVector(world) : world;
+
+            // Turns about the sight, so the dot stays on screen centre while the muzzle rises.
+            Vector3 pivot = sightPoint != null ? sightPoint.position : transform.position;
+            transform.RotateAround(pivot, cam.right, -kickRot.x);
+            transform.RotateAround(pivot, cam.up, kickRot.y);
+            transform.RotateAround(pivot, cam.forward, kickRot.z);
         }
 
         // The viewmodel's ADS tilt, rotated around the front sight so the post stays put.
@@ -128,7 +180,11 @@ namespace Combat.Weapons
         public void SetWeapon(WeaponFireController weapon, RuntimeAnimatorController controller,
                               Transform sight)
         {
+            if (firing != null) firing.OnFired -= HandleFired;
             Current = weapon;
+            firing = weapon;
+            if (firing != null) firing.OnFired += HandleFired;
+            kickPos = kickPosVel = kickRot = kickRotVel = Vector3.zero;
             var source = weapon != null ? weapon.DamageSource : null;
             viewmodel = source != null && source.Weapon != null ? source.Weapon.viewmodel : null;
             sightPoint = sight;

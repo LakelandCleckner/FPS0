@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Combat.Weapons
@@ -55,6 +56,40 @@ namespace Combat.Weapons
         [Min(0f)] public float assistHipMultiplier = 0.8f;
         [Tooltip("Max magnetism distance = falloff end x this.")]
         [Min(0f)] public float assistDistanceMultiplier = 1f;
+
+        [Header("Recoil")]
+        [Tooltip("Base stability stat, 0-100. Scales each kick and the viewmodel bounce. A per-weapon delta layers on top.")]
+        [Range(0f, 100f)] public float stability = 50f;
+        [Tooltip("Base recoil direction stat, 0-100. Sets the sideways bias and how much the pattern wanders (100 = straight up).")]
+        [Range(0f, 100f)] public float recoilDirection = 75f;
+        [Tooltip("Upward kick per shot (deg) at 0 stability.")]
+        public float kickAtMinStability = 1.0f;
+        [Tooltip("Upward kick per shot (deg) at 100 stability.")]
+        public float kickAtMaxStability = 0.3f;
+        [Tooltip("Sideways kick per degree of upward kick at full bounce intensity (0 recoil direction).")]
+        public float sideKickScale = 0.7f;
+        [Tooltip("Random share on top of the fixed pattern. 0 = identical sprays, 1 = mostly random.")]
+        [Range(0f, 1f)] public float patternVariance = 0.15f;
+        [Tooltip("Kick multiplier on the first shot of a spray.")]
+        [Min(0f)] public float firstShotMultiplier = 1f;
+        [Tooltip("Kick multiplier by shot number in the spray (x = shot index, y = multiplier).")]
+        public AnimationCurve kickRamp = AnimationCurve.Linear(0f, 1f, 12f, 1.25f);
+        [Tooltip("Kick multiplier while fully aimed.")]
+        [Range(0f, 1f)] public float adsRecoilMultiplier = 0.85f;
+        [Tooltip("Seconds each kick takes to land, so it reads as a push rather than a snap.")]
+        [Min(0.001f)] public float kickTime = 0.035f;
+        [Tooltip("Seconds after a shot before the aim starts recentring.")]
+        [Min(0f)] public float centreDelay = 0.06f;
+        [Tooltip("Recentring speed (1/s). Higher returns faster. Not affected by stability.")]
+        [Min(0f)] public float centreSpeed = 10f;
+        [Tooltip("Share of the uncountered climb that recentres. 1 = back to the start point.")]
+        [Range(0f, 1f)] public float recenterPercent = 1f;
+        [Tooltip("Random miss (deg) per shot left after recentring.")]
+        [Min(0f)] public float residualError = 0.04f;
+        [Tooltip("Authored kick per shot in base-kick units (x right, y up). Empty = a pattern seeded from this archetype.")]
+        public List<Vector2> recoilPattern = new List<Vector2>();
+        [Tooltip("Past the end of the pattern, shots loop from this index.")]
+        [Min(0)] public int patternLoopFrom = 0;
 
         [Header("Base Stats (the frame profile)")]
         public float weaponDamage = 0f;
