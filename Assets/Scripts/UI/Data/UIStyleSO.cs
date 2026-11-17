@@ -74,11 +74,12 @@ namespace Combat.UI
         public Color rankElite = new Color(0.78f, 0.42f, 1f, 1f);
         public Color rankMiniboss = new Color(1f, 0.86f, 0.35f, 1f);
         public Color rankBoss = new Color(1f, 0.86f, 0.35f, 1f);
-        [Tooltip("Optional rank icons. Empty = pips (Minor 1 to Miniboss 4).")]
+        [Tooltip("Optional rank icons, white fill tinted by the rank colour. Empty = pips (Minor 1 to Miniboss 4).")]
         public Sprite rankIconMinor;
         public Sprite rankIconMajor;
         public Sprite rankIconElite;
         public Sprite rankIconMiniboss;
+        public Sprite rankIconBoss;
         [Tooltip("Default shield colour when a shield doesn't set its own.")]
         public Color enemyShield = new Color(0.45f, 0.8f, 1f, 1f);
 
@@ -105,12 +106,18 @@ namespace Combat.UI
         public float sectionGap = 22f;
 
         [Header("Sizes")]
-        public float weaponSlotHeight = 112f;
-        public float armorSlotHeight = 76f;
+        public float weaponSlotHeight = 78f;
+        public float armorSlotHeight = 58f;
         public float gridTileSize = 118f;
         [Min(1)] public int gridColumns = 3;
         public float perkIconSize = 46f;
         public float chipSize = 26f;
+        [Tooltip("Perk chips on the equipped slot cards.")]
+        public float cardChipSize = 22f;
+        [Tooltip("Tiles per row in the loadout tab's carried sections; tile size fits the panel width.")]
+        [Min(1)] public int carriedColumns = 5;
+        [Tooltip("Carried sections open for the selected slot and close for the rest; pinned sections always stay open.")]
+        public bool carriedAutoOpen = true;
         [Tooltip("Perk chips per row on the equipped cards.")]
         [Min(1)] public int chipsPerRow = 4;
 
@@ -161,6 +168,7 @@ namespace Combat.UI
                 case EnemyRank.Elite: return rankIconElite;
                 case EnemyRank.Miniboss: return rankIconMiniboss;
                 case EnemyRank.Minor: return rankIconMinor;
+                case EnemyRank.Boss: return rankIconBoss;
                 default: return null;
             }
         }

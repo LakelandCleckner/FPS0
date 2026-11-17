@@ -104,9 +104,11 @@ namespace Combat.UI
         }
 
         // Grid loot card for an owned item: rarity tag, monogram, name in its rarity colour, and the delete-hold fill.
-        protected static UITile ItemTile(Transform grid, InventoryScreen screen, object item)
+        protected static UITile ItemTile(Transform grid, InventoryScreen screen, object item, float size = -1f)
         {
             var s = screen.Style;
+            if (size <= 0f) size = s.gridTileSize;
+            bool small = size < 100f;
             var tile = Tile(grid, "Item", screen, item);
 
             var rarity = ItemText.RarityOf(item);
@@ -115,16 +117,18 @@ namespace Combat.UI
                 var tag = UIKit.Text(tile.transform, "Rarity", s, rarity.Value.ToString(), s.labelSize - 2f,
                                      rarity.Value == Rarity.Common ? s.textFaint : s.RarityColor(rarity.Value), TMPro.TextAlignmentOptions.TopLeft, heading: true);
                 tag.characterSpacing = 1f;
-                UIKit.Anchor(tag.rectTransform, new Vector2(0f, 1f), new Vector2(0.7f, 1f), new Vector2(10f, -24f), new Vector2(0f, -8f));
+                float inset = small ? 6f : 10f;
+                UIKit.Anchor(tag.rectTransform, new Vector2(0f, 1f), new Vector2(0.85f, 1f), new Vector2(inset, -inset - 16f), new Vector2(0f, -inset));
             }
 
-            var mono = UIKit.Text(tile.transform, "Monogram", s, ItemText.Monogram(item), s.gridTileSize * 0.28f, s.text,
+            var mono = UIKit.Text(tile.transform, "Monogram", s, ItemText.Monogram(item), size * 0.28f, s.text,
                                   TMPro.TextAlignmentOptions.Center, role: TextRole.Title);
             UIKit.Anchor(mono.rectTransform, new Vector2(0f, 0.34f), new Vector2(1f, 0.86f), Vector2.zero, Vector2.zero);
 
-            var name = UIKit.Text(tile.transform, "Name", s, ItemText.Name(item), s.labelSize + 2f, ItemText.NameColor(s, item, s.textMuted),
+            var name = UIKit.Text(tile.transform, "Name", s, ItemText.Name(item), small ? s.labelSize + 1f : s.labelSize + 2f, ItemText.NameColor(s, item, s.textMuted),
                                   TMPro.TextAlignmentOptions.Center, lines: 2, role: TextRole.Title);
-            UIKit.Anchor(name.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.34f), new Vector2(8f, 6f), new Vector2(-8f, 0f));
+            float pad = small ? 4f : 8f;
+            UIKit.Anchor(name.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.34f), new Vector2(pad, pad * 0.75f), new Vector2(-pad, 0f));
 
             var fill = UIKit.Box(tile.transform, "DeleteFill", s, new Color(s.negative.r, s.negative.g, s.negative.b, 0.35f));
             fill.gameObject.AddComponent<UnityEngine.UI.LayoutElement>().ignoreLayout = true;

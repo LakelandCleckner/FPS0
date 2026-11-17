@@ -84,9 +84,10 @@ namespace Combat.UI.EditorTools
             var characterTab = Rect(content, "CharacterTab", Vector2.zero, Vector2.one, new Vector2(72f, 96f), new Vector2(-72f, -140f));
             var footer = Rect(content, "Footer", Vector2.zero, new Vector2(1f, 0f), new Vector2(72f, 28f), new Vector2(-72f, 76f));
 
-            var slots = Rect(loadoutTab, "Slots", Vector2.zero, new Vector2(0f, 1f), Vector2.zero, new Vector2(470f, 0f));
-            var carried = Rect(loadoutTab, "Carried", Vector2.zero, new Vector2(0f, 1f), new Vector2(494f, 0f), new Vector2(912f, 0f));
-            var detail = Rect(loadoutTab, "Detail", Vector2.zero, Vector2.one, new Vector2(936f, 0f), Vector2.zero);
+            var slots = Rect(loadoutTab, "Slots", Vector2.zero, Vector2.zero, Vector2.zero, Vector2.zero);
+            var carried = Rect(loadoutTab, "Carried", Vector2.zero, Vector2.zero, Vector2.zero, Vector2.zero);
+            var detail = Rect(loadoutTab, "Detail", Vector2.zero, Vector2.zero, Vector2.zero, Vector2.zero);
+            InventoryLayoutWindow.Place(slots, carried, detail, InventoryLayoutWindow.DefaultSlots, InventoryLayoutWindow.DefaultCarried, InventoryLayoutWindow.DefaultGap);
 
             var screen = rootGo.AddComponent<InventoryScreen>();
             var so = new SerializedObject(screen);

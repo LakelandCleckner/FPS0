@@ -96,32 +96,33 @@ namespace Combat.UI
             var key = new SlotRef(SlotKind.Weapon, slot);
             var tile = Tile(parent, "Weapon_" + (slot + 1), screen, weapon, wide: true);
             UIKit.Size(tile, height: s.weaponSlotHeight);
-            UIKit.HStack(tile, 14f, UIKit.Pad(16f, 16f, 12f, 12f));
+            UIKit.HStack(tile, 10f, UIKit.Pad(12f, 12f, 8f, 8f));
             tile.SetSelected(screen.Selected.Is(SlotKind.Weapon, slot));
             tile.LeftClick += _ => screen.Select(key);
             tile.RightClick += _ => screen.Unequip(key);
+            tile.HoverChanged += (_, on) => screen.HoverSlot(key, on);
             DragTargets(tile, screen, weapon, key);
 
-            var num = UIKit.Text(tile.transform, "Slot", s, (slot + 1).ToString(), s.titleSize * 0.8f, s.textFaint, TextAlignmentOptions.Center, heading: true);
-            UIKit.Size(num, width: 28f);
+            var num = UIKit.Text(tile.transform, "Slot", s, (slot + 1).ToString(), s.headingSize + 4f, s.textFaint, TextAlignmentOptions.Center, heading: true);
+            UIKit.Size(num, width: 16f);
 
-            Icon(tile.transform, s, weapon, s.weaponSlotHeight - 28f);
+            Icon(tile.transform, s, weapon, s.weaponSlotHeight - 16f);
 
             var info = UIKit.Node(tile.transform, "Info");
-            UIKit.VStack(info, 4f, null, TextAnchor.MiddleLeft);
+            UIKit.VStack(info, 1f, null, TextAnchor.MiddleLeft);
             UIKit.Size(info, flexWidth: 1f);
 
             if (weapon == null)
             {
                 UIKit.Text(info, "Name", s, "Empty", s.bodySize, s.textFaint);
-                UIKit.Text(info, "Kind", s, "Click a carried weapon to equip", s.smallSize, s.textFaint, lines: 2);
+                UIKit.Text(info, "Kind", s, "Drop or click a carried weapon", s.smallSize, s.textFaint);
                 return tile;
             }
 
-            UIKit.Text(info, "Name", s, ItemText.Name(weapon), s.bodySize + 1f, ItemText.NameColor(s, weapon, s.text), lines: 2, role: TextRole.Title);
+            UIKit.Text(info, "Name", s, ItemText.Name(weapon), s.bodySize, ItemText.NameColor(s, weapon, s.text), role: TextRole.Title);
             string kind = ItemText.Kind(weapon);
             string element = ItemText.Element(weapon);
-            UIKit.Text(info, "Kind", s, string.IsNullOrEmpty(element) ? kind : kind + "  /  " + element, s.smallSize, s.textMuted, lines: 2);
+            UIKit.Text(info, "Kind", s, string.IsNullOrEmpty(element) ? kind : kind + "  /  " + element, s.smallSize, s.textMuted);
             ChipGrid(tile.transform, screen, weapon.Perks, screen.ContextFor(weapon));
             return tile;
         }
@@ -132,20 +133,21 @@ namespace Combat.UI
             var key = new SlotRef(SlotKind.Armor, index);
             var tile = Tile(parent, "Armor_" + ItemText.SlotName(slot), screen, piece, wide: true);
             UIKit.Size(tile, height: s.armorSlotHeight);
-            UIKit.HStack(tile, 14f, UIKit.Pad(16f, 16f, 8f, 8f));
+            UIKit.HStack(tile, 10f, UIKit.Pad(12f, 12f, 6f, 6f));
             tile.SetSelected(screen.Selected.Is(SlotKind.Armor, index));
             tile.LeftClick += _ => screen.Select(key);
             tile.RightClick += _ => screen.Unequip(key);
+            tile.HoverChanged += (_, on) => screen.HoverSlot(key, on);
             DragTargets(tile, screen, piece, key);
 
-            Icon(tile.transform, s, piece, s.armorSlotHeight - 18f);
+            Icon(tile.transform, s, piece, s.armorSlotHeight - 12f);
 
             var info = UIKit.Node(tile.transform, "Info");
-            UIKit.VStack(info, 2f, null, TextAnchor.MiddleLeft);
+            UIKit.VStack(info, 0f, null, TextAnchor.MiddleLeft);
             UIKit.Size(info, flexWidth: 1f);
-            UIKit.Label(info, "Slot", s, ItemText.SlotName(slot));
-            UIKit.Text(info, "Name", s, piece != null ? ItemText.Name(piece) : "Empty", s.bodySize - 1f,
-                       piece != null ? ItemText.NameColor(s, piece, s.text) : s.textFaint, lines: piece != null ? 2 : 1,
+            UIKit.Text(info, "Slot", s, ItemText.SlotName(slot), s.labelSize + 1f, s.textMuted, TextAlignmentOptions.MidlineLeft, heading: true);
+            UIKit.Text(info, "Name", s, piece != null ? ItemText.Name(piece) : "Empty", s.smallSize + 2f,
+                       piece != null ? ItemText.NameColor(s, piece, s.text) : s.textFaint,
                        role: piece != null ? TextRole.Title : TextRole.Body);
 
             if (piece != null) ChipGrid(tile.transform, screen, piece.Perks, screen.ContextFor(piece));
@@ -179,27 +181,29 @@ namespace Combat.UI
             foreach (var p in perks) if (p != null) count++;
             if (count == 0) return;
 
-            const float gap = 4f;
+            const float gap = 3f;
+            float size = s.cardChipSize;
             int perRow = Mathf.Max(1, s.chipsPerRow);
             int rows = Mathf.CeilToInt(count / (float)perRow);
 
             var grid = UIKit.Node(parent, "Perks");
             var g = grid.gameObject.AddComponent<UnityEngine.UI.GridLayoutGroup>();
-            g.cellSize = new Vector2(s.chipSize, s.chipSize);
+            g.cellSize = new Vector2(size, size);
             g.spacing = new Vector2(gap, gap);
             g.constraint = UnityEngine.UI.GridLayoutGroup.Constraint.FixedColumnCount;
             g.constraintCount = perRow;
             g.childAlignment = TextAnchor.MiddleRight;
-            UIKit.Size(grid, width: perRow * s.chipSize + (perRow - 1) * gap, height: rows * s.chipSize + (rows - 1) * gap);
-            foreach (var p in perks) if (p != null) Chip(grid, s, p, screen, ctx);
+            UIKit.Size(grid, width: perRow * size + (perRow - 1) * gap, height: rows * size + (rows - 1) * gap);
+            foreach (var p in perks) if (p != null) Chip(grid, s, p, screen, ctx, size);
         }
 
         // Perk chip; with a screen it shows the perk's name and description on hover.
-        public static void Chip(Transform parent, UIStyleSO s, PerkSO perk, InventoryScreen screen = null, DescribeContext ctx = null)
+        public static void Chip(Transform parent, UIStyleSO s, PerkSO perk, InventoryScreen screen = null, DescribeContext ctx = null, float size = -1f)
         {
+            if (size <= 0f) size = s.chipSize;
             var chip = UIKit.Box(parent, "Chip_" + perk.name, s, s.tileEmpty, true, small: true);
             if (screen != null) InfoHover.Attach(chip, screen, ItemText.PerkName(perk), s.accent, perk, ctx ?? screen.ContextFor(null));
-            UIKit.Size(chip, width: s.chipSize, height: s.chipSize);
+            UIKit.Size(chip, width: size, height: size);
             if (perk.icon != null)
             {
                 var img = UIKit.Node(chip.transform, "Icon").gameObject.AddComponent<UnityEngine.UI.Image>();

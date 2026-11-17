@@ -61,6 +61,8 @@ namespace Combat.Testing
             if (input == null) input = PlayerInputRouter.For(this);
             if (input != null)
             {
+                if (input.Debug.ToggleSpawnOverlay.WasPressedThisFrame()) showOverlay = !showOverlay;
+
                 if (input.Debug.SpawnOne.WasPressedThisFrame())
                     Report(variant != null ? spawner.Spawn(variant, SpawnPoint()) != null : spawner.Spawn(enemyId, SpawnPoint()) != null, Label, 1);
 

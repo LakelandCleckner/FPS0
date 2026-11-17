@@ -52,6 +52,15 @@ namespace Combat.UI
             HoverChanged?.Invoke(this, hovered);
         }
 
+        // A tile removed while hovered still reports the hover ending.
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            if (!hovered) return;
+            hovered = false;
+            HoverChanged?.Invoke(this, false);
+        }
+
         public override void OnSelect(BaseEventData e)
         {
             base.OnSelect(e);

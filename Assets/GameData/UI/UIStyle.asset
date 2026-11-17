@@ -51,11 +51,12 @@ MonoBehaviour:
   rankMajor: {r: 1, g: 0.66, b: 0.2, a: 1}
   rankElite: {r: 0.78, g: 0.42, b: 1, a: 1}
   rankMiniboss: {r: 1, g: 0.86, b: 0.35, a: 1}
-  rankBoss: {r: 1, g: 0.86, b: 0.35, a: 1}
-  rankIconMinor: {fileID: 0}
-  rankIconMajor: {fileID: 0}
-  rankIconElite: {fileID: 0}
-  rankIconMiniboss: {fileID: 0}
+  rankBoss: {r: 0.029355614, g: 0.5018867, b: 0.11406932, a: 1}
+  rankIconMinor: {fileID: 21300000, guid: b03353852b80c2b4fb37408334574c46, type: 3}
+  rankIconMajor: {fileID: 21300000, guid: 18e487365634c2d4dae4b3966d467152, type: 3}
+  rankIconElite: {fileID: 21300000, guid: 0074ac772c0ffef4280457194ece747f, type: 3}
+  rankIconMiniboss: {fileID: 21300000, guid: 5354cf0ac18714d4d926e79e14f7283a, type: 3}
+  rankIconBoss: {fileID: 21300000, guid: de35cff28944b8840a2adddc7ea549d7, type: 3}
   enemyShield: {r: 0.45, g: 0.8, b: 1, a: 1}
   barTrack: {r: 1, g: 1, b: 1, a: 0.07}
   barBase: {r: 0.86, g: 0.89, b: 0.91, a: 1}
@@ -71,10 +72,13 @@ MonoBehaviour:
   padding: 22
   gap: 10
   sectionGap: 22
-  weaponSlotHeight: 112
-  armorSlotHeight: 76
+  weaponSlotHeight: 78
+  armorSlotHeight: 58
   gridTileSize: 118
   gridColumns: 3
   perkIconSize: 46
   chipSize: 26
+  cardChipSize: 22
+  carriedColumns: 5
+  carriedAutoOpen: 1
   chipsPerRow: 4

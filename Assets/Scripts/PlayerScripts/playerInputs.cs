@@ -1271,6 +1271,16 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""ToggleSpawnOverlay"",
+                    ""type"": ""Button"",
+                    ""id"": ""3b9f48a1-a3cf-41ac-a10b-465e8645a02e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -2274,6 +2284,39 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""action"": ""ToggleAIDebug"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt"",
+                    ""id"": ""a2a211ac-1848-43b1-a123-70b925f8a47d"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleSpawnOverlay"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""f004a836-7d95-4cea-a71f-7a04ee70a2f2"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ToggleSpawnOverlay"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""1d89b304-029b-4da6-ac1c-29d94ea1afd6"",
+                    ""path"": ""<Keyboard>/o"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ToggleSpawnOverlay"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -2348,6 +2391,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         m_Debug_FalloffHud = m_Debug.FindAction("FalloffHud", throwIfNotFound: true);
         m_Debug_SpawnDrop = m_Debug.FindAction("SpawnDrop", throwIfNotFound: true);
         m_Debug_ToggleAIDebug = m_Debug.FindAction("ToggleAIDebug", throwIfNotFound: true);
+        m_Debug_ToggleSpawnOverlay = m_Debug.FindAction("ToggleSpawnOverlay", throwIfNotFound: true);
     }
 
     ~@PlayerInputs()
@@ -3000,6 +3044,7 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_Debug_FalloffHud;
     private readonly InputAction m_Debug_SpawnDrop;
     private readonly InputAction m_Debug_ToggleAIDebug;
+    private readonly InputAction m_Debug_ToggleSpawnOverlay;
     /// <summary>
     /// Provides access to input actions defined in input action map "Debug".
     /// </summary>
@@ -3124,6 +3169,10 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @ToggleAIDebug => m_Wrapper.m_Debug_ToggleAIDebug;
         /// <summary>
+        /// Provides access to the underlying input action "Debug/ToggleSpawnOverlay".
+        /// </summary>
+        public InputAction @ToggleSpawnOverlay => m_Wrapper.m_Debug_ToggleSpawnOverlay;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Debug; }
@@ -3233,6 +3282,9 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @ToggleAIDebug.started += instance.OnToggleAIDebug;
             @ToggleAIDebug.performed += instance.OnToggleAIDebug;
             @ToggleAIDebug.canceled += instance.OnToggleAIDebug;
+            @ToggleSpawnOverlay.started += instance.OnToggleSpawnOverlay;
+            @ToggleSpawnOverlay.performed += instance.OnToggleSpawnOverlay;
+            @ToggleSpawnOverlay.canceled += instance.OnToggleSpawnOverlay;
         }
 
         /// <summary>
@@ -3328,6 +3380,9 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @ToggleAIDebug.started -= instance.OnToggleAIDebug;
             @ToggleAIDebug.performed -= instance.OnToggleAIDebug;
             @ToggleAIDebug.canceled -= instance.OnToggleAIDebug;
+            @ToggleSpawnOverlay.started -= instance.OnToggleSpawnOverlay;
+            @ToggleSpawnOverlay.performed -= instance.OnToggleSpawnOverlay;
+            @ToggleSpawnOverlay.canceled -= instance.OnToggleSpawnOverlay;
         }
 
         /// <summary>
@@ -3783,5 +3838,12 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnToggleAIDebug(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToggleSpawnOverlay" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToggleSpawnOverlay(InputAction.CallbackContext context);
     }
 }

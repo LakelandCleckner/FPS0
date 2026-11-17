@@ -78,7 +78,8 @@ namespace Combat.UI
         private object holdItem;
         private float held;
         private bool waitRelease;
-        private bool open, dirty = true, detailDirty, footerDirty, building, previewBuilt, subscribed;
+        private bool open, dirty = true, detailDirty, footerDirty, carriedDirty, building, previewBuilt, subscribed;
+        private float slotHoverClearAt = -1f;
         private float messageUntil;
 
         public UIStyleSO Style => style;
@@ -91,6 +92,8 @@ namespace Combat.UI
         public InventoryTab Tab { get; private set; } = InventoryTab.Loadout;
         public SlotRef Selected { get; private set; } = new SlotRef(SlotKind.Weapon, 0);
         public object Hovered { get; private set; }
+        // Equipped slot under the pointer or focus; carried sections preview it.
+        public SlotRef? HoveredSlot { get; private set; }
         // Last item hovered; the detail panel keeps showing it after the pointer leaves.
         public object Shown { get; private set; }
         // Vault tab selection: pinned in the detail panel, and what Store and delete act on.
@@ -205,6 +208,14 @@ namespace Combat.UI
                 else ResetHold();
             }
 
+            // Short grace so moving between slot cards doesn't snap back to the selection.
+            if (slotHoverClearAt >= 0f && Time.unscaledTime >= slotHoverClearAt)
+            {
+                slotHoverClearAt = -1f;
+                HoveredSlot = null;
+                carriedDirty = true;
+            }
+
             if (open && Message.Length > 0 && Time.unscaledTime >= messageUntil)
             {
                 Message = "";
@@ -220,7 +231,9 @@ namespace Combat.UI
             {
                 if (detailDirty) RebuildDetail();
                 if (footerDirty) RebuildFooter();
+                if (carriedDirty && carriedPanel != null) carriedPanel.Rebuild(this);
             }
+            carriedDirty = false;
             if (Tab == InventoryTab.Character && characterPanel != null) characterPanel.Tick(this);
         }
 
@@ -234,6 +247,8 @@ namespace Combat.UI
             {
                 if (input != null) input.PushUI(uiOwner);
                 Hovered = Shown = null;
+                HoveredSlot = null;
+                slotHoverClearAt = -1f;
                 RebuildAll();
             }
             else
@@ -586,6 +601,24 @@ namespace Combat.UI
             g.interactable = false;
             rt.SetAsLastSibling();
             return rt;
+        }
+
+        public void HoverSlot(SlotRef slot, bool on)
+        {
+            if (on)
+            {
+                slotHoverClearAt = -1f;
+                if (HoveredSlot.HasValue && HoveredSlot.Value.Is(slot.Kind, slot.Index)) return;
+                HoveredSlot = slot;
+            }
+            else
+            {
+                if (!HoveredSlot.HasValue || !HoveredSlot.Value.Is(slot.Kind, slot.Index)) return;
+                if (Application.isPlaying) { slotHoverClearAt = Time.unscaledTime + 0.12f; return; }
+                HoveredSlot = null;
+            }
+            carriedDirty = true;
+            if (!Application.isPlaying) Request();
         }
 
         public void OnTileHover(UITile tile, bool on)

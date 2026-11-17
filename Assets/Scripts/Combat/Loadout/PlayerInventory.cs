@@ -13,11 +13,11 @@ namespace Combat.Loadout
         [Tooltip("Weapons carried per loadout slot (by each weapon's inventory slot). Equipped weapons don't count.")]
         [Min(0)]
         [FormerlySerializedAs("carriedWeaponCap")]
-        [SerializeField] private int carriedWeaponCapPerSlot = 9;
+        [SerializeField] private int carriedWeaponCapPerSlot = 10;
 
         [Tooltip("Armor pieces carried per armor slot. Equipped armor doesn't count.")]
         [Min(0)]
-        [SerializeField] private int carriedArmorCapPerSlot = 9;
+        [SerializeField] private int carriedArmorCapPerSlot = 10;
 
         private readonly List<WeaponInstance> weapons = new List<WeaponInstance>();
         private readonly List<ArmorInstance> armor = new List<ArmorInstance>();

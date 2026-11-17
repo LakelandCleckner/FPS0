@@ -1185,6 +1185,16 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
+                },
+                {
+                    "name": "ToggleSpawnOverlay",
+                    "type": "Button",
+                    "id": "3b9f48a1-a3cf-41ac-a10b-465e8645a02e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -2186,6 +2196,39 @@
                     "processors": "",
                     "groups": ";Default",
                     "action": "ToggleAIDebug",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Alt",
+                    "id": "a2a211ac-1848-43b1-a123-70b925f8a47d",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleSpawnOverlay",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "f004a836-7d95-4cea-a71f-7a04ee70a2f2",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Default",
+                    "action": "ToggleSpawnOverlay",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "1d89b304-029b-4da6-ac1c-29d94ea1afd6",
+                    "path": "<Keyboard>/o",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Default",
+                    "action": "ToggleSpawnOverlay",
                     "isComposite": false,
                     "isPartOfComposite": true
                 }

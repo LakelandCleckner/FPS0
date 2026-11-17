@@ -1537,8 +1537,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04a2c11c53180364c94c098c9983b560, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  carriedWeaponCapPerSlot: 9
-  carriedArmorCapPerSlot: 9
+  carriedWeaponCapPerSlot: 10
+  carriedArmorCapPerSlot: 10
 --- !u!114 &2881276839120533511
 MonoBehaviour:
   m_ObjectHideFlags: 0

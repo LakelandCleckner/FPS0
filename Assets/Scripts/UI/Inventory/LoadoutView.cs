@@ -26,8 +26,8 @@ namespace Combat.UI
         public readonly List<ArmorInstance> CarriedArmor = new List<ArmorInstance>();
         public readonly List<WeaponInstance> VaultWeapons = new List<WeaponInstance>();
         public readonly List<ArmorInstance> VaultArmor = new List<ArmorInstance>();
-        public int WeaponCapPerSlot = 9;
-        public int ArmorCapPerSlot = 9;
+        public int WeaponCapPerSlot = 10;
+        public int ArmorCapPerSlot = 10;
         public bool Locked;
         public bool IsPreview;
 
