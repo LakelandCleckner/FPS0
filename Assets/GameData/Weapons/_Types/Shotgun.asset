@@ -29,11 +29,11 @@ MonoBehaviour:
     extraPerks: []
   - label: Trait
     minRarity: 0
-    source: {fileID: 11400000, guid: fee7a54fc72d9a9498b3d9c9b0ed2ec0, type: 2}
+    source: {fileID: 11400000, guid: 6b7445b35fd54288bc0983b776ae3c31, type: 2}
     extraPerks: []
   - label: Trait
     minRarity: 0
-    source: {fileID: 11400000, guid: 256cc2e72b7a4b548b19a0abe02b12b0, type: 2}
+    source: {fileID: 11400000, guid: fee7a54fc72d9a9498b3d9c9b0ed2ec0, type: 2}
     extraPerks: []
   - label: Trait
     minRarity: 1
@@ -41,13 +41,26 @@ MonoBehaviour:
     extraPerks: []
   - label: Trait
     minRarity: 2
-    source: {fileID: 11400000, guid: d765c4dc6e13d8d4eb8a08dc803da118, type: 2}
+    source: {fileID: 11400000, guid: 4a4055abda214510925b94f47670c1b3, type: 2}
     extraPerks: []
   - label: Trait
     minRarity: 3
-    source: {fileID: 11400000, guid: d765c4dc6e13d8d4eb8a08dc803da118, type: 2}
+    source: {fileID: 11400000, guid: 4a4055abda214510925b94f47670c1b3, type: 2}
     extraPerks: []
   - label: Trait
     minRarity: 4
-    source: {fileID: 11400000, guid: d765c4dc6e13d8d4eb8a08dc803da118, type: 2}
+    source: {fileID: 11400000, guid: 4a4055abda214510925b94f47670c1b3, type: 2}
     extraPerks: []
+  - label: Element
+    minRarity: 1
+    source: {fileID: 11400000, guid: 493ae8f02fc8405bb35cda236702a836, type: 2}
+    extraPerks: []
+    byElement:
+    - element: {fileID: 11400000, guid: bb5cd7710169fec488edfdb57f9d8ade, type: 2}
+      pool: {fileID: 11400000, guid: b32c704cbb984029afd0bac369fe47c3, type: 2}
+    - element: {fileID: 11400000, guid: 4e160728f4591b5449e17a7cceb05c43, type: 2}
+      pool: {fileID: 11400000, guid: f6725ca85c2f48df9e96f69ee710649d, type: 2}
+    - element: {fileID: 11400000, guid: 8337384683ac3314180ba08185f989f2, type: 2}
+      pool: {fileID: 11400000, guid: 4de1e5df9bb84bc68cd79b79f478f098, type: 2}
+    - element: {fileID: 11400000, guid: 1b2eaa9ee1d78754f9e8def8f252f9e4, type: 2}
+      pool: {fileID: 11400000, guid: 7ec54142e94b417a8784f0f9f1b32f74, type: 2}

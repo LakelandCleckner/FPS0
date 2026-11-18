@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4d1da4720f2c694786e3c4a0bbe5be0, type: 3}
+  m_Name: Shotgun Traits
+  m_EditorClassIdentifier: 
+  perks:
+  - {fileID: 11400000, guid: fffc1c30d7054b93aba99d83091622d5, type: 2}
+  - {fileID: 11400000, guid: 7567f17af2eb4c8786dd16af28b6ced3, type: 2}
+  - {fileID: 11400000, guid: 4eeb5dca5d214c1587baec862e75a076, type: 2}
+  - {fileID: 11400000, guid: 82ed6fca5d274106a9e6969780d8f58b, type: 2}
+  includes:
+  - {fileID: 11400000, guid: 256cc2e72b7a4b548b19a0abe02b12b0, type: 2}
+  authoredAs: Shotgun traits, @Sustain

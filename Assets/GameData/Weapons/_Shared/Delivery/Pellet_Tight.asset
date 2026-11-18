@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6462041372fef864ca3ad9d4a4bb6e2d, type: 3}
+  m_Name: Pellet_Tight
+  m_EditorClassIdentifier: 
+  pelletDelivery: {fileID: 11400000, guid: b38b61e8f021d194e886619c1acbd934, type: 2}
+  spreadAngle: 0.6
+  pattern:
+  - {x: -0.000000019670125, y: 0.45}
+  - {x: -0.3897114, y: -0.22499998}
+  - {x: 0.38971138, y: -0.22500007}
+  - {x: 1, y: 0}
+  - {x: 0.49999997, y: 0.86602545}
+  - {x: -0.50000006, y: 0.8660254}
+  - {x: -1, y: -0.00000008742278}
+  - {x: -0.4999999, y: -0.86602545}
+  - {x: 0.4999999, y: -0.86602545}

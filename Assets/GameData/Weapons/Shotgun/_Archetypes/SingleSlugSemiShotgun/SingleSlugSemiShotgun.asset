@@ -80,8 +80,8 @@ MonoBehaviour:
   shellStartFraction: 0
   shellEndFraction: 0.1
   interruptReadyFraction: 0.3
-  magazineSize: 10
-  reloadTime: 8
+  magazineSize: 8
+  reloadTime: 6.5
   infiniteReserves: 0
   handling: 25
   baseEquipTime: 0.5
@@ -93,3 +93,5 @@ MonoBehaviour:
     deliveryOverrides: []
   crosshairPrefab: {fileID: 6358792504129393579, guid: f65e2aca27d6353489d3b57cde01da47, type: 3}
   round: {fileID: 11400000, guid: 1a65fe1dd1c344d4bc05c17b21ad0453, type: 2}
+  intrinsicPerks:
+  - {fileID: 11400000, guid: 7e0c9ceaf8fc41698fee07244c3f435c, type: 2}

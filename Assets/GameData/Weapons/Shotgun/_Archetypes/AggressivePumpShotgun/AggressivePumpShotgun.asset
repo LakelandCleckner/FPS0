@@ -91,15 +91,15 @@ MonoBehaviour:
   centreSpeed: 7
   recenterPercent: 0.95
   residualError: 0.1
-  weaponDamage: 60
+  weaponDamage: 70
   precisionMultiplier: 1.2
-  roundsPerMinute: 90
+  roundsPerMinute: 80
   reloadStyle: 1
   shellStartFraction: 0
   shellEndFraction: 0.1
   interruptReadyFraction: 0.3
-  magazineSize: 10
-  reloadTime: 7
+  magazineSize: 5
+  reloadTime: 4
   infiniteReserves: 0
   handling: 50
   baseEquipTime: 0.5
@@ -111,3 +111,5 @@ MonoBehaviour:
     deliveryOverrides: []
   crosshairPrefab: {fileID: 6358792504129393579, guid: f65e2aca27d6353489d3b57cde01da47, type: 3}
   round: {fileID: 11400000, guid: 51e7ad746bdf4a5a9d780d2fc84fba50, type: 2}
+  intrinsicPerks:
+  - {fileID: 11400000, guid: 3540a27ebd5d404a9e7efffd125c86f9, type: 2}
