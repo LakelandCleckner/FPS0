@@ -122,7 +122,16 @@ namespace Combat.UI
             UIKit.Text(info, "Name", s, ItemText.Name(weapon), s.bodySize, ItemText.NameColor(s, weapon, s.text), role: TextRole.Title);
             string kind = ItemText.Kind(weapon);
             string element = ItemText.Element(weapon);
-            UIKit.Text(info, "Kind", s, string.IsNullOrEmpty(element) ? kind : kind + "  /  " + element, s.smallSize, s.textMuted);
+            var type = ItemText.ElementType(weapon);
+            var kindLine = UIKit.Node(info, "Kind");
+            UIKit.HStack(kindLine, 5f);
+            UIKit.Text(kindLine, "Text", s, string.IsNullOrEmpty(element) ? kind : kind + "  /", s.smallSize, s.textMuted);
+            if (type != null)
+            {
+                UIKit.Icon(kindLine, "Icon", type.icon, type.color, s.smallSize + 4f);
+                UIKit.Text(kindLine, "Element", s, element, s.smallSize, type.color);
+            }
+            UIKit.Spacer(kindLine);
             ChipGrid(tile.transform, screen, weapon.Definition.intrinsicPerks, weapon.Perks, screen.ContextFor(weapon), s.weaponSlotHeight - 16f);
             return tile;
         }
@@ -171,6 +180,8 @@ namespace Combat.UI
             if (item == null) return;
             var t = UIKit.Text(box.transform, "Monogram", s, ItemText.Monogram(item), size * 0.34f, s.text, TextAlignmentOptions.Center, role: TextRole.Title);
             UIKit.Stretch(t.rectTransform);
+            var type = item is WeaponInstance w ? ItemText.ElementType(w) : null;
+            if (type != null) UIKit.Badge(box.rectTransform, "Element", type.icon, type.color, size * 0.28f, new Vector2(1f, 0f), 6f);
         }
 
         // Perk chips on the card's right, intrinsics first with an accent border, wrapping every Chips Per Row.
@@ -206,8 +217,8 @@ namespace Combat.UI
         {
             if (size <= 0f) size = s.chipSize;
             // Elemental perks wear their element's colour; other intrinsics the accent
-            bool elemental = ItemText.PerkElementColor(perk, out var element);
-            Color tint = elemental ? element : s.accent;
+            bool elemental = ItemText.PerkElement(perk, out var type);
+            Color tint = elemental ? type.color : s.accent;
             var chip = UIKit.Box(parent, "Chip_" + perk.name, s, s.tileEmpty, true, intrinsic || elemental ? tint : (Color?)null, small: true);
             string title = intrinsic ? ItemText.PerkName(perk) + "  (Intrinsic)" : ItemText.PerkName(perk);
             if (screen != null) InfoHover.Attach(chip, screen, title, tint, perk, ctx ?? screen.ContextFor(null));
@@ -226,6 +237,7 @@ namespace Combat.UI
                 t.characterSpacing = 0f;
                 UIKit.Stretch(t.rectTransform);
             }
+            if (elemental) UIKit.Badge(chip.rectTransform, "Element", type.icon, tint, size * 0.36f, new Vector2(1f, 0f), 1f);
         }
     }
 }

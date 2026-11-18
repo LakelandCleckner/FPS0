@@ -11,6 +11,10 @@ namespace Combat.UI
     // Code-built UI helpers. Everything made here is marked DontSave while Transient is set (edit-mode previews).
     public static class UIKit
     {
+        // An inline sprite tag with its colour wrapper and trailing space
+        private static readonly System.Text.RegularExpressions.Regex NoSprites =
+            new System.Text.RegularExpressions.Regex("(<color=[^>]*>)?<sprite[^>]*>(</color>)? ?");
+
         public static bool Transient;
 
         public static RectTransform Node(Transform parent, string name)
@@ -112,6 +116,32 @@ namespace Combat.UI
             le.ignoreLayout = true;
         }
 
+        // Tinted square icon, aspect kept. Null when there is no sprite.
+        public static Image Icon(Transform parent, string name, Sprite sprite, Color color, float size)
+        {
+            if (sprite == null) return null;
+            var img = Solid(parent, name, color);
+            img.sprite = sprite;
+            img.preserveAspect = true;
+            Size(img, size, size);
+            return img;
+        }
+
+        // Icon pinned to a corner of 'target', outside its layout. corner: (1,0) = bottom right.
+        public static Image Badge(RectTransform target, string name, Sprite sprite, Color color, float size, Vector2 corner, float inset = 2f)
+        {
+            if (sprite == null || target == null) return null;
+            var img = Solid(target, name, color);
+            img.sprite = sprite;
+            img.preserveAspect = true;
+            Ignore(img);
+            var rt = img.rectTransform;
+            rt.anchorMin = rt.anchorMax = rt.pivot = corner;
+            rt.sizeDelta = new Vector2(size, size);
+            rt.anchoredPosition = new Vector2(corner.x > 0.5f ? -inset : inset, corner.y > 0.5f ? -inset : inset);
+            return img;
+        }
+
         // Square-cornered solid block (rules, bar segments, accent marks).
         public static Image Solid(Transform parent, string name, Color color)
         {
@@ -130,6 +160,8 @@ namespace Combat.UI
             var rt = Node(parent, name);
             var t = rt.gameObject.AddComponent<TextMeshProUGUI>();
             t.font = FontFor(style, r);
+            if (style.inlineIcons != null) t.spriteAsset = style.inlineIcons;
+            else if (value != null && value.Contains("<sprite")) value = NoSprites.Replace(value, "");   // no inline icons yet
             t.text = value ?? "";
             t.fontSize = size;
             t.color = color;

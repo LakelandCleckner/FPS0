@@ -59,7 +59,8 @@ namespace Combat.UI
         {
             var s = screen.Style;
             var def = w.Definition;
-            Title(body, s, w, ItemText.Kind(w), ItemText.Element(w), ItemText.ElementColor(w, s.accent));
+            var type = ItemText.ElementType(w);
+            Title(body, s, w, ItemText.Kind(w), ItemText.Element(w), ItemText.ElementColor(w, s.accent), type != null ? type.icon : null);
 
             // Slot rules
             var rules = UIKit.Node(body, "Slots");
@@ -266,7 +267,8 @@ namespace Combat.UI
         // ------------------------------------------------------------------ parts
 
         // Banner with the rarity wash: name in its rarity colour, the kind line led by the rarity.
-        private static void Title(RectTransform body, UIStyleSO s, object item, string kind, string element, Color elementColor = default)
+        private static void Title(RectTransform body, UIStyleSO s, object item, string kind, string element, Color elementColor = default,
+                                  Sprite elementIcon = null)
         {
             var rarity = ItemText.RarityOf(item);
             var banner = UIKit.Box(body, "TitleBlock", s, s.backdrop);
@@ -286,7 +288,8 @@ namespace Combat.UI
                 var c = elementColor.a > 0f ? elementColor : s.accent;
                 var pill = UIKit.Box(line, "Element", s, new Color(c.r, c.g, c.b, 0.12f), true,
                                      new Color(c.r, c.g, c.b, 0.5f), small: true);
-                UIKit.HStack(pill, 0f, UIKit.Pad(10f, 10f, 3f, 3f), TextAnchor.MiddleCenter);
+                UIKit.HStack(pill, 5f, UIKit.Pad(elementIcon != null ? 6f : 10f, 10f, 3f, 3f), TextAnchor.MiddleCenter);
+                UIKit.Icon(pill.transform, "Icon", elementIcon, c, s.labelSize + 6f);
                 UIKit.Text(pill.transform, "Text", s, element, s.labelSize, c, TextAlignmentOptions.Center, heading: true);
             }
         }
@@ -308,9 +311,11 @@ namespace Combat.UI
             var row = UIKit.Node(parent, "Perk_" + perk.name);
             UIKit.HStack(row, 14f, UIKit.Pad(0f, 0f, 4f, 4f), TextAnchor.UpperLeft);
 
-            bool elemental = ItemText.PerkElementColor(perk, out var element);
+            bool elemental = ItemText.PerkElement(perk, out var type);
+            var element = elemental ? type.color : default;
             var icon = UIKit.Box(row, "Icon", s, s.tileHover, true, elemental ? element : (Color?)null, small: true);
             UIKit.Size(icon, width: s.perkIconSize, height: s.perkIconSize);
+            if (elemental) UIKit.Badge(icon.rectTransform, "Element", type.icon, element, s.perkIconSize * 0.42f, new Vector2(1f, 0f), -4f);
             if (perk.icon != null)
             {
                 var img = UIKit.Node(icon.transform, "Art").gameObject.AddComponent<UnityEngine.UI.Image>();

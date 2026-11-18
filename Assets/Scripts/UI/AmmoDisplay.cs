@@ -29,6 +29,15 @@ namespace Combat.Weapons
 
         [SerializeField] private TMP_Text label;
 
+        [Header("Element")]
+        [Tooltip("Shows the held weapon's damage type icon. Empty = one is created to the left of the label.")]
+        [SerializeField] private UnityEngine.UI.Image elementIcon;
+        [SerializeField] private bool showElement = true;
+        [Tooltip("Icon size as a multiple of the label's font size.")]
+        [SerializeField] private float elementIconScale = 1.1f;
+        [Tooltip("Gap in pixels between the icon and the label.")]
+        [SerializeField] private float elementIconGap = 8f;
+
         [Header("Format")]
         [Tooltip("Symbol shown for reserves when the weapon has infinite reserves.")]
         [SerializeField] private string infiniteSymbol = "\u221E"; // ∞
@@ -97,6 +106,7 @@ namespace Combat.Weapons
             }
 
             bound = next;
+            RefreshElement();
 
             if (bound != null)
             {
@@ -118,6 +128,38 @@ namespace Combat.Weapons
         }
 
         private void HandleAmmoEvent(WeaponEvent evt) => Refresh();
+
+        // Icon of the held weapon's damage type, tinted to its colour.
+        private void RefreshElement()
+        {
+            var source = bound != null ? bound.Source : null;
+            var type = source != null ? source.BaseDamageType : null;
+            bool show = showElement && type != null && type.icon != null;
+            if (show && elementIcon == null) elementIcon = CreateIcon();
+            if (elementIcon == null) return;
+            elementIcon.enabled = show;
+            if (!show) return;
+            elementIcon.sprite = type.icon;
+            elementIcon.color = type.color;
+        }
+
+        private UnityEngine.UI.Image CreateIcon()
+        {
+            if (label == null) return null;
+            var go = new GameObject("ElementIcon", typeof(RectTransform), typeof(UnityEngine.UI.Image));
+            var rt = (RectTransform)go.transform;
+            rt.SetParent(label.rectTransform, false);
+            // Just outside the label's left edge, vertically centred
+            rt.anchorMin = rt.anchorMax = new Vector2(0f, 0.5f);
+            rt.pivot = new Vector2(1f, 0.5f);
+            float size = label.fontSize * elementIconScale;
+            rt.sizeDelta = new Vector2(size, size);
+            rt.anchoredPosition = new Vector2(-elementIconGap, 0f);
+            var img = go.GetComponent<UnityEngine.UI.Image>();
+            img.preserveAspect = true;
+            img.raycastTarget = false;
+            return img;
+        }
 
         private void Refresh()
         {

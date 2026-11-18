@@ -15,6 +15,8 @@ MonoBehaviour:
   id: physical
   displayName: Ballistic
   color: {r: 0.85, g: 0.85, b: 0.85, a: 1}
+  icon: {fileID: 21300000, guid: 4820876831d14192a57cb8575707b893, type: 3}
+  inlineSprite: Ballistic
   hitSound: {fileID: 8300000, guid: 6df85a6523bd5834283b398ed01f3cb1, type: 3}
   font: {fileID: 11400000, guid: 50aa2ce3f6554a649a8b0f1191dda614, type: 2}
   normalGradient:

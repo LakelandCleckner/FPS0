@@ -58,6 +58,7 @@ MonoBehaviour:
   rankIconMiniboss: {fileID: 21300000, guid: 5354cf0ac18714d4d926e79e14f7283a, type: 3}
   rankIconBoss: {fileID: 21300000, guid: de35cff28944b8840a2adddc7ea549d7, type: 3}
   enemyShield: {r: 0.45, g: 0.8, b: 1, a: 1}
+  inlineIcons: {fileID: 11400000, guid: 74dba2ae0d493ce46962949311b3bc9d, type: 2}
   barTrack: {r: 1, g: 1, b: 1, a: 0.07}
   barBase: {r: 0.86, g: 0.89, b: 0.91, a: 1}
   barPerk: {r: 0.47, g: 0.76, b: 1, a: 1}

@@ -64,6 +64,22 @@ namespace Combat.UI
             return t != null ? Pick(t.displayName, t.name) : "";
         }
 
+        // The weapon's damage type, or null.
+        public static Combat.Core.DamageTypeSO ElementType(WeaponInstance w)
+            => w != null && w.Definition != null ? w.Definition.baseDamageType : null;
+
+        // First element a perk deals or applies; false for element-free perks.
+        public static bool PerkElement(PerkSO perk, out Combat.Core.DamageTypeSO type)
+        {
+            type = null;
+            if (perk == null) return false;
+            perkElements.Clear();
+            perk.CollectElements(perkElements);
+            for (int i = 0; i < perkElements.Count; i++)
+                if (perkElements[i] != null) { type = perkElements[i]; return true; }
+            return false;
+        }
+
         // The weapon's damage type colour, else the fallback.
         public static UnityEngine.Color ElementColor(WeaponInstance w, UnityEngine.Color fallback)
         {

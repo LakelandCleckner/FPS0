@@ -2296,6 +2296,10 @@ MonoBehaviour:
   loadout: {fileID: 1551917934}
   ammo: {fileID: 0}
   label: {fileID: 632418750}
+  elementIcon: {fileID: 0}
+  showElement: 1
+  elementIconScale: 1.1
+  elementIconGap: 8
   infiniteSymbol: "\u221E"
   separator: ' / '
 --- !u!1 &633784269

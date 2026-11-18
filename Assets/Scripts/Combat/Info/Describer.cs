@@ -151,6 +151,7 @@ namespace Combat.Info
         {
             if (type == null) return Add(fallback);
             string word = string.IsNullOrWhiteSpace(type.displayName) ? type.name : type.displayName;
+            if (Context.Rich) Add(type.InlineIcon());   // tinted element icon before the name
             return type.keyword != null ? Keyword(type.keyword, null, word) : Add(word);
         }
 
@@ -158,6 +159,7 @@ namespace Combat.Info
         {
             if (status == null) return this;
             string word = status.keyword != null ? status.keyword.Name : StatusName(status);
+            if (Context.Rich && status.damageType != null) Add(status.damageType.InlineIcon());   // element icon before the status
             return status.keyword != null ? Keyword(status.keyword, status, word) : Add(word);
         }
 

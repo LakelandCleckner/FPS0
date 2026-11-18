@@ -375,7 +375,7 @@ namespace Combat.UI
             {
                 if (t.keyword != null) keywords.Add(t.keyword);
                 string name = string.IsNullOrWhiteSpace(t.displayName) ? t.name : t.displayName;
-                var row = InfoRow(body, s, name, t.color, "x" + counts[t]);
+                var row = InfoRow(body, s, name, t.color, "x" + counts[t], t.icon);
                 InfoHover.Attach(row, screen, t, name, t.color, t.keyword != null ? t.keyword.description : null, null, ctx);
             }
             return keywords;
@@ -448,13 +448,14 @@ namespace Combat.UI
         }
 
         // Dot, name and an optional note on the right; returns the row's hit area for a hover popup.
-        private static Image InfoRow(Transform parent, UIStyleSO s, string name, Color color, string note)
+        private static Image InfoRow(Transform parent, UIStyleSO s, string name, Color color, string note, Sprite icon = null)
         {
             var row = UIKit.Node(parent, "Info_" + name);
             UIKit.HStack(row, 10f, UIKit.Pad(8f, 8f, 2f, 2f));
             var hit = row.gameObject.AddComponent<Image>();
             hit.color = new Color(0f, 0f, 0f, 0f);
-            UIKit.Size(UIKit.Solid(row, "Dot", color), width: 8f, height: 8f);
+            if (icon != null) UIKit.Icon(row, "Icon", icon, color, s.smallSize + 4f);
+            else UIKit.Size(UIKit.Solid(row, "Dot", color), width: 8f, height: 8f);
             UIKit.Size(UIKit.Text(row, "Name", s, name, s.smallSize, color), flexWidth: 1f);
             if (!string.IsNullOrEmpty(note)) UIKit.Text(row, "Note", s, note, s.smallSize, s.textMuted, TextAlignmentOptions.MidlineRight, role: TextRole.Number);
             return hit;

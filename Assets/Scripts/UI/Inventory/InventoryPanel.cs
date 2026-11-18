@@ -125,6 +125,10 @@ namespace Combat.UI
                                   TMPro.TextAlignmentOptions.Center, role: TextRole.Title);
             UIKit.Anchor(mono.rectTransform, new Vector2(0f, 0.34f), new Vector2(1f, 0.86f), Vector2.zero, Vector2.zero);
 
+            // Element badge, top right
+            var type = item is Combat.Weapons.WeaponInstance w ? ItemText.ElementType(w) : null;
+            if (type != null) UIKit.Badge((RectTransform)tile.transform, "Element", type.icon, type.color, small ? 16f : 22f, Vector2.one, small ? 5f : 8f);
+
             var name = UIKit.Text(tile.transform, "Name", s, ItemText.Name(item), small ? s.labelSize + 1f : s.labelSize + 2f, ItemText.NameColor(s, item, s.textMuted),
                                   TMPro.TextAlignmentOptions.Center, lines: 2, role: TextRole.Title);
             float pad = small ? 4f : 8f;

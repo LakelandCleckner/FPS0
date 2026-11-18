@@ -7,6 +7,7 @@ using Combat.Info;
 namespace Combat.UI
 {
     // Keyword links in a description: hover shows the keyword popup, click pins it.
+    // Nested links (inside a pinned popup) open a second popup beside it instead and don't pin.
     [RequireComponent(typeof(TMP_Text))]
     public class TextLinkHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerMoveHandler, IPointerClickHandler
     {
@@ -15,9 +16,11 @@ namespace Combat.UI
         private DescribeContext context;
         private TMP_Text text;
         private int hovered = -1;
+        private bool nested;
 
-        public void Setup(InventoryScreen owner, List<KeywordLink> keywordLinks, DescribeContext ctx)
+        public void Setup(InventoryScreen owner, List<KeywordLink> keywordLinks, DescribeContext ctx, bool nested = false)
         {
+            this.nested = nested;
             screen = owner;
             links = keywordLinks;
             context = ctx;
@@ -34,6 +37,7 @@ namespace Combat.UI
         public void OnPointerClick(PointerEventData e)
         {
             Check(e);
+            if (nested) return;
             if (hovered >= 0 && screen != null && screen.Tooltip != null) screen.Tooltip.ToggleKeywordPin(screen, links[hovered], context);
         }
 
@@ -50,9 +54,15 @@ namespace Combat.UI
         {
             if (index == hovered) return;
             var tip = screen != null ? screen.Tooltip : null;
-            if (tip != null && hovered >= 0) tip.HoverKeyword(screen, links[hovered], context, false);
+            if (tip != null && hovered >= 0) Hover(tip, links[hovered], false);
             hovered = index;
-            if (tip != null && hovered >= 0) tip.HoverKeyword(screen, links[hovered], context, true);
+            if (tip != null && hovered >= 0) Hover(tip, links[hovered], true);
+        }
+
+        private void Hover(StatTooltip tip, KeywordLink link, bool on)
+        {
+            if (nested) tip.HoverNested(screen, link, context, on);
+            else tip.HoverKeyword(screen, link, context, on);
         }
     }
 }

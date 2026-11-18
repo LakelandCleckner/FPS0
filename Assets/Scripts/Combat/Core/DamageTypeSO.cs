@@ -28,6 +28,30 @@ namespace Combat.Core
         [Tooltip("World colour for this type's pools, blasts and other effects.")]
         public Color color = Color.white;
 
+        [Tooltip("UI icon: white fill and dark outline, tinted to the colour above.")]
+        public UnityEngine.Sprite icon;
+        [Tooltip("Sprite name in the inline text sprite asset. Empty = no inline icon.")]
+        public string inlineSprite = "";
+
+        private static readonly System.Collections.Generic.List<DamageTypeSO> loaded = new System.Collections.Generic.List<DamageTypeSO>();
+
+        private void OnEnable() { if (!loaded.Contains(this)) loaded.Add(this); }
+        private void OnDisable() => loaded.Remove(this);
+
+        // The loaded damage type that owns this keyword, or null.
+        public static DamageTypeSO ForKeyword(Object keyword)
+        {
+            if (keyword == null) return null;
+            for (int i = 0; i < loaded.Count; i++)
+                if (loaded[i] != null && loaded[i].keyword == keyword) return loaded[i];
+            return null;
+        }
+
+        // Rich-text inline icon tinted to this type, with a trailing space. Empty without a sprite name.
+        public string InlineIcon()
+            => string.IsNullOrEmpty(inlineSprite) ? ""
+             : "<color=#" + ColorUtility.ToHtmlStringRGB(color) + "><sprite name=\"" + inlineSprite + "\" tint=1></color> ";
+
         [Tooltip("Optional hit/tick sound for this type. May be left empty for now.")]
         public AudioClip hitSound;
 

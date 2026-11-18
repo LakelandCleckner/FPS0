@@ -30,6 +30,10 @@ namespace Combat.UI
         private IDescribable infoDetail;
         private DescribeContext infoContext;
         private bool hasInfo;
+        // Second popup for a keyword hovered inside a pinned popup
+        private RectTransform sub;
+        private object subKey;
+        private CanvasGroup group;
 
         public bool IsPinned { get; private set; }
 
@@ -37,7 +41,7 @@ namespace Combat.UI
         {
             var rt = (RectTransform)transform;
             rt.pivot = new Vector2(0.5f, 0.5f);
-            var group = GetComponent<CanvasGroup>();
+            group = GetComponent<CanvasGroup>();
             if (group == null) group = gameObject.AddComponent<CanvasGroup>();
             group.blocksRaycasts = false;
             group.interactable = false;
@@ -84,6 +88,17 @@ namespace Combat.UI
             else if (SameInfo(key)) Hide();
         }
 
+        // The damage type a popup is about: an element row, an elemental perk, or an element keyword.
+        private static Combat.Core.DamageTypeSO ElementOf(object key, IDescribable detail)
+        {
+            if (key is Combat.Core.DamageTypeSO t) return t;
+            if (detail is Combat.Perks.PerkSO p && ItemText.PerkElement(p, out var pt)) return pt;
+            if (detail is Combat.Status.StatusSO st && st.damageType != null) return st.damageType;
+            if (key is KeywordSO k) return Combat.Core.DamageTypeSO.ForKeyword(k);
+            if (key is System.ValueTuple<KeywordSO, IDescribable> kt) return Combat.Core.DamageTypeSO.ForKeyword(kt.Item1);
+            return null;
+        }
+
         private static object KeyOf(KeywordLink link) => link.Detail != null ? (object)(link.Keyword, link.Detail) : link.Keyword;
 
         private bool SameInfo(object key) => hasInfo && Equals(infoKey, key);
@@ -111,6 +126,47 @@ namespace Combat.UI
             entry = null;
             Kill(box);
             box = null;
+            HideSub();
+            SetInteractive(false);
+        }
+
+        // A pinned popup takes the pointer so its own keyword links can be hovered.
+        private void SetInteractive(bool on)
+        {
+            if (group != null) group.blocksRaycasts = on;
+        }
+
+        // Keyword hovered inside a pinned popup: a second popup beside it.
+        public void HoverNested(InventoryScreen owner, KeywordLink link, DescribeContext ctx, bool on)
+        {
+            if (link.Keyword == null || box == null || owner == null || owner.Style == null) return;
+            var key = KeyOf(link);
+            if (!on) { if (Equals(subKey, key)) HideSub(); return; }
+            HideSub();
+            subKey = key;
+            sub = InfoBox(owner.Style, key, link.Keyword.Name, link.Keyword.color, link.Keyword.description, link.Detail, ctx, null, false);
+            PlaceSub();
+        }
+
+        private void HideSub()
+        {
+            Kill(sub);
+            sub = null;
+            subKey = null;
+        }
+
+        // Right of the main popup, else left; tops aligned and kept on screen.
+        private void PlaceSub()
+        {
+            if (sub == null || box == null) return;
+            var r = ((RectTransform)transform).rect;
+            Vector2 main = box.anchoredPosition, mainSize = box.rect.size, size = sub.rect.size;
+            const float gap = 8f;
+            float x = main.x + mainSize.x + gap;
+            if (x + size.x > r.xMax - edgeMargin) x = main.x - gap - size.x;
+            x = Mathf.Clamp(x, r.xMin + edgeMargin, Mathf.Max(r.xMin + edgeMargin, r.xMax - edgeMargin - size.x));
+            float y = Mathf.Clamp(main.y, Mathf.Min(r.yMax - edgeMargin, r.yMin + edgeMargin + size.y), r.yMax - edgeMargin);
+            sub.anchoredPosition = new Vector2(x, y);
         }
 
         // Hidden now, destroyed at frame end. Scale, not SetActive: this can run while the menu is deactivating.
@@ -168,6 +224,8 @@ namespace Combat.UI
         {
             Vector2 keep = box != null ? box.anchoredPosition : Vector2.zero;
             Kill(box);
+            HideSub();
+            SetInteractive(false);
 
             var stat = entry.stat;
             float baseValue = c.GetBreakdown(stat, lines);
@@ -207,34 +265,51 @@ namespace Combat.UI
         {
             Vector2 keep = box != null ? box.anchoredPosition : Vector2.zero;
             Kill(box);
-
-            var edge = new Color(infoColor.r, infoColor.g, infoColor.b, 0.6f);
-            var bg = UIKit.Box(transform, "Box", s, s.panel, true, IsPinned ? s.accent : edge);
-            box = bg.rectTransform;
-            box.anchorMin = box.anchorMax = new Vector2(0.5f, 0.5f);
-            box.pivot = new Vector2(0f, 1f);
-            box.sizeDelta = new Vector2(width, 0f);
+            HideSub();
+            box = InfoBox(s, infoKey, infoTitle, infoColor, infoRule, infoDetail, infoContext,
+                          IsPinned ? infoPinNote : null, IsPinned);
             box.anchoredPosition = keep;
+            SetInteractive(IsPinned);
+        }
+
+        // One popup: icon and title, the keyword's rule, then the generated detail. live = its keyword links open a second popup.
+        private RectTransform InfoBox(UIStyleSO s, object key, string title, Color color, string rule, IDescribable detail,
+                                      DescribeContext ctx, string pinNote, bool live)
+        {
+            var edge = new Color(color.r, color.g, color.b, 0.6f);
+            var bg = UIKit.Box(transform, "Box", s, s.panel, true, pinNote != null ? s.accent : edge);
+            var rt = bg.rectTransform;
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.pivot = new Vector2(0f, 1f);
+            rt.sizeDelta = new Vector2(width, 0f);
             UIKit.VStack(bg, 6f, UIKit.Pad(s.padding * 0.75f));
             var fit = bg.gameObject.AddComponent<ContentSizeFitter>();
             fit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            UIKit.Text(box, "Name", s, infoTitle, s.headingSize + 2f, infoColor, heading: true);
-            if (!string.IsNullOrWhiteSpace(infoRule))
-                UIKit.Text(box, "Rule", s, infoRule, s.smallSize, s.textMuted, wrap: true);
+            var head = UIKit.Node(rt, "Head");
+            UIKit.HStack(head, 8f);
+            var element = ElementOf(key, detail);
+            if (element != null) UIKit.Icon(head, "Icon", element.icon, element.color, s.headingSize + 6f);
+            UIKit.Size(UIKit.Text(head, "Name", s, title, s.headingSize + 2f, color, heading: true), flexWidth: 1f);
+            if (!string.IsNullOrWhiteSpace(rule))
+                UIKit.Text(rt, "Rule", s, rule, s.smallSize, s.textMuted, wrap: true);
 
-            if (infoDetail != null)
+            if (detail != null)
             {
-                string detail = Describer.Build(infoDetail, infoContext);
-                if (!string.IsNullOrWhiteSpace(detail))
+                var links = new List<KeywordLink>();
+                string text = Describer.Build(detail, ctx, links);
+                if (!string.IsNullOrWhiteSpace(text))
                 {
-                    if (!string.IsNullOrWhiteSpace(infoRule)) Rule(box, s);
-                    UIKit.Text(box, "Detail", s, detail, s.smallSize, s.text, wrap: true).richText = true;
+                    if (!string.IsNullOrWhiteSpace(rule)) Rule(rt, s);
+                    var t = UIKit.Text(rt, "Detail", s, text, s.smallSize, s.text, wrap: true);
+                    t.richText = true;
+                    if (live && links.Count > 0) t.gameObject.AddComponent<TextLinkHover>().Setup(screen, links, ctx, nested: true);
                 }
             }
-            if (IsPinned && infoPinNote != null) UIKit.Label(box, "Pinned", s, infoPinNote, s.accent);
+            if (pinNote != null) UIKit.Label(rt, "Pinned", s, pinNote, s.accent);
 
-            LayoutRebuilder.ForceRebuildLayoutImmediate(box);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
+            return rt;
         }
 
         private bool Bucket(RectTransform parent, UIStyleSO s, string bucket)

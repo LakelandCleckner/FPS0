@@ -83,6 +83,10 @@ namespace Combat.UI
         [Tooltip("Default shield colour when a shield doesn't set its own.")]
         public Color enemyShield = new Color(0.45f, 0.8f, 1f, 1f);
 
+        [Header("Damage types")]
+        [Tooltip("Inline element icons for rich text (<sprite name=\"Fire\">). Built by FPS0/Art/Build Damage Type Icon Sprites.")]
+        public TMP_SpriteAsset inlineIcons;
+
         [Header("Stat bars")]
         public Color barTrack = new Color(1f, 1f, 1f, 0.07f);
         public Color barBase = new Color(0.86f, 0.89f, 0.91f, 1f);

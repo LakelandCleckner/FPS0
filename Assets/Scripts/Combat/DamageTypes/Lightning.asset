@@ -15,6 +15,8 @@ MonoBehaviour:
   id: lightning
   displayName: Shock
   color: {r: 0.65, g: 0.55, b: 1, a: 1}
+  icon: {fileID: 21300000, guid: 320b0c9fb75148448a25e10fe1c33e48, type: 3}
+  inlineSprite: Shock
   hitSound: {fileID: 0}
   font: {fileID: 0}
   normalGradient:
