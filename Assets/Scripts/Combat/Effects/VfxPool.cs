@@ -11,6 +11,9 @@ namespace Combat.Effects
         private static readonly List<VfxInstance> pending = new List<VfxInstance>(8);
         private static Transform root;
 
+        // True while play mode or the app is shutting down; pooled objects may already be destroyed
+        public static bool Quitting { get; private set; }
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatics()
         {
@@ -18,13 +21,18 @@ namespace Combat.Effects
             timed.Clear();
             pending.Clear();
             root = null;
+            Quitting = false;
+            Application.quitting -= OnQuitting;
+            Application.quitting += OnQuitting;
         }
+
+        private static void OnQuitting() => Quitting = true;
 
         // lifetime 0 = stays until Release. tint alpha 0 = leave the prefab's colours. colorize = also tint white parts.
         public static GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent,
                                        Color tint, float lifetime, float scale = 1f, bool colorize = false)
         {
-            if (prefab == null) return null;
+            if (prefab == null || Quitting) return null;
             EnsureRoot();
 
             if (tint.a <= 0f) { tint = Color.clear; colorize = false; }

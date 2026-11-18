@@ -19,9 +19,11 @@ namespace Combat.Effects
         {
             systems ??= GetComponentsInChildren<ParticleSystem>(true);
             trails ??= GetComponentsInChildren<TrailRenderer>(true);
-            for (int i = 0; i < trails.Length; i++) trails[i].Clear();
+            for (int i = 0; i < trails.Length; i++)
+                if (trails[i] != null) trails[i].Clear();
             for (int i = 0; i < systems.Length; i++)
             {
+                if (systems[i] == null) continue;
                 systems[i].Clear(false);
                 systems[i].Play(false);
             }

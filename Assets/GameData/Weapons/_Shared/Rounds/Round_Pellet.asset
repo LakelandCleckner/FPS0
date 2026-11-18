@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91f7dc9d8f9346a5b91f690bdbb8c255, type: 3}
+  m_Name: Round_Pellet
+  m_EditorClassIdentifier: 
+  mesh: {fileID: 0}
+  model: {fileID: 0}
+  meshName: 
+  material: {fileID: 2100000, guid: 1610f2d57f29472d87f6e2cb6538aa05, type: 2}
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  scale: {x: 0.042, y: 0.042, z: 0.042}
+  rotation: {x: 0, y: 90, z: 0}
+  hideNearMuzzle: 0.2
+  elementGlow: 1
+  glowSize: 1.5
+  glowAlpha: 0.6
+  elementBodyScale: 0.4
+  streakLength: 0.8
+  streakWidth: 0.6

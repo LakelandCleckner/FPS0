@@ -19,7 +19,7 @@ MonoBehaviour:
   viewmodelSkin: []
   defaultShader: {fileID: 11400000, guid: 6afe353b48cc3a646bf6665295d7e8a2, type: 2}
   overrideSlots: 0
-  allowedSlotsOverride: 7
+  allowedSlotsOverride: -1
   overrideInventorySlot: 0
   inventorySlotOverride: 0
   baseDamageType: {fileID: 11400000, guid: 8337384683ac3314180ba08185f989f2, type: 2}
@@ -31,12 +31,16 @@ MonoBehaviour:
   adsZoomDelta: 0
   rangeDelta: 0
   aimAssistDelta: 0
+  precisionDelta: 0
+  stabilityDelta: 0
+  recoilDirectionDelta: 0
   startingReserves: 180
   infiniteReservesOverride: 0
   fireClip: {fileID: 8300000, guid: a02ac01715490c646a720c0bcc70ec7a, type: 3}
   emptyClip: {fileID: 8300000, guid: 08eb29cab0988c349bc1c4de52aaf72c, type: 3}
   reloadClip: {fileID: 8300000, guid: 49af6209dec94aa4a9216b5a301d0a88, type: 3}
   riderEffects: []
+  mythic: 0
   intrinsicPerks:
   - {fileID: 11400000, guid: 54defde772d54843b207637093efd8af, type: 2}
   perkColumns: []

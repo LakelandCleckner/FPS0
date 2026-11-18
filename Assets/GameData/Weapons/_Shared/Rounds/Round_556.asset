@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91f7dc9d8f9346a5b91f690bdbb8c255, type: 3}
+  m_Name: Round_556
+  m_EditorClassIdentifier: 
+  mesh: {fileID: 0}
+  model: {fileID: 919132149155446097, guid: 795e2f40da53c5c4ea98da32bdf89160, type: 3}
+  meshName: 5.56mm_Projectile_Mesh
+  material: {fileID: 2100000, guid: cbc7024fb1067af4987b3478b3e65289, type: 2}
+  tint: {r: 1, g: 1, b: 1, a: 1}
+  scale: {x: 4.2, y: 4.2, z: 4.2}
+  rotation: {x: 0, y: 90, z: 0}
+  hideNearMuzzle: 0.2
+  elementGlow: 1
+  glowSize: 1.5
+  glowAlpha: 0.6
+  elementBodyScale: 0.8
+  streakLength: 1.5
+  streakWidth: 1.1

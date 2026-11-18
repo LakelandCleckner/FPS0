@@ -76,6 +76,23 @@ namespace Combat.Core
         [Tooltip("Line material for chain arcs of this type. Empty = a plain unlit line.")]
         public Material arcMaterial;
 
+        [Header("Tracer")]
+        [Tooltip("Hitscan shots of this type draw a tracer from the muzzle; the hit effect then plays when it lands.")]
+        public bool tracer = true;
+        [Tooltip("Draw the coloured streak line.")]
+        public bool tracerStreak = true;
+        [Tooltip("Projectile body flown along the tracer, tinted to this type. Empty = streak only.")]
+        public GameObject tracerVfx;
+        [Min(0.01f)] public float tracerScale = 0.3f;
+        [Tooltip("Visual speed in metres per second. Damage is already instant.")]
+        [Min(1f)] public float tracerSpeed = 300f;
+        [Tooltip("Streak length in metres.")]
+        [Min(0.1f)] public float tracerLength = 3f;
+        [Tooltip("Streak width multiplier.")]
+        [Min(0.1f)] public float tracerWidth = 1f;
+        [Tooltip("Seconds the tracer stays after landing so trails can fade.")]
+        [Min(0f)] public float tracerLinger = 0.12f;
+
 
         // Picks the gradient for the current modifier combination. Falls back to
         // the normal gradient if a slot was left at default (incremental authoring).

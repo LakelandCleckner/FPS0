@@ -454,6 +454,7 @@ namespace Combat.Core
         {
             var type = ctx.DamageType;
             if (ctx.Source != HitSource.Direct || type == null || type.hitVfx == null) return;
+            if (Combat.Effects.TracerVfx.Uses(type)) return;   // the tracer plays it when it lands
             float now = Time.time;
             if (lastHitVfx.TryGetValue(type, out float last) && now - last < type.hitVfxInterval) return;
             lastHitVfx[type] = now;

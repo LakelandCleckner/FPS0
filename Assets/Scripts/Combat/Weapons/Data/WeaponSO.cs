@@ -39,6 +39,8 @@ namespace Combat.Weapons
         public List<MaterialSwap> viewmodelSkin = new List<MaterialSwap>();
         [Tooltip("Zone shader preset applied to the gun model on spawn. Empty = original look.")]
         public ZoneShaderSO defaultShader;
+        [Tooltip("Custom round this weapon fires. Empty = the archetype's round.")]
+        public RoundSO roundOverride;
 
         [Header("Loadout")]
         [Tooltip("Use the slot rule below instead of the weapon type's.")]

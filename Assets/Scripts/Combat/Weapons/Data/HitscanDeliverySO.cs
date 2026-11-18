@@ -10,6 +10,6 @@ namespace Combat.Weapons
         public float range = 100f;
 
         public override Combat.Delivery.IDelivery CreateDelivery(in DeliveryBuildContext ctx)
-            => new Combat.Delivery.HitscanDelivery(ctx.Resolver, range);
+            => new Combat.Delivery.HitscanDelivery(ctx.Resolver, range, ctx.Muzzle);
     }
 }

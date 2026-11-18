@@ -49,3 +49,11 @@ MonoBehaviour:
   blastReferenceRadius: 3
   blastLifetime: 2
   arcMaterial: {fileID: 0}
+  tracer: 1
+  tracerStreak: 1
+  tracerVfx: {fileID: 7866002994442904433, guid: ce5e6c05cc9837b4e8e08e6507db9d07, type: 3}
+  tracerScale: 0.35
+  tracerSpeed: 250
+  tracerLength: 3
+  tracerWidth: 1
+  tracerLinger: 0.15

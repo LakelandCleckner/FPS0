@@ -194,6 +194,10 @@ namespace Combat.Sources
             => WeaponFalloff.Multiplier(weapon != null ? weapon.archetype : null, ResolvedRange, distance, aimBlend);
 
         public WeaponSO Weapon => weapon;
+        // The weapon's own round, else its archetype's
+        public RoundSO Round => weapon == null ? null
+            : weapon.roundOverride != null ? weapon.roundOverride
+            : weapon.archetype != null ? weapon.archetype.round : null;
         public AudioClip FireClip => weapon != null ? weapon.fireClip : null;
         public AudioClip EmptyClip => weapon != null ? weapon.emptyClip : null;
     }

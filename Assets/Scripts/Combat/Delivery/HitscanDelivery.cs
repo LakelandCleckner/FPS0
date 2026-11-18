@@ -1,5 +1,6 @@
 using UnityEngine;
 using Combat.Core;
+using Combat.Effects;
 using Combat.Sources;
 
 namespace Combat.Delivery
@@ -11,20 +12,27 @@ namespace Combat.Delivery
     {
         private readonly WeaponHitResolver resolver;
         private readonly float range;
+        private readonly Transform muzzle;   // tracer start; the ray itself starts at the camera for the player
 
         // Reused per delivery; the nearest hit that isn't the shooter wins
         private readonly RaycastHit[] hits = new RaycastHit[16];
 
-        public HitscanDelivery(WeaponHitResolver resolver, float range)
+        public HitscanDelivery(WeaponHitResolver resolver, float range, Transform muzzle = null)
         {
             this.resolver = resolver;
             this.range = range;
+            this.muzzle = muzzle;
         }
 
         public void Fire(Vector3 origin, Vector3 direction, IDamageSource source, in ShotInfo shot)
         {
+            var type = source != null ? source.BaseDamageType : null;
+            var round = source is WeaponDamageSource w ? w.Round : null;
+            Vector3 start = muzzle != null ? muzzle.position : origin;
+
             if (!NearestNotOwner(origin, direction, source, out var hit))
             {
+                TracerVfx.Fire(start, origin + direction * range, type, false, round);
                 HitLog.Log($"[HitDebug:Hitscan] miss (nothing within {range:F0}m)");
                 return;
             }
@@ -32,9 +40,13 @@ namespace Combat.Delivery
             var playerHitbox = hit.collider.GetComponent<PlayerHitbox>();
             if (playerHitbox != null)
             {
+                // No impact spark in the player's face
+                TracerVfx.Fire(start, hit.point, type, false, round);
                 HitPlayer(playerHitbox, hit, source, shot);
                 return;
             }
+
+            TracerVfx.Fire(start, hit.point, type, true, round, hit.normal);
 
             var hitbox = hit.collider.GetComponentInParent<EnemyHitbox>();
             if (hitbox == null)

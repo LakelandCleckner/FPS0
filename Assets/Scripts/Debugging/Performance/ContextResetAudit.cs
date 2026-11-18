@@ -191,6 +191,11 @@ namespace Combat.Diagnostics
             "currentHitbox",
             "currentPlayerHitbox",
             "initialized",
+            "tracer",       // attached in Init, detached in Despawn
+            "hasEnd",
+            "endImpact",
+            "endPoint",
+            "endNormal",
         };
 
         // Allocated once per instance and reused across every flight. Resetting these
@@ -200,6 +205,7 @@ namespace Combat.Diagnostics
             "hitContext",
             "applyBaseDamage",
             "poolOrigin",
+            "ownRenderers", // cached on first flight
         };
 
         // Carried from the parent for the whole blast/cascade; identical for every

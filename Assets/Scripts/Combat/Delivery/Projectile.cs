@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Combat.Core;
+using Combat.Effects;
 
 namespace Combat.Delivery
 {
@@ -61,6 +62,14 @@ namespace Combat.Delivery
         // EffectStackPool holds for the life of a status and which therefore lives on
         // EnemyHitbox instead.
         private System.Action<float> applyBaseDamage;
+
+        // Element tracer following this flight; replaces the prefab's own visuals while active
+        private TracerVfx.Tracer tracer;
+        private Renderer[] ownRenderers;
+        private Vector3 endPoint;
+        private Vector3 endNormal;
+        private bool endImpact;
+        private bool hasEnd;
 
         private void Awake()
         {
@@ -131,7 +140,31 @@ namespace Combat.Delivery
             hitContext.ApplyDamageToTarget = applyBaseDamage;
             hitContext.Shot = shot;
 
+            hasEnd = false;
+            endImpact = false;
+            endPoint = Vector3.zero;
+            endNormal = Vector3.zero;
+            var round = damageSource is Combat.Sources.WeaponDamageSource w ? w.Round : null;
+            tracer = TracerVfx.Attach(transform, this.direction, damageType, round);
+            ShowOwnVisuals(tracer == null);
+
             initialized = true;
+        }
+
+        private void ShowOwnVisuals(bool show)
+        {
+            ownRenderers ??= GetComponentsInChildren<Renderer>(true);
+            for (int i = 0; i < ownRenderers.Length; i++)
+                if (ownRenderers[i] != null) ownRenderers[i].enabled = show;
+        }
+
+        // Where the flight ended and whether the tracer plays an impact there
+        private void SetEnd(Vector3 point, bool impact, Vector3 normal = default)
+        {
+            endPoint = point;
+            endNormal = normal;
+            endImpact = impact;
+            hasEnd = true;
         }
 
         private void Update()
@@ -156,7 +189,10 @@ namespace Combat.Delivery
             age += Time.deltaTime;
 
             if (age >= config.maxLifetime || distanceTravelled >= config.maxDistance)
+            {
+                hasEnd = false;   // ran out of range: no impact
                 Despawn();
+            }
         }
 
         private bool NearestNotOwner(Vector3 start, float step, out RaycastHit best)
@@ -193,7 +229,10 @@ namespace Combat.Delivery
                            "-> no EnemyHitbox in parents, " +
                            (config.stopOnEnvironment ? "despawned" : "continuing"), hit.collider);
                 if (config.stopOnEnvironment)
+                {
+                    SetEnd(hit.point, true, hit.normal);
                     Despawn();
+                }
                 return;
             }
 
@@ -240,7 +279,14 @@ namespace Combat.Delivery
 
             ResetHitResults();
             resolver.ResolveHit(hitContext);
+            SetEnd(hit.point, true, hit.normal);
             ApplyImpact();
+            // Pierced through: spark here and keep flying
+            if (initialized)
+            {
+                hasEnd = false;
+                if (tracer != null) TracerVfx.PlayImpact(damageType, hit.point, hit.normal);
+            }
         }
 
         // A projectile landing on a player body hitbox
@@ -274,6 +320,7 @@ namespace Combat.Delivery
             ResetHitResults();
             var attackerComponent = attacker as Component;
             hurtbox.Receive(resolver, hitContext, attackerComponent != null ? attackerComponent.transform : null);
+            SetEnd(hit.point, false);   // no spark in the player's face
             ApplyImpact();
         }
 
@@ -308,6 +355,11 @@ namespace Combat.Delivery
 
         private void Despawn()
         {
+            if (tracer != null)
+            {
+                TracerVfx.Detach(tracer, hasEnd ? endPoint : transform.position, hasEnd && endImpact, endNormal);
+                tracer = null;
+            }
             initialized = false;
             currentHitbox = null;
             currentPlayerHitbox = null;

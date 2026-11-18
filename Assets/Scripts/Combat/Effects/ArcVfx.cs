@@ -51,7 +51,7 @@ namespace Combat.Effects
         private void Spawn(Vector3 from, Vector3 to, Color color, Material material)
         {
             var arc = free.Count > 0 ? free.Pop() : Create();
-            var mat = material != null ? material : Fallback();
+            var mat = material != null ? material : LineMaterial();
             arc.Core.sharedMaterial = mat;
             arc.Glow.sharedMaterial = mat;
             arc.From = from;
@@ -150,8 +150,8 @@ namespace Combat.Effects
             arc.Glow.endColor = glow;
         }
 
-        // Additive unlit particle material, so the glow brightens instead of covering.
-        private static Material Fallback()
+        // Additive unlit particle material, so the glow brightens instead of covering. Shared with tracers.
+        public static Material LineMaterial()
         {
             if (fallback != null) return fallback;
             var shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");

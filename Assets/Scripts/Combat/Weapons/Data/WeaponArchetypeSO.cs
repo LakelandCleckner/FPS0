@@ -143,5 +143,7 @@ namespace Combat.Weapons
 
         [Header("Presentation")]
         public GameObject crosshairPrefab;
+        [Tooltip("What this frame's shots look like in flight. Weapons can override it.")]
+        public Combat.Effects.RoundSO round;
     }
 }
