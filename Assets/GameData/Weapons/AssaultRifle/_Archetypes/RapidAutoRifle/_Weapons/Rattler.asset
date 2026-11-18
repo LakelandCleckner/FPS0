@@ -25,19 +25,23 @@ MonoBehaviour:
   baseDamageType: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
   weaponDamageDelta: 0
   roundsPerMinuteDelta: 0
-  magazineSizeDelta: 0
+  magazineSizeDelta: 4
   reloadTimeDelta: 0
   handlingDelta: 0
   adsZoomDelta: 0
   rangeDelta: 0
   aimAssistDelta: 0
+  precisionDelta: 0
+  stabilityDelta: 5
+  recoilDirectionDelta: 0
   startingReserves: 180
   infiniteReservesOverride: 0
   fireClip: {fileID: 8300000, guid: a02ac01715490c646a720c0bcc70ec7a, type: 3}
   emptyClip: {fileID: 8300000, guid: 08eb29cab0988c349bc1c4de52aaf72c, type: 3}
   reloadClip: {fileID: 8300000, guid: 49af6209dec94aa4a9216b5a301d0a88, type: 3}
   riderEffects: []
-  intrinsicPerks: []
+  intrinsicPerks:
+  - {fileID: 11400000, guid: 031b557cbad3456a82b9cce0ce853a9a, type: 2}
   perkColumns: []
   curatedRoll: []
   faction: 0

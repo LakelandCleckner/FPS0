@@ -16,7 +16,7 @@ MonoBehaviour:
   id: precision_semi_rifle
   displayName: Precision Semi Rifle
   baseAdsTime: 0.35
-  adsZoom: 3.5
+  adsZoom: 3
   adsCurve:
     serializedVersion: 2
     m_Curve:
@@ -43,7 +43,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   adsExitFraction: 1
   adsMoveSpeedMultiplier: 0.8
-  range: 70
+  range: 80
   falloffStartAtMinRange: 30
   falloffStartAtMaxRange: 55
   falloffEndMultiplier: 1.8
@@ -55,13 +55,13 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  aimAssist: 40
+  aimAssist: 55
   assistAngleAtMin: 0.5
   assistAngleAtMax: 1.5
   assistHipMultiplier: 0.8
   assistDistanceMultiplier: 1
-  stability: 55
-  recoilDirection: 90
+  stability: 60
+  recoilDirection: 92
   kickAtMinStability: 1.6
   kickAtMaxStability: 0.6
   sideKickScale: 0.5
@@ -73,18 +73,18 @@ MonoBehaviour:
   centreSpeed: 12
   recenterPercent: 1
   residualError: 0.02
-  weaponDamage: 38
-  precisionMultiplier: 2.0
+  weaponDamage: 36
+  precisionMultiplier: 2
   roundsPerMinute: 180
   reloadStyle: 0
   shellStartFraction: 0.15
   shellEndFraction: 0.2
   interruptReadyFraction: 0.3
-  magazineSize: 16
-  reloadTime: 2.4
+  magazineSize: 15
+  reloadTime: 2.3
   infiniteReserves: 0
   ammoPool: {fileID: 0}
-  handling: 35
+  handling: 40
   baseEquipTime: 0.65
   baseStowTime: 0.5
   primaryFire:

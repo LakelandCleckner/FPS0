@@ -9,21 +9,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1af7cb93084b4758a11b1ffb6a1c3d47, type: 3}
-  m_Name: Feeding Frenzy
+  m_Script: {fileID: 11500000, guid: dc83da027f774a338cb03d91fe7153b4, type: 3}
+  m_Name: Long Watch
   m_EditorClassIdentifier: 
-  id: feeding_frenzy
-  displayName: Feeding Frenzy
+  id: long_watch
+  displayName: Long Watch
   customDescription: 0
-  description: Kills refill part of the magazine.
+  description: More damage at long range.
   icon: {fileID: 0}
   shortName: 
   listenScope: 1
-  trigger: 2
-  sources: 3
-  oncePerShot: 1
-  everyN: 1
-  window: 0
-  rounds: 0
-  magFraction: 0.2
-  fromReserves: 1
+  condition: 1
+  distance: 30
+  healthFraction: 0.3
+  sources: 1
+  bonus: 0.15

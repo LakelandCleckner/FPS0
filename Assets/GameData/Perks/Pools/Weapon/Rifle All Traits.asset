@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4d1da4720f2c694786e3c4a0bbe5be0, type: 3}
+  m_Name: Rifle All Traits
+  m_EditorClassIdentifier: 
+  perks: []
+  includes:
+  - {fileID: 11400000, guid: 3e8abe918ce442989d256f84dae54e99, type: 2}
+  - {fileID: 11400000, guid: d765c4dc6e13d8d4eb8a08dc803da118, type: 2}
+  - {fileID: 11400000, guid: 2f53fe63d6de1b7409eed0490c44bc36, type: 2}
+  authoredAs: @Rifle Traits, @All Traits, @Elemental

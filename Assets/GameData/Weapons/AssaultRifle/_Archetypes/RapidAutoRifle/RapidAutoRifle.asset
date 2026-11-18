@@ -16,7 +16,7 @@ MonoBehaviour:
   id: rapid_auto_rifle
   displayName: Rapid Auto Rifle
   baseAdsTime: 0.28
-  adsZoom: 1.8
+  adsZoom: 1.6
   adsCurve:
     serializedVersion: 2
     m_Curve:
@@ -43,7 +43,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   adsExitFraction: 1
   adsMoveSpeedMultiplier: 0.8
-  range: 45
+  range: 55
   falloffStartAtMinRange: 16
   falloffStartAtMaxRange: 30
   falloffEndMultiplier: 1.8
@@ -55,13 +55,13 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  aimAssist: 60
+  aimAssist: 65
   assistAngleAtMin: 0.5
   assistAngleAtMax: 1.5
   assistHipMultiplier: 0.8
   assistDistanceMultiplier: 1
-  stability: 50
-  recoilDirection: 75
+  stability: 55
+  recoilDirection: 70
   kickAtMinStability: 0.9
   kickAtMaxStability: 0.3
   sideKickScale: 0.7
@@ -73,18 +73,18 @@ MonoBehaviour:
   centreSpeed: 10
   recenterPercent: 1
   residualError: 0.03
-  weaponDamage: 14
+  weaponDamage: 11
   precisionMultiplier: 1.5
-  roundsPerMinute: 600
+  roundsPerMinute: 720
   reloadStyle: 0
   shellStartFraction: 0.15
   shellEndFraction: 0.2
   interruptReadyFraction: 0.3
-  magazineSize: 36
+  magazineSize: 42
   reloadTime: 2
   infiniteReserves: 0
   ammoPool: {fileID: 0}
-  handling: 55
+  handling: 50
   baseEquipTime: 0.55
   baseStowTime: 0.45
   primaryFire:

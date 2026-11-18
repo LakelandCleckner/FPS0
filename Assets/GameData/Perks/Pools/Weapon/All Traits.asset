@@ -20,5 +20,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 43890af136a19cb46af8f260519be347, type: 2}
   - {fileID: 11400000, guid: 8d8ca4a1304991b4e8a8f59239922b25, type: 2}
   - {fileID: 11400000, guid: b2b1e68a2f42cd64ebf526e9471f0cb1, type: 2}
+  - {fileID: 11400000, guid: c26289cbde2c4329849a3e75ba244cce, type: 2}
+  - {fileID: 11400000, guid: aa0e566de11e45969c36fe3f66c7cb1b, type: 2}
+  - {fileID: 11400000, guid: 5086c933e8104a3e810b3ecd0ada2285, type: 2}
+  - {fileID: 11400000, guid: 4c4a446a09284fcbab27451bb1ff1647, type: 2}
   includes: []
-  authoredAs: folder=Trait
+  authoredAs: folder=Trait, Reload Rush, Chain Loader, Finisher, Kindling

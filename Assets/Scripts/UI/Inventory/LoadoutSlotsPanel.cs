@@ -123,7 +123,7 @@ namespace Combat.UI
             string kind = ItemText.Kind(weapon);
             string element = ItemText.Element(weapon);
             UIKit.Text(info, "Kind", s, string.IsNullOrEmpty(element) ? kind : kind + "  /  " + element, s.smallSize, s.textMuted);
-            ChipGrid(tile.transform, screen, weapon.Definition.intrinsicPerks, weapon.Perks, screen.ContextFor(weapon));
+            ChipGrid(tile.transform, screen, weapon.Definition.intrinsicPerks, weapon.Perks, screen.ContextFor(weapon), s.weaponSlotHeight - 16f);
             return tile;
         }
 
@@ -150,7 +150,7 @@ namespace Combat.UI
                        piece != null ? ItemText.NameColor(s, piece, s.text) : s.textFaint,
                        role: piece != null ? TextRole.Title : TextRole.Body);
 
-            if (piece != null) ChipGrid(tile.transform, screen, piece.Definition.intrinsicPerks, piece.Perks, screen.ContextFor(piece));
+            if (piece != null) ChipGrid(tile.transform, screen, piece.Definition.intrinsicPerks, piece.Perks, screen.ContextFor(piece), s.armorSlotHeight - 12f);
             return tile;
         }
 
@@ -174,7 +174,8 @@ namespace Combat.UI
         }
 
         // Perk chips on the card's right, intrinsics first with an accent border, wrapping every Chips Per Row.
-        private static void ChipGrid(Transform parent, InventoryScreen screen, IReadOnlyList<PerkSO> intrinsic, IReadOnlyList<PerkSO> perks, DescribeContext ctx)
+        // At most two rows, sized to fit the card's inner height; more chips widen the grid instead of overflowing.
+        private static void ChipGrid(Transform parent, InventoryScreen screen, IReadOnlyList<PerkSO> intrinsic, IReadOnlyList<PerkSO> perks, DescribeContext ctx, float maxHeight)
         {
             var s = screen.Style;
             int count = 0;
@@ -183,9 +184,10 @@ namespace Combat.UI
             if (count == 0) return;
 
             const float gap = 3f;
-            float size = s.cardChipSize;
             int perRow = Mathf.Max(1, s.chipsPerRow);
-            int rows = Mathf.CeilToInt(count / (float)perRow);
+            int rows = Mathf.Min(2, Mathf.CeilToInt(count / (float)perRow));
+            perRow = Mathf.CeilToInt(count / (float)rows);
+            float size = Mathf.Min(s.cardChipSize, (maxHeight - gap * (rows - 1)) / rows);
 
             var grid = UIKit.Node(parent, "Perks");
             var g = grid.gameObject.AddComponent<UnityEngine.UI.GridLayoutGroup>();

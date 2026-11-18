@@ -33,7 +33,7 @@ MonoBehaviour:
     extraPerks: []
   - label: Trait
     minRarity: 0
-    source: {fileID: 11400000, guid: 256cc2e72b7a4b548b19a0abe02b12b0, type: 2}
+    source: {fileID: 11400000, guid: 3e8abe918ce442989d256f84dae54e99, type: 2}
     extraPerks: []
   - label: Trait
     minRarity: 1
@@ -41,13 +41,13 @@ MonoBehaviour:
     extraPerks: []
   - label: Trait
     minRarity: 2
-    source: {fileID: 11400000, guid: d765c4dc6e13d8d4eb8a08dc803da118, type: 2}
+    source: {fileID: 11400000, guid: d65a92d715394f51ae40395cdbdbbbe3, type: 2}
     extraPerks: []
   - label: Trait
     minRarity: 3
-    source: {fileID: 11400000, guid: d765c4dc6e13d8d4eb8a08dc803da118, type: 2}
+    source: {fileID: 11400000, guid: d65a92d715394f51ae40395cdbdbbbe3, type: 2}
     extraPerks: []
   - label: Trait
     minRarity: 4
-    source: {fileID: 11400000, guid: d765c4dc6e13d8d4eb8a08dc803da118, type: 2}
+    source: {fileID: 11400000, guid: d65a92d715394f51ae40395cdbdbbbe3, type: 2}
     extraPerks: []
