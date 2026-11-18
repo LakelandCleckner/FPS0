@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1db4d530470498186becae7de98ff75, type: 3}
+  m_Name: Triple Dose
+  m_EditorClassIdentifier: 
+  id: triple_dose
+  displayName: Triple Dose
+  customDescription: 0
+  description: A full burst of precision hits will poison the target.
+  icon: {fileID: 0}
+  shortName: 
+  listenScope: 0
+  trigger: 1
+  sources: 1
+  anyWeapon: 0
+  oncePerShot: 1
+  everyN: 3
+  window: 0.3
+  status: {fileID: 11400000, guid: d796eba52a3c6c54d87d12cc358c04cb, type: 2}
+  stacks: 4
+  radius: 0
+  includeTarget: 1
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 128

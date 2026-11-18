@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1beabed67d81c843a00ec904d9d8961, type: 3}
-  m_Name: PlinkingSidearm
+  m_Name: LightSidearm
   m_EditorClassIdentifier: 
   weaponType: {fileID: 11400000, guid: 478ca46d3d8c5f84b8e85cfe255d8678, type: 2}
-  id: sidearm_plink
-  displayName: PlinkingSidearm
+  id: sidearm_light
+  displayName: Light Sidearm
   baseAdsTime: 0.2
   adsZoom: 1.15
   adsCurve:
@@ -43,9 +43,9 @@ MonoBehaviour:
     m_RotationOrder: 4
   adsExitFraction: 0.5
   adsMoveSpeedMultiplier: 0.8
-  range: 50
-  falloffStartAtMinRange: 12
-  falloffStartAtMaxRange: 20
+  range: 45
+  falloffStartAtMinRange: 11
+  falloffStartAtMaxRange: 18
   falloffEndMultiplier: 1.6
   minDamagePercent: 0.5
   hipFalloffMultiplier: 0.85
@@ -73,24 +73,26 @@ MonoBehaviour:
   centreSpeed: 12
   recenterPercent: 1
   residualError: 0.03
-  weaponDamage: 5
-  precisionMultiplier: 1.5
+  weaponDamage: 12
+  precisionMultiplier: 1.6
   roundsPerMinute: 300
   reloadStyle: 0
   shellStartFraction: 0.15
   shellEndFraction: 0.2
   interruptReadyFraction: 0.3
-  magazineSize: 20
-  reloadTime: 1.5
+  magazineSize: 17
+  reloadTime: 1.4
   infiniteReserves: 0
   ammoPool: {fileID: 0}
   handling: 80
   baseEquipTime: 0.5
   baseStowTime: 0.4
   primaryFire:
-    displayName: Full Auto Projectile
-    behavior: {fileID: 11400000, guid: 18ecd96ed19c8e04386c78f5434b2d0d, type: 2}
+    displayName: Semi Auto
+    behavior: {fileID: 11400000, guid: e994552d4c33e474fbaf1138181dc5b5, type: 2}
     delivery: {fileID: 11400000, guid: b38b61e8f021d194e886619c1acbd934, type: 2}
     deliveryOverrides: []
   crosshairPrefab: {fileID: 6358792504129393579, guid: f65e2aca27d6353489d3b57cde01da47, type: 3}
   round: {fileID: 11400000, guid: ef7bb52b5b5c4a64a33151cac3c33f1b, type: 2}
+  intrinsicPerks:
+  - {fileID: 11400000, guid: 6d660332f35b4483b2f768d783bb5e85, type: 2}

@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4d1da4720f2c694786e3c4a0bbe5be0, type: 3}
+  m_Name: Sidearm Traits
+  m_EditorClassIdentifier: 
+  perks:
+  - {fileID: 11400000, guid: e5430c4ace40446da78fded88ca6b3d3, type: 2}
+  - {fileID: 11400000, guid: 7f78ed7127c84aac898b6431284dd979, type: 2}
+  - {fileID: 11400000, guid: eb23ca66519f42869216efe470e02789, type: 2}
+  - {fileID: 11400000, guid: 24fe311244b149d099d06d241ca084ee, type: 2}
+  includes:
+  - {fileID: 11400000, guid: 256cc2e72b7a4b548b19a0abe02b12b0, type: 2}
+  authoredAs: Sidearm traits, @Sustain

@@ -1,0 +1,98 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1beabed67d81c843a00ec904d9d8961, type: 3}
+  m_Name: ScatterSidearm
+  m_EditorClassIdentifier: 
+  weaponType: {fileID: 11400000, guid: 478ca46d3d8c5f84b8e85cfe255d8678, type: 2}
+  id: sidearm_scatter
+  displayName: Scatter Sidearm
+  baseAdsTime: 0.22
+  adsZoom: 1.3
+  adsCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  adsExitFraction: 0.5
+  adsMoveSpeedMultiplier: 0.8
+  range: 20
+  falloffStartAtMinRange: 5
+  falloffStartAtMaxRange: 9
+  falloffEndMultiplier: 1.6
+  minDamagePercent: 0.5
+  hipFalloffMultiplier: 0.85
+  falloffCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  aimAssist: 40
+  assistAngleAtMin: 0.5
+  assistAngleAtMax: 1.5
+  assistHipMultiplier: 0.8
+  assistDistanceMultiplier: 1
+  stability: 40
+  recoilDirection: 95
+  kickAtMinStability: 3
+  kickAtMaxStability: 1.3
+  sideKickScale: 0.5
+  patternVariance: 0.1
+  firstShotMultiplier: 1
+  adsRecoilMultiplier: 0.9
+  kickTime: 0.045
+  centreDelay: 0.1
+  centreSpeed: 9
+  recenterPercent: 1
+  residualError: 0.04
+  weaponDamage: 48
+  precisionMultiplier: 1.1
+  roundsPerMinute: 120
+  reloadStyle: 0
+  shellStartFraction: 0.15
+  shellEndFraction: 0.2
+  interruptReadyFraction: 0.3
+  magazineSize: 4
+  reloadTime: 1.8
+  infiniteReserves: 0
+  ammoPool: {fileID: 0}
+  handling: 68
+  baseEquipTime: 0.4
+  baseStowTime: 0.35
+  primaryFire:
+    displayName: Pellet
+    behavior: {fileID: 11400000, guid: e994552d4c33e474fbaf1138181dc5b5, type: 2}
+    delivery: {fileID: 11400000, guid: cc05ba97f640a37468ef92b9d00ed2e9, type: 2}
+    deliveryOverrides: []
+  crosshairPrefab: {fileID: 6358792504129393579, guid: f65e2aca27d6353489d3b57cde01da47, type: 3}
+  round: {fileID: 11400000, guid: 51e7ad746bdf4a5a9d780d2fc84fba50, type: 2}
+  intrinsicPerks:
+  - {fileID: 11400000, guid: 3b4635e354b641499a07f812ead0051e, type: 2}
