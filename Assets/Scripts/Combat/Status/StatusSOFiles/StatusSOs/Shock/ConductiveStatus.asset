@@ -15,6 +15,7 @@ MonoBehaviour:
   keyword: {fileID: 11400000, guid: 9b442ceac5234cfcaf64979838d0754b, type: 2}
   auraVfx: {fileID: 207745087118991948, guid: e656699b143494148a872961a9feb410, type: 3}
   tintAura: 1
+  colorizeAura: 1
   auraScale: 0.8
   auraOffset: {x: 0, y: 0, z: 0}
   endVfx: {fileID: 0}

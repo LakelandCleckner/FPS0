@@ -7,10 +7,16 @@ namespace Combat.Effects
     public static class VfxTint
     {
         private static MaterialPropertyBlock block;
-        public static void Apply(GameObject fx, Color tint)
+        private static bool colorizing;
+        // Colorize saturation: high enough that bright HDR particles keep their hue through bloom.
+        private const float ColorizeSaturation = 0.9f;
+
+        // colorize: also saturate white and grey toward the tint, for effects authored in white.
+        public static void Apply(GameObject fx, Color tint, bool colorize = false)
         {
             if (fx == null) return;
             Color.RGBToHSV(tint, out float h, out float s, out _);
+            colorizing = colorize;
 
             foreach (var ps in fx.GetComponentsInChildren<ParticleSystem>(true))
             {
@@ -61,7 +67,8 @@ namespace Combat.Effects
         private static Color Tint(Color c, float h, float s)
         {
             Color.RGBToHSV(c, out _, out float cs, out float cv);
-            var r = Color.HSVToRGB(h, Mathf.Min(cs, s), cv, true);
+            float sat = colorizing ? Mathf.Max(cs, ColorizeSaturation) : Mathf.Min(cs, s);
+            var r = Color.HSVToRGB(h, sat, cv, true);
             r.a = c.a;
             return r;
         }

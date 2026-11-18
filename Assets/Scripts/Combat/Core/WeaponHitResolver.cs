@@ -458,7 +458,7 @@ namespace Combat.Core
             if (lastHitVfx.TryGetValue(type, out float last) && now - last < type.hitVfxInterval) return;
             lastHitVfx[type] = now;
             Combat.Effects.VfxPool.Spawn(type.hitVfx, ctx.HitPoint, Quaternion.identity, null, type.color,
-                                         type.hitVfxLifetime, type.hitVfxScale);
+                                         type.hitVfxLifetime, type.hitVfxScale, type.colorizeVfx);
         }
 
         // Hitmarker, hit sound and kill sound for one hit.

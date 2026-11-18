@@ -8,6 +8,7 @@ namespace Combat.Effects
         internal GameObject Prefab;
         internal Vector3 BaseScale;
         internal Color Tint;
+        internal bool Colorize;
         internal float ReleaseAt;
         internal bool Timed;
         private ParticleSystem[] systems;

@@ -152,7 +152,7 @@ namespace Combat.Perks
                 var type = Def.status.damageType;
                 if (type == null || type.blastVfx == null) return;
                 float scale = type.blastReferenceRadius > 0f ? Def.radius / type.blastReferenceRadius : 1f;
-                VfxPool.Spawn(type.blastVfx, center, Quaternion.identity, null, type.color, type.blastLifetime, scale);
+                VfxPool.Spawn(type.blastVfx, center, Quaternion.identity, null, type.color, type.blastLifetime, scale, type.colorizeVfx);
             }
 
             // True when this trigger completes a set of N.

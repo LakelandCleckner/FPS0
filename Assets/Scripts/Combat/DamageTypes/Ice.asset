@@ -18,25 +18,25 @@ MonoBehaviour:
   hitSound: {fileID: 0}
   font: {fileID: 0}
   normalGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+    topLeft: {r: 0.62, g: 0.88, b: 1, a: 1}
+    topRight: {r: 0.62, g: 0.88, b: 1, a: 1}
+    bottomLeft: {r: 0.62, g: 0.88, b: 1, a: 1}
+    bottomRight: {r: 0.62, g: 0.88, b: 1, a: 1}
   critGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+    topLeft: {r: 0.25, g: 0.7, b: 1, a: 1}
+    topRight: {r: 0.25, g: 0.7, b: 1, a: 1}
+    bottomLeft: {r: 0.25, g: 0.7, b: 1, a: 1}
+    bottomRight: {r: 0.25, g: 0.7, b: 1, a: 1}
   debuffedGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+    topLeft: {r: 0.45, g: 0.62, b: 0.78, a: 1}
+    topRight: {r: 0.45, g: 0.62, b: 0.78, a: 1}
+    bottomLeft: {r: 0.45, g: 0.62, b: 0.78, a: 1}
+    bottomRight: {r: 0.45, g: 0.62, b: 0.78, a: 1}
   critDebuffedGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+    topLeft: {r: 0.25, g: 0.7, b: 1, a: 1}
+    topRight: {r: 0.25, g: 0.7, b: 1, a: 1}
+    bottomLeft: {r: 0.45, g: 0.62, b: 0.78, a: 1}
+    bottomRight: {r: 0.45, g: 0.62, b: 0.78, a: 1}
   resistanceStat: {fileID: 11400000, guid: a89e67f16ea52304c9df256c094efcd4, type: 2}
   keyword: {fileID: 11400000, guid: 37b1529ee58b31b4bba5d024fdae88f9, type: 2}
   directDamageMultiplier: 1

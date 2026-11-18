@@ -18,29 +18,30 @@ MonoBehaviour:
   hitSound: {fileID: 0}
   font: {fileID: 0}
   normalGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+    topLeft: {r: 0.78, g: 0.68, b: 1, a: 1}
+    topRight: {r: 0.78, g: 0.68, b: 1, a: 1}
+    bottomLeft: {r: 0.78, g: 0.68, b: 1, a: 1}
+    bottomRight: {r: 0.78, g: 0.68, b: 1, a: 1}
   critGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+    topLeft: {r: 0.62, g: 0.42, b: 1, a: 1}
+    topRight: {r: 0.62, g: 0.42, b: 1, a: 1}
+    bottomLeft: {r: 0.62, g: 0.42, b: 1, a: 1}
+    bottomRight: {r: 0.62, g: 0.42, b: 1, a: 1}
   debuffedGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+    topLeft: {r: 0.55, g: 0.47, b: 0.78, a: 1}
+    topRight: {r: 0.55, g: 0.47, b: 0.78, a: 1}
+    bottomLeft: {r: 0.55, g: 0.47, b: 0.78, a: 1}
+    bottomRight: {r: 0.55, g: 0.47, b: 0.78, a: 1}
   critDebuffedGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+    topLeft: {r: 0.62, g: 0.42, b: 1, a: 1}
+    topRight: {r: 0.62, g: 0.42, b: 1, a: 1}
+    bottomLeft: {r: 0.55, g: 0.47, b: 0.78, a: 1}
+    bottomRight: {r: 0.55, g: 0.47, b: 0.78, a: 1}
   resistanceStat: {fileID: 11400000, guid: 87d6c1c70154b0348b8856aeee374a6c, type: 2}
   keyword: {fileID: 11400000, guid: 2cb02b702f07d74499724f1fc2dfe12f, type: 2}
   directDamageMultiplier: 1
   precisionBonus: 0
+  colorizeVfx: 1
   hitVfx: {fileID: 3362559094653938668, guid: 6d9be190363175c47a89407642a9a0b9, type: 3}
   hitVfxInterval: 0.08
   hitVfxLifetime: 1
@@ -48,4 +49,4 @@ MonoBehaviour:
   blastVfx: {fileID: 3398366222349601506, guid: 3af328b9a7e29044bade7641dd722166, type: 3}
   blastReferenceRadius: 3
   blastLifetime: 2
-  arcMaterial: {fileID: 2100000, guid: 3b1a1450be77506409ab5bc28f664bbb, type: 2}
+  arcMaterial: {fileID: 0}

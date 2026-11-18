@@ -23,6 +23,8 @@ namespace Combat.Status
         public GameObject auraVfx;
         [Tooltip("Tint the aura to the damage type's colour.")]
         public bool tintAura = true;
+        [Tooltip("Also tint white and grey parts of the aura. On for auras authored in white.")]
+        public bool colorizeAura = false;
         [Min(0.01f)] public float auraScale = 1f;
         public Vector3 auraOffset = new Vector3(0f, 1f, 0f);
         [Tooltip("One-shot effect when the status ends or converts. Empty = none.")]

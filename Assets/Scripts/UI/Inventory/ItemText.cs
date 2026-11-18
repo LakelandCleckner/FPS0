@@ -64,6 +64,27 @@ namespace Combat.UI
             return t != null ? Pick(t.displayName, t.name) : "";
         }
 
+        // The weapon's damage type colour, else the fallback.
+        public static UnityEngine.Color ElementColor(WeaponInstance w, UnityEngine.Color fallback)
+        {
+            var t = w != null && w.Definition != null ? w.Definition.baseDamageType : null;
+            return t != null ? t.color : fallback;
+        }
+
+        private static readonly List<Combat.Core.DamageTypeSO> perkElements = new List<Combat.Core.DamageTypeSO>(4);
+
+        // The colour of the first element a perk deals or applies; false for element-free perks.
+        public static bool PerkElementColor(PerkSO perk, out UnityEngine.Color color)
+        {
+            color = default;
+            if (perk == null) return false;
+            perkElements.Clear();
+            perk.CollectElements(perkElements);
+            for (int i = 0; i < perkElements.Count; i++)
+                if (perkElements[i] != null) { color = perkElements[i].color; return true; }
+            return false;
+        }
+
         // Two or three letters for a tile with no icon art yet.
         public static string Monogram(object item)
         {

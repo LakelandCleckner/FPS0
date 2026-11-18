@@ -205,9 +205,12 @@ namespace Combat.UI
         public static void Chip(Transform parent, UIStyleSO s, PerkSO perk, InventoryScreen screen = null, DescribeContext ctx = null, float size = -1f, bool intrinsic = false)
         {
             if (size <= 0f) size = s.chipSize;
-            var chip = UIKit.Box(parent, "Chip_" + perk.name, s, s.tileEmpty, true, intrinsic ? s.accent : (Color?)null, small: true);
+            // Elemental perks wear their element's colour; other intrinsics the accent
+            bool elemental = ItemText.PerkElementColor(perk, out var element);
+            Color tint = elemental ? element : s.accent;
+            var chip = UIKit.Box(parent, "Chip_" + perk.name, s, s.tileEmpty, true, intrinsic || elemental ? tint : (Color?)null, small: true);
             string title = intrinsic ? ItemText.PerkName(perk) + "  (Intrinsic)" : ItemText.PerkName(perk);
-            if (screen != null) InfoHover.Attach(chip, screen, title, s.accent, perk, ctx ?? screen.ContextFor(null));
+            if (screen != null) InfoHover.Attach(chip, screen, title, tint, perk, ctx ?? screen.ContextFor(null));
             UIKit.Size(chip, width: size, height: size);
             if (perk.icon != null)
             {
@@ -219,7 +222,7 @@ namespace Combat.UI
             }
             else
             {
-                var t = UIKit.Text(chip.transform, "Label", s, perk.ShortLabel, s.labelSize - 1f, intrinsic ? s.accent : s.textMuted, TextAlignmentOptions.Center, heading: true);
+                var t = UIKit.Text(chip.transform, "Label", s, perk.ShortLabel, s.labelSize - 1f, intrinsic || elemental ? tint : s.textMuted, TextAlignmentOptions.Center, heading: true);
                 t.characterSpacing = 0f;
                 UIKit.Stretch(t.rectTransform);
             }

@@ -125,6 +125,8 @@ namespace Combat.Perks
         private static readonly HashSet<string> warned = new HashSet<string>();
 
         private static readonly Dictionary<string, List<PerkSO>> families = new Dictionary<string, List<PerkSO>>();
+        private static readonly List<Combat.Core.DamageTypeSO> perkElements = new List<Combat.Core.DamageTypeSO>(4);
+        private static Combat.Core.DamageTypeSO rollElement;
         private static readonly List<string> familyKeys = new List<string>();
 
         // One pick per column: a random family not already on the item (intrinsics included), at the tier the rarity allows.
@@ -135,6 +137,7 @@ namespace Combat.Perks
         {
             into.Clear();
             used.Clear();
+            rollElement = element;
             if (columns == null) return;
 
             if (intrinsic != null)
@@ -170,7 +173,7 @@ namespace Combat.Perks
             familyKeys.Clear();
             foreach (var p in perks)
             {
-                if (p == null) continue;
+                if (p == null || !FitsElement(p)) continue;
                 string f = Family(p);
                 if (used.Contains(f)) continue;
                 if (!families.TryGetValue(f, out var list)) { families[f] = list = new List<PerkSO>(); familyKeys.Add(f); }
@@ -189,6 +192,18 @@ namespace Combat.Perks
             }
             return best ?? lowest;
         }
+
+        // A perk that deals or applies an element only rolls on weapons of that element. Element-free perks roll anywhere.
+        public static bool FitsElement(PerkSO perk, Combat.Core.DamageTypeSO element)
+        {
+            perkElements.Clear();
+            perk.CollectElements(perkElements);
+            if (perkElements.Count == 0) return true;
+            for (int i = 0; i < perkElements.Count; i++) if (perkElements[i] == element) return true;
+            return false;
+        }
+
+        private static bool FitsElement(PerkSO perk) => FitsElement(perk, rollElement);
 
         // "Sturdy III" and "Sturdy I" are one family: the name without a trailing roman numeral.
         public static string Family(PerkSO perk)

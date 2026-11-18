@@ -6,7 +6,7 @@ namespace Combat.Effects
     // Pooled spawner for one-shot and looping VFX prefabs. Instances are pooled per prefab and tint, so each is tinted once.
     public static class VfxPool
     {
-        private static readonly Dictionary<(GameObject, Color), Stack<VfxInstance>> free = new Dictionary<(GameObject, Color), Stack<VfxInstance>>();
+        private static readonly Dictionary<(GameObject, Color, bool), Stack<VfxInstance>> free = new Dictionary<(GameObject, Color, bool), Stack<VfxInstance>>();
         private static readonly List<VfxInstance> timed = new List<VfxInstance>(32);
         private static readonly List<VfxInstance> pending = new List<VfxInstance>(8);
         private static Transform root;
@@ -20,16 +20,16 @@ namespace Combat.Effects
             root = null;
         }
 
-        // lifetime 0 = stays until Release. tint alpha 0 = leave the prefab's colours.
+        // lifetime 0 = stays until Release. tint alpha 0 = leave the prefab's colours. colorize = also tint white parts.
         public static GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent,
-                                       Color tint, float lifetime, float scale = 1f)
+                                       Color tint, float lifetime, float scale = 1f, bool colorize = false)
         {
             if (prefab == null) return null;
             EnsureRoot();
 
-            if (tint.a <= 0f) tint = Color.clear;
+            if (tint.a <= 0f) { tint = Color.clear; colorize = false; }
             VfxInstance inst = null;
-            if (free.TryGetValue((prefab, tint), out var stack))
+            if (free.TryGetValue((prefab, tint, colorize), out var stack))
                 while (stack.Count > 0 && inst == null) inst = stack.Pop();
 
             if (inst == null)
@@ -38,8 +38,9 @@ namespace Combat.Effects
                 inst = go.AddComponent<VfxInstance>();
                 inst.Prefab = prefab;
                 inst.Tint = tint;
+                inst.Colorize = colorize;
                 inst.BaseScale = prefab.transform.localScale;
-                if (tint.a > 0f) VfxTint.Apply(go, tint);
+                if (tint.a > 0f) VfxTint.Apply(go, tint, colorize);
             }
 
             var t = inst.transform;
@@ -77,7 +78,7 @@ namespace Combat.Effects
             if (inst == null || !inst.gameObject.activeSelf) return;
             inst.gameObject.SetActive(false);
             inst.transform.SetParent(root, false);
-            var key = (inst.Prefab, inst.Tint);
+            var key = (inst.Prefab, inst.Tint, inst.Colorize);
             if (!free.TryGetValue(key, out var stack)) free[key] = stack = new Stack<VfxInstance>();
             stack.Push(inst);
         }

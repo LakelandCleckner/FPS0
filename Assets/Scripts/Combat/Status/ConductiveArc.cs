@@ -65,8 +65,14 @@ namespace Combat.Status
             Material mat = type != null ? type.arcMaterial : null;
             Vector3 from = center + Vector3.up;
             for (int i = 0; i < found.Count; i++)
-                if (found[i] is MonoBehaviour t && t != null)
-                    ArcVfx.Draw(from, t.transform.position + Vector3.up, color, mat);
+            {
+                if (!(found[i] is MonoBehaviour t) || t == null) continue;
+                Vector3 to = t.transform.position + Vector3.up;
+                ArcVfx.Draw(from, to, color, mat);
+                // Spark where the arc lands
+                if (type != null && type.hitVfx != null)
+                    VfxPool.Spawn(type.hitVfx, to, Quaternion.identity, null, color, type.hitVfxLifetime, type.hitVfxScale, type.colorizeVfx);
+            }
         }
     }
 }

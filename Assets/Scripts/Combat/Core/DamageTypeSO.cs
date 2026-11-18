@@ -60,6 +60,8 @@ namespace Combat.Core
         public float precisionBonus = 0f;
 
         [Header("VFX")]
+        [Tooltip("Also tint white and grey parts of this type's effects. On for effects authored in white.")]
+        public bool colorizeVfx = false;
         [Tooltip("Spawned at direct-hit points, tinted to this type's colour. Empty = none.")]
         public GameObject hitVfx;
         [Tooltip("Seconds between hit effects of this type, so fast guns don't spawn one per bullet.")]

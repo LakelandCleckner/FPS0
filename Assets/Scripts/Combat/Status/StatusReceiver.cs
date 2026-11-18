@@ -113,7 +113,7 @@ namespace Combat.Status
             if (status.auraVfx == null) return;
             Color tint = status.tintAura && status.damageType != null ? status.damageType.color : Color.clear;
             var t = transform;
-            var fx = VfxPool.Spawn(status.auraVfx, t.TransformPoint(status.auraOffset), t.rotation, t, tint, 0f, status.auraScale);
+            var fx = VfxPool.Spawn(status.auraVfx, t.TransformPoint(status.auraOffset), t.rotation, t, tint, 0f, status.auraScale, status.colorizeAura);
             if (fx != null) auras[status] = fx;
         }
 
@@ -133,7 +133,7 @@ namespace Combat.Status
             {
                 Color tint = status.tintAura && status.damageType != null ? status.damageType.color : Color.clear;
                 VfxPool.Spawn(status.endVfx, transform.TransformPoint(status.auraOffset), Quaternion.identity, null,
-                              tint, status.endVfxLifetime, status.auraScale);
+                              tint, status.endVfxLifetime, status.auraScale, status.colorizeAura);
             }
         }
 

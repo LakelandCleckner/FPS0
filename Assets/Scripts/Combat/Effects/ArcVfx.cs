@@ -3,18 +3,23 @@ using UnityEngine;
 
 namespace Combat.Effects
 {
-    // Short jagged lines between two points for chain arcs. Pooled line renderers that fade out.
+    // Jagged flickering lines between two points for chain arcs: a bright core over a wide glow. Pooled, fades out.
     public sealed class ArcVfx : MonoBehaviour
     {
-        private const int Points = 9;
-        private const float Life = 0.15f;
-        private const float Width = 0.06f;
-        private const float Jitter = 0.35f;
+        private const int Points = 12;
+        private const float Life = 0.3f;
+        private const float CoreWidth = 0.07f;
+        private const float GlowWidth = 0.35f;
+        private const float Jitter = 0.45f;
+        private const float FlickerInterval = 0.04f;
+        private const float Intensity = 3f;
 
         private sealed class Arc
         {
-            public LineRenderer Line;
-            public float Born;
+            public LineRenderer Core;
+            public LineRenderer Glow;
+            public Vector3 From, To;
+            public float Born, NextFlicker;
             public Color Color;
         }
 
@@ -31,7 +36,7 @@ namespace Combat.Effects
             fallback = null;
         }
 
-        // Draws one arc. material null = a plain unlit line in the colour.
+        // Draws one arc. material null = an additive unlit line in the colour.
         public static void Draw(Vector3 from, Vector3 to, Color color, Material material)
         {
             if (instance == null)
@@ -46,33 +51,18 @@ namespace Combat.Effects
         private void Spawn(Vector3 from, Vector3 to, Color color, Material material)
         {
             var arc = free.Count > 0 ? free.Pop() : Create();
-            var line = arc.Line;
-            line.sharedMaterial = material != null ? material : Fallback();
-
-            Vector3 dir = to - from;
-            Vector3 side = Vector3.Cross(dir, Vector3.up);
-            if (side.sqrMagnitude < 0.0001f) side = Vector3.Cross(dir, Vector3.right);
-            side.Normalize();
-            Vector3 up = Vector3.Cross(side, dir).normalized;
-
-            for (int i = 0; i < Points; i++)
-            {
-                float t = i / (float)(Points - 1);
-                Vector3 p = from + dir * t;
-                if (i > 0 && i < Points - 1)
-                {
-                    float k = Mathf.Sin(t * Mathf.PI) * Jitter;
-                    p += side * Random.Range(-k, k) + up * Random.Range(-k, k);
-                }
-                buffer[i] = p;
-            }
-            line.positionCount = Points;
-            line.SetPositions(buffer);
-
-            arc.Born = Time.time;
+            var mat = material != null ? material : Fallback();
+            arc.Core.sharedMaterial = mat;
+            arc.Glow.sharedMaterial = mat;
+            arc.From = from;
+            arc.To = to;
             arc.Color = color;
-            SetColor(line, color, 1f);
-            line.gameObject.SetActive(true);
+            arc.Born = Time.time;
+            arc.NextFlicker = 0f;
+            Shape(arc);
+            SetColor(arc, 1f);
+            arc.Core.gameObject.SetActive(true);
+            arc.Glow.gameObject.SetActive(true);
             live.Add(arc);
         }
 
@@ -83,43 +73,103 @@ namespace Combat.Effects
             {
                 var arc = live[i];
                 float a = 1f - (now - arc.Born) / Life;
-                if (a > 0f) { SetColor(arc.Line, arc.Color, a); continue; }
-                arc.Line.gameObject.SetActive(false);
+                if (a > 0f)
+                {
+                    if (now >= arc.NextFlicker) Shape(arc);
+                    SetColor(arc, a);
+                    continue;
+                }
+                arc.Core.gameObject.SetActive(false);
+                arc.Glow.gameObject.SetActive(false);
                 live[i] = live[live.Count - 1];
                 live.RemoveAt(live.Count - 1);
                 free.Push(arc);
             }
         }
 
+        // New jagged path; the glow follows the core.
+        private void Shape(Arc arc)
+        {
+            Vector3 dir = arc.To - arc.From;
+            Vector3 side = Vector3.Cross(dir, Vector3.up);
+            if (side.sqrMagnitude < 0.0001f) side = Vector3.Cross(dir, Vector3.right);
+            side.Normalize();
+            Vector3 up = Vector3.Cross(side, dir).normalized;
+
+            for (int i = 0; i < Points; i++)
+            {
+                float t = i / (float)(Points - 1);
+                Vector3 p = arc.From + dir * t;
+                if (i > 0 && i < Points - 1)
+                {
+                    float k = Mathf.Sin(t * Mathf.PI) * Jitter;
+                    p += side * Random.Range(-k, k) + up * Random.Range(-k, k);
+                }
+                buffer[i] = p;
+            }
+            arc.Core.positionCount = Points;
+            arc.Core.SetPositions(buffer);
+            arc.Glow.positionCount = Points;
+            arc.Glow.SetPositions(buffer);
+            arc.NextFlicker = Time.time + FlickerInterval;
+        }
+
         private Arc Create()
         {
-            var go = new GameObject("Arc");
+            return new Arc { Glow = Line("Glow", GlowWidth), Core = Line("Core", CoreWidth) };
+        }
+
+        private LineRenderer Line(string name, float width)
+        {
+            var go = new GameObject(name);
             go.transform.SetParent(transform, false);
             var line = go.AddComponent<LineRenderer>();
             line.useWorldSpace = true;
-            line.widthMultiplier = Width;
-            line.numCapVertices = 2;
+            line.widthMultiplier = width;
+            line.numCapVertices = 3;
+            line.numCornerVertices = 2;
             line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             line.receiveShadows = false;
-            return new Arc { Line = line };
+            return line;
         }
 
-        private static void SetColor(LineRenderer line, Color c, float alpha)
+        // Both lines in a strongly saturated element hue (core slightly lighter), HDR for bloom.
+        private static void SetColor(Arc arc, float alpha)
         {
-            var start = c * 2f;
-            start.a = alpha;
-            var end = c;
-            end.a = alpha * 0.6f;
-            line.startColor = start;
-            line.endColor = end;
+            Color.RGBToHSV(arc.Color, out float h, out float s, out _);
+            var hue = Color.HSVToRGB(h, Mathf.Max(s, 0.9f), 1f);
+
+            var core = Color.Lerp(hue, Color.white, 0.2f) * Intensity;
+            core.a = alpha;
+            arc.Core.startColor = core;
+            arc.Core.endColor = core;
+
+            var glow = hue * Intensity;
+            glow.a = alpha * 0.6f;
+            arc.Glow.startColor = glow;
+            arc.Glow.endColor = glow;
         }
 
+        // Additive unlit particle material, so the glow brightens instead of covering.
         private static Material Fallback()
         {
             if (fallback != null) return fallback;
             var shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
-            if (shader == null) shader = Shader.Find("Sprites/Default");
-            fallback = new Material(shader);
+            if (shader != null)
+            {
+                fallback = new Material(shader);
+                fallback.SetFloat("_Surface", 1f);
+                fallback.SetFloat("_Blend", 2f);
+                fallback.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                fallback.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.One);
+                fallback.SetFloat("_ZWrite", 0f);
+                fallback.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+                fallback.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+            }
+            else
+            {
+                fallback = new Material(Shader.Find("Sprites/Default"));
+            }
             return fallback;
         }
     }
