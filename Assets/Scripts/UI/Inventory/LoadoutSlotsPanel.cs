@@ -132,7 +132,7 @@ namespace Combat.UI
                 UIKit.Text(kindLine, "Element", s, element, s.smallSize, type.color);
             }
             UIKit.Spacer(kindLine);
-            ChipGrid(tile.transform, screen, weapon.Definition.intrinsicPerks, weapon.Perks, screen.ContextFor(weapon), s.weaponSlotHeight - 16f);
+            ChipGrid(tile.transform, screen, weapon.Definition.ResolvedIntrinsics, weapon.Perks, screen.ContextFor(weapon), s.weaponSlotHeight - 16f);
             return tile;
         }
 

@@ -75,6 +75,9 @@ namespace Combat.AI
 
         // Stun: no movement or turning (staggered)
         private float stunUntil;
+        // Push: a short shove applied while stunned (knockback)
+        private Vector3 pushVelocity;
+        private float pushUntil;
         private bool stunHeld;
 
         public bool HasLook => lookOwner != null;
@@ -136,6 +139,7 @@ namespace Combat.AI
             pointOwner = null;
             dodgeUntil = 0f;
             stunUntil = 0f;
+            pushUntil = 0f;
             stunHeld = false;
             currentTarget = null;
             shouldMove = false;
@@ -243,6 +247,16 @@ namespace Combat.AI
             if (nav.isActiveAndEnabled && nav.isOnNavMesh) nav.SetDestination(point);
         }
 
+        // Shoves the body by this offset over the given time; stuns it for that long
+        public void Push(Vector3 offset, float time)
+        {
+            time = Mathf.Max(0.05f, time);
+            offset.y = 0f;
+            pushVelocity = offset / time;
+            pushUntil = Time.time + time;
+            Stun(pushUntil);
+        }
+
         // Stand still until this time; cancels a dodge
         public void Stun(float until)
         {
@@ -320,6 +334,7 @@ namespace Combat.AI
                 if (!stunHeld && nav.isActiveAndEnabled && nav.isOnNavMesh) nav.velocity = Vector3.zero;
                 stunHeld = true;
                 nav.isStopped = true;
+                if (Time.time < pushUntil && nav.isActiveAndEnabled && nav.isOnNavMesh) nav.Move(pushVelocity * Time.deltaTime);
                 return;
             }
             stunHeld = false;

@@ -37,6 +37,16 @@ namespace Combat.Status
         [Tooltip("Applied when Convert At Stacks is reached. This status can't be applied while it's active.")]
         public StatusSO convertsTo;
 
+        [Header("Control (when first applied)")]
+        [Tooltip("Seconds the target can't move or attack (Freeze). 0 = none.")]
+        [Min(0f)] public float stunTime = 0f;
+        [Tooltip("Plays a stagger reaction and interrupts the target's attack.")]
+        public bool stagger = false;
+        [Tooltip("Heavy stagger instead of a normal one.")]
+        public bool heavyStagger = false;
+        [Tooltip("Metres the target is pushed away from the attacker. 0 = none.")]
+        [Min(0f)] public float knockback = 0f;
+
         [Header("Stat Modifier (while active)")]
         [Tooltip("Stat this status modifies while active (e.g. Move Speed for a slow). " +
          "null = no modifier (damage-only statuses like burn).")]

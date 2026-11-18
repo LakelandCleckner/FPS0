@@ -2,12 +2,13 @@ using UnityEngine;
 using Combat.AI;
 using Combat.Core;
 using Combat.Spawning;
+using Combat.Status;
 
 namespace Combat.Enemies
 {
     // Hit reactions: a procedural kick on every hit, a stagger meter, and hit clips on the HitReact layer.
     [DefaultExecutionOrder(130)]
-    public class EnemyHitReaction : MonoBehaviour, IPoolable
+    public class EnemyHitReaction : MonoBehaviour, IPoolable, IStatusControl
     {
         public enum ClipRole { Stand, Walk, Run, Crouch, Heavy }
 
@@ -154,6 +155,27 @@ namespace Combat.Enemies
 
             StaggerStarted?.Invoke(isHeavy);
             if (logStaggers) Debug.Log($"[EnemyHitReaction] {name} {(isHeavy ? "heavy " : "")}stagger ({role}) for {time:F2}s", this);
+        }
+
+        // Status control: Freeze stuns, Break staggers and knocks back
+        public void ApplyControl(StatusSO status, Vector3 from)
+        {
+            if (status == null || health == null || health.IsDying) return;
+            float now = Time.time;
+            if (status.stunTime > 0f)
+            {
+                if (mover != null) mover.Stun(now + status.stunTime);
+                if (ranged != null) ranged.Interrupt(status.stunTime, status.stunTime, false);
+                if (melee != null) melee.Interrupt(true, status.stunTime);
+            }
+            if (status.stagger && Profile != null && tuning.canStagger) Begin(status.heavyStagger, now);
+            if (status.knockback > 0f && mover != null)
+            {
+                Vector3 away = transform.position - from;
+                away.y = 0f;
+                if (away.sqrMagnitude < 0.0001f) away = -transform.forward;
+                mover.Push(away.normalized * status.knockback, 0.25f);
+            }
         }
 
         // Clip by what the enemy was doing; missing states fall back to Stand

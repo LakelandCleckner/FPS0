@@ -21,6 +21,10 @@ MonoBehaviour:
   endVfxLifetime: 1.5
   convertAtStacks: 0
   convertsTo: {fileID: 0}
+  stunTime: 1.5
+  stagger: 0
+  heavyStagger: 0
+  knockback: 0
   modifierTargetStat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
   modifierBucket: mult
   modifierPerIntensity: -1

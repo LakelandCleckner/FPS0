@@ -94,3 +94,5 @@ MonoBehaviour:
     deliveryOverrides: []
   crosshairPrefab: {fileID: 6358792504129393579, guid: f65e2aca27d6353489d3b57cde01da47, type: 3}
   round: {fileID: 11400000, guid: 4f87cd6ed12e4367b98667809bad254b, type: 2}
+  intrinsicPerks:
+  - {fileID: 11400000, guid: f22da7794d61411abd6de841c52a59c3, type: 2}

@@ -77,7 +77,8 @@ namespace Combat.UI
             var ctx = screen.ContextFor(w);
             Divider(body, s);
             Heading(body, s, "Perks");
-            foreach (var p in def.intrinsicPerks) if (p != null) PerkRow(body, screen, p, "Intrinsic", ctx);
+            var intrinsics = def.ResolvedIntrinsics;
+            foreach (var p in intrinsics) PerkRow(body, screen, p, "Intrinsic", ctx);
 
             var columns = def.ResolvedPerkColumns;
             bool any = false;
@@ -90,7 +91,7 @@ namespace Combat.UI
                 PerkRow(body, screen, p, col, ctx);
                 any = true;
             }
-            if (!any && def.intrinsicPerks.Count == 0) UIKit.Text(body, "None", s, "No perks.", s.smallSize, s.textFaint);
+            if (!any && intrinsics.Count == 0) UIKit.Text(body, "None", s, "No perks.", s.smallSize, s.textFaint);
         }
 
         private void Armor(RectTransform body, InventoryScreen screen, ArmorInstance a)

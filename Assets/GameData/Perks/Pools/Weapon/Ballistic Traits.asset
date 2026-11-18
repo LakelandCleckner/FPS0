@@ -16,5 +16,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 92ce15c0fa914ae7a902180b774cd8eb, type: 2}
   - {fileID: 11400000, guid: 4e0252ada7c94890b4dcd2bfaffda950, type: 2}
   - {fileID: 11400000, guid: df6338b7c35542f69fa5c26daba856a1, type: 2}
+  - {fileID: 11400000, guid: 8b1333f3a18f4b3cb6621e2b5315ccf3, type: 2}
+  - {fileID: 11400000, guid: cb92e930056f49a89de809108f0bf829, type: 2}
+  - {fileID: 11400000, guid: 984ec606f9304b5daeefec10679752e2, type: 2}
+  - {fileID: 11400000, guid: c5128534ce354c10a754215cb67399a7, type: 2}
   includes: []
-  authoredAs: Heavy Rounds, Hollow Point, Steady Rhythm
+  authoredAs: Heavy Rounds, Hollow Point, Steady Rhythm, Splinter, Aftershock, Crushing Blow, Rubble Field

@@ -10,6 +10,12 @@ namespace Combat.Status
 {
     // Lives on each combatant. Owns that target's EffectStackPools, keyed by StatusSO.
     // The target is the ICombatant (CombatantStats).
+    // Reacts to a status's control effects (stun, stagger, knockback) on the combatant that receives it.
+    public interface IStatusControl
+    {
+        void ApplyControl(StatusSO status, Vector3 from);
+    }
+
     [RequireComponent(typeof(CombatantStats))]
     public class StatusReceiver : MonoBehaviour, IPoolable
     {
@@ -31,9 +37,12 @@ namespace Combat.Status
         // Active Conductive status, or null.
         public ConductiveStatusSO Conductive { get; private set; }
 
+        private IStatusControl control;
+
         private void Awake()
         {
             target = GetComponent<CombatantStats>();
+            control = GetComponent<IStatusControl>();
         }
 
         private void OnEnable()
@@ -74,6 +83,7 @@ namespace Combat.Status
                 pools[status] = pool;
                 StatusManager.Instance.Register(pool);
                 OnPoolStarted(status);
+                ApplyControl(status, attacker);
             }
             pool.AddEntry(source, attacker, chainMultiplier, tickType, sourceFaction, chainDepth);
 
@@ -104,6 +114,14 @@ namespace Combat.Status
             pool.ClearAll();
             pools.Remove(status);
             OnPoolEnded(status, true);
+        }
+
+        // Stun, stagger and knockback, pushed away from the attacker
+        private void ApplyControl(StatusSO status, ICombatant attacker)
+        {
+            if (control == null || (status.stunTime <= 0f && !status.stagger && status.knockback <= 0f)) return;
+            var a = attacker as Component;
+            control.ApplyControl(status, a != null ? a.transform.position : transform.position - transform.forward);
         }
 
         private void OnPoolStarted(StatusSO status)

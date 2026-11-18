@@ -138,6 +138,10 @@ namespace Combat.Weapons
 
 
         // Inline rather than a FireModeSO reference -- see FireMode.cs for why.
+        [Header("Intrinsic Perks")]
+        [Tooltip("On every weapon of this archetype, whatever its element, before the weapon's own intrinsics.")]
+        public List<Combat.Perks.PerkSO> intrinsicPerks = new List<Combat.Perks.PerkSO>();
+
         [Header("Fire Mode (primary)")]
         public FireMode primaryFire = new FireMode();
 

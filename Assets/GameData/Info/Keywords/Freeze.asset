@@ -16,4 +16,4 @@ MonoBehaviour:
   displayName: Freeze
   color: {r: 0.55, g: 0.85, b: 1, a: 1}
   icon: {fileID: 0}
-  description: Frozen targets can't move. Chill can't build while frozen.
+  description: Frozen targets can't move or attack. Chill can't build while frozen.

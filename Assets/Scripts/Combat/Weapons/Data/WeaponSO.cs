@@ -93,6 +93,19 @@ namespace Combat.Weapons
         public bool mythic = false;
         [Tooltip("Always present on every copy.")]
         public List<PerkSO> intrinsicPerks = new List<PerkSO>();
+
+        // The archetype's intrinsics first, then this weapon's own. A new list each call.
+        public List<PerkSO> ResolvedIntrinsics
+        {
+            get
+            {
+                var all = new List<PerkSO>();
+                if (archetype != null && archetype.intrinsicPerks != null)
+                    foreach (var p in archetype.intrinsicPerks) if (p != null && !all.Contains(p)) all.Add(p);
+                foreach (var p in intrinsicPerks) if (p != null && !all.Contains(p)) all.Add(p);
+                return all;
+            }
+        }
         [Tooltip("One perk is rolled from each column. Empty = use the weapon type's columns.")]
         public List<PerkColumn> perkColumns = new List<PerkColumn>();
         [Tooltip("Fixed pick per column for curated rolls. Empty entry = random for that column.")]

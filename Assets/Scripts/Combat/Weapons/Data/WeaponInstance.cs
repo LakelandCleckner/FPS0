@@ -41,14 +41,14 @@ namespace Combat.Weapons
         {
             if (definition == null) { perks.Clear(); return; }
             if (definition.mythic) mode = RollMode.Curated;
-            PerkRoll.Roll(definition.ResolvedPerkColumns, definition.curatedRoll, mode, perks, definition.intrinsicPerks, definition.name, rarity, definition.baseDamageType);
+            PerkRoll.Roll(definition.ResolvedPerkColumns, definition.curatedRoll, mode, perks, definition.ResolvedIntrinsics, definition.name, rarity, definition.baseDamageType);
         }
 
         // Intrinsic perks, then rolled ones.
         public IEnumerable<PerkSO> AllPerks()
         {
             if (definition != null)
-                foreach (var p in definition.intrinsicPerks) if (p != null) yield return p;
+                foreach (var p in definition.ResolvedIntrinsics) yield return p;
             foreach (var p in perks) if (p != null) yield return p;
         }
     }

@@ -41,7 +41,7 @@ MonoBehaviour:
   reloadClip: {fileID: 8300000, guid: 49af6209dec94aa4a9216b5a301d0a88, type: 3}
   riderEffects: []
   intrinsicPerks:
-  - {fileID: 11400000, guid: 031b557cbad3456a82b9cce0ce853a9a, type: 2}
+  - {fileID: 11400000, guid: dc42479b401a4d92b5d719f67a77917e, type: 2}
   perkColumns: []
   curatedRoll: []
   faction: 0
