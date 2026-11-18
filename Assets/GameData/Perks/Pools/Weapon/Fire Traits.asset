@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4d1da4720f2c694786e3c4a0bbe5be0, type: 3}
+  m_Name: Fire Traits
+  m_EditorClassIdentifier: 
+  perks:
+  - {fileID: 11400000, guid: a4dbb8a9dc900774c83f68eedef9788a, type: 2}
+  - {fileID: 11400000, guid: c5a0116b08334c90a19ad1bdf8ceb9c9, type: 2}
+  - {fileID: 11400000, guid: 7c026848d3bb1b147bdfab5b8bc4052b, type: 2}
+  - {fileID: 11400000, guid: c1e7814e2a16f9b4eaec3074f934560c, type: 2}
+  - {fileID: 11400000, guid: a1938dab6f86446297f00a1c54e2d8d5, type: 2}
+  includes: []
+  authoredAs: Incendiary, Fire Pool, Spreading Flame, Flashover, Scald

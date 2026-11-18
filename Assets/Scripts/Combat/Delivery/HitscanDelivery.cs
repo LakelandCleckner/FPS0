@@ -27,7 +27,7 @@ namespace Combat.Delivery
         public void Fire(Vector3 origin, Vector3 direction, IDamageSource source, in ShotInfo shot)
         {
             var type = source != null ? source.BaseDamageType : null;
-            var round = source is WeaponDamageSource w ? w.Round : null;
+            var round = source is IRoundSource rs ? rs.Round : null;
             Vector3 start = muzzle != null ? muzzle.position : origin;
 
             if (!NearestNotOwner(origin, direction, source, out var hit))

@@ -144,7 +144,7 @@ namespace Combat.Delivery
             endImpact = false;
             endPoint = Vector3.zero;
             endNormal = Vector3.zero;
-            var round = damageSource is Combat.Sources.WeaponDamageSource w ? w.Round : null;
+            var round = damageSource is IRoundSource rs ? rs.Round : null;
             tracer = TracerVfx.Attach(transform, this.direction, damageType, round);
             ShowOwnVisuals(tracer == null);
 

@@ -2,6 +2,12 @@ using UnityEngine;
 
 namespace Combat.Effects
 {
+    // Anything that fires shots with a round (player weapons, enemy guns).
+    public interface IRoundSource
+    {
+        RoundSO Round { get; }
+    }
+
     // What a shot looks like in flight. Archetypes pick one; a weapon can override it with its own.
     [CreateAssetMenu(fileName = "Round", menuName = "Combat/Weapons/Round")]
     public class RoundSO : ScriptableObject

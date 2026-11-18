@@ -51,3 +51,16 @@ MonoBehaviour:
     minRarity: 4
     source: {fileID: 11400000, guid: d65a92d715394f51ae40395cdbdbbbe3, type: 2}
     extraPerks: []
+  - label: Element
+    minRarity: 1
+    source: {fileID: 11400000, guid: 493ae8f02fc8405bb35cda236702a836, type: 2}
+    extraPerks: []
+    byElement:
+    - element: {fileID: 11400000, guid: bb5cd7710169fec488edfdb57f9d8ade, type: 2}
+      pool: {fileID: 11400000, guid: b32c704cbb984029afd0bac369fe47c3, type: 2}
+    - element: {fileID: 11400000, guid: 4e160728f4591b5449e17a7cceb05c43, type: 2}
+      pool: {fileID: 11400000, guid: f6725ca85c2f48df9e96f69ee710649d, type: 2}
+    - element: {fileID: 11400000, guid: 8337384683ac3314180ba08185f989f2, type: 2}
+      pool: {fileID: 11400000, guid: 4de1e5df9bb84bc68cd79b79f478f098, type: 2}
+    - element: {fileID: 11400000, guid: 1b2eaa9ee1d78754f9e8def8f252f9e4, type: 2}
+      pool: {fileID: 11400000, guid: 7ec54142e94b417a8784f0f9f1b32f74, type: 2}

@@ -16,5 +16,4 @@ MonoBehaviour:
   includes:
   - {fileID: 11400000, guid: b5064ee13db140cabf351141a23f09eb, type: 2}
   - {fileID: 11400000, guid: d765c4dc6e13d8d4eb8a08dc803da118, type: 2}
-  - {fileID: 11400000, guid: 2f53fe63d6de1b7409eed0490c44bc36, type: 2}
-  authoredAs: @SMG Traits, @All Traits, @Elemental
+  authoredAs: @SMG Traits, @All Traits

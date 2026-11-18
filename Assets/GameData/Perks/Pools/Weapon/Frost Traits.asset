@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4d1da4720f2c694786e3c4a0bbe5be0, type: 3}
+  m_Name: Frost Traits
+  m_EditorClassIdentifier: 
+  perks:
+  - {fileID: 11400000, guid: 7c5d3db4251b4ddb9aca39eca97ee462, type: 2}
+  - {fileID: 11400000, guid: 504e37d1dc51401c9c956cc355c9fad3, type: 2}
+  - {fileID: 11400000, guid: f6d6932ee3db44c0b4a2338da52948b1, type: 2}
+  - {fileID: 11400000, guid: 61c8044c317d48abbda88df8b3d26662, type: 2}
+  - {fileID: 11400000, guid: 5c2f8f4af3c34180bac37a371cdc67bf, type: 2}
+  includes: []
+  authoredAs: Frost Pool, Rimefall, Cold Iron, Whiteout, Flash Freeze

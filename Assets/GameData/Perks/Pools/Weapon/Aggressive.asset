@@ -17,6 +17,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e7b4eb241a094154c9dcfcfd70eaf07e, type: 2}
   - {fileID: 11400000, guid: 43890af136a19cb46af8f260519be347, type: 2}
   - {fileID: 11400000, guid: b2b1e68a2f42cd64ebf526e9471f0cb1, type: 2}
-  includes:
-  - {fileID: 11400000, guid: 2f53fe63d6de1b7409eed0490c44bc36, type: 2}
-  authoredAs: folder=Trait, -Precision Refund, -Holster Reload, -Desperation, @Elemental
+  includes: []
+  authoredAs: folder=Trait, -Precision Refund, -Holster Reload, -Desperation

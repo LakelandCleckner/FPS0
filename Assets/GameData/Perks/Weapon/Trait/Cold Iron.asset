@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc83da027f774a338cb03d91fe7153b4, type: 3}
+  m_Name: Cold Iron
+  m_EditorClassIdentifier: 
+  id: cold_iron
+  displayName: Cold Iron
+  customDescription: 0
+  description: More damage to chilled and frozen targets.
+  icon: {fileID: 0}
+  shortName: 
+  listenScope: 1
+  condition: 6
+  distance: 6
+  healthFraction: 0.3
+  statuses:
+  - {fileID: 11400000, guid: 46a0959a9a044873a636c58474f5db30, type: 2}
+  - {fileID: 11400000, guid: 00935cade343416da63767f055416c3c, type: 2}
+  sources: 1
+  bonus: 0.15

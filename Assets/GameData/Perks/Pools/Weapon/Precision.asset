@@ -16,7 +16,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d9c62ca6c4065f44d887338dbff77621, type: 2}
   - {fileID: 11400000, guid: 43890af136a19cb46af8f260519be347, type: 2}
   - {fileID: 11400000, guid: 8d8ca4a1304991b4e8a8f59239922b25, type: 2}
-  includes:
-  - {fileID: 11400000, guid: 2f53fe63d6de1b7409eed0490c44bc36, type: 2}
-  authoredAs: folder=Trait, -Holster Reload, -Kill Mobility, -Rotation, -Desperation,
-    @Elemental
+  includes: []
+  authoredAs: folder=Trait, -Holster Reload, -Kill Mobility, -Rotation, -Desperation

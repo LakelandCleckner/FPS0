@@ -13,7 +13,7 @@ using Combat.Weapons;
 namespace Combat.Enemies
 {
     // Bursts at the believed target position through a DeliverySO; aim settles over time on target, raising the weapon is the wind-up.
-    public class EnemyRangedAttack : MonoBehaviour, IDamageSource, IPoolable
+    public class EnemyRangedAttack : MonoBehaviour, IDamageSource, IPoolable, IRoundSource
     {
         public enum Phase { Lowered, Raising, Ready, Bursting, Reloading }
 
@@ -26,6 +26,7 @@ namespace Combat.Enemies
         [SerializeField] private DeliverySO delivery;
         [Tooltip("Shot origin when there is no EnemyWeaponModel; with one, the gun's own muzzle is used.")]
         [SerializeField] private Transform muzzle;
+        [Tooltip("Override. Empty = the element of the gun on EnemyWeaponModel.")]
         [SerializeField] private DamageTypeSO damageType;
 
         [Header("Base Stats (pushed as stat bases at Start)")]
@@ -135,7 +136,13 @@ namespace Combat.Enemies
         // ---- IDamageSource ----
         public List<IHitEffect> GetEffects() => effects;
         public int Faction => combatantStats != null ? combatantStats.Faction : 0;
-        public DamageTypeSO BaseDamageType => damageType;
+        public DamageTypeSO BaseDamageType => damageType != null ? damageType : weapon != null ? weapon.baseDamageType : null;
+
+        // The held gun: its round in flight, and its element unless overridden
+        private WeaponSO weapon;
+        public RoundSO Round => weapon == null ? null
+            : weapon.roundOverride != null ? weapon.roundOverride
+            : weapon.archetype != null ? weapon.archetype.round : null;
         public int MaxChainDepth => 0;
         public float ChainFalloff => 1f;
         public float ChainGrowth => 1f;
@@ -153,6 +160,7 @@ namespace Combat.Enemies
             definition = GetComponent<EnemyDefinitionApplier>();
             var weaponModel = GetComponentInChildren<EnemyWeaponModel>();
             if (weaponModel != null && weaponModel.EnsureModel() != null && weaponModel.Muzzle != null) muzzle = weaponModel.Muzzle;
+            weapon = weaponModel != null ? weaponModel.Weapon : null;
             CacheAnimatorParams();
             BuildDelivery();
             BuildEffects();
@@ -369,7 +377,7 @@ namespace Combat.Enemies
             if (projectile == null) return;
             var config = so.config.Clone();
             config.speed *= ProjectileSpeedScale;
-            projectile.Init(resolver, this, combatantStats, effects, Faction, damageType, 0, 1f, 1f,
+            projectile.Init(resolver, this, combatantStats, effects, Faction, BaseDamageType, 0, 1f, 1f,
                             HitDedupMode.PerShot, config, dir, shot);
         }
 
@@ -438,8 +446,8 @@ namespace Combat.Enemies
             effects.Clear();
             var stat = statKeys != null ? statKeys.damage : null;
             effects.Add(stat != null
-                ? new DamageHitEffect(new DamageSpec(stat, StatScope.Source, 1f, damageType, false))
-                : new DamageHitEffect(new DamageSpec(baseDamage, damageType, false)));
+                ? new DamageHitEffect(new DamageSpec(stat, StatScope.Source, 1f, BaseDamageType, false))
+                : new DamageHitEffect(new DamageSpec(baseDamage, BaseDamageType, false)));
         }
 
         private void CacheAnimatorParams()

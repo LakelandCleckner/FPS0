@@ -10,11 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c9e5c4e214e465c44adf8c290f474f40, type: 3}
-  m_Name: Toxic
+  m_Name: Tainted Rounds
   m_EditorClassIdentifier: 
-  id: toxic
-  displayName: Toxic
+  id: tainted_rounds
+  displayName: Tainted Rounds
+  customDescription: 0
   description: Hits poison targets.
+  icon: {fileID: 0}
+  shortName: 
   listenScope: 0
   effects:
   - {fileID: 11400000, guid: 7876f6e7b2073c64eaa30f9c0cb49185, type: 2}
