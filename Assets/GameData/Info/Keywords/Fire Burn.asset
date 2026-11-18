@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Fire Burn
   m_EditorClassIdentifier: 
   id: status_fireburnstatus
-  displayName: Fire Burn
+  displayName: Burn
   color: {r: 1, g: 0.45, b: 0.1, a: 1}
   icon: {fileID: 0}
   description: 

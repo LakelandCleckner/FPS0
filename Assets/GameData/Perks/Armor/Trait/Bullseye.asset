@@ -10,27 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f488871374fb1014ba6535628d40da6a, type: 3}
-  m_Name: Quick Draw
+  m_Name: Bullseye
   m_EditorClassIdentifier: 
-  id: quick_draw
-  displayName: Quick Draw
-  description: Swapping weapons grants 30 handling for 3 seconds.
+  id: bullseye
+  displayName: Bullseye
+  description: Precision hits grant 3% weapon damage for 4 seconds, stacking 5 times.
   icon: {fileID: 0}
   shortName: 
   listenScope: 1
-  trigger: 12
+  trigger: 1
   sources: 3
   anyWeapon: 0
-  oncePerShot: 0
+  oncePerShot: 1
   everyN: 1
   window: 0
-  duration: 3
-  maxStacks: 1
+  duration: 4
+  maxStacks: 5
   endOnStow: 0
   modifiers:
-  - stat: {fileID: 11400000, guid: 1af39531c4c9d474f810115fd25ae295, type: 2}
-    bucket: 0
-    value: 30
+  - stat: {fileID: 11400000, guid: 74e01aed325cce348acbd5d421549c4f, type: 2}
+    bucket: 1
+    value: 0.03
     target: 1
     weaponTypes: []
     scope: 1

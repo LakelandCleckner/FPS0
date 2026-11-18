@@ -10,27 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f488871374fb1014ba6535628d40da6a, type: 3}
-  m_Name: Overflow
+  m_Name: Snap Swap
   m_EditorClassIdentifier: 
-  id: overflow
-  displayName: Overflow
-  description: Precision hits grant 3% weapon damage for 4 seconds, stacking 5 times.
+  id: snap_swap
+  displayName: Snap Swap
+  description: Swapping weapons grants 20% faster reloads for 3 seconds.
   icon: {fileID: 0}
   shortName: 
   listenScope: 1
-  trigger: 1
+  trigger: 12
   sources: 3
   anyWeapon: 0
-  oncePerShot: 1
+  oncePerShot: 0
   everyN: 1
   window: 0
-  duration: 4
-  maxStacks: 5
+  duration: 3
+  maxStacks: 1
   endOnStow: 0
   modifiers:
-  - stat: {fileID: 11400000, guid: 74e01aed325cce348acbd5d421549c4f, type: 2}
-    bucket: 1
-    value: 0.03
+  - stat: {fileID: 11400000, guid: 7579532ea69da3744ab17777fafe21c6, type: 2}
+    bucket: 2
+    value: -0.2
     target: 1
     weaponTypes: []
     scope: 1

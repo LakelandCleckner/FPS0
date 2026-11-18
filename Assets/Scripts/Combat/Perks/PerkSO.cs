@@ -75,6 +75,14 @@ namespace Combat.Perks
         }
     }
 
+    // A pool used only for weapons of one damage type.
+    [Serializable]
+    public class ElementPool
+    {
+        public Combat.Core.DamageTypeSO element;
+        public PerkPoolSO pool;
+    }
+
     // One roll column: a shared pool plus optional one-off perks, one picked per roll.
     [Serializable]
     public class PerkColumn
@@ -87,12 +95,24 @@ namespace Combat.Perks
         [Tooltip("Optional. Perks for this column only, on top of the source pool. Usually empty.")]
         [FormerlySerializedAs("pool")]
         public List<PerkSO> extraPerks = new List<PerkSO>();
+        [Tooltip("Optional. The pool matching the weapon's damage type is used instead of Source. No match = Source.")]
+        public List<ElementPool> byElement = new List<ElementPool>();
 
-        // Source pool plus extras, once each.
-        public void Gather(List<PerkSO> into)
+        // The weapon's element pool, else the source pool.
+        public PerkPoolSO PoolFor(Combat.Core.DamageTypeSO element)
+        {
+            if (element != null && byElement != null)
+                for (int i = 0; i < byElement.Count; i++)
+                    if (byElement[i] != null && byElement[i].element == element && byElement[i].pool != null) return byElement[i].pool;
+            return source;
+        }
+
+        // Pool plus extras, once each.
+        public void Gather(List<PerkSO> into, Combat.Core.DamageTypeSO element = null)
         {
             into.Clear();
-            if (source != null) source.Collect(into);
+            var pool = PoolFor(element);
+            if (pool != null) pool.Collect(into);
             foreach (var p in extraPerks)
                 if (p != null && !into.Contains(p)) into.Add(p);
         }
@@ -110,7 +130,8 @@ namespace Combat.Perks
         // One pick per column: a random family not already on the item (intrinsics included), at the tier the rarity allows.
         // Columns above the item's rarity, or with nothing left, stay empty. Curated picks are kept as authored.
         public static void Roll(List<PerkColumn> columns, List<PerkSO> curated, RollMode mode, List<PerkSO> into,
-                                IEnumerable<PerkSO> intrinsic = null, string owner = null, Rarity rarity = Rarity.Common)
+                                IEnumerable<PerkSO> intrinsic = null, string owner = null, Rarity rarity = Rarity.Common,
+                                Combat.Core.DamageTypeSO element = null)
         {
             into.Clear();
             used.Clear();
@@ -130,7 +151,7 @@ namespace Combat.Perks
 
                 if (pick == null && columns[i] != null)
                 {
-                    columns[i].Gather(candidates);
+                    columns[i].Gather(candidates, element);
                     pick = PickFamily(candidates, rarity);
                     if (pick == null) WarnEmpty(owner, columns[i], i);
                     candidates.Clear();

@@ -13,20 +13,20 @@ MonoBehaviour:
   m_Name: SlowStatus
   m_EditorClassIdentifier: 
   keyword: {fileID: 11400000, guid: e07821266052deb4fb0df9f001a59d2d, type: 2}
-  modifierTargetStat: {fileID: 0}
+  modifierTargetStat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
   modifierBucket: mult
-  modifierPerIntensity: 0
+  modifierPerIntensity: -0.3
   derivationKind: 1
   owner: 1
   stat: {fileID: 0}
   quantity: 0
-  coefficient: 0.2
+  coefficient: 0
   damageType: {fileID: 0}
   duration: 3
   tickInterval: 0.5
-  maxEntries: 0
+  maxEntries: 1
   evictionStrategy: 0
-  durationMode: 0
+  durationMode: 1
   extendByOriginalDuration: 1
   extendAmount: 1
   extensionCap: 0

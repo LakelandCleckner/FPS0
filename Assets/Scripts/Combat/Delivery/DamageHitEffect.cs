@@ -13,9 +13,12 @@ namespace Combat.Effects
         public EffectPhase Phase => EffectPhase.Application;
         public bool PropagatesOnChain => true;
 
-        private readonly DamageSpec spec;
+        private DamageSpec spec;
 
         public DamageHitEffect(DamageSpec spec) { this.spec = spec; }
+
+        // Reused effects (chain arcs) swap their spec per use.
+        public void SetSpec(DamageSpec value) => spec = value;
 
         public void Apply(HitContext ctx, IHitResolver resolver)
         {
@@ -31,8 +34,12 @@ namespace Combat.Effects
             {
                 final *= ctx.Shot.DamageScale;
 
+                // Element identity: Ballistic hits harder and crits harder than elements
+                var element = ctx.DamageType;
+                if (element != null) final *= element.directDamageMultiplier;
+
                 if (ctx.BodyPartHit == BodyPart.Head && ctx.DamageSource is IPrecisionSource precise)
-                    final *= precise.PrecisionMultiplier;
+                    final *= precise.PrecisionMultiplier + (element != null ? element.precisionBonus : 0f);
 
                 if (ctx.Shot.HasOrigin && ctx.DamageSource is IRangeFalloffSource falloff)
                     final *= falloff.FalloffMultiplier(

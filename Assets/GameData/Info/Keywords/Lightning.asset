@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Lightning
   m_EditorClassIdentifier: 
   id: element_lightning
-  displayName: Lightning
+  displayName: Shock
   color: {r: 0.65, g: 0.55, b: 1, a: 1}
   icon: {fileID: 0}
   description: 

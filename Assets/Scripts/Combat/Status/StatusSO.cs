@@ -18,6 +18,23 @@ namespace Combat.Status
         [Tooltip("Keyword this status shows as in descriptions (Burn, Chill). Empty = the asset name, no popup.")]
         public KeywordSO keyword;
 
+        [Header("VFX")]
+        [Tooltip("Looping effect on the target while this status is active. Empty = none.")]
+        public GameObject auraVfx;
+        [Tooltip("Tint the aura to the damage type's colour.")]
+        public bool tintAura = true;
+        [Min(0.01f)] public float auraScale = 1f;
+        public Vector3 auraOffset = new Vector3(0f, 1f, 0f);
+        [Tooltip("One-shot effect when the status ends or converts. Empty = none.")]
+        public GameObject endVfx;
+        [Min(0.05f)] public float endVfxLifetime = 1.5f;
+
+        [Header("Conversion")]
+        [Tooltip("At this many stacks the status clears and applies Converts To instead (Chill into Freeze). 0 = never.")]
+        [Min(0)] public int convertAtStacks = 0;
+        [Tooltip("Applied when Convert At Stacks is reached. This status can't be applied while it's active.")]
+        public StatusSO convertsTo;
+
         [Header("Stat Modifier (while active)")]
         [Tooltip("Stat this status modifies while active (e.g. Move Speed for a slow). " +
          "null = no modifier (damage-only statuses like burn).")]
@@ -114,6 +131,8 @@ namespace Combat.Status
                 d.Add(" for ").Seconds(duration, "duration").Add(maxEntries > 1 ? " per stack." : ".");
             }
             if (maxEntries > 1) d.Next().Add("Stacks up to ").Count(maxEntries, "stacks").Add(" times.");
+            if (convertsTo != null && convertAtStacks > 0)
+                d.Next().Add("At ").Count(convertAtStacks, "convert").Add(" stacks it becomes ").StatusLink(convertsTo).Add(".");
             else if (maxEntries == 0 && deals) d.Next().Add("Stacks without limit.");
             if (d.IsEmpty) d.Add(name);
         }

@@ -13,6 +13,14 @@ MonoBehaviour:
   m_Name: FireBurnStatus
   m_EditorClassIdentifier: 
   keyword: {fileID: 11400000, guid: d2efe690607ed554189dd53a537c3460, type: 2}
+  auraVfx: {fileID: 2692375763741349971, guid: a047b1cf5e54c6b43a92f67dd966d4b1, type: 3}
+  tintAura: 0
+  auraScale: 0.8
+  auraOffset: {x: 0, y: 0, z: 0}
+  endVfx: {fileID: 0}
+  endVfxLifetime: 1.5
+  convertAtStacks: 0
+  convertsTo: {fileID: 0}
   modifierTargetStat: {fileID: 0}
   modifierBucket: mult
   modifierPerIntensity: 0

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d4c13629e85fd0f4780d73dbbd330d95, type: 3}
-  m_Name: Desperado
+  m_Name: Long Odds
   m_EditorClassIdentifier: 
-  id: desperado
-  displayName: Desperado
+  id: long_odds
+  displayName: Long Odds
   description: 20% crit chance while below 30% health.
   icon: {fileID: 0}
   shortName: 

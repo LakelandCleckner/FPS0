@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Poison Burn
   m_EditorClassIdentifier: 
   id: status_poisonburnstatus
-  displayName: Poison Burn
+  displayName: Poison
   color: {r: 0.35, g: 0.8, b: 0.25, a: 1}
   icon: {fileID: 0}
   description: 

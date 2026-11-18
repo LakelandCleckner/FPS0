@@ -100,6 +100,7 @@ namespace Combat.Core
                 pendingShots[key] = shot;
 
                 PlayHitPresentation(ctx);              // first pellet: marker + sound now
+                PlayHitVfx(ctx);
                 shot.Killed = ctx.WasKill;
             }
             else if (ctx.WasKill && !shot.Killed)
@@ -256,6 +257,9 @@ namespace Combat.Core
             // cascade begins, so a perk-caused follow-up can't spawn its damage
             // number ahead of the number for the hit that caused it.
             DispatchHitEvents(ctx);
+
+            // Conductive targets pass part of a direct hit on; queued, so it drains below.
+            Combat.Status.ConductiveArc.TryArc(ctx, this);
 
             // TOP-LEVEL ONLY: drain the deferred AoE/chain queue once the outermost
             // resolution is done. resolveDepth was decremented in ReturnBuffer (via
@@ -443,6 +447,20 @@ namespace Combat.Core
 
         // ----------------------------------------------------------------- feedback
 
+        // Element hit effect at the impact, throttled per type.
+        private readonly Dictionary<DamageTypeSO, float> lastHitVfx = new Dictionary<DamageTypeSO, float>();
+
+        private void PlayHitVfx(HitContext ctx)
+        {
+            var type = ctx.DamageType;
+            if (ctx.Source != HitSource.Direct || type == null || type.hitVfx == null) return;
+            float now = Time.time;
+            if (lastHitVfx.TryGetValue(type, out float last) && now - last < type.hitVfxInterval) return;
+            lastHitVfx[type] = now;
+            Combat.Effects.VfxPool.Spawn(type.hitVfx, ctx.HitPoint, Quaternion.identity, null, type.color,
+                                         type.hitVfxLifetime, type.hitVfxScale);
+        }
+
         // Hitmarker, hit sound and kill sound for one hit.
         private void PlayHitPresentation(HitContext ctx)
         {
@@ -488,6 +506,7 @@ namespace Combat.Core
             }
 
             PlayHitPresentation(ctx);
+            PlayHitVfx(ctx);
 
             // floating damage number.
             // isCrit styling: a REAL crit OR a headshot lights it up (per current

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Physical
   m_EditorClassIdentifier: 
   id: element_physical
-  displayName: Physical
+  displayName: Ballistic
   color: {r: 0.85, g: 0.85, b: 0.85, a: 1}
   icon: {fileID: 0}
   description: 

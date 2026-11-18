@@ -39,3 +39,13 @@ MonoBehaviour:
     bottomRight: {r: 1, g: 0.70389724, b: 0, a: 1}
   resistanceStat: {fileID: 11400000, guid: f5a8c623ad3a88c48bda3be493dbf950, type: 2}
   keyword: {fileID: 11400000, guid: 8222aa6b56e64f24a9a91d5ce5c29067, type: 2}
+  directDamageMultiplier: 1
+  precisionBonus: 0
+  hitVfx: {fileID: 4830294202082529915, guid: 04e8b0b6ae02ffb419cc12f41626e4e5, type: 3}
+  hitVfxInterval: 0.08
+  hitVfxLifetime: 1
+  hitVfxScale: 0.5
+  blastVfx: {fileID: 5971203435228136222, guid: 3223bec477ea3f44eb28a6c62236e3da, type: 3}
+  blastReferenceRadius: 3
+  blastLifetime: 2
+  arcMaterial: {fileID: 0}

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Physical
   m_EditorClassIdentifier: 
   id: physical
-  displayName: Physical
+  displayName: Ballistic
   color: {r: 0.85, g: 0.85, b: 0.85, a: 1}
   hitSound: {fileID: 8300000, guid: 6df85a6523bd5834283b398ed01f3cb1, type: 3}
   font: {fileID: 11400000, guid: 50aa2ce3f6554a649a8b0f1191dda614, type: 2}
@@ -39,3 +39,13 @@ MonoBehaviour:
     bottomRight: {r: 0.94716984, g: 0.7450985, b: 0, a: 1}
   resistanceStat: {fileID: 11400000, guid: 3a5aadef136191c46a35a5ecdf04e1ac, type: 2}
   keyword: {fileID: 11400000, guid: b495e4f2f96a25340a175c5a85352eab, type: 2}
+  directDamageMultiplier: 1.1
+  precisionBonus: 0.1
+  hitVfx: {fileID: 4330111335796242336, guid: 826ae61451417b94897e4b852dec721d, type: 3}
+  hitVfxInterval: 0.08
+  hitVfxLifetime: 1
+  hitVfxScale: 0.5
+  blastVfx: {fileID: 0}
+  blastReferenceRadius: 3
+  blastLifetime: 2
+  arcMaterial: {fileID: 0}

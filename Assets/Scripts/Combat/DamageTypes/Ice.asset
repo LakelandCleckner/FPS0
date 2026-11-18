@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Ice
   m_EditorClassIdentifier: 
   id: ice
-  displayName: Ice
+  displayName: Frost
   color: {r: 0.55, g: 0.85, b: 1, a: 1}
   hitSound: {fileID: 0}
   font: {fileID: 0}
@@ -39,3 +39,13 @@ MonoBehaviour:
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   resistanceStat: {fileID: 11400000, guid: a89e67f16ea52304c9df256c094efcd4, type: 2}
   keyword: {fileID: 11400000, guid: 37b1529ee58b31b4bba5d024fdae88f9, type: 2}
+  directDamageMultiplier: 1
+  precisionBonus: 0
+  hitVfx: {fileID: 5013003061549203214, guid: 2aa34b068c1a581478a60636f4fda771, type: 3}
+  hitVfxInterval: 0.08
+  hitVfxLifetime: 1
+  hitVfxScale: 0.5
+  blastVfx: {fileID: 6426699771996326788, guid: e9e2c43baa7907e4cabcde0e77e62fa2, type: 3}
+  blastReferenceRadius: 3
+  blastLifetime: 2
+  arcMaterial: {fileID: 0}

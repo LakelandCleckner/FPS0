@@ -3,6 +3,7 @@ using UnityEngine;
 using Combat.Core;
 using Combat.Events;
 using Combat.Info;
+using Combat.Status;
 
 namespace Combat.Perks
 {
@@ -13,7 +14,8 @@ namespace Combat.Perks
         TargetBelowHealth,  // target health fraction at or under the threshold, before this hit
         TargetAboveHealth,  // target health fraction at or over the threshold, before this hit
         TargetDebuffed,     // target carries a status (burn, poison, ...)
-        Precision           // the hit struck a precision zone
+        Precision,          // the hit struck a precision zone
+        TargetHasStatus     // target carries any of the listed statuses
     }
 
     // Extra damage on hits that meet a condition. Contributes a Modifier-phase effect to the resolving hit,
@@ -27,6 +29,8 @@ namespace Combat.Perks
         [Min(0f)] public float distance = 6f;
         [Tooltip("Target Below / Above Health: fraction of max health (0.3 = 30%).")]
         [Range(0f, 1f)] public float healthFraction = 0.3f;
+        [Tooltip("Target Has Status: any of these counts.")]
+        public List<StatusSO> statuses = new List<StatusSO>();
         [Tooltip("Which hits count. Direct = shots; add Status Tick for burns and poison.")]
         public HitSourceMask sources = HitSourceMask.Direct;
 
@@ -47,6 +51,14 @@ namespace Combat.Perks
                 case HitCondition.TargetAboveHealth: d.Add("to targets at or above ").Percent(healthFraction, "health").Add(" health"); break;
                 case HitCondition.TargetDebuffed: d.Add("to targets suffering a status effect"); break;
                 case HitCondition.Precision: d.Add("on ").Keyword("precision", "precision").Add(" hits"); break;
+                case HitCondition.TargetHasStatus:
+                    d.Add("to targets with ");
+                    for (int i = 0; i < statuses.Count; i++)
+                    {
+                        if (i > 0) d.Add(i == statuses.Count - 1 ? " or " : ", ");
+                        d.StatusLink(statuses[i]);
+                    }
+                    break;
             }
             d.Add(".");
             if ((sources & HitSourceMask.StatusTick) != 0) d.Next().Add("Status ticks count.");
@@ -96,6 +108,11 @@ namespace Combat.Perks
                         return ctx.Target.IsDebuffed;
                     case HitCondition.Precision:
                         return ctx.BodyPartHit == BodyPart.Head;
+                    case HitCondition.TargetHasStatus:
+                        var r = StatusReceiver.For(ctx.Target);
+                        if (r == null) return false;
+                        for (int i = 0; i < d.statuses.Count; i++) if (r.Has(d.statuses[i])) return true;
+                        return false;
                     default:
                         return false;
                 }

@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dd56c19941fb6964294e4e861f6ec0a1, type: 3}
-  m_Name: SMG Loader
+  m_Name: Rifle Drill
   m_EditorClassIdentifier: 
-  id: smg_loader
-  displayName: SMG Loader
-  description: Submachine guns reload faster.
+  id: rifle_drill
+  displayName: Rifle Drill
+  description: Assault rifles reload faster.
   icon: {fileID: 0}
   shortName: 
   listenScope: 0
@@ -24,5 +24,5 @@ MonoBehaviour:
     value: -0.2
     target: 1
     weaponTypes:
-    - {fileID: 11400000, guid: da0d96b685ab47c42b674412116a8621, type: 2}
+    - {fileID: 11400000, guid: 20f04e02e595b0347bac6a3f73768bd7, type: 2}
     scope: 1

@@ -53,6 +53,27 @@ namespace Combat.Core
         [Tooltip("Keyword this element shows as in descriptions. Empty = plain name.")]
         public Combat.Info.KeywordSO keyword;
 
+        [Header("Direct Hits")]
+        [Tooltip("Multiplies direct-hit damage from weapons of this type. Ballistic's edge over elements.")]
+        public float directDamageMultiplier = 1f;
+        [Tooltip("Added to the weapon's precision multiplier on precision hits.")]
+        public float precisionBonus = 0f;
+
+        [Header("VFX")]
+        [Tooltip("Spawned at direct-hit points, tinted to this type's colour. Empty = none.")]
+        public GameObject hitVfx;
+        [Tooltip("Seconds between hit effects of this type, so fast guns don't spawn one per bullet.")]
+        [Min(0f)] public float hitVfxInterval = 0.08f;
+        [Min(0.05f)] public float hitVfxLifetime = 1f;
+        [Min(0.01f)] public float hitVfxScale = 0.5f;
+        [Tooltip("Spawned for spreads of this type (kill spreads, area applies).")]
+        public GameObject blastVfx;
+        [Tooltip("Radius the blast prefab was built at; spawned scale is radius / this. 0 = authored scale.")]
+        [Min(0f)] public float blastReferenceRadius = 3f;
+        [Min(0.05f)] public float blastLifetime = 2f;
+        [Tooltip("Line material for chain arcs of this type. Empty = a plain unlit line.")]
+        public Material arcMaterial;
+
 
         // Picks the gradient for the current modifier combination. Falls back to
         // the normal gradient if a slot was left at default (incremental authoring).

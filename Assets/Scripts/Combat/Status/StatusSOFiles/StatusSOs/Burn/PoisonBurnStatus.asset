@@ -13,9 +13,17 @@ MonoBehaviour:
   m_Name: PoisonBurnStatus
   m_EditorClassIdentifier: 
   keyword: {fileID: 11400000, guid: 27cfd5db291b3864daaab2e3bc1b8a59, type: 2}
-  modifierTargetStat: {fileID: 0}
-  modifierBucket: mult
-  modifierPerIntensity: 0
+  auraVfx: {fileID: 2987979887945417987, guid: 30311f0e7d5b3e04f9d1d9b728e6642c, type: 3}
+  tintAura: 1
+  auraScale: 0.8
+  auraOffset: {x: 0, y: 0, z: 0}
+  endVfx: {fileID: 0}
+  endVfxLifetime: 1.5
+  convertAtStacks: 0
+  convertsTo: {fileID: 0}
+  modifierTargetStat: {fileID: 11400000, guid: dc920a34e05adb64c958ff021c4eb339, type: 2}
+  modifierBucket: flat
+  modifierPerIntensity: -0.005
   derivationKind: 1
   owner: 1
   stat: {fileID: 11400000, guid: 74e01aed325cce348acbd5d421549c4f, type: 2}

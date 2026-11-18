@@ -41,7 +41,7 @@ namespace Combat.Weapons
         {
             if (definition == null) { perks.Clear(); return; }
             if (definition.mythic) mode = RollMode.Curated;
-            PerkRoll.Roll(definition.ResolvedPerkColumns, definition.curatedRoll, mode, perks, definition.intrinsicPerks, definition.name, rarity);
+            PerkRoll.Roll(definition.ResolvedPerkColumns, definition.curatedRoll, mode, perks, definition.intrinsicPerks, definition.name, rarity, definition.baseDamageType);
         }
 
         // Intrinsic perks, then rolled ones.

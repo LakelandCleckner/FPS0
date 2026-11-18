@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Poison
   m_EditorClassIdentifier: 
   id: poison
-  displayName: Poison
+  displayName: Toxic
   color: {r: 0.35, g: 0.8, b: 0.25, a: 1}
   hitSound: {fileID: 8300000, guid: 875bd7073367e0e479fe52992c1712ce, type: 3}
   font: {fileID: 11400000, guid: f748d9418595b544899bd0376a99a7eb, type: 2}
@@ -39,3 +39,13 @@ MonoBehaviour:
     bottomRight: {r: 0.027248098, g: 0.335849, b: 0.07038589, a: 1}
   resistanceStat: {fileID: 11400000, guid: dc920a34e05adb64c958ff021c4eb339, type: 2}
   keyword: {fileID: 11400000, guid: ee076cb053fd6614884ed7782fde9db4, type: 2}
+  directDamageMultiplier: 1
+  precisionBonus: 0
+  hitVfx: {fileID: 5013003061549203214, guid: 2aa34b068c1a581478a60636f4fda771, type: 3}
+  hitVfxInterval: 0.08
+  hitVfxLifetime: 1
+  hitVfxScale: 0.5
+  blastVfx: {fileID: 96566848741554304, guid: 743d81eb82b906a46a44ee2e8c3f4eaf, type: 3}
+  blastReferenceRadius: 3
+  blastLifetime: 2
+  arcMaterial: {fileID: 0}

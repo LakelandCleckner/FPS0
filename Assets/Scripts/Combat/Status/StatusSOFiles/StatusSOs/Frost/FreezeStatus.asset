@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fdacdb27aeb4f6487a0daebff4cbb08, type: 3}
+  m_Name: FreezeStatus
+  m_EditorClassIdentifier: 
+  keyword: {fileID: 11400000, guid: 6da0517e3c714a0f9a002a7af69c34d8, type: 2}
+  auraVfx: {fileID: 1198433312203469917, guid: 34b28b7ad9fce9c4a9ff7303607c2a65, type: 3}
+  tintAura: 1
+  auraScale: 0.35
+  auraOffset: {x: 0, y: 1, z: 0}
+  endVfx: {fileID: 5013003061549203214, guid: 2aa34b068c1a581478a60636f4fda771, type: 3}
+  endVfxLifetime: 1.5
+  convertAtStacks: 0
+  convertsTo: {fileID: 0}
+  modifierTargetStat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
+  modifierBucket: mult
+  modifierPerIntensity: -1
+  derivationKind: 1
+  owner: 1
+  stat: {fileID: 0}
+  quantity: 0
+  coefficient: 0
+  damageType: {fileID: 11400000, guid: 4e160728f4591b5449e17a7cceb05c43, type: 2}
+  duration: 1.5
+  tickInterval: 0.5
+  maxEntries: 1
+  evictionStrategy: 1
+  durationMode: 1
+  extendByOriginalDuration: 1
+  extendAmount: 1
+  extensionCap: 0
+  intensityMode: 0
+  intervalReductionPerStack: 0
+  minInterval: 0.1
+  tickTimerMode: 0
+  showFloatingNumber: 0
+  feedsAccumulator: 0
+  onKillEffects: []
+  transferResetsTickCadence: 0
