@@ -3,6 +3,9 @@ using TMPro;
 
 namespace Combat.Core
 {
+    // Particle trail a shot of this type sheds in flight.
+    public enum TrailStyle { None, Embers, Mist, Sparks, Drips }
+
     // A damage type as a ScriptableObject asset. Replaces the old DamageType
     // enum. Owns presentation data (font, color gradients, sound) and is the
     // identity used for resistance lookups and future type interactions.
@@ -68,6 +71,8 @@ namespace Combat.Core
         [Min(0f)] public float hitVfxInterval = 0.08f;
         [Min(0.05f)] public float hitVfxLifetime = 1f;
         [Min(0.01f)] public float hitVfxScale = 0.5f;
+        [Tooltip("Metres the hit effect is pushed out from the surface so it doesn't clip into it.")]
+        [Min(0f)] public float hitVfxOffset = 0.12f;
         [Tooltip("Spawned for spreads of this type (kill spreads, area applies).")]
         public GameObject blastVfx;
         [Tooltip("Radius the blast prefab was built at; spawned scale is radius / this. 0 = authored scale.")]
@@ -92,6 +97,12 @@ namespace Combat.Core
         [Min(0.1f)] public float tracerWidth = 1f;
         [Tooltip("Seconds the tracer stays after landing so trails can fade.")]
         [Min(0f)] public float tracerLinger = 0.12f;
+        [Tooltip("Particle trail shed along the shot in flight.")]
+        public TrailStyle trailStyle = TrailStyle.None;
+        [Tooltip("Particles per metre, times the style's base rate.")]
+        [Min(0f)] public float trailDensity = 1f;
+        [Tooltip("Particle size multiplier.")]
+        [Min(0.01f)] public float trailSize = 1f;
 
 
         // Picks the gradient for the current modifier combination. Falls back to

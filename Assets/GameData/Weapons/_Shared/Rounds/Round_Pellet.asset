@@ -26,3 +26,4 @@ MonoBehaviour:
   elementBodyScale: 0.4
   streakLength: 0.8
   streakWidth: 0.6
+  trailDensity: 0.35

@@ -45,6 +45,7 @@ MonoBehaviour:
   hitVfxInterval: 0.08
   hitVfxLifetime: 1
   hitVfxScale: 0.5
+  hitVfxOffset: 0.12
   blastVfx: {fileID: 6426699771996326788, guid: e9e2c43baa7907e4cabcde0e77e62fa2, type: 3}
   blastReferenceRadius: 3
   blastLifetime: 2
@@ -57,3 +58,6 @@ MonoBehaviour:
   tracerLength: 3
   tracerWidth: 1
   tracerLinger: 0.15
+  trailStyle: 2
+  trailDensity: 1
+  trailSize: 1

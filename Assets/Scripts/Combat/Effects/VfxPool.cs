@@ -49,6 +49,12 @@ namespace Combat.Effects
                 inst.Colorize = colorize;
                 inst.BaseScale = prefab.transform.localScale;
                 if (tint.a > 0f) VfxTint.Apply(go, tint, colorize);
+                // Effects never need shadows
+                foreach (var r in go.GetComponentsInChildren<Renderer>(true))
+                {
+                    r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                    r.receiveShadows = false;
+                }
             }
 
             var t = inst.transform;

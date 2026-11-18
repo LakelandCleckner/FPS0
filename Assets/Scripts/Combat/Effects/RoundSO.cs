@@ -33,6 +33,8 @@ namespace Combat.Effects
         [Header("Streak")]
         [Min(0f)] public float streakLength = 1f;
         [Min(0f)] public float streakWidth = 1f;
+        [Tooltip("Element particle trail density multiplier. Lower for multi-pellet shots.")]
+        [Min(0f)] public float trailDensity = 1f;
 
         [System.NonSerialized] private Mesh resolved;
         private static Mesh ball;

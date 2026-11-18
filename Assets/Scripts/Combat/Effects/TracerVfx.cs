@@ -35,6 +35,7 @@ namespace Combat.Effects
             internal float LengthMul, WidthMul;
             internal float StartDist, BodyScale;
             internal Gradient CoreGrad, GlowGrad;
+            internal ParticleSystem Trail;
         }
 
         private static TracerVfx instance;
@@ -146,6 +147,7 @@ namespace Combat.Effects
             // Body spawns once the shot clears the start distance (see Update)
             t.BodyScale = type.tracerScale * (round != null ? round.elementBodyScale : 1f);
             t.Body = null;
+            t.Trail = null;
 
             ShowRound(t, from, elemental);
 
@@ -156,6 +158,7 @@ namespace Combat.Effects
         private void Update()
         {
             if (VfxPool.Quitting) return;
+            ElementTrail.Tick();
             float now = Time.time;
             float dt = Time.deltaTime;
             for (int i = live.Count - 1; i >= 0; i--)
@@ -198,6 +201,20 @@ namespace Combat.Effects
                     t.Body = VfxPool.Spawn(type.tracerVfx, headPos, Quaternion.LookRotation(t.Dir), null, type.color, 0f,
                                            t.BodyScale, type.colorizeVfx);
                 if (t.Body != null) t.Body.transform.position = headPos;
+
+                // Element particle trail follows the head until the shot lands
+                if (t.Trail == null && clear && !t.Arrived && type.trailStyle != TrailStyle.None)
+                    t.Trail = ElementTrail.Get(type.trailStyle, headPos, t.Hue,
+                        type.trailDensity * (t.Round != null ? t.Round.trailDensity : 1f), type.trailSize, transform);
+                if (t.Trail != null)
+                {
+                    t.Trail.transform.position = headPos;
+                    if (t.Arrived)
+                    {
+                        ElementTrail.Stop(t.Trail, type.trailStyle);
+                        t.Trail = null;
+                    }
+                }
                 if (t.RoundT != null && t.Round != null)
                 {
                     // Hidden near the muzzle and once spent on landing
@@ -306,6 +323,7 @@ namespace Combat.Effects
             t.RoundF = go.AddComponent<MeshFilter>();
             t.RoundR = go.AddComponent<MeshRenderer>();
             t.RoundR.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            t.RoundR.receiveShadows = false;
 
             var shell = new GameObject("Shell");
             shell.transform.SetParent(go.transform, false);
@@ -325,6 +343,8 @@ namespace Combat.Effects
             lastImpact[type] = now;
             // Hit effects face +Z: point it out of the surface
             var rot = normal.sqrMagnitude > 0.01f ? Quaternion.LookRotation(normal) : Quaternion.identity;
+            // Lift off the surface so the effect isn't half buried
+            if (normal.sqrMagnitude > 0.01f) at += normal.normalized * type.hitVfxOffset;
             VfxPool.Spawn(type.hitVfx, at, rot, null, type.color, type.hitVfxLifetime,
                           type.hitVfxScale, type.colorizeVfx);
         }
