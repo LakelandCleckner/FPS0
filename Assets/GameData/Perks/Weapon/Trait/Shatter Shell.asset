@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1db4d530470498186becae7de98ff75, type: 3}
+  m_Name: Shatter Shell
+  m_EditorClassIdentifier: 
+  id: shatter_shell
+  displayName: Shatter Shell
+  customDescription: 0
+  description: Every shot that lands will fracture the target.
+  icon: {fileID: 0}
+  shortName: 
+  listenScope: 0
+  trigger: 0
+  sources: 1
+  anyWeapon: 0
+  oncePerShot: 1
+  everyN: 1
+  window: 0
+  status: {fileID: 11400000, guid: c7540b71143b4cb8a524dc4bbd10cb16, type: 2}
+  stacks: 2
+  radius: 0
+  includeTarget: 1
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 128
