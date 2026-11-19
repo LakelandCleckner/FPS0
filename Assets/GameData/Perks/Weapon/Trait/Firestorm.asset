@@ -15,20 +15,20 @@ MonoBehaviour:
   id: firestorm
   displayName: Firestorm
   customDescription: 0
-  description: Kills set fire to nearby enemies.
+  description: Landing 4 shots within 1 s will set fire to the target.
   icon: {fileID: 0}
   shortName: 
   listenScope: 0
-  trigger: 2
+  trigger: 0
   sources: 1
   anyWeapon: 0
-  oncePerShot: 0
-  everyN: 1
-  window: 0
+  oncePerShot: 1
+  everyN: 4
+  window: 1
   status: {fileID: 11400000, guid: 2c3506ec21153694b9dc51e7df2a289d, type: 2}
   stacks: 1
-  radius: 5
-  includeTarget: 0
+  radius: 0
+  includeTarget: 1
   enemyLayers:
     serializedVersion: 2
     m_Bits: 128

@@ -15,7 +15,7 @@ MonoBehaviour:
   id: rot_core
   displayName: Rot Core
   customDescription: 0
-  description: Precision hits poison targets.
+  description: Two precision hits within 2 s will poison the target.
   icon: {fileID: 0}
   shortName: 
   listenScope: 0
@@ -23,8 +23,8 @@ MonoBehaviour:
   sources: 1
   anyWeapon: 0
   oncePerShot: 1
-  everyN: 1
-  window: 0
+  everyN: 2
+  window: 2
   status: {fileID: 11400000, guid: d796eba52a3c6c54d87d12cc358c04cb, type: 2}
   stacks: 3
   radius: 0

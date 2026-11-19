@@ -25,14 +25,14 @@ MonoBehaviour:
   oncePerShot: 1
   everyN: 1
   window: 0
-  duration: 2
-  maxStacks: 1
+  duration: 3
+  maxStacks: 2
   charges: 0
   endOnStow: 0
   modifiers:
   - stat: {fileID: 11400000, guid: 143b12865efe3284c8474b70084cde31, type: 2}
     bucket: 0
-    value: 0.5
+    value: 0.75
     target: 1
     weaponTypes: []
     scope: 0

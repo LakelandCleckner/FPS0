@@ -15,7 +15,7 @@ MonoBehaviour:
   id: live_core
   displayName: Live Core
   customDescription: 0
-  description: Precision hits make targets conductive.
+  description: Two precision hits within 2 s make the target conductive.
   icon: {fileID: 0}
   shortName: 
   listenScope: 0
@@ -23,8 +23,8 @@ MonoBehaviour:
   sources: 1
   anyWeapon: 0
   oncePerShot: 1
-  everyN: 1
-  window: 0
+  everyN: 2
+  window: 2
   status: {fileID: 11400000, guid: 1088f9e4dc5046fca51cf01453c4ee08, type: 2}
   stacks: 1
   radius: 0

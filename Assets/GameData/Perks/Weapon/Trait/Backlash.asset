@@ -10,27 +10,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f488871374fb1014ba6535628d40da6a, type: 3}
-  m_Name: Fleet
+  m_Name: Backlash
   m_EditorClassIdentifier: 
-  id: fleet
-  displayName: Fleet
-  description: Swapping weapons grants 10% move speed for 3 seconds.
+  id: backlash
+  displayName: Backlash
+  customDescription: 0
+  description: Taking damage raises damage for a short time.
   icon: {fileID: 0}
   shortName: 
   listenScope: 1
-  trigger: 12
-  sources: 3
+  trigger: 14
+  sources: 1
   anyWeapon: 0
   oncePerShot: 0
   everyN: 1
   window: 0
   duration: 3
   maxStacks: 1
+  charges: 0
   endOnStow: 0
   modifiers:
-  - stat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
-    bucket: 2
-    value: 0.1
-    target: 0
+  - stat: {fileID: 11400000, guid: 74e01aed325cce348acbd5d421549c4f, type: 2}
+    bucket: 1
+    value: 0.2
+    target: 1
     weaponTypes: []
-    scope: 1
+    scope: 0

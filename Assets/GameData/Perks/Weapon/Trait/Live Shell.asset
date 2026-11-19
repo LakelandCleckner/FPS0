@@ -15,7 +15,7 @@ MonoBehaviour:
   id: live_shell
   displayName: Live Shell
   customDescription: 0
-  description: Every shot that lands will make the target conductive.
+  description: Every shot that lands makes the target and enemies within 2 m conductive.
   icon: {fileID: 0}
   shortName: 
   listenScope: 0
@@ -27,7 +27,7 @@ MonoBehaviour:
   window: 0
   status: {fileID: 11400000, guid: 1088f9e4dc5046fca51cf01453c4ee08, type: 2}
   stacks: 1
-  radius: 0
+  radius: 2
   includeTarget: 1
   enemyLayers:
     serializedVersion: 2

@@ -15,7 +15,7 @@ MonoBehaviour:
   id: frostnip
   displayName: Frostnip
   customDescription: 0
-  description: Precision hits chill targets.
+  description: Precision hits chill the target and enemies within 3 m.
   icon: {fileID: 0}
   shortName: 
   listenScope: 0
@@ -27,7 +27,7 @@ MonoBehaviour:
   window: 0
   status: {fileID: 11400000, guid: 46a0959a9a044873a636c58474f5db30, type: 2}
   stacks: 3
-  radius: 0
+  radius: 3
   includeTarget: 1
   enemyLayers:
     serializedVersion: 2

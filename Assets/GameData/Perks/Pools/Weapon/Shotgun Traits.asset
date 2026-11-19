@@ -17,6 +17,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7567f17af2eb4c8786dd16af28b6ced3, type: 2}
   - {fileID: 11400000, guid: 4eeb5dca5d214c1587baec862e75a076, type: 2}
   - {fileID: 11400000, guid: 82ed6fca5d274106a9e6969780d8f58b, type: 2}
+  - {fileID: 11400000, guid: 54d3015c1acb4c6a8728122df0816841, type: 2}
   includes:
   - {fileID: 11400000, guid: 256cc2e72b7a4b548b19a0abe02b12b0, type: 2}
   authoredAs: Shotgun traits, @Sustain

@@ -34,7 +34,7 @@ namespace Combat.Core
         private void Awake()
         {
             if (combatant == null) combatant = GetComponent<CombatantStats>();
-            bus = GetComponent<WeaponEventBus>();
+            bus = GetComponentInParent<WeaponEventBus>();
         }
 
         private void ApplyTypedDamage(float damage, DamageTypeSO type) => TakeDamage(damage, bodyPart, type);

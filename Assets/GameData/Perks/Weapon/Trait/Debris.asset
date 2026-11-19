@@ -15,20 +15,20 @@ MonoBehaviour:
   id: debris
   displayName: Debris
   customDescription: 0
-  description: Kills fracture nearby enemies.
+  description: Landing 4 shots within 1 s will fracture the target.
   icon: {fileID: 0}
   shortName: 
   listenScope: 0
-  trigger: 2
+  trigger: 0
   sources: 1
   anyWeapon: 0
-  oncePerShot: 0
-  everyN: 1
-  window: 0
+  oncePerShot: 1
+  everyN: 4
+  window: 1
   status: {fileID: 11400000, guid: c7540b71143b4cb8a524dc4bbd10cb16, type: 2}
   stacks: 2
-  radius: 5
-  includeTarget: 0
+  radius: 0
+  includeTarget: 1
   enemyLayers:
     serializedVersion: 2
     m_Bits: 128

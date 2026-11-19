@@ -15,7 +15,7 @@ MonoBehaviour:
   id: cold_core
   displayName: Cold Core
   customDescription: 0
-  description: Precision hits chill targets.
+  description: Two precision hits within 2 s will chill the target.
   icon: {fileID: 0}
   shortName: 
   listenScope: 0
@@ -23,8 +23,8 @@ MonoBehaviour:
   sources: 1
   anyWeapon: 0
   oncePerShot: 1
-  everyN: 1
-  window: 0
+  everyN: 2
+  window: 2
   status: {fileID: 11400000, guid: 46a0959a9a044873a636c58474f5db30, type: 2}
   stacks: 3
   radius: 0

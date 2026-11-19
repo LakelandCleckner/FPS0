@@ -15,7 +15,7 @@ MonoBehaviour:
   id: fumes
   displayName: Fumes
   customDescription: 0
-  description: Kills poison nearby enemies.
+  description: Kills poison enemies within 3 m.
   icon: {fileID: 0}
   shortName: 
   listenScope: 0
@@ -26,8 +26,8 @@ MonoBehaviour:
   everyN: 1
   window: 0
   status: {fileID: 11400000, guid: d796eba52a3c6c54d87d12cc358c04cb, type: 2}
-  stacks: 1
-  radius: 5
+  stacks: 2
+  radius: 3
   includeTarget: 0
   enemyLayers:
     serializedVersion: 2

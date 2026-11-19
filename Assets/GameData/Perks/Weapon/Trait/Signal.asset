@@ -15,11 +15,11 @@ MonoBehaviour:
   id: signal
   displayName: Signal
   customDescription: 0
-  description: Every second precision hit will make the target conductive.
+  description: Every second shot that lands makes the target conductive.
   icon: {fileID: 0}
   shortName: 
   listenScope: 0
-  trigger: 1
+  trigger: 0
   sources: 1
   anyWeapon: 0
   oncePerShot: 1

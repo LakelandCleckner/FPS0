@@ -15,11 +15,11 @@ MonoBehaviour:
   id: snakebite
   displayName: Snakebite
   customDescription: 0
-  description: Every second precision hit will poison the target.
+  description: Every second shot that lands will poison the target.
   icon: {fileID: 0}
   shortName: 
   listenScope: 0
-  trigger: 1
+  trigger: 0
   sources: 1
   anyWeapon: 0
   oncePerShot: 1

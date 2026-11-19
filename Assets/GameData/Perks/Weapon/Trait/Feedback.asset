@@ -15,15 +15,15 @@ MonoBehaviour:
   id: feedback
   displayName: Feedback
   customDescription: 0
-  description: Arcs from your hits return rounds.
+  description: Chain kills return rounds.
   icon: {fileID: 0}
   shortName: 
   listenScope: 1
-  trigger: 0
+  trigger: 2
   sources: 4
   oncePerShot: 0
   everyN: 1
   window: 0
-  rounds: 1
+  rounds: 2
   magFraction: 0
   fromReserves: 1

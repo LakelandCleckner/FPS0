@@ -15,7 +15,7 @@ MonoBehaviour:
   id: discharge
   displayName: Discharge
   customDescription: 0
-  description: Kills make nearby enemies conductive.
+  description: Kills make enemies within 3 m conductive.
   icon: {fileID: 0}
   shortName: 
   listenScope: 0
@@ -27,7 +27,7 @@ MonoBehaviour:
   window: 0
   status: {fileID: 11400000, guid: 1088f9e4dc5046fca51cf01453c4ee08, type: 2}
   stacks: 1
-  radius: 5
+  radius: 3
   includeTarget: 0
   enemyLayers:
     serializedVersion: 2

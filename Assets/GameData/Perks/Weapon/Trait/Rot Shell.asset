@@ -15,7 +15,7 @@ MonoBehaviour:
   id: rot_shell
   displayName: Rot Shell
   customDescription: 0
-  description: Every shot that lands will poison the target.
+  description: Every shot that lands will poison the target and enemies within 2 m.
   icon: {fileID: 0}
   shortName: 
   listenScope: 0
@@ -27,7 +27,7 @@ MonoBehaviour:
   window: 0
   status: {fileID: 11400000, guid: d796eba52a3c6c54d87d12cc358c04cb, type: 2}
   stacks: 3
-  radius: 0
+  radius: 2
   includeTarget: 1
   enemyLayers:
     serializedVersion: 2

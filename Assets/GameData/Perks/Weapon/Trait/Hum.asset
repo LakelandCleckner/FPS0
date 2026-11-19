@@ -23,7 +23,7 @@ MonoBehaviour:
   sources: 1
   anyWeapon: 0
   oncePerShot: 1
-  everyN: 10
+  everyN: 12
   window: 0
   status: {fileID: 11400000, guid: 1088f9e4dc5046fca51cf01453c4ee08, type: 2}
   stacks: 1

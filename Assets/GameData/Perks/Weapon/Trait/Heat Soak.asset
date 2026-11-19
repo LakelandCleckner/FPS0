@@ -25,4 +25,4 @@ MonoBehaviour:
   statuses:
   - {fileID: 11400000, guid: 2c3506ec21153694b9dc51e7df2a289d, type: 2}
   sources: 1
-  bonus: 0.15
+  bonus: 0.25

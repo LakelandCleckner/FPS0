@@ -15,11 +15,11 @@ MonoBehaviour:
   id: hot_iron
   displayName: Hot Iron
   customDescription: 0
-  description: Every second precision hit will set fire to the target.
+  description: Every second shot that lands will set fire to the target.
   icon: {fileID: 0}
   shortName: 
   listenScope: 0
-  trigger: 1
+  trigger: 0
   sources: 1
   anyWeapon: 0
   oncePerShot: 1

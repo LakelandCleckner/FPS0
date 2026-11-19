@@ -151,10 +151,12 @@ namespace Combat.Perks
         // ------------------------------------------------------------------ events
 
         // Own weapon's events by default; anyWeapon hears every weapon (armor always does).
+        // Player events (DamageTaken) carry no weapon, so they are never filtered by weapon.
         protected void Listen(WeaponEventType type, HitSourceMask sources = HitSourceMask.Direct, bool anyWeapon = false)
         {
             if (Ctx.Bus == null) return;
-            var filter = anyWeapon || Ctx.IsArmor ? null : Ctx.Weapon;
+            bool playerEvent = type == WeaponEventType.DamageTaken;
+            var filter = anyWeapon || playerEvent || Ctx.IsArmor ? null : Ctx.Weapon;
             Ctx.Bus.Subscribe(type, Dispatch, filter, sources);
         }
 

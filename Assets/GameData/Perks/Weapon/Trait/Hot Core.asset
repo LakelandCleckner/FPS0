@@ -15,7 +15,7 @@ MonoBehaviour:
   id: hot_core
   displayName: Hot Core
   customDescription: 0
-  description: Precision hits set fire to targets.
+  description: Two precision hits within 2 s will set fire to the target.
   icon: {fileID: 0}
   shortName: 
   listenScope: 0
@@ -23,8 +23,8 @@ MonoBehaviour:
   sources: 1
   anyWeapon: 0
   oncePerShot: 1
-  everyN: 1
-  window: 0
+  everyN: 2
+  window: 2
   status: {fileID: 11400000, guid: 2c3506ec21153694b9dc51e7df2a289d, type: 2}
   stacks: 2
   radius: 0

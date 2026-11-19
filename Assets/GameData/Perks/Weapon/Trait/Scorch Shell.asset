@@ -15,7 +15,7 @@ MonoBehaviour:
   id: scorch_shell
   displayName: Scorch Shell
   customDescription: 0
-  description: Every shot that lands will set fire to the target.
+  description: Every shot that lands will set fire to the target and enemies within 2 m.
   icon: {fileID: 0}
   shortName: 
   listenScope: 0
@@ -27,7 +27,7 @@ MonoBehaviour:
   window: 0
   status: {fileID: 11400000, guid: 2c3506ec21153694b9dc51e7df2a289d, type: 2}
   stacks: 2
-  radius: 0
+  radius: 2
   includeTarget: 1
   enemyLayers:
     serializedVersion: 2
