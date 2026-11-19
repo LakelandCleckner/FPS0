@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEditor;
+using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using Combat.Core;
 using Combat.Events;
@@ -27,6 +28,7 @@ public partial class PerkLabWindow
     private const string SweepPrefsKey = "FPS0.PerkLab.Sweep";
 
     [SerializeField] private string sweepSearch = "";
+    [SerializeField] private string sweepType = "All types";
     [SerializeField] private bool showPass = true, showFail = true, showSkip = true;
 
     private readonly List<SweepResult> sweepResults = new List<SweepResult>();
@@ -34,7 +36,6 @@ public partial class PerkLabWindow
     private double sweepNextAt;
     private bool sweepRunning;
     private string sweepStatus = "";
-    private PerkSO sweepPick;
 
     // Saved host state, put back when the sweep ends
     private WeaponInstance sweepHost;
@@ -47,66 +48,124 @@ public partial class PerkLabWindow
     {
         if (!EditorApplication.isPlaying) { EditorGUILayout.HelpBox("The sweep runs in Play mode with a weapon in hand.", MessageType.None); return; }
         DrawSimPicker();
+        EditorGUILayout.LabelField("Tests weapon perks one at a time on the weapon in your hand, against the simulated enemy.", EditorStyles.wordWrappedMiniLabel);
+
+        bool canRun = !sweepRunning && SimReady;
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            using (new EditorGUI.DisabledScope(!canRun))
+            {
+                if (GUILayout.Button(new GUIContent("Run All", "Test every weapon perk."), GUILayout.Width(70))) StartSweep(SweepList(false));
+                int failed = sweepResults.Count(r => r.Verdict == "FAIL");
+                using (new EditorGUI.DisabledScope(failed == 0))
+                    if (GUILayout.Button(new GUIContent($"Rerun Failed ({failed})", "Test only the perks that failed last time."), GUILayout.Width(120)))
+                        StartSweep(sweepResults.Where(r => r.Verdict == "FAIL" && r.Perk != null).Select(r => r.Perk).ToList());
+                var pickRect = GUILayoutUtility.GetRect(new GUIContent("Run One Perk..."), EditorStyles.popup, GUILayout.Width(130));
+                if (GUI.Button(pickRect, new GUIContent("Run One Perk...", "Search for a perk by name and test just that one."), EditorStyles.popup))
+                    new PerkDropdown(allWeaponPerks ?? new List<PerkSO>(), p => { if (!sweepRunning && SimReady) StartSweep(new List<PerkSO> { p }); }).Show(pickRect);
+            }
+            using (new EditorGUI.DisabledScope(!sweepRunning))
+                if (GUILayout.Button(new GUIContent("Stop", "Stop the run and put your weapon's perks back."), GUILayout.Width(50))) StopSweep();
+        }
 
         using (new EditorGUILayout.HorizontalScope())
         {
-            sweepSearch = EditorGUILayout.TextField("Filter", sweepSearch);
-            using (new EditorGUI.DisabledScope(sweepRunning || !SimReady))
-            {
-                if (GUILayout.Button("Run All", GUILayout.Width(70))) StartSweep(SweepList(false));
-                if (GUILayout.Button("Run Filtered", GUILayout.Width(90))) StartSweep(SweepList(true));
-            }
-            using (new EditorGUI.DisabledScope(!sweepRunning))
-                if (GUILayout.Button("Stop", GUILayout.Width(50))) StopSweep();
-        }
-        using (new EditorGUILayout.HorizontalScope())
-        {
-            var list = allWeaponPerks ?? new List<PerkSO>();
-            var names = list.Select(p => p.name).ToArray();
-            int cur = Mathf.Max(0, list.IndexOf(sweepPick));
-            int next = EditorGUILayout.Popup("Single perk", cur, names);
-            if (list.Count > 0) sweepPick = list[next];
-            using (new EditorGUI.DisabledScope(sweepRunning || !SimReady || sweepPick == null))
-                if (GUILayout.Button("Run Selected", GUILayout.Width(100))) StartSweep(new List<PerkSO> { sweepPick });
+            sweepSearch = EditorGUILayout.TextField(new GUIContent("Filter", "Part of a perk name or type. Separate several with commas, e.g. fresh, holster."), sweepSearch);
+            var types = SweepTypes();
+            int cur = Mathf.Max(0, Array.IndexOf(types, sweepType));
+            sweepType = types[EditorGUILayout.Popup(cur, types, GUILayout.Width(110))];
+            var matches = SweepList(true);
+            using (new EditorGUI.DisabledScope(!canRun || matches.Count == 0))
+                if (GUILayout.Button(new GUIContent($"Run Filtered ({matches.Count})", "Test the perks matching the filter and type."), GUILayout.Width(120))) StartSweep(matches);
         }
 
         if (!string.IsNullOrEmpty(sweepStatus)) EditorGUILayout.LabelField(sweepStatus, EditorStyles.miniBoldLabel);
 
         using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
         {
-            showPass = GUILayout.Toggle(showPass, $"PASS {sweepResults.Count(r => r.Verdict == "PASS")}", EditorStyles.toolbarButton, GUILayout.Width(70));
-            showFail = GUILayout.Toggle(showFail, $"FAIL {sweepResults.Count(r => r.Verdict == "FAIL")}", EditorStyles.toolbarButton, GUILayout.Width(70));
-            showSkip = GUILayout.Toggle(showSkip, $"SKIP {sweepResults.Count(r => r.Verdict == "SKIP")}", EditorStyles.toolbarButton, GUILayout.Width(70));
-            GUILayout.Label($"changed {sweepResults.Count(r => r.Changed)}", EditorStyles.miniLabel);
+            showPass = GUILayout.Toggle(showPass, new GUIContent($"PASS {sweepResults.Count(r => r.Verdict == "PASS")}", "Show or hide passing perks."), EditorStyles.toolbarButton, GUILayout.Width(70));
+            showFail = GUILayout.Toggle(showFail, new GUIContent($"FAIL {sweepResults.Count(r => r.Verdict == "FAIL")}", "Show or hide failing perks."), EditorStyles.toolbarButton, GUILayout.Width(70));
+            showSkip = GUILayout.Toggle(showSkip, new GUIContent($"SKIP {sweepResults.Count(r => r.Verdict == "SKIP")}", "Show or hide skipped perks."), EditorStyles.toolbarButton, GUILayout.Width(70));
+            GUILayout.Label(new GUIContent($"changed {sweepResults.Count(r => r.Changed)}", "Results that differ from the run before (marked *)."), EditorStyles.miniLabel);
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button("Copy Report", EditorStyles.toolbarButton, GUILayout.Width(90))) CopySweep();
+            if (GUILayout.Button(new GUIContent("Copy Report", "Copy every FAIL and SKIP line to the clipboard."), EditorStyles.toolbarButton, GUILayout.Width(90))) CopySweep();
         }
 
+        PerkSO rerun = null;
         foreach (var r in sweepResults)
         {
             if ((r.Verdict == "PASS" && !showPass) || (r.Verdict == "FAIL" && !showFail) || (r.Verdict == "SKIP" && !showSkip)) continue;
             using (new EditorGUILayout.HorizontalScope())
             {
+                using (new EditorGUI.DisabledScope(!canRun || r.Perk == null))
+                    if (GUILayout.Button(new GUIContent("Run", "Test this perk again."), EditorStyles.miniButton, GUILayout.Width(36))) rerun = r.Perk;
                 var style = new GUIStyle(EditorStyles.boldLabel);
                 style.normal.textColor = r.Verdict == "PASS" ? new Color(0.45f, 0.8f, 0.45f) : r.Verdict == "FAIL" ? new Color(0.95f, 0.4f, 0.35f) : Color.gray;
                 GUILayout.Label(r.Verdict + (r.Changed ? "*" : ""), style, GUILayout.Width(48));
-                if (GUILayout.Button(r.Perk != null ? r.Perk.name : "?", EditorStyles.linkLabel, GUILayout.Width(160)) && r.Perk != null)
+                if (GUILayout.Button(new GUIContent(r.Perk != null ? r.Perk.name : "?", "Select the perk asset."), EditorStyles.linkLabel, GUILayout.Width(160)) && r.Perk != null)
                 {
                     EditorGUIUtility.PingObject(r.Perk);
                     Selection.activeObject = r.Perk;
                 }
-                GUILayout.Label(r.Perk != null ? r.Perk.GetType().Name.Replace("PerkSO", "") : "", EditorStyles.miniLabel, GUILayout.Width(110));
+                GUILayout.Label(r.Perk != null ? TypeLabel(r.Perk) : "", EditorStyles.miniLabel, GUILayout.Width(110));
                 GUILayout.Label(r.Detail, EditorStyles.wordWrappedMiniLabel);
             }
         }
+        // Started after the loop so the results list is not changed while it is drawn
+        if (rerun != null) StartSweep(new List<PerkSO> { rerun });
     }
 
+    private static string TypeLabel(PerkSO p) => p.GetType().Name.Replace("PerkSO", "");
+
+    private string[] SweepTypes()
+        => new[] { "All types" }.Concat((allWeaponPerks ?? new List<PerkSO>()).Select(TypeLabel).Distinct().OrderBy(t => t)).ToArray();
+
+    // Filter terms are comma separated, any one matching the name or type counts; the type popup narrows further
     private List<PerkSO> SweepList(bool filtered)
     {
         var list = allWeaponPerks ?? new List<PerkSO>();
-        if (!filtered || string.IsNullOrWhiteSpace(sweepSearch)) return list.ToList();
-        string s = sweepSearch.ToLowerInvariant();
-        return list.Where(p => p.name.ToLowerInvariant().Contains(s) || p.GetType().Name.ToLowerInvariant().Contains(s)).ToList();
+        if (!filtered) return list.ToList();
+        var terms = (sweepSearch ?? "").Split(',').Select(t => t.Trim().ToLowerInvariant()).Where(t => t.Length > 0).ToList();
+        return list.Where(p =>
+            (string.IsNullOrEmpty(sweepType) || sweepType == "All types" || TypeLabel(p) == sweepType) &&
+            (terms.Count == 0 || terms.Any(t => p.name.ToLowerInvariant().Contains(t) || TypeLabel(p).ToLowerInvariant().Contains(t)))).ToList();
+    }
+
+    // Searchable perk picker, grouped by perk type
+    private sealed class PerkDropdown : AdvancedDropdown
+    {
+        private readonly List<PerkSO> perks;
+        private readonly Action<PerkSO> pick;
+
+        public PerkDropdown(List<PerkSO> perks, Action<PerkSO> pick) : base(new AdvancedDropdownState())
+        {
+            this.perks = perks;
+            this.pick = pick;
+            minimumSize = new Vector2(280f, 400f);
+        }
+
+        protected override AdvancedDropdownItem BuildRoot()
+        {
+            var root = new AdvancedDropdownItem("Weapon perks");
+            foreach (var g in perks.Where(p => p != null).GroupBy(TypeLabel).OrderBy(g => g.Key))
+            {
+                var folder = new AdvancedDropdownItem($"{g.Key} ({g.Count()})");
+                foreach (var p in g.OrderBy(p => p.name)) folder.AddChild(new PerkItem(p));
+                root.AddChild(folder);
+            }
+            return root;
+        }
+
+        protected override void ItemSelected(AdvancedDropdownItem item)
+        {
+            if (item is PerkItem pi) pick(pi.Perk);
+        }
+
+        private sealed class PerkItem : AdvancedDropdownItem
+        {
+            public readonly PerkSO Perk;
+            public PerkItem(PerkSO p) : base(p.name) { Perk = p; }
+        }
     }
 
     private void CopySweep()
@@ -211,8 +270,6 @@ public partial class PerkLabWindow
         void Fail(string d) { r.Verdict = "FAIL"; r.Detail = d; }
         void Skip(string d) { r.Verdict = "SKIP"; r.Detail = d; }
 
-        if (p.listenScope == PerkListenScope.StowedOnly) { Skip("Listens only while stowed; the sweep tests the held weapon."); yield break; }
-
         var ammo = active.GetComponent<WeaponAmmo>();
         var bus = WeaponEventBus.FindFor(active);
 
@@ -290,8 +347,7 @@ public partial class PerkLabWindow
         if (p is HitConditionPerkSO hc)
         {
             string cond = hc.condition.ToString();
-            float baseDmg = float.MaxValue, perkDmg = float.MaxValue;
-            bool killed = false;
+            var offHits = new List<float>(); var onHits = new List<float>();
             ResetForTest(ammo);
             // Off and on hits alternate so timed buffs from other sources hit both sides equally
             for (int s = 0; s < 8; s++)
@@ -300,17 +356,18 @@ public partial class PerkLabWindow
                 Mount(on ? p : null);
                 ReviveSim(simA);
                 float origin = SetUpCondition(active, hc, cond);
-                float d = SimHit(active, simA, cond == "Precision", false, false, origin, out bool k);
-                killed |= k;
-                if (on) perkDmg = Mathf.Min(perkDmg, d); else baseDmg = Mathf.Min(baseDmg, d);
+                float d = SimHit(active, simA, cond == "Precision", false, false, origin, out _);
+                (on ? onHits : offHits).Add(d);
                 yield return 0.02f;
             }
             ReviveSim(simA);
-            if (baseDmg <= 0f || baseDmg == float.MaxValue) { Skip("The base hit did no damage (immune or shielded?)."); yield break; }
-            if (killed) { Skip("The test hit killed the target, so damage was capped."); yield break; }
-            float ratio = perkDmg / baseDmg, want = 1f + hc.bonus;
+            if (offHits.Any(d => d <= 0f)) { Skip("A base hit did no damage (immune or shielded?)."); yield break; }
+            // Each on hit against the off hit just before it, median of the pairs
+            var ratios = offHits.Select((d, i) => onHits[i] / d).OrderBy(x => x).ToList();
+            float ratio = (ratios[1] + ratios[2]) * 0.5f, want = 1f + hc.bonus;
+            string hits = $"off {string.Join("/", offHits.Select(d => d.ToString("0.#")))}, on {string.Join("/", onHits.Select(d => d.ToString("0.#")))}";
             if (Mathf.Abs(ratio - want) <= 0.03f * want) Pass($"{cond}: x{ratio:0.00} damage (expected x{want:0.00}).");
-            else Fail($"{cond}: x{ratio:0.00} damage, expected x{want:0.00} ({baseDmg:0.#} -> {perkDmg:0.#}).");
+            else Fail($"{cond}: x{ratio:0.00} damage, expected x{want:0.00} ({hits}).");
             yield break;
         }
 
@@ -343,8 +400,7 @@ public partial class PerkLabWindow
             yield break;
         }
 
-        if (p is StatPerkSO) { Skip("Static stat perk; the audit checks its data."); yield break; }
-        Skip($"{p.GetType().Name.Replace("PerkSO", "")} perks are not covered by the sweep yet.");
+        foreach (var w in TestMore(active, p, ammo, bus, r)) yield return w;
     }
 
     // ------------------------------------------------------------------ helpers
@@ -359,7 +415,6 @@ public partial class PerkLabWindow
         why = null;
         bool hitFamily = t == WeaponEventType.Hit || t == WeaponEventType.PrecisionHit || t == WeaponEventType.Kill || t == WeaponEventType.PrecisionKill;
         if (hitFamily && (mask & (HitSourceMask.Direct | HitSourceMask.Chain)) == 0) { why = $"{t} from status ticks only; the sweep fires direct and chain hits."; return false; }
-        if (t == WeaponEventType.Equip || t == WeaponEventType.Stow) { why = $"{t} needs a weapon swap; test it in game."; return false; }
         return true;
     }
 
@@ -376,6 +431,8 @@ public partial class PerkLabWindow
             case WeaponEventType.ShotFired: Shot(active, bus); break;
             case WeaponEventType.DryFire: if (bus != null) bus.Publish(WeaponEvent.ForWeapon(WeaponEventType.DryFire, active.DamageSource)); break;
             case WeaponEventType.DamageTaken: TakeDamage(bus); break;
+            case WeaponEventType.Equip: SimSwap(active, bus, true); break;
+            case WeaponEventType.Stow: SimSwap(active, bus, false); break;
             case WeaponEventType.AmmoChanged: if (ammo != null) ammo.TryConsume(); break;
             case WeaponEventType.MagEmpty: if (ammo != null) while (ammo.Magazine > 0 && ammo.TryConsume()) { } break;
             case WeaponEventType.MagFull: if (ammo != null) { ammo.TryConsume(); ammo.AddToMagazine(1, false); } break;
@@ -454,7 +511,7 @@ public partial class PerkLabWindow
                 ApplyStatus(active, hc.statuses != null ? hc.statuses.FirstOrDefault(s => s != null) : null);
                 return -1f;
             case "TargetDebuffed":
-                if (allStatuses == null) allStatuses = Load<StatusSO>();
+                if (allStatuses == null) allStatuses = LoadStatuses();
                 ApplyStatus(active, allStatuses.FirstOrDefault(s => s != null && s.damageType != null));
                 return -1f;
         }
@@ -493,6 +550,7 @@ public partial class PerkLabWindow
 
     private void ResetForTest(WeaponAmmo ammo)
     {
+        SetHostHeld(true);
         ReviveSim(simA);
         ReviveSim(simB);
         if (ammo != null)

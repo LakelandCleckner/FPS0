@@ -69,19 +69,38 @@ public partial class PerkLabWindow
         var applier = go.GetComponent<EnemyDefinitionApplier>();
         if (applier != null) applier.SetVariant(simVariant);
 
-        // Several passes, since a component can't go while another still requires it
-        for (int pass = 0; pass < 4; pass++)
+        // Dependents go first: a component is skipped while another on its object still requires it
+        for (bool removed = true; removed;)
+        {
+            removed = false;
             foreach (var c in go.GetComponentsInChildren<Component>(true))
             {
                 if (c == null || c is Transform || c is Collider || c is Rigidbody) continue;
                 if (c is Renderer r) { r.enabled = false; continue; }
-                if (SimKeep.Contains(c.GetType().Name)) continue;
-                try { Object.DestroyImmediate(c); } catch { }
+                if (SimKeep.Contains(c.GetType().Name) || IsRequired(c)) continue;
+                Object.DestroyImmediate(c);
+                removed = true;
             }
+        }
 
         foreach (var rb in go.GetComponentsInChildren<Rigidbody>(true)) { rb.isKinematic = true; rb.useGravity = false; }
         return go.GetComponent<CombatantStats>();
     }
+
+    // True if another component on the same object has a RequireComponent for this one's type
+    private static bool IsRequired(Component c)
+    {
+        var t = c.GetType();
+        foreach (var other in c.GetComponents<Component>())
+        {
+            if (other == null || other == c) continue;
+            foreach (RequireComponent rc in other.GetType().GetCustomAttributes(typeof(RequireComponent), true))
+                if (Needs(rc.m_Type0, t) || Needs(rc.m_Type1, t) || Needs(rc.m_Type2, t)) return true;
+        }
+        return false;
+    }
+
+    private static bool Needs(System.Type req, System.Type t) => req != null && req.IsAssignableFrom(t);
 
     // Runs from Update: lets the applier set stats, then turns it off so the sims don't count as live enemies
     private void SimTick()
@@ -99,7 +118,11 @@ public partial class PerkLabWindow
         var h = c.GetComponent<CombatantHealth>();
         if (h != null) h.OnSpawn();
         var s = c.GetComponent<StatusReceiver>();
-        if (s != null) s.OnSpawn();
+        if (s == null) return;
+        // OnSpawn drops the pools without lifting their stat changes (spawning relies on CombatantStats for that), so lift them first
+        var pools = typeof(StatusReceiver).GetField("pools", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)?.GetValue(s) as System.Collections.IDictionary;
+        if (pools != null) foreach (var p in pools.Values) (p as EffectStackPool)?.ClearAll();
+        s.OnSpawn();
     }
 
     private void DestroySim()

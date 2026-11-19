@@ -95,7 +95,7 @@ public partial class PerkLabWindow
 
         EditorGUILayout.LabelField("Target statuses", EditorStyles.boldLabel);
         var receiver = target != null ? StatusReceiver.For(target) : null;
-        if (allStatuses == null) allStatuses = Load<StatusSO>();
+        if (allStatuses == null) allStatuses = LoadStatuses();
         bool anyStatus = false;
         if (receiver != null)
             foreach (var s in allStatuses)

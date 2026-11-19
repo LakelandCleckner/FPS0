@@ -179,9 +179,11 @@ namespace Combat.Status
 
         private void ClearAllPools()
         {
-            if (StatusManager.Instance != null)
-                foreach (var kv in pools)
-                    StatusManager.Instance.Unregister(kv.Value);
+            foreach (var kv in pools)
+            {
+                kv.Value.ClearAll();   // lifts its stat change too
+                if (StatusManager.Instance != null) StatusManager.Instance.Unregister(kv.Value);
+            }
             pools.Clear();
             ReleaseAuras();
         }
@@ -198,6 +200,7 @@ namespace Combat.Status
         private void OnDisable()
         {
             ReleaseAuras(true);
+            foreach (var kv in pools) kv.Value.ClearAll();   // lifts its stat change too
             if (StatusManager.Instance == null) return;
             foreach (var kv in pools)
                 StatusManager.Instance.Unregister(kv.Value);
