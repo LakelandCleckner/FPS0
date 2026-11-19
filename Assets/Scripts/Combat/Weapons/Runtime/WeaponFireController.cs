@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Combat.Core;
 using Combat.Delivery;
+using Combat.Events;
 using Combat.Sources;
 
 namespace Combat.Weapons
@@ -66,6 +67,10 @@ namespace Combat.Weapons
         // compares ids across weapons should key on (DamageSource, ShotId), both of
         // which are on the hit context.
         private int nextShotId = 1;
+
+        // Perk events: ShotFired after each delivered shot, DryFire on an empty trigger pull
+        private WeaponEventBus bus;
+        private WeaponEventBus Bus => bus != null ? bus : (bus = GetComponentInParent<WeaponEventBus>());
 
         // Set by WeaponLoadout. False while stowed or mid-swap. The component keeps
         // running (its weapon can still be reloaded by a perk); it just stops taking
@@ -209,6 +214,7 @@ namespace Combat.Weapons
                 var empty = damageSource.EmptyClip;
                 if (empty != null && playerAudio != null) playerAudio.Play3D(empty);
                 OnDryFire?.Invoke();
+                Bus?.Publish(WeaponEvent.ForWeapon(WeaponEventType.DryFire, damageSource));
 
                 // A burst that runs dry stops rather than dry-firing its remainder:
                 // two rounds left on a three-round burst gives two shots and one dry
@@ -233,6 +239,9 @@ namespace Combat.Weapons
             if (fire != null && playerAudio != null) playerAudio.Play3D(fire);
 
             SelectDelivery(in stamped).Fire(ray.origin, direction, damageSource, in stamped);
+
+            // After delivery, so a next-shot buff applies to this shot before its charge is spent
+            Bus?.Publish(WeaponEvent.ForWeapon(WeaponEventType.ShotFired, damageSource));
 
             // Kick after the shot, so the first round lands where you aimed
             if (recoil != null) recoil.Kick(damageSource, aimBlend);
