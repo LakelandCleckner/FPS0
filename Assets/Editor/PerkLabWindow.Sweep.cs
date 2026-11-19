@@ -34,13 +34,14 @@ public partial class PerkLabWindow
     private readonly List<SweepResult> sweepResults = new List<SweepResult>();
     private IEnumerator<float> sweep;
     private double sweepNextAt;
-    private bool sweepRunning;
+    [NonSerialized] private bool sweepRunning;
     private string sweepStatus = "";
 
     // Saved host state, put back when the sweep ends
-    private WeaponInstance sweepHost;
-    private WeaponPerks sweepHostPerks;
-    private List<PerkSO> sweepSaved;
+    // Live scene state only; never carried over a script reload
+    [NonSerialized] private WeaponInstance sweepHost;
+    [NonSerialized] private WeaponPerks sweepHostPerks;
+    [NonSerialized] private List<PerkSO> sweepSaved;
 
     // ------------------------------------------------------------------ GUI
 
@@ -48,7 +49,7 @@ public partial class PerkLabWindow
     {
         if (!EditorApplication.isPlaying) { EditorGUILayout.HelpBox("The sweep runs in Play mode with a weapon in hand.", MessageType.None); return; }
         DrawSimPicker();
-        EditorGUILayout.LabelField("Tests weapon perks one at a time on the weapon in your hand, against the simulated enemy.", EditorStyles.wordWrappedMiniLabel);
+        EditorGUILayout.LabelField("Tests weapon and armor perks one at a time, against the simulated enemy. Needs a weapon in hand; armor perks also need an armor piece worn. Your own perks are switched off during the run and put back after.", EditorStyles.wordWrappedMiniLabel);
 
         bool canRun = !sweepRunning && SimReady;
         using (new EditorGUILayout.HorizontalScope())
@@ -62,7 +63,7 @@ public partial class PerkLabWindow
                         StartSweep(sweepResults.Where(r => r.Verdict == "FAIL" && r.Perk != null).Select(r => r.Perk).ToList());
                 var pickRect = GUILayoutUtility.GetRect(new GUIContent("Run One Perk..."), EditorStyles.popup, GUILayout.Width(130));
                 if (GUI.Button(pickRect, new GUIContent("Run One Perk...", "Search for a perk by name and test just that one."), EditorStyles.popup))
-                    new PerkDropdown(allWeaponPerks ?? new List<PerkSO>(), p => { if (!sweepRunning && SimReady) StartSweep(new List<PerkSO> { p }); }).Show(pickRect);
+                    new PerkDropdown(AllSweepPerks(), p => { if (!sweepRunning && SimReady) StartSweep(new List<PerkSO> { p }); }).Show(pickRect);
             }
             using (new EditorGUI.DisabledScope(!sweepRunning))
                 if (GUILayout.Button(new GUIContent("Stop", "Stop the run and put your weapon's perks back."), GUILayout.Width(50))) StopSweep();
@@ -115,15 +116,15 @@ public partial class PerkLabWindow
         if (rerun != null) StartSweep(new List<PerkSO> { rerun });
     }
 
-    private static string TypeLabel(PerkSO p) => p.GetType().Name.Replace("PerkSO", "");
+    private static string TypeLabel(PerkSO p) => (IsArmorPerk(p) ? "Armor " : "") + p.GetType().Name.Replace("PerkSO", "");
 
     private string[] SweepTypes()
-        => new[] { "All types" }.Concat((allWeaponPerks ?? new List<PerkSO>()).Select(TypeLabel).Distinct().OrderBy(t => t)).ToArray();
+        => new[] { "All types" }.Concat(AllSweepPerks().Select(TypeLabel).Distinct().OrderBy(t => t)).ToArray();
 
     // Filter terms are comma separated, any one matching the name or type counts; the type popup narrows further
     private List<PerkSO> SweepList(bool filtered)
     {
-        var list = allWeaponPerks ?? new List<PerkSO>();
+        var list = AllSweepPerks();
         if (!filtered) return list.ToList();
         var terms = (sweepSearch ?? "").Split(',').Select(t => t.Trim().ToLowerInvariant()).Where(t => t.Length > 0).ToList();
         return list.Where(p =>
@@ -146,7 +147,7 @@ public partial class PerkLabWindow
 
         protected override AdvancedDropdownItem BuildRoot()
         {
-            var root = new AdvancedDropdownItem("Weapon perks");
+            var root = new AdvancedDropdownItem("Perks");
             foreach (var g in perks.Where(p => p != null).GroupBy(TypeLabel).OrderBy(g => g.Key))
             {
                 var folder = new AdvancedDropdownItem($"{g.Key} ({g.Count()})");
@@ -190,6 +191,7 @@ public partial class PerkLabWindow
         sweepHostPerks = active.GetComponent<WeaponPerks>();
         if (sweepHostPerks == null) { sweepStatus = "Held weapon has no WeaponPerks."; return; }
         sweepSaved = sweepHost.Perks.ToList();
+        BeginArmorIsolation();
 
         // Keep results for perks not in this run
         foreach (var p in perks) sweepResults.RemoveAll(r => r.Perk == p);
@@ -212,6 +214,7 @@ public partial class PerkLabWindow
         if (sweepHost != null && sweepSaved != null) SetPerks(sweepHost, sweepSaved);
         if (sweepHostPerks != null) sweepHostPerks.Reattach();
         sweepHost = null; sweepSaved = null; sweepHostPerks = null;
+        EndArmorIsolation();
     }
 
     private void SweepTick()
@@ -272,6 +275,9 @@ public partial class PerkLabWindow
 
         var ammo = active.GetComponent<WeaponAmmo>();
         var bus = WeaponEventBus.FindFor(active);
+
+        if (IsArmorPerk(p)) { foreach (var w in TestArmor(active, p, ammo, bus, r)) yield return w; yield break; }
+        if (sweepArmorMounted) MountArmor(null);
 
         if (p is TriggeredBuffPerkSO tb)
         {
