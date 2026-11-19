@@ -14,7 +14,7 @@ using Object = UnityEngine.Object;
 // Play-mode perk testing: Forge builds an exact weapon or armor piece and gives it to the player.
 public partial class PerkLabWindow : EditorWindow
 {
-    private enum Tab { Forge, Bench }
+    private enum Tab { Forge, Bench, Sweep }
     private enum ForgeKind { Weapon, Armor }
 
     [SerializeField] private Tab tab = Tab.Forge;
@@ -62,7 +62,7 @@ public partial class PerkLabWindow : EditorWindow
     {
         using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
         {
-            tab = (Tab)GUILayout.Toolbar((int)tab, new[] { "Forge", "Bench" }, EditorStyles.toolbarButton, GUILayout.Width(160));
+            tab = (Tab)GUILayout.Toolbar((int)tab, new[] { "Forge", "Bench", "Sweep" }, EditorStyles.toolbarButton, GUILayout.Width(230));
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Reload Assets", EditorStyles.toolbarButton, GUILayout.Width(95))) LoadAssets();
         }
@@ -72,7 +72,8 @@ public partial class PerkLabWindow : EditorWindow
 
         scroll = EditorGUILayout.BeginScrollView(scroll);
         if (tab == Tab.Forge) DrawForge();
-        else DrawBench();
+        else if (tab == Tab.Bench) DrawBench();
+        else DrawSweep();
         EditorGUILayout.EndScrollView();
     }
 

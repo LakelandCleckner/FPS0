@@ -21,6 +21,7 @@ public partial class PerkLabWindow
     [SerializeField] private int repeatCount = 1;
     [SerializeField] private float repeatInterval = 0.2f;
     [SerializeField] private bool keepAlive = true;
+    [SerializeField] private bool useSim = true;
 
     private WeaponLoadout loadout;
     private CombatantStats target;
@@ -43,12 +44,16 @@ public partial class PerkLabWindow
         WatchBus(WeaponEventBus.FindFor(active));
 
         // Target
+        useSim = EditorGUILayout.ToggleLeft("Use a simulated enemy (no spawning)", useSim);
+        if (useSim) DrawSimPicker();
         using (new EditorGUILayout.HorizontalScope())
         {
+            if (useSim) target = SimReady ? simA : null;
             var health = target != null ? target.GetComponent<CombatantHealth>() : null;
-            if (target == null || health == null || health.IsDying) target = NearestEnemy(active.transform.position);
-            EditorGUILayout.LabelField("Target", target != null ? $"{target.name}  {health?.CurrentHealth:0}/{health?.MaxHealth:0} HP" : "none (spawn one with the debug key)");
-            if (GUILayout.Button("Nearest", GUILayout.Width(70))) target = NearestEnemy(active.transform.position);
+            if (!useSim && (target == null || health == null || health.IsDying)) target = NearestEnemy(active.transform.position);
+            health = target != null ? target.GetComponent<CombatantHealth>() : null;
+            EditorGUILayout.LabelField("Target", target != null ? $"{target.name}  {health?.CurrentHealth:0}/{health?.MaxHealth:0} HP" : useSim ? "building..." : "none (spawn one with the debug key)");
+            if (!useSim && GUILayout.Button("Nearest", GUILayout.Width(70))) target = NearestEnemy(active.transform.position);
         }
         keepAlive = EditorGUILayout.ToggleLeft("Keep target alive (heal after non-kill hits)", keepAlive);
 
@@ -135,12 +140,14 @@ public partial class PerkLabWindow
 
     private void OnInspectorUpdate()
     {
-        if (tab == Tab.Bench && EditorApplication.isPlaying) Repaint();
+        if (tab != Tab.Forge && EditorApplication.isPlaying) Repaint();
     }
 
     private void Update()
     {
-        if (!EditorApplication.isPlaying) { queue.Clear(); return; }
+        if (!EditorApplication.isPlaying) { queue.Clear(); sweepRunning = false; return; }
+        SimTick();
+        SweepTick();
         double now = EditorApplication.timeSinceStartup;
         while (queue.Count > 0 && queue.Peek().at <= now) Run(queue.Dequeue().action);
     }
@@ -177,7 +184,8 @@ public partial class PerkLabWindow
     private void Hit(WeaponFireController active, bool precision, bool kill, bool chain)
     {
         var src = active.DamageSource;
-        if (target == null) target = NearestEnemy(active.transform.position);
+        if (useSim) target = SimReady ? simA : null;
+        else if (target == null) target = NearestEnemy(active.transform.position);
         if (target == null) { Log("bench: no target"); return; }
         var health = target.GetComponent<CombatantHealth>();
         var hitboxes = target.GetComponentsInChildren<EnemyHitbox>();
@@ -212,6 +220,7 @@ public partial class PerkLabWindow
         lastDamage = ctx.DamageDealt;
 
         if (keepAlive && !kill && health != null && !health.IsDying) health.Heal(health.MaxHealth);
+        if (useSim && health != null && health.IsDying) ReviveSim(target);
     }
 
     // Publishes DamageTaken as if an enemy hit you, without hurting you
@@ -231,14 +240,14 @@ public partial class PerkLabWindow
         bus.Publish(WeaponEvent.ForHit(WeaponEventType.DamageTaken, null, ctx));
     }
 
-    private static CombatantStats NearestEnemy(Vector3 from)
+    private CombatantStats NearestEnemy(Vector3 from)
     {
         CombatantStats best = null;
         float bestD = float.MaxValue;
         foreach (var hb in Object.FindObjectsByType<EnemyHitbox>(FindObjectsSortMode.None))
         {
             var c = hb.combatant;
-            if (c == null) continue;
+            if (c == null || (simRoot != null && c.transform.IsChildOf(simRoot.transform))) continue;
             var h = c.GetComponent<CombatantHealth>();
             if (h != null && h.IsDying) continue;
             float d = (c.transform.position - from).sqrMagnitude;
@@ -282,5 +291,10 @@ public partial class PerkLabWindow
         if (log.Count > 20) log.RemoveAt(0);
     }
 
-    private void OnDisable() => Unwatch();
+    private void OnDisable()
+    {
+        Unwatch();
+        DestroySim();
+        StopSweep();
+    }
 }
