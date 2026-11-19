@@ -292,18 +292,18 @@ public partial class PerkLabWindow
             string cond = hc.condition.ToString();
             float baseDmg = float.MaxValue, perkDmg = float.MaxValue;
             bool killed = false;
-            for (int pass = 0; pass < 2; pass++)
+            ResetForTest(ammo);
+            // Off and on hits alternate so timed buffs from other sources hit both sides equally
+            for (int s = 0; s < 8; s++)
             {
-                Mount(pass == 0 ? null : p); ResetForTest(ammo); yield return 0.1f;
-                for (int s = 0; s < 4; s++)
-                {
-                    ReviveSim(simA);
-                    float origin = SetUpCondition(active, hc, cond);
-                    float d = SimHit(active, simA, cond == "Precision", false, false, origin, out bool k);
-                    killed |= k;
-                    if (pass == 0) baseDmg = Mathf.Min(baseDmg, d); else perkDmg = Mathf.Min(perkDmg, d);
-                    yield return 0.02f;
-                }
+                bool on = (s & 1) == 1;
+                Mount(on ? p : null);
+                ReviveSim(simA);
+                float origin = SetUpCondition(active, hc, cond);
+                float d = SimHit(active, simA, cond == "Precision", false, false, origin, out bool k);
+                killed |= k;
+                if (on) perkDmg = Mathf.Min(perkDmg, d); else baseDmg = Mathf.Min(baseDmg, d);
+                yield return 0.02f;
             }
             ReviveSim(simA);
             if (baseDmg <= 0f || baseDmg == float.MaxValue) { Skip("The base hit did no damage (immune or shielded?)."); yield break; }
@@ -435,7 +435,8 @@ public partial class PerkLabWindow
         active.Resolver.ResolveHit(ctx);
         killed = ctx.WasKill;
         if (!kill && health != null && !health.IsDying) health.Heal(health.MaxHealth);
-        return ctx.DamageDealt;
+        // Crit is a random roll, so it is divided out to keep comparisons stable
+        return ctx.CritMultiplier > 0f ? ctx.DamageDealt / ctx.CritMultiplier : ctx.DamageDealt;
     }
 
     // Puts the target into the perk's condition; returns the shot origin distance to use (-1 = none)
