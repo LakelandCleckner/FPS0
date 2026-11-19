@@ -42,7 +42,10 @@ namespace Combat.Stats
                 if (mode == StatResolutionMode.Pool)
                 {
                     // base is the inherent, living IN the additive pool
-                    result = Mathf.Max(0f, baseValue + flatSum + additiveSum) * multProduct;
+                    float pool = baseValue + flatSum + additiveSum;
+                    // A stat with its own minimum may go negative (damage_taken reductions); others floor at 0
+                    if (stat == null || !stat.useMin) pool = Mathf.Max(0f, pool);
+                    result = pool * multProduct;
                 }
                 else // ScaledBase
                 {

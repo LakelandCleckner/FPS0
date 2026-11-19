@@ -16,8 +16,8 @@ MonoBehaviour:
   displayName: Damage Taken
   resolutionMode: 1
   defaultValue: 0
-  useMin: 0
-  minValue: 0
+  useMin: 1
+  minValue: -0.9
   useMax: 0
   maxValue: 0
   isPercent: 1
