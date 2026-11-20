@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1c87bf3b35c07714b9aa7cdd526b8349, type: 3}
-  m_Name: Slugger120
+  m_Name: Slugger
   m_EditorClassIdentifier: 
   archetype: {fileID: 11400000, guid: c4094ed640a1c7d41a4c9440bdfbf2f5, type: 2}
   id: slugger120
@@ -18,8 +18,9 @@ MonoBehaviour:
   viewmodel: {fileID: 11400000, guid: 409e69fdfa7817a45b80198dfa6325bf, type: 2}
   viewmodelSkin: []
   defaultShader: {fileID: 11400000, guid: 6afe353b48cc3a646bf6665295d7e8a2, type: 2}
+  roundOverride: {fileID: 0}
   overrideSlots: 0
-  allowedSlotsOverride: 7
+  allowedSlotsOverride: -1
   overrideInventorySlot: 0
   inventorySlotOverride: 0
   baseDamageType: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
@@ -31,12 +32,16 @@ MonoBehaviour:
   adsZoomDelta: 0
   rangeDelta: 0
   aimAssistDelta: 0
+  precisionDelta: 0
+  stabilityDelta: 0
+  recoilDirectionDelta: 0
   startingReserves: 100
   infiniteReservesOverride: 0
   fireClip: {fileID: 8300000, guid: a02ac01715490c646a720c0bcc70ec7a, type: 3}
   emptyClip: {fileID: 8300000, guid: 08eb29cab0988c349bc1c4de52aaf72c, type: 3}
   reloadClip: {fileID: 8300000, guid: 49af6209dec94aa4a9216b5a301d0a88, type: 3}
   riderEffects: []
+  mythic: 0
   intrinsicPerks:
   - {fileID: 11400000, guid: d744e0e7a24541bb80504d7280bf9c87, type: 2}
   perkColumns: []
