@@ -32,6 +32,8 @@ namespace Combat.Status
         [Tooltip("One-shot effect when the status ends or converts. Empty = none.")]
         public GameObject endVfx;
         [Min(0.05f)] public float endVfxLifetime = 1.5f;
+        [Tooltip("Play the end effect only when converting (Fracture into Break), not when it runs out.")]
+        public bool endVfxOnConvertOnly = false;
         [Tooltip("Aura emission follows the stack count, full at the most stacks this status can show.")]
         public bool auraScalesWithStacks = false;
         [Tooltip("Stacks for full emission when there is no stack limit.")]

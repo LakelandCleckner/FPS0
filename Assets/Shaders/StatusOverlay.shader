@@ -5,6 +5,7 @@ Shader "FPS0/StatusOverlay"
         [KeywordEnum(Rim, Creep, Crack, Arc, Burn, Toxic)] _Mode("Mode", Float) = 0
         [HDR] _Color("Color", Color) = (1, 1, 1, 1)
         [HDR] _EdgeColor("Edge Color", Color) = (1, 1, 1, 1)
+        [HDR] _GlowColor("Glow Color", Color) = (0, 0, 0, 0)
         _Intensity("Intensity", Range(0, 1)) = 1
         _Fill("Fill", Range(0, 1)) = 0.3
         _RimPower("Rim Power", Range(0.5, 8)) = 2.5
@@ -52,6 +53,7 @@ Shader "FPS0/StatusOverlay"
             CBUFFER_START(UnityPerMaterial)
                 half4 _Color;
                 half4 _EdgeColor;
+                half4 _GlowColor;
                 half _Intensity;
                 half _Fill;
                 half _RimPower;
@@ -165,11 +167,15 @@ Shader "FPS0/StatusOverlay"
                 col = lerp(col, _EdgeColor.rgb, edge);
                 a = cover * (_Fill * shade + rim * _RimStrength + sparkle * _Sparkle) + edge * 0.6;
             #elif defined(_MODE_CRACK)
-                float2 c = Cells(i.uv * _CrackScale);
-                float crackLine = 1.0 - smoothstep(0.0, _CrackWidth, c.x);
-                float shown = step(c.y, _Intensity * 1.05);
-                col = lerp(col, _EdgeColor.rgb, crackLine);
-                a = crackLine * shown + rim * _RimStrength * 0.3 * _Intensity + _Fill * _Intensity * shade;
+                // Warped cracks appearing segment by segment with stacks: dark core, dusty edge, optional pulsing glow inside.
+                float2 wv = (float2(Noise(i.uv * _NoiseScale), Noise(i.uv * _NoiseScale + 23.0)) - 0.5) * 0.5;
+                float2 c = Cells(i.uv * _CrackScale + wv);
+                float core = 1.0 - smoothstep(0.0, _CrackWidth, c.x);
+                float halo = 1.0 - smoothstep(0.0, _CrackWidth * 3.0, c.x);
+                float shown = smoothstep(c.y, c.y + 0.04, _Intensity * 1.05);
+                float glow = 0.75 + 0.25 * sin(t * _PulseSpeed * 6.2832);
+                col = lerp(_EdgeColor.rgb, _Color.rgb, core) + _GlowColor.rgb * core * glow;
+                a = (core + (halo - core) * 0.35) * shown + rim * _RimStrength * 0.3 * _Intensity + _Fill * _Intensity * shade;
             #elif defined(_MODE_ARC)
                 // Veins on a slowly drifting cell grid; each cell flares on its own cycle (quick rise, slower fade) and skips some cycles at random.
                 float2 warp = float2(Noise(i.uv * _NoiseScale * 2.0 + t * _NoiseSpeed), Noise(i.uv * _NoiseScale * 2.0 - t * _NoiseSpeed)) - 0.5;

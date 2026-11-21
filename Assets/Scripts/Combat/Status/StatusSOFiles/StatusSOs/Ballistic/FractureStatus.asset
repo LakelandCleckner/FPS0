@@ -18,11 +18,17 @@ MonoBehaviour:
   colorizeAura: 0
   auraScale: 1
   auraOffset: {x: 0, y: 1, z: 0}
-  endVfx: {fileID: 0}
-  endVfxLifetime: 1.5
+  endVfx: {fileID: 2553895446039474660, guid: a3c2acdac05c77a46a722acff10de646, type: 3}
+  endVfxLifetime: 2
+  endVfxOnConvertOnly: 1
   auraScalesWithStacks: 1
   auraFullAtStacks: 10
   auraEmitFrom: 2
+  previewStacks: 
+  overlayMaterial: {fileID: 2100000, guid: 5ff9ff5bfe7606745841e0981acaa42f, type: 2}
+  overlayScalesWithStacks: 1
+  fadeOutTime: 0
+  stackCurve: 1
   convertAtStacks: 5
   convertsTo: {fileID: 11400000, guid: 5b12904f116c4947b51c061fa7c8caee, type: 2}
   stunTime: 0

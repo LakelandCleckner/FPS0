@@ -14,6 +14,9 @@ namespace Combat.Status.EditorTools
         private const string OverlayShader = "FPS0/StatusOverlay";
         private const string SpikePath = "Assets/PixPlays/Components/Meshes/Objects/spike_mesh.prefab";
         private const string IceMatPath = "Assets/Art/VFX/Shields/IceCrystal.mat";
+        private const string RockPath = "Assets/PixPlays/Components/Meshes/Objects/rock.prefab";
+        private const string RockTexPath = "Assets/PixPlays/Components/Textures/RockTextures/Rock_Diffuse.png";
+        private static readonly Color Amber = new Color(1.4f, 0.85f, 0.35f, 1f);
         private const string Tag = "[StatusVfxSetup] ";
 
         [MenuItem("FPS0/Art/Build Status VFX", priority = 523)]
@@ -167,6 +170,31 @@ namespace Combat.Status.EditorTools
                 s.auraScalesWithStacks = true;
                 s.auraEmitFrom = AuraEmitFrom.Skin;
                 if (Replaceable(s.endVfx)) { s.endVfx = poisonOut; s.endVfxLifetime = 2.5f; s.colorizeAura = false; }
+            });
+
+            // ---- Ballistic ----
+            var fractureMat = Overlay("Fracture", 2, m => CrackLook(m, false));
+            var breakMat = Overlay("Break", 2, m => CrackLook(m, true));
+            var rockBurst = RockBurst(dot);
+            var crumble = BreakCrumble(dot);
+            var dustPuff = DustPuff(dot);
+
+            Wire("FractureStatus", s =>
+            {
+                Set(ref s.overlayMaterial, fractureMat);
+                s.overlayScalesWithStacks = true;
+                if (Replaceable(s.endVfx)) { s.endVfx = rockBurst; s.endVfxLifetime = 2f; }
+                s.endVfxOnConvertOnly = true;
+            });
+            Wire("BreakStatus", s =>
+            {
+                Set(ref s.overlayMaterial, breakMat);
+                s.overlayScalesWithStacks = false;
+                s.fadeOutTime = 0.5f;
+                if (Replaceable(s.auraVfx)) { s.auraVfx = crumble; s.auraScale = 1f; s.auraOffset = Vector3.up; s.tintAura = false; s.colorizeAura = false; }
+                s.auraScalesWithStacks = false;
+                s.auraEmitFrom = AuraEmitFrom.Skin;
+                if (Replaceable(s.endVfx)) { s.endVfx = dustPuff; s.endVfxLifetime = 2f; }
             });
 
             AssetDatabase.SaveAssets();
@@ -390,6 +418,148 @@ namespace Combat.Status.EditorTools
             var c = go.AddComponent<AuraShareCurve>();
             c.startAt = startAt;
             c.power = power;
+        }
+
+        // Shared crack network; Break adds the amber shield-rim glow pulsing inside.
+        private static void CrackLook(Material m, bool glow)
+        {
+            m.SetColor("_Color", new Color(0.05f, 0.04f, 0.035f, 1f));
+            m.SetColor("_EdgeColor", new Color(0.45f, 0.4f, 0.33f, 1f));
+            m.SetColor("_GlowColor", glow ? Amber * 2.5f : Color.clear);
+            m.SetFloat("_Fill", 0f);
+            m.SetFloat("_RimStrength", glow ? 0.6f : 0f);
+            m.SetFloat("_NoiseScale", 5f);
+            m.SetFloat("_NoiseSpeed", 0f);
+            m.SetFloat("_NoiseStrength", 0f);
+            m.SetFloat("_CrackScale", 6f);
+            m.SetFloat("_CrackWidth", 0.03f);
+            m.SetFloat("_PulseSpeed", glow ? 0.6f : 0f);
+            m.SetFloat("_PulseAmount", 0f);
+        }
+
+        // Rock chunks and dust bursting off the body when Fracture breaks.
+        private static GameObject RockBurst(Texture2D dot)
+        {
+            string path = PrefabDir + "/BreakRockBurst.prefab";
+            var existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (existing != null) return existing;
+
+            var root = new GameObject("BreakRockBurst");
+            var rocks = Burst(root, RockMaterial(dot), 14);
+            RockLook(rocks, 0.8f, 1.2f, 3f, 6f, 0.06f, 0.14f, 1.5f);
+            var shape = rocks.shape;
+            shape.shapeType = ParticleSystemShapeType.Sphere;
+            shape.radius = 0.4f;
+
+            var dustGo = new GameObject("Dust");
+            dustGo.transform.SetParent(root.transform, false);
+            var dust = Burst(dustGo, AlphaMaterial("Mist", dot), 12);
+            DustLook(dust, 1f, 1.6f, 0.5f, 1.5f, 0.4f, 0.7f, 0.45f);
+            shape = dust.shape;
+            shape.shapeType = ParticleSystemShapeType.Sphere;
+            shape.radius = 0.4f;
+            return Save(root, path);
+        }
+
+        // Chips and dust trickling off the skin while Broken.
+        private static GameObject BreakCrumble(Texture2D dot)
+        {
+            string path = PrefabDir + "/BreakCrumble.prefab";
+            var existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (existing != null) return existing;
+
+            var root = new GameObject("BreakCrumble");
+            var chips = Emitter(root, RockMaterial(dot), 12f, 80);
+            RockLook(chips, 0.6f, 1f, 0f, 0.2f, 0.03f, 0.06f, 1f);
+
+            var dustGo = new GameObject("Dust");
+            dustGo.transform.SetParent(root.transform, false);
+            var dust = Emitter(dustGo, AlphaMaterial("Mist", dot), 6f, 40);
+            DustLook(dust, 0.8f, 1.4f, 0f, 0.1f, 0.15f, 0.3f, 0.3f);
+            var main = dust.main;
+            main.gravityModifier = 0.05f;
+            return Save(root, path);
+        }
+
+        // Small dust puff as Break wears off.
+        private static GameObject DustPuff(Texture2D dot)
+        {
+            string path = PrefabDir + "/BreakDustPuff.prefab";
+            var existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (existing != null) return existing;
+
+            var root = new GameObject("BreakDustPuff");
+            var dust = Burst(root, AlphaMaterial("Mist", dot), 8);
+            DustLook(dust, 0.8f, 1.3f, 0.3f, 0.8f, 0.3f, 0.5f, 0.35f);
+            var shape = dust.shape;
+            shape.shapeType = ParticleSystemShapeType.Sphere;
+            shape.radius = 0.35f;
+            return Save(root, path);
+        }
+
+        // Tumbling rock meshes that fall; dots if the rock mesh is missing.
+        private static void RockLook(ParticleSystem ps, float lifeMin, float lifeMax, float speedMin, float speedMax, float sizeMin, float sizeMax, float gravity)
+        {
+            var main = ps.main;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(lifeMin, lifeMax);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(speedMin, speedMax);
+            main.startSize = new ParticleSystem.MinMaxCurve(sizeMin, sizeMax);
+            main.gravityModifier = gravity;
+            main.startColor = Color.white;
+            main.startRotation3D = true;
+            main.startRotationX = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+            main.startRotationY = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+            main.startRotationZ = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+            var rot = ps.rotationOverLifetime;
+            rot.enabled = true;
+            rot.separateAxes = true;
+            rot.x = new ParticleSystem.MinMaxCurve(-4f, 4f);
+            rot.y = new ParticleSystem.MinMaxCurve(-4f, 4f);
+            rot.z = new ParticleSystem.MinMaxCurve(-4f, 4f);
+            var sol = ps.sizeOverLifetime;
+            sol.enabled = true;
+            sol.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 1f), new Keyframe(0.8f, 1f), new Keyframe(1f, 0f)));
+            var rockGo = AssetDatabase.LoadAssetAtPath<GameObject>(RockPath);
+            var mesh = rockGo != null ? rockGo.GetComponentInChildren<MeshFilter>()?.sharedMesh : null;
+            if (mesh == null) return;
+            var r = ps.GetComponent<ParticleSystemRenderer>();
+            r.renderMode = ParticleSystemRenderMode.Mesh;
+            r.mesh = mesh;
+        }
+
+        // Brown-grey dust that spreads and settles.
+        private static void DustLook(ParticleSystem ps, float lifeMin, float lifeMax, float speedMin, float speedMax, float sizeMin, float sizeMax, float alpha)
+        {
+            var main = ps.main;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(lifeMin, lifeMax);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(speedMin, speedMax);
+            main.startSize = new ParticleSystem.MinMaxCurve(sizeMin, sizeMax);
+            main.gravityModifier = 0.02f;
+            main.startColor = new Color(0.55f, 0.5f, 0.42f, 1f);
+            var lv = ps.limitVelocityOverLifetime;
+            lv.enabled = true;
+            lv.limit = 0.3f;
+            lv.dampen = 0.15f;
+            Fade(ps, alpha);
+            Grow(ps, 2.2f);
+        }
+
+        // URP Lit rock for chunks and chips, on the PixPlays rock texture.
+        private static Material RockMaterial(Texture2D dot)
+        {
+            string path = MatDir + "/Rock_URP.mat";
+            var m = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (m != null) return m;
+            var shader = Shader.Find("Universal Render Pipeline/Lit");
+            if (shader == null) return AlphaMaterial("Mist", dot);
+            m = new Material(shader);
+            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(RockTexPath);
+            if (tex != null) m.SetTexture("_BaseMap", tex);
+            m.SetColor("_BaseColor", new Color(0.75f, 0.7f, 0.62f, 1f));
+            SetF(m, "_Smoothness", 0.1f);
+            m.enableInstancing = true;
+            AssetDatabase.CreateAsset(m, path);
+            return m;
         }
 
         // Rising licks: grow then shrink, yellow to orange to deep red.

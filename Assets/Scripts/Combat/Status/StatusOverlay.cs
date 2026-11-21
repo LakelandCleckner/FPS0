@@ -8,10 +8,12 @@ namespace Combat.Status
     {
         private const int MaxLayers = 3;
         private const string LayerName = "StatusOverlay";
+        private const float GrowTime = 0.2f;
 
         private class Slot
         {
             public StatusSO Status;
+            public float Shown;
             public readonly List<SkinnedMeshRenderer> Renderers = new List<SkinnedMeshRenderer>();
         }
 
@@ -85,7 +87,10 @@ namespace Combat.Status
             {
                 var slot = slots[i];
                 if (slot == null || slot.Status == null) continue;
-                float k = slot.Status.overlayScalesWithStacks ? Strength(slot.Status) : 1f;
+                float target = slot.Status.overlayScalesWithStacks ? Strength(slot.Status) : 1f;
+                // Eases toward the stack share so new stacks grow in instead of popping.
+                slot.Shown = Mathf.MoveTowards(slot.Shown, target, Time.deltaTime / GrowTime);
+                float k = slot.Shown;
                 int rank = order.IndexOf(slot.Status);
                 float fade = receiver != null ? receiver.Fade(slot.Status) : 1f;
                 foreach (var r in slot.Renderers)
@@ -118,6 +123,7 @@ namespace Combat.Status
         private void Show(Slot slot, StatusSO s)
         {
             slot.Status = s;
+            slot.Shown = 0f;
             if (s != null && slot.Renderers.Count == 0) Build(slot);
             foreach (var r in slot.Renderers)
             {

@@ -141,7 +141,7 @@ namespace Combat.Status
             if (StatusManager.Instance != null) StatusManager.Instance.Unregister(pool);
             pool.ClearAll();
             pools.Remove(status);
-            OnPoolEnded(status, true);
+            OnPoolEnded(status, true, false, true);
         }
 
         // Stun, stagger and knockback, pushed away from the attacker
@@ -187,7 +187,7 @@ namespace Combat.Status
             return hullPoints ??= StatusAura.Sample(transform);
         }
 
-        private void OnPoolEnded(StatusSO status, bool playEnd, bool deferRelease = false)
+        private void OnPoolEnded(StatusSO status, bool playEnd, bool deferRelease = false, bool converted = false)
         {
             if (ReferenceEquals(Conductive, status)) Conductive = FindConductive();
             if (overlay != null) overlay.Remove(status);
@@ -200,7 +200,7 @@ namespace Combat.Status
                 auras.Remove(status);
             }
 
-            if (playEnd && status.endVfx != null && gameObject.activeInHierarchy)
+            if (playEnd && status.endVfx != null && (converted || !status.endVfxOnConvertOnly) && gameObject.activeInHierarchy)
             {
                 Color tint = status.tintAura && status.damageType != null ? status.damageType.color : Color.clear;
                 VfxPool.Spawn(status.endVfx, transform.TransformPoint(status.auraOffset), Quaternion.identity, null,

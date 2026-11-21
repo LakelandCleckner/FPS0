@@ -20,6 +20,7 @@ MonoBehaviour:
   auraOffset: {x: 0, y: 1, z: 0}
   endVfx: {fileID: 5528850911371181799, guid: 237ebd5112e91cd4cb5864120c53279a, type: 3}
   endVfxLifetime: 2
+  endVfxOnConvertOnly: 0
   auraScalesWithStacks: 1
   auraFullAtStacks: 10
   auraEmitFrom: 2

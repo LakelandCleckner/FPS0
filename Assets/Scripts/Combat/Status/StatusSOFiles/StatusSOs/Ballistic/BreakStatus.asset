@@ -13,12 +13,22 @@ MonoBehaviour:
   m_Name: BreakStatus
   m_EditorClassIdentifier: 
   keyword: {fileID: 11400000, guid: 8b5cdb2c70d74ce18ed6190c8e661343, type: 2}
-  auraVfx: {fileID: 4330111335796242336, guid: 826ae61451417b94897e4b852dec721d, type: 3}
+  auraVfx: {fileID: 2008758985123216959, guid: 4fe4da723f9a5f441840b5c509db2dee, type: 3}
   tintAura: 0
-  auraScale: 0.6
+  colorizeAura: 0
+  auraScale: 1
   auraOffset: {x: 0, y: 1, z: 0}
-  endVfx: {fileID: 0}
-  endVfxLifetime: 1.5
+  endVfx: {fileID: 3293153478843263668, guid: 328c4a7aceb83dd4d8fbe7d0132f6383, type: 3}
+  endVfxLifetime: 2
+  endVfxOnConvertOnly: 0
+  auraScalesWithStacks: 0
+  auraFullAtStacks: 10
+  auraEmitFrom: 2
+  previewStacks: 
+  overlayMaterial: {fileID: 2100000, guid: 423baf8af9644a94690165fef9ab3ce5, type: 2}
+  overlayScalesWithStacks: 0
+  fadeOutTime: 0.5
+  stackCurve: 1
   convertAtStacks: 0
   convertsTo: {fileID: 0}
   stunTime: 0
