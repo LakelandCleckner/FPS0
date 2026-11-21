@@ -13,6 +13,28 @@ MonoBehaviour:
   m_Name: SlowStatus
   m_EditorClassIdentifier: 
   keyword: {fileID: 11400000, guid: e07821266052deb4fb0df9f001a59d2d, type: 2}
+  auraVfx: {fileID: 8617858811833427731, guid: d01b9b235662aba4ea78421c99d613ef, type: 3}
+  tintAura: 0
+  colorizeAura: 0
+  auraScale: 1
+  auraOffset: {x: 0, y: 0, z: 0}
+  endVfx: {fileID: 0}
+  endVfxLifetime: 1.5
+  endVfxOnConvertOnly: 0
+  auraScalesWithStacks: 0
+  auraFullAtStacks: 10
+  auraEmitFrom: 2
+  previewStacks: 
+  overlayMaterial: {fileID: 2100000, guid: bca71739ab8180e4fa88354df032bafe, type: 2}
+  overlayScalesWithStacks: 0
+  fadeOutTime: 0.5
+  stackCurve: 1
+  convertAtStacks: 0
+  convertsTo: {fileID: 0}
+  stunTime: 0
+  stagger: 0
+  heavyStagger: 0
+  knockback: 0
   modifierTargetStat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
   modifierBucket: mult
   modifierPerIntensity: -0.3

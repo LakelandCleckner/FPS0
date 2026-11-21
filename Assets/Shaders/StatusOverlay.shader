@@ -2,7 +2,7 @@ Shader "FPS0/StatusOverlay"
 {
     Properties
     {
-        [KeywordEnum(Rim, Creep, Crack, Arc, Burn, Toxic)] _Mode("Mode", Float) = 0
+        [KeywordEnum(Rim, Creep, Crack, Arc, Burn, Toxic, Drag)] _Mode("Mode", Float) = 0
         [HDR] _Color("Color", Color) = (1, 1, 1, 1)
         [HDR] _EdgeColor("Edge Color", Color) = (1, 1, 1, 1)
         [HDR] _GlowColor("Glow Color", Color) = (0, 0, 0, 0)
@@ -47,7 +47,7 @@ Shader "FPS0/StatusOverlay"
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #pragma shader_feature_local _MODE_RIM _MODE_CREEP _MODE_CRACK _MODE_ARC _MODE_BURN _MODE_TOXIC
+            #pragma shader_feature_local _MODE_RIM _MODE_CREEP _MODE_CRACK _MODE_ARC _MODE_BURN _MODE_TOXIC _MODE_DRAG
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
@@ -215,6 +215,14 @@ Shader "FPS0/StatusOverlay"
                 col = lerp(_Color.rgb, _EdgeColor.rgb, vein * beat);
                 col = lerp(col, _Color.rgb * 0.15, blot);
                 a = vein * (0.6 + 0.8 * beat) + (rim * _RimStrength * shade + _Fill) * _Intensity + blot * 0.5;
+            #elif defined(_MODE_DRAG)
+                // Dark rim with slow streaks flowing down the body in world space, heavier toward the feet.
+                float3 wp = i.positionWS;
+                float2 suv = float2((wp.x + wp.z) * _NoiseScale * 2.0, wp.y * _NoiseScale * 0.25 + t * _NoiseSpeed);
+                float streak = smoothstep(0.55, 0.8, Noise(suv));
+                float h = saturate((wp.y - _BaseY) / max(0.01, _Height));
+                col = lerp(_Color.rgb, _EdgeColor.rgb, streak);
+                a = (rim * _RimStrength + _Fill + streak * 0.5 * (1.2 - h)) * _Intensity * shade;
             #else
                 a = (rim * _RimStrength * shade + _Fill * shade) * _Intensity;
             #endif

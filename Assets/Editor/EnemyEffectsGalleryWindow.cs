@@ -70,9 +70,11 @@ public class EnemyEffectsGalleryWindow : EditorWindow
         }
     }
 
+    // The entry after the last element is General: statuses with no element, shown with any weapon.
     private DamageTypeSO Element => element >= 0 && element < elements.Count ? elements[element] : null;
+    private bool General => element == elements.Count;
     private List<StatusSO> ElementStatuses => statuses.Where(s => s.damageType == Element).ToList();
-    private List<WeaponSO> ElementWeapons => weapons.Where(w => w.baseDamageType == Element).ToList();
+    private List<WeaponSO> ElementWeapons => General ? weapons : weapons.Where(w => w.baseDamageType == Element).ToList();
 
     private void OnGUI()
     {
@@ -100,7 +102,7 @@ public class EnemyEffectsGalleryWindow : EditorWindow
     private void Picks()
     {
         EditorGUILayout.LabelField("Lineup", EditorStyles.boldLabel);
-        int e = EditorGUILayout.Popup("Element", element, elements.Select(x => x.displayName).ToArray());
+        int e = EditorGUILayout.Popup("Element", element, elements.Select(x => x.displayName).Append("General").ToArray());
         if (e != element) { element = e; weapon = 0; status = 0; explosion = 0; }
 
         var ws = ElementWeapons;

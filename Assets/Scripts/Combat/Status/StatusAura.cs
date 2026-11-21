@@ -53,7 +53,7 @@ namespace Combat.Status
             for (int i = 0; i < systems.Length; i++)
             {
                 var em = systems[i].emission;
-                em.enabled = points == null;
+                em.enabled = points == null || Own(i);
                 carry[i] = 0f;
             }
 
@@ -89,9 +89,9 @@ namespace Combat.Status
 
         private void Apply()
         {
-            if (points != null) return;
             for (int i = 0; i < systems.Length; i++)
             {
+                if (points != null && !Own(i)) continue;
                 var em = systems[i].emission;
                 em.rateOverTimeMultiplier = baseRates[i] * Share(i) * fade;
             }
@@ -103,6 +103,7 @@ namespace Combat.Status
             float dt = Time.deltaTime;
             for (int i = 0; i < systems.Length; i++)
             {
+                if (Own(i)) continue;
                 carry[i] += baseRates[i] * Share(i) * fade * dt;
                 if (carry[i] < 1f) continue;
 
@@ -125,6 +126,8 @@ namespace Combat.Status
         }
 
         // Stack share for one system, through its curve if it has one.
+        private bool Own(int i) => curves[i] != null && curves[i].OwnShape;
+
         private float Share(int i) => curves[i] != null ? curves[i].Evaluate(share) : share;
 
         // Prefab rates, read once before anything changes them.

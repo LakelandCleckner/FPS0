@@ -9,6 +9,10 @@ namespace Combat.Status
         [Range(0f, 0.95f)] public float startAt = 0f;
         [Tooltip("Above 1 keeps low shares sparse and ramps up near full.")]
         [Min(0.1f)] public float power = 1f;
+        [Tooltip("Emit from this system's own shape and position, not from body points (ground rings).")]
+        public bool ownShape = false;
+
+        public bool OwnShape => ownShape;
 
         public float Evaluate(float share)
         {

@@ -197,6 +197,31 @@ namespace Combat.Status.EditorTools
                 if (Replaceable(s.endVfx)) { s.endVfx = dustPuff; s.endVfxLifetime = 2f; }
             });
 
+            // ---- General ----
+            var slowMat = Overlay("Slow", 6, m =>
+            {
+                m.SetColor("_Color", new Color(0.05f, 0.05f, 0.06f, 1f));
+                m.SetColor("_EdgeColor", new Color(0.2f, 0.2f, 0.22f, 1f));
+                m.SetFloat("_Fill", 0.12f);
+                m.SetFloat("_RimPower", 2f);
+                m.SetFloat("_RimStrength", 1.4f);
+                m.SetFloat("_NoiseScale", 3f);
+                m.SetFloat("_NoiseSpeed", 0.25f);
+                m.SetFloat("_NoiseStrength", 0.2f);
+                m.SetFloat("_PulseAmount", 0f);
+            });
+            var drag = SlowDrag(dot, RingTexture());
+
+            Wire("SlowStatus", s =>
+            {
+                Set(ref s.overlayMaterial, slowMat);
+                s.overlayScalesWithStacks = false;
+                s.fadeOutTime = 0.5f;
+                if (Replaceable(s.auraVfx)) { s.auraVfx = drag; s.auraScale = 1f; s.auraOffset = Vector3.zero; s.tintAura = false; s.colorizeAura = false; }
+                s.auraScalesWithStacks = false;
+                s.auraEmitFrom = AuraEmitFrom.Skin;
+            });
+
             AssetDatabase.SaveAssets();
             Debug.Log(Tag + "Done.");
         }
@@ -562,6 +587,45 @@ namespace Combat.Status.EditorTools
             return m;
         }
 
+        // Dark specks sinking off the skin and a ground ring pulsing inward at the feet.
+        private static GameObject SlowDrag(Texture2D dot, Texture2D ring)
+        {
+            string path = PrefabDir + "/SlowDrag.prefab";
+            var existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (existing != null) return existing;
+
+            var root = new GameObject("SlowDrag");
+            var motes = Emitter(root, AlphaMaterial("Mist", dot), 10f, 60);
+            var main = motes.main;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(0.8f, 1.4f);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(0f, 0.05f);
+            main.startSize = new ParticleSystem.MinMaxCurve(0.015f, 0.03f);
+            main.gravityModifier = 0.4f;
+            main.startColor = new Color(0.08f, 0.08f, 0.09f, 1f);
+            Fade(motes, 0.9f);
+
+            var ringGo = new GameObject("Ring");
+            ringGo.transform.SetParent(root.transform, false);
+            ringGo.transform.localPosition = new Vector3(0f, 0.03f, 0f);
+            var rings = Emitter(ringGo, AlphaMaterial("Ring", ring), 1.2f, 4);
+            main = rings.main;
+            main.simulationSpace = ParticleSystemSimulationSpace.Local;
+            main.startLifetime = 1.2f;
+            main.startSpeed = 0f;
+            main.startSize = 1.6f;
+            main.startColor = new Color(0.05f, 0.05f, 0.06f, 1f);
+            var shape = rings.shape;
+            shape.enabled = false;
+            var sol = rings.sizeOverLifetime;
+            sol.enabled = true;
+            sol.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.EaseInOut(0f, 1f, 1f, 0.25f));
+            Fade(rings, 0.5f);
+            rings.GetComponent<ParticleSystemRenderer>().renderMode = ParticleSystemRenderMode.HorizontalBillboard;
+            var c = ringGo.AddComponent<AuraShareCurve>();
+            c.ownShape = true;
+            return Save(root, path);
+        }
+
         // Rising licks: grow then shrink, yellow to orange to deep red.
         private static void FlameLook(ParticleSystem ps, float lifeMin, float lifeMax, float sizeMin, float sizeMax)
         {
@@ -826,6 +890,29 @@ namespace Combat.Status.EditorTools
                     px[y * w + x] = new Color(1f, 1f, 1f, Mathf.Pow(a, 1.5f));
                 }
             }
+            tex.SetPixels(px);
+            tex.Apply(false, false);
+            AssetDatabase.CreateAsset(tex, path);
+            return tex;
+        }
+
+        // Soft flat ring for ground effects. White; colour comes from the particle.
+        private static Texture2D RingTexture()
+        {
+            string path = MatDir + "/Ring.asset";
+            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+            if (tex != null) return tex;
+            const int n = 128;
+            tex = new Texture2D(n, n, TextureFormat.RGBA32, false) { name = "Ring", wrapMode = TextureWrapMode.Clamp };
+            var px = new Color[n * n];
+            float c = (n - 1) * 0.5f;
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float d = Mathf.Sqrt((x - c) * (x - c) + (y - c) * (y - c)) / c;
+                    float a = Mathf.Clamp01(1f - Mathf.Abs(d - 0.8f) / 0.15f);
+                    px[y * n + x] = new Color(1f, 1f, 1f, a * a);
+                }
             tex.SetPixels(px);
             tex.Apply(false, false);
             AssetDatabase.CreateAsset(tex, path);
