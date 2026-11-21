@@ -105,8 +105,7 @@ namespace Combat.Status
         private float Strength(StatusSO s)
         {
             if (receiver == null) return 1f;
-            int n = receiver.Stacks(s);
-            return Mathf.Clamp01((float)n / Mathf.Max(1, s.AuraMaxStacks));
+            return s.ShareAt(receiver.Stacks(s));
         }
 
         private Slot Find(StatusSO s)

@@ -2,7 +2,7 @@ Shader "FPS0/StatusOverlay"
 {
     Properties
     {
-        [KeywordEnum(Rim, Creep, Crack, Arc, Burn)] _Mode("Mode", Float) = 0
+        [KeywordEnum(Rim, Creep, Crack, Arc, Burn, Toxic)] _Mode("Mode", Float) = 0
         [HDR] _Color("Color", Color) = (1, 1, 1, 1)
         [HDR] _EdgeColor("Edge Color", Color) = (1, 1, 1, 1)
         _Intensity("Intensity", Range(0, 1)) = 1
@@ -46,7 +46,7 @@ Shader "FPS0/StatusOverlay"
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #pragma shader_feature_local _MODE_RIM _MODE_CREEP _MODE_CRACK _MODE_ARC _MODE_BURN
+            #pragma shader_feature_local _MODE_RIM _MODE_CREEP _MODE_CRACK _MODE_ARC _MODE_BURN _MODE_TOXIC
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
@@ -198,6 +198,17 @@ Shader "FPS0/StatusOverlay"
                 col = lerp(col, float3(0.03, 0.02, 0.015), scorch * (1.0 - tongue * 0.5));
                 col += _EdgeColor.rgb * ember * _Sparkle;
                 a = heat + scorch * 0.7 + ember;
+            #elif defined(_MODE_TOXIC)
+                // Veins filling in with stacks, a glow pulse travelling up them, green rim, dark wet blotches past half.
+                float2 wv = (float2(Noise(i.uv * _NoiseScale), Noise(i.uv * _NoiseScale + 23.0)) - 0.5) * 0.6;
+                float2 c = Cells(i.uv * _CrackScale + wv);
+                float vein = (1.0 - smoothstep(0.0, _CrackWidth, c.x)) * step(c.y, _Intensity * 1.05);
+                float h = saturate((i.positionWS.y - _BaseY) / max(0.01, _Height));
+                float beat = pow(0.5 + 0.5 * sin((h * 3.0 - t * _PulseSpeed) * 6.2832), 4.0);
+                float blot = smoothstep(0.6, 0.75, Noise(i.uv * _NoiseScale * 0.5 + 41.0)) * saturate(_Intensity * 2.0 - 0.8);
+                col = lerp(_Color.rgb, _EdgeColor.rgb, vein * beat);
+                col = lerp(col, _Color.rgb * 0.15, blot);
+                a = vein * (0.6 + 0.8 * beat) + (rim * _RimStrength * shade + _Fill) * _Intensity + blot * 0.5;
             #else
                 a = (rim * _RimStrength * shade + _Fill * shade) * _Intensity;
             #endif

@@ -46,6 +46,8 @@ namespace Combat.Status
         public bool overlayScalesWithStacks = true;
         [Tooltip("Overlay and aura stutter out over this many final seconds. 0 = cut off.")]
         [Min(0f)] public float fadeOutTime = 0f;
+        [Tooltip("Shapes how visuals follow stacks / max stacks. Below 1 shows early stacks strongly (0.5: 10% of stacks looks ~30%).")]
+        [Min(0.1f)] public float stackCurve = 1f;
 
         [Header("Conversion")]
         [Tooltip("At this many stacks the status clears and applies Converts To instead (Chill into Freeze). 0 = never.")]
@@ -148,6 +150,9 @@ namespace Combat.Status
                 return Mathf.Max(1, m);
             }
         }
+
+        // Visual share for a stack count: stacks / max stacks through the stack curve.
+        public float ShareAt(int stacks) => Mathf.Pow(Mathf.Clamp01((float)stacks / AuraMaxStacks), stackCurve);
 
         // Visual strength in the fade-out window: full, then flickering off more often as time runs out.
         public float FadeAt(float remaining, int seed)

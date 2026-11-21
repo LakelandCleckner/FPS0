@@ -27,6 +27,7 @@ MonoBehaviour:
   overlayMaterial: {fileID: 2100000, guid: 69d08e83d81ff8846868761ca4061583, type: 2}
   overlayScalesWithStacks: 1
   fadeOutTime: 0.5
+  stackCurve: 1
   convertAtStacks: 0
   convertsTo: {fileID: 0}
   stunTime: 0

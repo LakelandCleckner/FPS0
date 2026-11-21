@@ -13,14 +13,27 @@ MonoBehaviour:
   m_Name: PoisonBurnStatus
   m_EditorClassIdentifier: 
   keyword: {fileID: 11400000, guid: 27cfd5db291b3864daaab2e3bc1b8a59, type: 2}
-  auraVfx: {fileID: 2987979887945417987, guid: 30311f0e7d5b3e04f9d1d9b728e6642c, type: 3}
-  tintAura: 1
-  auraScale: 0.8
-  auraOffset: {x: 0, y: 0, z: 0}
-  endVfx: {fileID: 0}
-  endVfxLifetime: 1.5
+  auraVfx: {fileID: 3814153650863099081, guid: e80ea5e9bc763c74f80459d2e25d4278, type: 3}
+  tintAura: 0
+  colorizeAura: 0
+  auraScale: 1
+  auraOffset: {x: 0, y: 1, z: 0}
+  endVfx: {fileID: 9187421512678252551, guid: d393966b5d8fb184791292215f99490e, type: 3}
+  endVfxLifetime: 2.5
+  auraScalesWithStacks: 1
+  auraFullAtStacks: 10
+  auraEmitFrom: 2
+  previewStacks: 
+  overlayMaterial: {fileID: 2100000, guid: 99912159090dfce4cb749b1e2e1dcc50, type: 2}
+  overlayScalesWithStacks: 1
+  fadeOutTime: 0.5
+  stackCurve: 0.5
   convertAtStacks: 0
   convertsTo: {fileID: 0}
+  stunTime: 0
+  stagger: 0
+  heavyStagger: 0
+  knockback: 0
   modifierTargetStat: {fileID: 11400000, guid: dc920a34e05adb64c958ff021c4eb339, type: 2}
   modifierBucket: flat
   modifierPerIntensity: -0.005

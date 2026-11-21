@@ -138,6 +138,37 @@ namespace Combat.Status.EditorTools
                 if (Replaceable(s.endVfx)) { s.endVfx = burnOut; s.endVfxLifetime = 2f; s.colorizeAura = false; }
             });
 
+            // ---- Toxic ----
+            var poisonMat = Overlay("Poison", 5, m =>
+            {
+                m.SetColor("_Color", new Color(0.3f, 1.2f, 0.15f, 1f));
+                m.SetColor("_EdgeColor", new Color(1f, 3f, 0.4f, 1f));
+                m.SetFloat("_Fill", 0.08f);
+                m.SetFloat("_RimPower", 2.5f);
+                m.SetFloat("_RimStrength", 1f);
+                m.SetFloat("_NoiseScale", 8f);
+                m.SetFloat("_NoiseSpeed", 0f);
+                m.SetFloat("_NoiseStrength", 0.3f);
+                m.SetFloat("_CrackScale", 9f);
+                m.SetFloat("_CrackWidth", 0.035f);
+                m.SetFloat("_PulseSpeed", 0.6f);
+                m.SetFloat("_PulseAmount", 0f);
+            });
+            var poisonAura = PoisonOoze(dot, BubbleTexture());
+            var poisonOut = GasPuff(dot);
+
+            Wire("PoisonBurnStatus", s =>
+            {
+                Set(ref s.overlayMaterial, poisonMat);
+                s.overlayScalesWithStacks = true;
+                s.stackCurve = 0.5f;
+                s.fadeOutTime = 0.5f;
+                if (Replaceable(s.auraVfx)) { s.auraVfx = poisonAura; s.auraScale = 1f; s.auraOffset = Vector3.up; s.tintAura = false; }
+                s.auraScalesWithStacks = true;
+                s.auraEmitFrom = AuraEmitFrom.Skin;
+                if (Replaceable(s.endVfx)) { s.endVfx = poisonOut; s.endVfxLifetime = 2.5f; s.colorizeAura = false; }
+            });
+
             AssetDatabase.SaveAssets();
             Debug.Log(Tag + "Done.");
         }
@@ -158,7 +189,9 @@ namespace Combat.Status.EditorTools
             m.DisableKeyword("_MODE_CRACK");
             m.DisableKeyword("_MODE_ARC");
             m.DisableKeyword("_MODE_BURN");
-            m.EnableKeyword(mode == 1 ? "_MODE_CREEP" : mode == 2 ? "_MODE_CRACK" : mode == 3 ? "_MODE_ARC" : mode == 4 ? "_MODE_BURN" : "_MODE_RIM");
+            m.DisableKeyword("_MODE_TOXIC");
+            string[] modes = { "_MODE_RIM", "_MODE_CREEP", "_MODE_CRACK", "_MODE_ARC", "_MODE_BURN", "_MODE_TOXIC" };
+            m.EnableKeyword(modes[Mathf.Clamp(mode, 0, modes.Length - 1)]);
             setup(m);
             AssetDatabase.CreateAsset(m, path);
             Debug.Log(Tag + "Created " + path);
@@ -416,6 +449,85 @@ namespace Combat.Status.EditorTools
             Grow(ps, 2.5f);
         }
 
+        // Drips falling off the skin, bubbles swelling and popping, haze from half share.
+        private static GameObject PoisonOoze(Texture2D dot, Texture2D bubble)
+        {
+            string path = PrefabDir + "/PoisonOoze.prefab";
+            var existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (existing != null) return existing;
+
+            var root = new GameObject("PoisonOoze");
+            var drips = Emitter(root, AlphaMaterial("Drop", dot), 20f, 120);
+            var main = drips.main;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(0.6f, 1f);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(0f, 0.05f);
+            main.startSize = new ParticleSystem.MinMaxCurve(0.02f, 0.04f);
+            main.gravityModifier = 1f;
+            main.startColor = new Color(0.35f, 0.9f, 0.15f, 0.9f);
+            var r = drips.GetComponent<ParticleSystemRenderer>();
+            r.renderMode = ParticleSystemRenderMode.Stretch;
+            r.velocityScale = 0.05f;
+            r.lengthScale = 1f;
+            Fade(drips, 1f);
+
+            var bubblesGo = new GameObject("Bubbles");
+            bubblesGo.transform.SetParent(root.transform, false);
+            var bubbles = Emitter(bubblesGo, AlphaMaterial("Bubble", bubble), 15f, 100);
+            main = bubbles.main;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(0.4f, 0.8f);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(0f, 0.05f);
+            main.startSize = new ParticleSystem.MinMaxCurve(0.03f, 0.07f);
+            main.gravityModifier = -0.1f;
+            main.startColor = new Color(0.6f, 1f, 0.35f, 0.9f);
+            var sol = bubbles.sizeOverLifetime;
+            sol.enabled = true;
+            sol.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.3f), new Keyframe(0.8f, 1f), new Keyframe(1f, 1.2f)));
+            var col = bubbles.colorOverLifetime;
+            col.enabled = true;
+            var g = new Gradient();
+            g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                      new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 0.85f), new GradientAlphaKey(0f, 1f) });
+            col.color = new ParticleSystem.MinMaxGradient(g);
+
+            var hazeGo = new GameObject("Haze");
+            hazeGo.transform.SetParent(root.transform, false);
+            var haze = Emitter(hazeGo, AlphaMaterial("Mist", dot), 10f, 80);
+            HazeLook(haze, 1.5f, 2.5f, 0.4f, 0.7f, 0.25f);
+            Curve(hazeGo, 0.5f, 1f);
+            return Save(root, path);
+        }
+
+        // Green gas puff when the last stack ends.
+        private static GameObject GasPuff(Texture2D dot)
+        {
+            string path = PrefabDir + "/PoisonGasPuff.prefab";
+            var existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (existing != null) return existing;
+
+            var root = new GameObject("PoisonGasPuff");
+            var gas = Burst(root, AlphaMaterial("Mist", dot), 10);
+            HazeLook(gas, 1.2f, 2f, 0.5f, 0.8f, 0.4f);
+            var main = gas.main;
+            main.startSpeed = new ParticleSystem.MinMaxCurve(0.2f, 0.6f);
+            var shape = gas.shape;
+            shape.shapeType = ParticleSystemShapeType.Sphere;
+            shape.radius = 0.4f;
+            return Save(root, path);
+        }
+
+        // Slow sickly green gas that drifts up and spreads.
+        private static void HazeLook(ParticleSystem ps, float lifeMin, float lifeMax, float sizeMin, float sizeMax, float alpha)
+        {
+            var main = ps.main;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(lifeMin, lifeMax);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(0f, 0.08f);
+            main.startSize = new ParticleSystem.MinMaxCurve(sizeMin, sizeMax);
+            main.gravityModifier = -0.03f;
+            main.startColor = new Color(0.35f, 0.65f, 0.15f, 1f);
+            Fade(ps, alpha);
+            Grow(ps, 2f);
+        }
+
         private static ParticleSystem Emitter(GameObject go, Material mat, float rate, int max)
         {
             var ps = Base(go, mat, max);
@@ -544,6 +656,33 @@ namespace Combat.Status.EditorTools
                     px[y * w + x] = new Color(1f, 1f, 1f, Mathf.Pow(a, 1.5f));
                 }
             }
+            tex.SetPixels(px);
+            tex.Apply(false, false);
+            AssetDatabase.CreateAsset(tex, path);
+            return tex;
+        }
+
+        // Bubble: thin ring with a small highlight. White; colour comes from the particle.
+        private static Texture2D BubbleTexture()
+        {
+            string path = MatDir + "/Bubble.asset";
+            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+            if (tex != null) return tex;
+            const int n = 64;
+            tex = new Texture2D(n, n, TextureFormat.RGBA32, false) { name = "Bubble", wrapMode = TextureWrapMode.Clamp };
+            var px = new Color[n * n];
+            float c = (n - 1) * 0.5f;
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float dx = (x - c) / c, dy = (y - c) / c;
+                    float d = Mathf.Sqrt(dx * dx + dy * dy);
+                    float ring = Mathf.Clamp01(1f - Mathf.Abs(d - 0.85f) / 0.12f);
+                    float inner = d < 0.85f ? 0.15f : 0f;
+                    float hx = dx + 0.35f, hy = dy - 0.35f;
+                    float spec = Mathf.Clamp01(1f - Mathf.Sqrt(hx * hx + hy * hy) / 0.18f);
+                    px[y * n + x] = new Color(1f, 1f, 1f, Mathf.Clamp01(ring + inner + spec));
+                }
             tex.SetPixels(px);
             tex.Apply(false, false);
             AssetDatabase.CreateAsset(tex, path);

@@ -78,7 +78,7 @@ namespace Combat.Status
             int n = receiver != null ? receiver.Stacks(status) : 0;
             if (n == shown) return;
             shown = n;
-            SetRates(Mathf.Clamp01((float)n / status.AuraMaxStacks));
+            SetRates(status.ShareAt(n));
         }
 
         private void SetRates(float f)
