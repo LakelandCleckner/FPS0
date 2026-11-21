@@ -4,7 +4,7 @@ using Combat.Enemies;
 
 namespace Combat.AI
 {
-    // A squad to spawn: which variants, how many of each, who leads.
+    // A squad to spawn: which enemies (variant plus extra layers), how many of each, who leads.
     [CreateAssetMenu(fileName = "Squad", menuName = "Combat/Enemies/Enemy Squad")]
     public class EnemySquadSO : ScriptableObject
     {
@@ -12,9 +12,14 @@ namespace Combat.AI
         public struct Member
         {
             public EnemyVariantSO variant;
+            [Tooltip("Layers added on top of the variant, e.g. a shield.")]
+            public List<EnemyModifierSO> extraModifiers;
             [Min(1)] public int count;
             [Tooltip("The first of these leads. With no leader ticked, the highest rank leads.")]
             public bool leader;
+
+            public bool IsSet => variant != null && variant.archetype != null;
+            public EnemySpawnDef Def => new EnemySpawnDef(variant, null, extraModifiers);
         }
 
         [Tooltip("Stable id. Don't change once spawners reference it.")]
@@ -36,10 +41,8 @@ namespace Combat.AI
                 int c = 0;
                 foreach (var m in members)
                 {
-                    if (m.variant == null || m.variant.archetype == null) continue;
-                    int rank = (int)m.variant.archetype.rank;
-                    foreach (var mod in m.variant.modifiers)
-                        if (mod != null && (int)mod.raiseRankTo > rank) rank = (int)mod.raiseRankTo;
+                    if (!m.IsSet) continue;
+                    int rank = (int)m.Def.Rank;
                     c += RankCost[Mathf.Clamp(rank, 0, RankCost.Length - 1)] * Mathf.Max(1, m.count);
                 }
                 return c;
@@ -51,7 +54,7 @@ namespace Combat.AI
             get
             {
                 int n = 0;
-                foreach (var m in members) if (m.variant != null) n += Mathf.Max(1, m.count);
+                foreach (var m in members) if (m.IsSet) n += Mathf.Max(1, m.count);
                 return n;
             }
         }

@@ -33,6 +33,8 @@ namespace Combat.Enemies
         private bool overridden;
 
         private readonly List<EnemyModifierSO> layers = new List<EnemyModifierSO>();
+        private readonly List<EnemyModifierSO> extra = new List<EnemyModifierSO>();
+        private readonly List<EnemyModifierSO> affixExtra = new List<EnemyModifierSO>();
         private readonly List<object> modifierOwners = new List<object>();
         private readonly Dictionary<StatDefinitionSO, float> authoredBases = new Dictionary<StatDefinitionSO, float>();
         private readonly List<IHitEffect> meleeEffects = new List<IHitEffect>();
@@ -61,11 +63,8 @@ namespace Combat.Enemies
                 var arch = Archetype;
                 if (arch == null) return null;
                 var p = arch.behaviourProfile;
-                if (variant != null)
-                    foreach (var m in variant.modifiers)
-                        if (m != null && m.behaviourProfile != null && (p == null || p.ranged == m.behaviourProfile.ranged))
-                            p = m.behaviourProfile;
-                return p;
+                if (variant != null) p = Profile(p, variant.modifiers);
+                return Profile(p, extra);
             }
         }
 
@@ -91,6 +90,14 @@ namespace Combat.Enemies
             }
         }
         public IReadOnlyList<EnemyModifierSO> Layers => layers;
+
+        private static Combat.AI.EnemyBehaviourProfileSO Profile(Combat.AI.EnemyBehaviourProfileSO p, List<EnemyModifierSO> mods)
+        {
+            foreach (var m in mods)
+                if (m != null && m.behaviourProfile != null && (p == null || p.ranged == m.behaviourProfile.ranged))
+                    p = m.behaviourProfile;
+            return p;
+        }
         public IReadOnlyList<EnemyDeathEffectSO> DeathEffects => deathEffects;
         public CombatantStats Stats => stats;
         public CombatantHealth Health => health;
@@ -157,6 +164,7 @@ namespace Combat.Enemies
         public void SetVariant(EnemyVariantSO v)
         {
             variant = v;
+            extra.Clear();
             if (started) Apply();
         }
 
@@ -164,7 +172,18 @@ namespace Combat.Enemies
         {
             variant = null;
             archetype = a;
+            extra.Clear();
             if (started) Apply();
+        }
+
+        // Preset or archetype plus extra layers. While inactive (pool reuse) the spawn's own apply picks it up.
+        public void SetDefinition(EnemySpawnDef def)
+        {
+            variant = def.preset;
+            if (def.preset == null) archetype = def.archetype;
+            extra.Clear();
+            EnemySpawnDef.Add(extra, def.modifiers);
+            if (started && isActiveAndEnabled) Apply();
         }
 
         // True when the definition owns this stat's base, so components skip pushing their own.
@@ -177,6 +196,8 @@ namespace Combat.Enemies
             if (variant != null)
                 foreach (var m in variant.modifiers)
                     if (m != null && m.SetsBase(stat)) return true;
+            foreach (var m in extra)
+                if (m.SetsBase(stat)) return true;
             return false;
         }
 
@@ -205,9 +226,8 @@ namespace Combat.Enemies
                 return;
             }
 
-            if (variant != null)
-                foreach (var m in variant.modifiers)
-                    if (m != null) layers.Add(m);
+            if (variant != null) EnemySpawnDef.Add(layers, variant.modifiers);
+            EnemySpawnDef.Add(layers, extra);
 
             foreach (var b in arch.baseStats)
                 if (b.stat != null) WriteBase(c, b.stat, b.baseValue);
@@ -330,12 +350,8 @@ namespace Combat.Enemies
 
         private void ApplyPresentation(EnemyArchetypeSO arch)
         {
-            DisplayName = variant != null ? variant.DisplayName : arch.StatSourceLabel;
-
-            var rank = arch.rank;
-            for (int i = 0; i < layers.Count; i++)
-                if ((int)layers[i].raiseRankTo > (int)rank) rank = (EnemyRank)layers[i].raiseRankTo;
-            Rank = rank;
+            DisplayName = EnemySpawnDef.NameOf(arch, layers, variant != null ? variant.displayNameOverride : null);
+            Rank = EnemySpawnDef.RankOf(arch, layers);
             ApplyLook(EnemyLook.Resolve(layers));
         }
 
@@ -356,16 +372,25 @@ namespace Combat.Enemies
         // Same definition as last life keeps its runtimes; they reset in OnSpawn.
         private void RebuildAffixes(EnemyArchetypeSO arch)
         {
-            if (arch != null && variant == affixVariant && arch == affixArchetype) return;
+            if (arch != null && variant == affixVariant && arch == affixArchetype && SameExtra()) return;
 
             for (int i = 0; i < affixes.Count; i++) affixes[i].OnRemoved(this);
             affixes.Clear();
             affixVariant = variant;
             affixArchetype = arch;
+            affixExtra.Clear();
+            affixExtra.AddRange(extra);
             if (arch == null) return;
 
             AddAffixes(arch.affixes);
             for (int i = 0; i < layers.Count; i++) AddAffixes(layers[i].affixes);
+        }
+
+        private bool SameExtra()
+        {
+            if (extra.Count != affixExtra.Count) return false;
+            for (int i = 0; i < extra.Count; i++) if (extra[i] != affixExtra[i]) return false;
+            return true;
         }
 
         private void AddAffixes(List<EnemyAffixSO> list)

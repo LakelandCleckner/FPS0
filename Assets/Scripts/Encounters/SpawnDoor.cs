@@ -89,10 +89,11 @@ namespace Combat.Encounters
             int k = 0;
             foreach (var m in squad.members)
             {
-                if (m.variant == null) continue;
+                if (!m.IsSet) continue;
+                var def = m.Def;
                 for (int i = 0; i < Mathf.Max(1, m.count); i++)
                 {
-                    var h = spawner.Spawn(m.variant, SpawnSpot(k), facing);
+                    var h = spawner.Spawn(def, SpawnSpot(k), facing);
                     if (h == null) continue;
                     var b = h.GameObject.GetComponent<EnemyBrain>();
                     if (b != null)

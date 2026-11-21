@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using Combat.Info;
 
@@ -11,7 +10,7 @@ namespace Combat.Enemies
     {
         [Tooltip("Stable id. Don't change once spawners reference it.")]
         public string id = "";
-        [Tooltip("Empty = built from modifier prefixes plus the archetype name.")]
+        [Tooltip("Empty = built from modifier prefixes plus the archetype's name for its rank.")]
         public string displayNameOverride = "";
         public EnemyArchetypeSO archetype;
         [Tooltip("Applied top to bottom.")]
@@ -21,18 +20,8 @@ namespace Combat.Enemies
 
         public GameObject Prefab => prefabOverride != null ? prefabOverride : (archetype != null ? archetype.bodyPrefab : null);
 
-        public string DisplayName
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(displayNameOverride)) return displayNameOverride;
-                var sb = new StringBuilder();
-                foreach (var m in modifiers)
-                    if (m != null && !string.IsNullOrEmpty(m.namePrefix)) sb.Append(m.namePrefix).Append(' ');
-                sb.Append(archetype != null ? archetype.StatSourceLabel : name);
-                return sb.ToString();
-            }
-        }
+        public string DisplayName => archetype != null ? EnemySpawnDef.NameOf(archetype, modifiers, displayNameOverride)
+                                                       : string.IsNullOrEmpty(displayNameOverride) ? name : displayNameOverride;
 
         // Every layer in order, each under its name.
         public void Describe(Describer d)

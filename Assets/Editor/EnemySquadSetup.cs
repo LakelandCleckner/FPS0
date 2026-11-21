@@ -174,6 +174,9 @@ public class EnemySquadSetup : EditorWindow
             leaderProp.boolValue = lead;
             if (GUILayout.Button("X", GUILayout.Width(22))) remove = i;
             EditorGUILayout.EndHorizontal();
+            EditorGUI.indentLevel++;
+            EditorGUILayout.PropertyField(m.FindPropertyRelative("extraModifiers"), new GUIContent("Extra Layers", "Added on top of the variant, e.g. a shield."), true);
+            EditorGUI.indentLevel--;
         }
         if (remove >= 0) members.DeleteArrayElementAtIndex(remove);
 
@@ -201,7 +204,7 @@ public class EnemySquadSetup : EditorWindow
 
     private static string LeaderText(EnemySquadSO s)
     {
-        foreach (var m in s.members) if (m.leader && m.variant != null) return m.variant.name;
+        foreach (var m in s.members) if (m.leader && m.IsSet) return m.Def.DisplayName;
         return "highest rank";
     }
 

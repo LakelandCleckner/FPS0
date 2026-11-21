@@ -30,7 +30,8 @@ namespace Combat.Spawning
                 Return(Create(parent.position, parent.rotation));
         }
 
-        public EnemyPoolHandle Rent(Vector3 position, Quaternion rotation)
+        // prepare runs before the instance comes alive: before reactivation on reuse, before Start when new.
+        public EnemyPoolHandle Rent(Vector3 position, Quaternion rotation, System.Action<GameObject> prepare = null)
         {
             EnemyPoolHandle handle;
 
@@ -40,6 +41,7 @@ namespace Combat.Spawning
                 handle = free.Pop();
                 var g = handle.GameObject;
                 g.transform.SetPositionAndRotation(position, rotation);
+                prepare?.Invoke(g);
                 g.SetActive(true);
                 handle.InvokeSpawn();
             }
@@ -48,6 +50,7 @@ namespace Combat.Spawning
                 // First creation: components initialise via their own Awake/Start;
                 // OnSpawn is the reset path for reuse only.
                 handle = Create(position, rotation);
+                prepare?.Invoke(handle.GameObject);
             }
 
             return handle;

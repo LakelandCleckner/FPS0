@@ -43,12 +43,35 @@ namespace Combat.Enemies
         [Header("Presentation")]
         [Tooltip("Base rank. Tier modifiers can raise it.")]
         public EnemyRank rank = EnemyRank.Minor;
+        [Tooltip("Name at Major rank. Empty = Display Name with the tier prefix.")]
+        public string majorName = "";
+        [Tooltip("Name at Elite rank. Empty = Display Name with the tier prefix.")]
+        public string eliteName = "";
+        [Tooltip("Name at Miniboss rank and above. Empty = Display Name with the tier prefix.")]
+        public string minibossName = "";
 
         [Header("Loot")]
         [Tooltip("Empty = the loot dropper's own table.")]
         public LootTableSO lootTable;
 
         public string StatSourceLabel => string.IsNullOrEmpty(displayName) ? name : displayName;
+
+        public bool HasRankName(EnemyRank r) => !string.IsNullOrEmpty(RankName(r));
+
+        // Name for a rank, falling back to the display name.
+        public string NameFor(EnemyRank r)
+        {
+            string n = RankName(r);
+            return string.IsNullOrEmpty(n) ? StatSourceLabel : n;
+        }
+
+        private string RankName(EnemyRank r) => r switch
+        {
+            EnemyRank.Major => majorName,
+            EnemyRank.Elite => eliteName,
+            EnemyRank.Miniboss or EnemyRank.Boss => minibossName,
+            _ => ""
+        };
 
         public bool DefinesBase(StatDefinitionSO stat)
         {
