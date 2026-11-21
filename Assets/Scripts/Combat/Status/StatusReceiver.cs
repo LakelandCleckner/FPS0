@@ -59,6 +59,15 @@ namespace Combat.Status
 
         public bool Has(StatusSO status) => status != null && pools.TryGetValue(status, out var p) && !p.Expired;
 
+        // Keeps an active status from expiring (gallery previews).
+        public void Hold(StatusSO status)
+        {
+            if (status != null && pools.TryGetValue(status, out var p) && !p.Expired) p.RefreshDuration();
+        }
+
+        // Ends every status now, lifting their stat changes.
+        public void ClearStatuses() => ClearAllPools();
+
         public int Stacks(StatusSO status) => status != null && pools.TryGetValue(status, out var p) && !p.Expired ? p.EntryCount : 0;
 
         public void Apply(

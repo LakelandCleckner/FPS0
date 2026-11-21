@@ -507,6 +507,13 @@ namespace Combat.Status
             RemoveStatModifier();
         }
 
+        // Resets every stack's timer so the status holds (gallery previews).
+        public void RefreshDuration()
+        {
+            for (int i = 0; i < entries.Count; i++) entries[i].RemainingDuration = Status.duration;
+            if (Status.durationMode == StatusDurationMode.ExtendShared) sharedTimer = Mathf.Max(sharedTimer, Status.duration);
+        }
+
         public void ClearAll()
         {
             RemoveStatModifier();
