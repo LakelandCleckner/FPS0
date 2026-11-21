@@ -18,7 +18,7 @@ MonoBehaviour:
   otherMultiplier: 1
   rechargeDelay: 4
   rechargeTime: 2
-  breakEffect: {fileID: 0}
+  breakEffect: {fileID: 11400000, guid: 54b16c3f983f4be4a274bf71b8f17585, type: 2}
   breakEffectOnlyOnMatch: 1
   fallbackColor: {r: 0.4, g: 0.8, b: 1, a: 1}
   shellVfx: {fileID: 8838651023955842426, guid: 9df1846e5602ba745aa8ad5459f0b017, type: 3}
