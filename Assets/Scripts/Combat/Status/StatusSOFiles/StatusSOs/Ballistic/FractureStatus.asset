@@ -13,12 +13,16 @@ MonoBehaviour:
   m_Name: FractureStatus
   m_EditorClassIdentifier: 
   keyword: {fileID: 11400000, guid: ce981776de4745e98b0135a00d74f87d, type: 2}
-  auraVfx: {fileID: 0}
+  auraVfx: {fileID: 6615306477621524926, guid: 87444f08eeb5d84439162d52781682aa, type: 3}
   tintAura: 0
-  auraScale: 0.6
+  colorizeAura: 0
+  auraScale: 1
   auraOffset: {x: 0, y: 1, z: 0}
   endVfx: {fileID: 0}
   endVfxLifetime: 1.5
+  auraScalesWithStacks: 1
+  auraFullAtStacks: 10
+  auraEmitFrom: 2
   convertAtStacks: 5
   convertsTo: {fileID: 11400000, guid: 5b12904f116c4947b51c061fa7c8caee, type: 2}
   stunTime: 0

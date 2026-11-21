@@ -9,6 +9,7 @@ namespace Combat.Status
     public enum StatusEvictionStrategy { LowestWeight, ShortestRemaining }
     public enum StatusIntensityMode { Magnitude, Rate, Both }
     public enum StatusTickTimerMode { SharedPoolTimer, PerEntryTimer }
+    public enum AuraEmitFrom { Prefab, Hulls, Skin }
 
     // Stateless status recipe. Phase 2i-b: the tick's derivation is authored as a
     // KIND + owner scope + stat/quantity, matching the data-driven DamageSpec.
@@ -30,6 +31,12 @@ namespace Combat.Status
         [Tooltip("One-shot effect when the status ends or converts. Empty = none.")]
         public GameObject endVfx;
         [Min(0.05f)] public float endVfxLifetime = 1.5f;
+        [Tooltip("Aura emission follows the stack count, full at the most stacks this status can show.")]
+        public bool auraScalesWithStacks = false;
+        [Tooltip("Stacks for full emission when there is no stack limit.")]
+        [Min(1)] public int auraFullAtStacks = 10;
+        [Tooltip("Prefab: the aura's own shape. Hulls: points on the hit hulls. Skin: baked skin points (falls back to Hulls).")]
+        public AuraEmitFrom auraEmitFrom = AuraEmitFrom.Prefab;
 
         [Header("Conversion")]
         [Tooltip("At this many stacks the status clears and applies Converts To instead (Chill into Freeze). 0 = never.")]
@@ -121,6 +128,17 @@ namespace Combat.Status
         public bool transferResetsTickCadence = false;
 
 
+
+        // Most stacks the aura shows: the stack cap (or the custom count), one below conversion.
+        public int AuraMaxStacks
+        {
+            get
+            {
+                int m = maxEntries > 0 ? maxEntries : auraFullAtStacks;
+                if (convertsTo != null && convertAtStacks > 0) m = Mathf.Min(m, convertAtStacks - 1);
+                return Mathf.Max(1, m);
+            }
+        }
 
         // Numbers for this status: damage per tick and in total, stat change, duration and stacking.
         public virtual void Describe(Describer d)

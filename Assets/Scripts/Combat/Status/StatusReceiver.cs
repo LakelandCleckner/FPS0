@@ -33,6 +33,8 @@ namespace Combat.Status
             = new Dictionary<StatusSO, EffectStackPool>();
         private readonly Dictionary<StatusSO, GameObject> auras = new Dictionary<StatusSO, GameObject>();
         private readonly List<StatusSO> scratch = new List<StatusSO>(4);
+        private StatusAura.BodyPoint[] hullPoints;
+        private StatusAura.BodyPoint[] skinPoints;
 
         // Active Conductive status, or null.
         public ConductiveStatusSO Conductive { get; private set; }
@@ -132,7 +134,30 @@ namespace Combat.Status
             Color tint = status.tintAura && status.damageType != null ? status.damageType.color : Color.clear;
             var t = transform;
             var fx = VfxPool.Spawn(status.auraVfx, t.TransformPoint(status.auraOffset), t.rotation, t, tint, 0f, status.auraScale, status.colorizeAura);
-            if (fx != null) auras[status] = fx;
+            if (fx == null) return;
+            auras[status] = fx;
+
+            var aura = fx.GetComponent<StatusAura>();
+            if (aura == null && (status.auraScalesWithStacks || status.auraEmitFrom != AuraEmitFrom.Prefab)) aura = fx.AddComponent<StatusAura>();
+            if (aura != null) aura.Bind(this, status, BodyPoints(status.auraEmitFrom));
+        }
+
+        // Emission points for the mode: baked skin points, else hull points sampled once; null for Prefab.
+        private StatusAura.BodyPoint[] BodyPoints(AuraEmitFrom mode)
+        {
+            if (mode == AuraEmitFrom.Prefab) return null;
+            if (mode == AuraEmitFrom.Skin)
+            {
+                if (skinPoints == null)
+                {
+                    var baked = GetComponent<BodySurfacePoints>();
+                    if (baked == null) baked = GetComponentInChildren<BodySurfacePoints>(true);
+                    if (baked == null) baked = GetComponentInParent<BodySurfacePoints>();
+                    skinPoints = baked != null ? baked.Points : System.Array.Empty<StatusAura.BodyPoint>();
+                }
+                if (skinPoints.Length > 0) return skinPoints;
+            }
+            return hullPoints ??= StatusAura.Sample(transform);
         }
 
         private void OnPoolEnded(StatusSO status, bool playEnd, bool deferRelease = false)
