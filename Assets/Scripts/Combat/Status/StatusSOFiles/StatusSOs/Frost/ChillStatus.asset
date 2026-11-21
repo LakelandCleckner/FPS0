@@ -13,14 +13,25 @@ MonoBehaviour:
   m_Name: ChillStatus
   m_EditorClassIdentifier: 
   keyword: {fileID: 11400000, guid: e6f2994121bc4a689f18ec5595d669b2, type: 2}
-  auraVfx: {fileID: 2987979887945417987, guid: 30311f0e7d5b3e04f9d1d9b728e6642c, type: 3}
-  tintAura: 1
-  auraScale: 0.8
+  auraVfx: {fileID: 5847538898688489390, guid: 00d6cce68d8a09a448fc9869292d88af, type: 3}
+  tintAura: 0
+  colorizeAura: 0
+  auraScale: 1
   auraOffset: {x: 0, y: 0, z: 0}
   endVfx: {fileID: 0}
   endVfxLifetime: 1.5
+  auraScalesWithStacks: 1
+  auraFullAtStacks: 10
+  auraEmitFrom: 2
+  previewStacks: 
+  overlayMaterial: {fileID: 2100000, guid: f9402da373e91bc43a2585139589b9ef, type: 2}
+  overlayScalesWithStacks: 1
   convertAtStacks: 5
   convertsTo: {fileID: 11400000, guid: 00935cade343416da63767f055416c3c, type: 2}
+  stunTime: 0
+  stagger: 0
+  heavyStagger: 0
+  knockback: 0
   modifierTargetStat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
   modifierBucket: mult
   modifierPerIntensity: -0.1

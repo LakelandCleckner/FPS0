@@ -40,6 +40,10 @@ namespace Combat.Status
         public AuraEmitFrom auraEmitFrom = AuraEmitFrom.Prefab;
         [Tooltip("Stack counts the enemy gallery shows for this status. Empty = up to 6 levels spread from 1 to the most it can show.")]
         public int[] previewStacks = new int[0];
+        [Tooltip("Drawn over the body while active (FPS0/StatusOverlay). Up to 3 layers, strongest first.")]
+        public Material overlayMaterial;
+        [Tooltip("Overlay strength follows stacks / max stacks; off = always full.")]
+        public bool overlayScalesWithStacks = true;
 
         [Header("Conversion")]
         [Tooltip("At this many stacks the status clears and applies Converts To instead (Chill into Freeze). 0 = never.")]

@@ -34,6 +34,18 @@ namespace Combat.Status
         private readonly Dictionary<StatusSO, GameObject> auras = new Dictionary<StatusSO, GameObject>();
         private readonly List<StatusSO> scratch = new List<StatusSO>(4);
         private StatusAura.BodyPoint[] hullPoints;
+        private StatusOverlay overlay;
+
+        private StatusOverlay Overlay()
+        {
+            if (overlay == null)
+            {
+                overlay = GetComponent<StatusOverlay>();
+                if (overlay == null) overlay = gameObject.AddComponent<StatusOverlay>();
+                overlay.Bind(this);
+            }
+            return overlay;
+        }
         private StatusAura.BodyPoint[] skinPoints;
 
         // Active Conductive status, or null.
@@ -138,6 +150,7 @@ namespace Combat.Status
         private void OnPoolStarted(StatusSO status)
         {
             if (status is ConductiveStatusSO c) Conductive = c;
+            if (status.overlayMaterial != null) Overlay().Add(status);
 
             if (status.auraVfx == null) return;
             Color tint = status.tintAura && status.damageType != null ? status.damageType.color : Color.clear;
@@ -172,6 +185,7 @@ namespace Combat.Status
         private void OnPoolEnded(StatusSO status, bool playEnd, bool deferRelease = false)
         {
             if (ReferenceEquals(Conductive, status)) Conductive = FindConductive();
+            if (overlay != null) overlay.Remove(status);
 
             if (auras.TryGetValue(status, out var fx))
             {

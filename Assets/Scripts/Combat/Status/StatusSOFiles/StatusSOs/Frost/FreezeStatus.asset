@@ -13,12 +13,19 @@ MonoBehaviour:
   m_Name: FreezeStatus
   m_EditorClassIdentifier: 
   keyword: {fileID: 11400000, guid: 6da0517e3c714a0f9a002a7af69c34d8, type: 2}
-  auraVfx: {fileID: 1198433312203469917, guid: 34b28b7ad9fce9c4a9ff7303607c2a65, type: 3}
-  tintAura: 1
-  auraScale: 0.35
+  auraVfx: {fileID: 5847538898688489390, guid: 00d6cce68d8a09a448fc9869292d88af, type: 3}
+  tintAura: 0
+  colorizeAura: 0
+  auraScale: 1
   auraOffset: {x: 0, y: 1, z: 0}
-  endVfx: {fileID: 5013003061549203214, guid: 2aa34b068c1a581478a60636f4fda771, type: 3}
+  endVfx: {fileID: 8484247064658278941, guid: c59bb949441174f4189a496d120400ba, type: 3}
   endVfxLifetime: 1.5
+  auraScalesWithStacks: 0
+  auraFullAtStacks: 10
+  auraEmitFrom: 2
+  previewStacks: 
+  overlayMaterial: {fileID: 2100000, guid: 607ea1a68de024441b1d11b1450485cb, type: 2}
+  overlayScalesWithStacks: 0
   convertAtStacks: 0
   convertsTo: {fileID: 0}
   stunTime: 1.5
