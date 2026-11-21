@@ -107,6 +107,37 @@ namespace Combat.Status.EditorTools
                 if (Replaceable(s.endVfx)) { s.endVfx = discharge; s.endVfxLifetime = 1f; }
             });
 
+            // ---- Fire ----
+            var burnMat = Overlay("Burn", 4, m =>
+            {
+                m.SetColor("_Color", new Color(2f, 0.7f, 0.15f, 1f));
+                m.SetColor("_EdgeColor", new Color(3f, 2f, 0.8f, 1f));
+                m.SetFloat("_Fill", 0.15f);
+                m.SetFloat("_RimPower", 1.8f);
+                m.SetFloat("_RimStrength", 1.6f);
+                m.SetFloat("_NoiseScale", 3f);
+                m.SetFloat("_NoiseSpeed", 1.2f);
+                m.SetFloat("_NoiseStrength", 0.3f);
+                m.SetFloat("_CrackScale", 6f);
+                m.SetFloat("_Sparkle", 1.5f);
+                m.SetFloat("_PulseSpeed", 1.5f);
+                m.SetFloat("_PulseAmount", 0.15f);
+            });
+            var flameTex = FlameTexture();
+            var burnAura = BurnFlames(dot, flameTex);
+            var burnOut = BurnOut(dot);
+
+            Wire("FireBurnStatus", s =>
+            {
+                Set(ref s.overlayMaterial, burnMat);
+                s.overlayScalesWithStacks = true;
+                s.fadeOutTime = 0.5f;
+                if (Replaceable(s.auraVfx)) { s.auraVfx = burnAura; s.auraScale = 1f; s.auraOffset = Vector3.up; s.tintAura = false; }
+                s.auraScalesWithStacks = true;
+                s.auraEmitFrom = AuraEmitFrom.Skin;
+                if (Replaceable(s.endVfx)) { s.endVfx = burnOut; s.endVfxLifetime = 2f; s.colorizeAura = false; }
+            });
+
             AssetDatabase.SaveAssets();
             Debug.Log(Tag + "Done.");
         }
@@ -126,7 +157,8 @@ namespace Combat.Status.EditorTools
             m.DisableKeyword("_MODE_CREEP");
             m.DisableKeyword("_MODE_CRACK");
             m.DisableKeyword("_MODE_ARC");
-            m.EnableKeyword(mode == 1 ? "_MODE_CREEP" : mode == 2 ? "_MODE_CRACK" : mode == 3 ? "_MODE_ARC" : "_MODE_RIM");
+            m.DisableKeyword("_MODE_BURN");
+            m.EnableKeyword(mode == 1 ? "_MODE_CREEP" : mode == 2 ? "_MODE_CRACK" : mode == 3 ? "_MODE_ARC" : mode == 4 ? "_MODE_BURN" : "_MODE_RIM");
             setup(m);
             AssetDatabase.CreateAsset(m, path);
             Debug.Log(Tag + "Created " + path);
@@ -270,6 +302,120 @@ namespace Combat.Status.EditorTools
             r.lengthScale = 1f;
         }
 
+        // Flame licks, embers and smoke off the skin; each follows the stack share on its own curve.
+        private static GameObject BurnFlames(Texture2D dot, Texture2D flame)
+        {
+            string path = PrefabDir + "/BurnFlames.prefab";
+            var existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (existing != null) return existing;
+
+            var root = new GameObject("BurnFlames");
+            var flames = Emitter(root, AdditiveMaterial("Flame", flame), 70f, 250);
+            FlameLook(flames, 0.35f, 0.6f, 0.18f, 0.35f);
+            Curve(root, 0f, 1.5f);
+
+            var embersGo = new GameObject("Embers");
+            embersGo.transform.SetParent(root.transform, false);
+            var embers = Emitter(embersGo, AdditiveMaterial("Spark", dot), 14f, 120);
+            EmberLook(embers, 0.8f, 1.6f, 0.2f, 0.6f);
+            Curve(embersGo, 0f, 1f);
+
+            var smokeGo = new GameObject("Smoke");
+            smokeGo.transform.SetParent(root.transform, false);
+            var smoke = Emitter(smokeGo, AlphaMaterial("Mist", dot), 8f, 80);
+            SmokeLook(smoke, 1.2f, 2f, 0.3f, 0.5f);
+            Curve(smokeGo, 0.5f, 1f);
+            return Save(root, path);
+        }
+
+        // Smoke puff and a few embers when the last stack burns out.
+        private static GameObject BurnOut(Texture2D dot)
+        {
+            string path = PrefabDir + "/BurnOut.prefab";
+            var existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (existing != null) return existing;
+
+            var root = new GameObject("BurnOut");
+            var smoke = Burst(root, AlphaMaterial("Mist", dot), 8);
+            SmokeLook(smoke, 1f, 1.6f, 0.35f, 0.6f);
+            var shape = smoke.shape;
+            shape.shapeType = ParticleSystemShapeType.Sphere;
+            shape.radius = 0.35f;
+
+            var embersGo = new GameObject("Embers");
+            embersGo.transform.SetParent(root.transform, false);
+            var embers = Burst(embersGo, AdditiveMaterial("Spark", dot), 15);
+            EmberLook(embers, 0.6f, 1.2f, 0.5f, 1.5f);
+            shape = embers.shape;
+            shape.shapeType = ParticleSystemShapeType.Sphere;
+            shape.radius = 0.35f;
+            return Save(root, path);
+        }
+
+        private static void Curve(GameObject go, float startAt, float power)
+        {
+            var c = go.AddComponent<AuraShareCurve>();
+            c.startAt = startAt;
+            c.power = power;
+        }
+
+        // Rising licks: grow then shrink, yellow to orange to deep red.
+        private static void FlameLook(ParticleSystem ps, float lifeMin, float lifeMax, float sizeMin, float sizeMax)
+        {
+            var main = ps.main;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(lifeMin, lifeMax);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(0f, 0.15f);
+            main.startSize = new ParticleSystem.MinMaxCurve(sizeMin, sizeMax);
+            main.startRotation = new ParticleSystem.MinMaxCurve(-0.2f, 0.2f);
+            main.gravityModifier = -0.8f;
+            main.startColor = Color.white;
+            var col = ps.colorOverLifetime;
+            col.enabled = true;
+            var g = new Gradient();
+            g.SetKeys(new[] { new GradientColorKey(new Color(1f, 0.9f, 0.5f), 0f), new GradientColorKey(new Color(1f, 0.45f, 0.1f), 0.45f), new GradientColorKey(new Color(0.6f, 0.1f, 0.02f), 1f) },
+                      new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.12f), new GradientAlphaKey(0.6f, 0.6f), new GradientAlphaKey(0f, 1f) });
+            col.color = new ParticleSystem.MinMaxGradient(g);
+            var sol = ps.sizeOverLifetime;
+            sol.enabled = true;
+            var k = new AnimationCurve(new Keyframe(0f, 0.6f), new Keyframe(0.3f, 1f), new Keyframe(1f, 0.2f));
+            sol.size = new ParticleSystem.MinMaxCurve(1f, k);
+        }
+
+        // Tiny bright specks drifting up with a wobble, orange cooling to red.
+        private static void EmberLook(ParticleSystem ps, float lifeMin, float lifeMax, float speedMin, float speedMax)
+        {
+            var main = ps.main;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(lifeMin, lifeMax);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(speedMin, speedMax);
+            main.startSize = new ParticleSystem.MinMaxCurve(0.01f, 0.025f);
+            main.gravityModifier = -0.25f;
+            main.startColor = Color.white;
+            var col = ps.colorOverLifetime;
+            col.enabled = true;
+            var g = new Gradient();
+            g.SetKeys(new[] { new GradientColorKey(new Color(1f, 0.75f, 0.3f), 0f), new GradientColorKey(new Color(1f, 0.3f, 0.05f), 0.6f), new GradientColorKey(new Color(0.5f, 0.05f, 0f), 1f) },
+                      new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 0.7f), new GradientAlphaKey(0f, 1f) });
+            col.color = new ParticleSystem.MinMaxGradient(g);
+            var noise = ps.noise;
+            noise.enabled = true;
+            noise.strength = 0.5f;
+            noise.frequency = 1f;
+            noise.scrollSpeed = 0.5f;
+        }
+
+        // Thin dark wisps that rise and spread.
+        private static void SmokeLook(ParticleSystem ps, float lifeMin, float lifeMax, float sizeMin, float sizeMax)
+        {
+            var main = ps.main;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(lifeMin, lifeMax);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(0f, 0.1f);
+            main.startSize = new ParticleSystem.MinMaxCurve(sizeMin, sizeMax);
+            main.gravityModifier = -0.15f;
+            main.startColor = new Color(0.12f, 0.1f, 0.09f, 1f);
+            Fade(ps, 0.35f);
+            Grow(ps, 2.5f);
+        }
+
         private static ParticleSystem Emitter(GameObject go, Material mat, float rate, int max)
         {
             var ps = Base(go, mat, max);
@@ -376,6 +522,32 @@ namespace Combat.Status.EditorTools
             if (m.HasProperty("_BaseMap")) m.SetTexture("_BaseMap", tex);
             AssetDatabase.CreateAsset(m, path);
             return m;
+        }
+
+        // Flame lick: rounded base, pointed top, soft edges. White; colour comes from the particle.
+        private static Texture2D FlameTexture()
+        {
+            string path = MatDir + "/FlameLick.asset";
+            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+            if (tex != null) return tex;
+            const int w = 64, h = 128;
+            tex = new Texture2D(w, h, TextureFormat.RGBA32, false) { name = "FlameLick", wrapMode = TextureWrapMode.Clamp };
+            var px = new Color[w * h];
+            for (int y = 0; y < h; y++)
+            {
+                float v = y / (float)(h - 1);
+                float rad = 0.9f * Mathf.Pow(1f - v, 0.8f) * Mathf.Sqrt(Mathf.Clamp01(v / 0.25f));
+                for (int x = 0; x < w; x++)
+                {
+                    float u = Mathf.Abs(x / (float)(w - 1) * 2f - 1f);
+                    float a = rad > 0f ? Mathf.Clamp01(1f - u / rad) : 0f;
+                    px[y * w + x] = new Color(1f, 1f, 1f, Mathf.Pow(a, 1.5f));
+                }
+            }
+            tex.SetPixels(px);
+            tex.Apply(false, false);
+            AssetDatabase.CreateAsset(tex, path);
+            return tex;
         }
 
         // Additive unlit particle material with the soft dot, so sparks glow.

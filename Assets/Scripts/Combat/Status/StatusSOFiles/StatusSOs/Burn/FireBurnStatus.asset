@@ -13,14 +13,26 @@ MonoBehaviour:
   m_Name: FireBurnStatus
   m_EditorClassIdentifier: 
   keyword: {fileID: 11400000, guid: d2efe690607ed554189dd53a537c3460, type: 2}
-  auraVfx: {fileID: 2692375763741349971, guid: a047b1cf5e54c6b43a92f67dd966d4b1, type: 3}
+  auraVfx: {fileID: 935176090689809444, guid: 97d59457eb920f44c9eaca4ee2ffa271, type: 3}
   tintAura: 0
-  auraScale: 0.8
-  auraOffset: {x: 0, y: 0, z: 0}
-  endVfx: {fileID: 0}
-  endVfxLifetime: 1.5
+  colorizeAura: 0
+  auraScale: 1
+  auraOffset: {x: 0, y: 1, z: 0}
+  endVfx: {fileID: 5528850911371181799, guid: 237ebd5112e91cd4cb5864120c53279a, type: 3}
+  endVfxLifetime: 2
+  auraScalesWithStacks: 1
+  auraFullAtStacks: 10
+  auraEmitFrom: 2
+  previewStacks: 
+  overlayMaterial: {fileID: 2100000, guid: 69d08e83d81ff8846868761ca4061583, type: 2}
+  overlayScalesWithStacks: 1
+  fadeOutTime: 0.5
   convertAtStacks: 0
   convertsTo: {fileID: 0}
+  stunTime: 0
+  stagger: 0
+  heavyStagger: 0
+  knockback: 0
   modifierTargetStat: {fileID: 0}
   modifierBucket: mult
   modifierPerIntensity: 0

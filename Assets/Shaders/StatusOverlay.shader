@@ -2,7 +2,7 @@ Shader "FPS0/StatusOverlay"
 {
     Properties
     {
-        [KeywordEnum(Rim, Creep, Crack, Arc)] _Mode("Mode", Float) = 0
+        [KeywordEnum(Rim, Creep, Crack, Arc, Burn)] _Mode("Mode", Float) = 0
         [HDR] _Color("Color", Color) = (1, 1, 1, 1)
         [HDR] _EdgeColor("Edge Color", Color) = (1, 1, 1, 1)
         _Intensity("Intensity", Range(0, 1)) = 1
@@ -46,7 +46,7 @@ Shader "FPS0/StatusOverlay"
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #pragma shader_feature_local _MODE_RIM _MODE_CREEP _MODE_CRACK _MODE_ARC
+            #pragma shader_feature_local _MODE_RIM _MODE_CREEP _MODE_CRACK _MODE_ARC _MODE_BURN
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
@@ -182,6 +182,22 @@ Shader "FPS0/StatusOverlay"
                 lit *= step(0.4, Hash21(float2(c.y * 17.0, floor(cyc))));
                 col = lerp(col, _EdgeColor.rgb, vein * lit);
                 a = (vein * lit * 1.5 + rim * _RimStrength * shade + _Fill * shade) * _Intensity;
+            #elif defined(_MODE_BURN)
+                // Heat licking up the body: world-space noise rising, reaching higher with stacks; scorch and embers past half.
+                float3 wp = i.positionWS;
+                float2 fuv = float2((wp.x + wp.z) * _NoiseScale, wp.y * _NoiseScale * 0.6 - t * _NoiseSpeed);
+                float fl = Noise(fuv) * 0.65 + Noise(fuv * 2.3 + 11.0) * 0.35;
+                float h = saturate((wp.y - _BaseY) / max(0.01, _Height));
+                float reach = lerp(0.35, 1.15, _Intensity);
+                float tongue = smoothstep(0.35, 0.75, fl + (reach - h) * 0.8);
+                float heat = tongue * (rim * _RimStrength + _Fill) * _Intensity * shade;
+                float scorch = smoothstep(0.55, 0.7, Noise(i.uv * _CrackScale)) * saturate(_Intensity * 2.0 - 0.8);
+                float sp = Hash21(floor(i.uv * 180.0));
+                float ember = step(0.97, sp) * scorch * (0.5 + 0.5 * sin(t * 3.0 + sp * 50.0));
+                col = lerp(_Color.rgb, _EdgeColor.rgb, saturate(tongue * rim * 2.0));
+                col = lerp(col, float3(0.03, 0.02, 0.015), scorch * (1.0 - tongue * 0.5));
+                col += _EdgeColor.rgb * ember * _Sparkle;
+                a = heat + scorch * 0.7 + ember;
             #else
                 a = (rim * _RimStrength * shade + _Fill * shade) * _Intensity;
             #endif

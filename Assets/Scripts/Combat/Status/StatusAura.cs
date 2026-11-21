@@ -26,6 +26,7 @@ namespace Combat.Status
         private ParticleSystem[] systems;
         private float[] baseRates;
         private float[] carry;
+        private AuraShareCurve[] curves;
         private StatusReceiver receiver;
         private StatusSO status;
         private BodyPoint[] points;
@@ -92,7 +93,7 @@ namespace Combat.Status
             for (int i = 0; i < systems.Length; i++)
             {
                 var em = systems[i].emission;
-                em.rateOverTimeMultiplier = baseRates[i] * share * fade;
+                em.rateOverTimeMultiplier = baseRates[i] * Share(i) * fade;
             }
         }
 
@@ -102,7 +103,7 @@ namespace Combat.Status
             float dt = Time.deltaTime;
             for (int i = 0; i < systems.Length; i++)
             {
-                carry[i] += baseRates[i] * share * fade * dt;
+                carry[i] += baseRates[i] * Share(i) * fade * dt;
                 if (carry[i] < 1f) continue;
 
                 var ps = systems[i];
@@ -123,6 +124,9 @@ namespace Combat.Status
             }
         }
 
+        // Stack share for one system, through its curve if it has one.
+        private float Share(int i) => curves[i] != null ? curves[i].Evaluate(share) : share;
+
         // Prefab rates, read once before anything changes them.
         private void Capture()
         {
@@ -130,7 +134,12 @@ namespace Combat.Status
             systems = GetComponentsInChildren<ParticleSystem>(true);
             baseRates = new float[systems.Length];
             carry = new float[systems.Length];
-            for (int i = 0; i < systems.Length; i++) baseRates[i] = systems[i].emission.rateOverTimeMultiplier;
+            curves = new AuraShareCurve[systems.Length];
+            for (int i = 0; i < systems.Length; i++)
+            {
+                baseRates[i] = systems[i].emission.rateOverTimeMultiplier;
+                curves[i] = systems[i].GetComponent<AuraShareCurve>();
+            }
         }
 
         // Area-weighted surface points on every readable convex hull under root. Empty if there are none.
