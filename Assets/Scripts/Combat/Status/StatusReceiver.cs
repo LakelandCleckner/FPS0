@@ -82,6 +82,11 @@ namespace Combat.Status
 
         public int Stacks(StatusSO status) => status != null && pools.TryGetValue(status, out var p) && !p.Expired ? p.EntryCount : 0;
 
+        public float Remaining(StatusSO status) => status != null && pools.TryGetValue(status, out var p) && !p.Expired ? p.Remaining : 0f;
+
+        // Fade-out strength for a status's visuals, seeded per enemy.
+        public float Fade(StatusSO status) => status != null ? status.FadeAt(Remaining(status), GetInstanceID()) : 1f;
+
         public void Apply(
             StatusSO status,
             IHitResolver resolver,

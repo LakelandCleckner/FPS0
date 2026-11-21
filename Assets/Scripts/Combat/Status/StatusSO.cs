@@ -44,6 +44,8 @@ namespace Combat.Status
         public Material overlayMaterial;
         [Tooltip("Overlay strength follows stacks / max stacks; off = always full.")]
         public bool overlayScalesWithStacks = true;
+        [Tooltip("Overlay and aura stutter out over this many final seconds. 0 = cut off.")]
+        [Min(0f)] public float fadeOutTime = 0f;
 
         [Header("Conversion")]
         [Tooltip("At this many stacks the status clears and applies Converts To instead (Chill into Freeze). 0 = never.")]
@@ -145,6 +147,16 @@ namespace Combat.Status
                 if (convertsTo != null && convertAtStacks > 0) m = Mathf.Min(m, convertAtStacks - 1);
                 return Mathf.Max(1, m);
             }
+        }
+
+        // Visual strength in the fade-out window: full, then flickering off more often as time runs out.
+        public float FadeAt(float remaining, int seed)
+        {
+            if (fadeOutTime <= 0f || remaining >= fadeOutTime) return 1f;
+            float r = Mathf.Clamp01(remaining / fadeOutTime);
+            uint h = (uint)(Mathf.FloorToInt(Time.time * 20f) * 73856093) ^ (uint)(seed * 19349663);
+            h ^= h >> 13; h *= 0x5bd1e995; h ^= h >> 15;
+            return (h & 1023) / 1023f < r ? Mathf.Lerp(0.35f, 1f, r) : 0f;
         }
 
         // Stack levels for previews: the custom list, else every level up to 6, else 6 spread evenly.

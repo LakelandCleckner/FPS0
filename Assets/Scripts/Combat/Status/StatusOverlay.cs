@@ -18,6 +18,7 @@ namespace Combat.Status
         private static readonly int IntensityId = Shader.PropertyToID("_Intensity");
         private static readonly int BaseYId = Shader.PropertyToID("_BaseY");
         private static readonly int HeightId = Shader.PropertyToID("_Height");
+        private static readonly int FadeId = Shader.PropertyToID("_Fade");
 
         private StatusReceiver receiver;
         private readonly List<SkinnedMeshRenderer> body = new List<SkinnedMeshRenderer>();
@@ -86,6 +87,7 @@ namespace Combat.Status
                 if (slot == null || slot.Status == null) continue;
                 float k = slot.Status.overlayScalesWithStacks ? Strength(slot.Status) : 1f;
                 int rank = order.IndexOf(slot.Status);
+                float fade = receiver != null ? receiver.Fade(slot.Status) : 1f;
                 foreach (var r in slot.Renderers)
                 {
                     if (r == null) continue;
@@ -93,6 +95,7 @@ namespace Combat.Status
                     block.SetFloat(IntensityId, k);
                     block.SetFloat(BaseYId, b.min.y);
                     block.SetFloat(HeightId, b.size.y);
+                    block.SetFloat(FadeId, fade);
                     r.SetPropertyBlock(block);
                     r.sortingOrder = MaxLayers - rank;
                 }

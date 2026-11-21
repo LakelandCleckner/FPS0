@@ -19,7 +19,7 @@ namespace Combat.Effects
             public LineRenderer Core;
             public LineRenderer Glow;
             public Vector3 From, To;
-            public float Born, NextFlicker;
+            public float Born, NextFlicker, Life, Jitter, Flicker;
             public Color Color;
         }
 
@@ -38,6 +38,10 @@ namespace Combat.Effects
 
         // Draws one arc. material null = an additive unlit line in the colour.
         public static void Draw(Vector3 from, Vector3 to, Color color, Material material)
+            => Draw(from, to, color, material, 1f, 1f, Life, FlickerInterval);
+
+        // Width and jitter are multipliers on the chain-arc defaults; life and reshape interval in seconds.
+        public static void Draw(Vector3 from, Vector3 to, Color color, Material material, float width, float jitter, float life, float reshape)
         {
             if (instance == null)
             {
@@ -45,10 +49,10 @@ namespace Combat.Effects
                 DontDestroyOnLoad(go);
                 instance = go.AddComponent<ArcVfx>();
             }
-            instance.Spawn(from, to, color, material);
+            instance.Spawn(from, to, color, material, width, jitter, life, reshape);
         }
 
-        private void Spawn(Vector3 from, Vector3 to, Color color, Material material)
+        private void Spawn(Vector3 from, Vector3 to, Color color, Material material, float width, float jitter, float life, float reshape)
         {
             var arc = free.Count > 0 ? free.Pop() : Create();
             var mat = material != null ? material : LineMaterial();
@@ -59,6 +63,11 @@ namespace Combat.Effects
             arc.Color = color;
             arc.Born = Time.time;
             arc.NextFlicker = 0f;
+            arc.Life = Mathf.Max(0.02f, life);
+            arc.Jitter = Jitter * jitter;
+            arc.Flicker = Mathf.Max(0.01f, reshape);
+            arc.Core.widthMultiplier = CoreWidth * width;
+            arc.Glow.widthMultiplier = GlowWidth * width;
             Shape(arc);
             SetColor(arc, 1f);
             arc.Core.gameObject.SetActive(true);
@@ -72,7 +81,7 @@ namespace Combat.Effects
             for (int i = live.Count - 1; i >= 0; i--)
             {
                 var arc = live[i];
-                float a = 1f - (now - arc.Born) / Life;
+                float a = 1f - (now - arc.Born) / arc.Life;
                 if (a > 0f)
                 {
                     if (now >= arc.NextFlicker) Shape(arc);
@@ -102,7 +111,7 @@ namespace Combat.Effects
                 Vector3 p = arc.From + dir * t;
                 if (i > 0 && i < Points - 1)
                 {
-                    float k = Mathf.Sin(t * Mathf.PI) * Jitter;
+                    float k = Mathf.Sin(t * Mathf.PI) * arc.Jitter;
                     p += side * Random.Range(-k, k) + up * Random.Range(-k, k);
                 }
                 buffer[i] = p;
@@ -111,7 +120,7 @@ namespace Combat.Effects
             arc.Core.SetPositions(buffer);
             arc.Glow.positionCount = Points;
             arc.Glow.SetPositions(buffer);
-            arc.NextFlicker = Time.time + FlickerInterval;
+            arc.NextFlicker = Time.time + arc.Flicker;
         }
 
         private Arc Create()

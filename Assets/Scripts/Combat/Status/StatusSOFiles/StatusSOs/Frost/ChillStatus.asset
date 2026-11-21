@@ -26,6 +26,7 @@ MonoBehaviour:
   previewStacks: 
   overlayMaterial: {fileID: 2100000, guid: f9402da373e91bc43a2585139589b9ef, type: 2}
   overlayScalesWithStacks: 1
+  fadeOutTime: 0
   convertAtStacks: 5
   convertsTo: {fileID: 11400000, guid: 00935cade343416da63767f055416c3c, type: 2}
   stunTime: 0

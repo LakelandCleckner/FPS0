@@ -30,7 +30,14 @@ namespace Combat.Status
         private StatusSO status;
         private BodyPoint[] points;
         private float share = 1f;
+        private float fade = 1f;
         private int shown = -1;
+
+        public StatusReceiver Receiver => receiver;
+        public StatusSO Status => status;
+        public BodyPoint[] Points => points;
+        // Fade-out strength this frame, 1 outside the fade window.
+        public float Fade => fade;
 
         public void Bind(StatusReceiver r, StatusSO s, BodyPoint[] body)
         {
@@ -40,6 +47,7 @@ namespace Combat.Status
             points = body != null && body.Length > 0 ? body : null;
             shown = -1;
             share = 1f;
+            fade = 1f;
 
             for (int i = 0; i < systems.Length; i++)
             {
@@ -48,7 +56,7 @@ namespace Combat.Status
                 carry[i] = 0f;
             }
 
-            enabled = s.auraScalesWithStacks || points != null;
+            enabled = s.auraScalesWithStacks || points != null || s.fadeOutTime > 0f;
             if (!s.auraScalesWithStacks) SetRates(1f);
             else Refresh();
         }
@@ -56,6 +64,11 @@ namespace Combat.Status
         private void Update()
         {
             if (status.auraScalesWithStacks) Refresh();
+            if (status.fadeOutTime > 0f && receiver != null)
+            {
+                float f = receiver.Fade(status);
+                if (f != fade) { fade = f; Apply(); }
+            }
             if (points != null) EmitOnBody();
         }
 
@@ -70,11 +83,16 @@ namespace Combat.Status
         private void SetRates(float f)
         {
             share = f;
+            Apply();
+        }
+
+        private void Apply()
+        {
             if (points != null) return;
             for (int i = 0; i < systems.Length; i++)
             {
                 var em = systems[i].emission;
-                em.rateOverTimeMultiplier = baseRates[i] * f;
+                em.rateOverTimeMultiplier = baseRates[i] * share * fade;
             }
         }
 
@@ -84,7 +102,7 @@ namespace Combat.Status
             float dt = Time.deltaTime;
             for (int i = 0; i < systems.Length; i++)
             {
-                carry[i] += baseRates[i] * share * dt;
+                carry[i] += baseRates[i] * share * fade * dt;
                 if (carry[i] < 1f) continue;
 
                 var ps = systems[i];

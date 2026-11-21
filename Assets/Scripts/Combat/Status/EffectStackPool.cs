@@ -73,6 +73,19 @@ namespace Combat.Status
 
         public int EntryCount => entries.Count;
 
+        // Seconds until the pool runs out: the shared timer, else the longest entry.
+        public float Remaining
+        {
+            get
+            {
+                if (Expired) return 0f;
+                if (Status.durationMode == StatusDurationMode.ExtendShared) return sharedTimer;
+                float m = 0f;
+                for (int i = 0; i < entries.Count; i++) if (entries[i].RemainingDuration > m) m = entries[i].RemainingDuration;
+                return m;
+            }
+        }
+
         // Effective cap: authored maxEntries, else HardEntryCap
         public int EntryCap => Status != null && Status.maxEntries > 0 ? Status.maxEntries : HardEntryCap;
 

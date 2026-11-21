@@ -13,15 +13,26 @@ MonoBehaviour:
   m_Name: ConductiveStatus
   m_EditorClassIdentifier: 
   keyword: {fileID: 11400000, guid: 9b442ceac5234cfcaf64979838d0754b, type: 2}
-  auraVfx: {fileID: 207745087118991948, guid: e656699b143494148a872961a9feb410, type: 3}
+  auraVfx: {fileID: 8006289383473463843, guid: 7c0d970890aa2dc45b595a0b7b1149d0, type: 3}
   tintAura: 1
   colorizeAura: 1
-  auraScale: 0.8
-  auraOffset: {x: 0, y: 0, z: 0}
-  endVfx: {fileID: 0}
-  endVfxLifetime: 1.5
+  auraScale: 1
+  auraOffset: {x: 0, y: 1, z: 0}
+  endVfx: {fileID: 1706125447932319348, guid: 5e6ee583ae0ea3746b59941c1aab1d3e, type: 3}
+  endVfxLifetime: 1
+  auraScalesWithStacks: 0
+  auraFullAtStacks: 10
+  auraEmitFrom: 2
+  previewStacks: 
+  overlayMaterial: {fileID: 2100000, guid: 262af7d82378cf8458367d0c70124e53, type: 2}
+  overlayScalesWithStacks: 0
+  fadeOutTime: 1
   convertAtStacks: 0
   convertsTo: {fileID: 0}
+  stunTime: 0
+  stagger: 0
+  heavyStagger: 0
+  knockback: 0
   modifierTargetStat: {fileID: 0}
   modifierBucket: mult
   modifierPerIntensity: 0

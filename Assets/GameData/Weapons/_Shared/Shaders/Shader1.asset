@@ -24,7 +24,7 @@ MonoBehaviour:
   - zoneId: 2
     color: {r: 0.4188679, g: 0.4188679, b: 0.4188679, a: 1}
     recolor: 1
-    brightness: 1
+    brightness: 1.14
     metallic: 0.368
     smoothness: 0.245
     emission: {r: 0, g: 0, b: 0, a: 1}

@@ -71,6 +71,42 @@ namespace Combat.Status.EditorTools
                 if (Replaceable(s.endVfx)) { s.endVfx = shatter; s.endVfxLifetime = 1.5f; s.colorizeAura = false; }
             });
 
+            // ---- Shock ----
+            var conductive = Find("ConductiveStatus");
+            Color shock = conductive != null && conductive.damageType != null ? conductive.damageType.color : new Color(0.55f, 0.75f, 1f);
+            var conductiveMat = Overlay("Conductive", 3, m =>
+            {
+                var c = shock * 1.5f; c.a = 0.7f;
+                var e = Color.Lerp(shock, Color.white, 0.5f) * 4f; e.a = 1f;
+                m.SetColor("_Color", c);
+                m.SetColor("_EdgeColor", e);
+                m.SetFloat("_Fill", 0.06f);
+                m.SetFloat("_RimPower", 3f);
+                m.SetFloat("_RimStrength", 1.4f);
+                m.SetFloat("_NoiseScale", 6f);
+                m.SetFloat("_NoiseSpeed", 0.3f);
+                m.SetFloat("_NoiseStrength", 0.5f);
+                m.SetFloat("_Flicker", 0f);
+                m.SetFloat("_FlickerRate", 6f);
+                m.SetFloat("_CrackScale", 7f);
+                m.SetFloat("_CrackWidth", 0.05f);
+                m.SetFloat("_ArcRate", 0.9f);
+                m.SetFloat("_ArcCoverage", 0.35f);
+            });
+            var sparks = ConductiveSparks(dot);
+            var discharge = Discharge(dot);
+
+            Wire("ConductiveStatus", s =>
+            {
+                Set(ref s.overlayMaterial, conductiveMat);
+                s.overlayScalesWithStacks = false;
+                s.fadeOutTime = 1f;
+                if (Replaceable(s.auraVfx)) { s.auraVfx = sparks; s.auraScale = 1f; s.auraOffset = Vector3.up; s.tintAura = true; s.colorizeAura = true; }
+                s.auraScalesWithStacks = false;
+                s.auraEmitFrom = AuraEmitFrom.Skin;
+                if (Replaceable(s.endVfx)) { s.endVfx = discharge; s.endVfxLifetime = 1f; }
+            });
+
             AssetDatabase.SaveAssets();
             Debug.Log(Tag + "Done.");
         }
@@ -89,7 +125,8 @@ namespace Combat.Status.EditorTools
             m.DisableKeyword("_MODE_RIM");
             m.DisableKeyword("_MODE_CREEP");
             m.DisableKeyword("_MODE_CRACK");
-            m.EnableKeyword(mode == 1 ? "_MODE_CREEP" : mode == 2 ? "_MODE_CRACK" : "_MODE_RIM");
+            m.DisableKeyword("_MODE_ARC");
+            m.EnableKeyword(mode == 1 ? "_MODE_CREEP" : mode == 2 ? "_MODE_CRACK" : mode == 3 ? "_MODE_ARC" : "_MODE_RIM");
             setup(m);
             AssetDatabase.CreateAsset(m, path);
             Debug.Log(Tag + "Created " + path);
@@ -164,6 +201,73 @@ namespace Combat.Status.EditorTools
             Fade(puff, 0.6f);
             Grow(puff, 1.8f);
             return Save(root, path);
+        }
+
+        // Sparks off the skin plus crawling skin arcs; tinted to the element on spawn.
+        private static GameObject ConductiveSparks(Texture2D dot)
+        {
+            string path = PrefabDir + "/ConductiveSparks.prefab";
+            var existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (existing != null) return existing;
+
+            var root = new GameObject("ConductiveSparks");
+            var ps = Emitter(root, AdditiveMaterial("Spark", dot), 6f, 300);
+            SparkLook(ps, 0.06f, 0.15f, 3f, 6f, 0.008f, 0.016f, 0.2f);
+            root.AddComponent<StatusAura>();
+            var arcs = root.AddComponent<SkinArcs>();
+            arcs.sparks = ps;
+            return Save(root, path);
+        }
+
+        // Spark burst and a quick flash when Conductive runs out.
+        private static GameObject Discharge(Texture2D dot)
+        {
+            string path = PrefabDir + "/ConductiveDischarge.prefab";
+            var existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (existing != null) return existing;
+
+            var root = new GameObject("ConductiveDischarge");
+            var add = AdditiveMaterial("Spark", dot);
+            var burst = Burst(root, add, 40);
+            SparkLook(burst, 0.1f, 0.25f, 4f, 9f, 0.01f, 0.02f, 0.3f);
+            var shape = burst.shape;
+            shape.shapeType = ParticleSystemShapeType.Sphere;
+            shape.radius = 0.35f;
+
+            var flashGo = new GameObject("Flash");
+            flashGo.transform.SetParent(root.transform, false);
+            var flash = Burst(flashGo, add, 1);
+            var main = flash.main;
+            main.startLifetime = 0.12f;
+            main.startSpeed = 0f;
+            main.startSize = 1.2f;
+            main.startColor = new Color(1f, 1f, 1f, 0.8f);
+            var fshape = flash.shape;
+            fshape.enabled = false;
+            Fade(flash, 1f);
+            Grow(flash, 1.5f);
+            return Save(root, path);
+        }
+
+        // Fast, short-lived thin streaks with little fall.
+        private static void SparkLook(ParticleSystem ps, float lifeMin, float lifeMax, float speedMin, float speedMax, float sizeMin, float sizeMax, float gravity)
+        {
+            var main = ps.main;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(lifeMin, lifeMax);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(speedMin, speedMax);
+            main.startSize = new ParticleSystem.MinMaxCurve(sizeMin, sizeMax);
+            main.gravityModifier = gravity;
+            main.startColor = Color.white;
+            var col = ps.colorOverLifetime;
+            col.enabled = true;
+            var g = new Gradient();
+            g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                      new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 0.6f), new GradientAlphaKey(0f, 1f) });
+            col.color = new ParticleSystem.MinMaxGradient(g);
+            var r = ps.GetComponent<ParticleSystemRenderer>();
+            r.renderMode = ParticleSystemRenderMode.Stretch;
+            r.velocityScale = 0.03f;
+            r.lengthScale = 1f;
         }
 
         private static ParticleSystem Emitter(GameObject go, Material mat, float rate, int max)
@@ -274,13 +378,37 @@ namespace Combat.Status.EditorTools
             return m;
         }
 
+        // Additive unlit particle material with the soft dot, so sparks glow.
+        private static Material AdditiveMaterial(string name, Texture2D tex)
+        {
+            string path = MatDir + "/Particle_" + name + ".mat";
+            var m = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (m != null) return m;
+            m = new Material(Shader.Find("Universal Render Pipeline/Particles/Unlit"));
+            SetF(m, "_Surface", 1f);
+            SetF(m, "_Blend", 2f);
+            SetF(m, "_SrcBlend", (float)BlendMode.SrcAlpha);
+            SetF(m, "_DstBlend", (float)BlendMode.One);
+            SetF(m, "_ZWrite", 0f);
+            m.SetOverrideTag("RenderType", "Transparent");
+            m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            m.EnableKeyword("_BLENDMODE_ADD");
+            m.renderQueue = (int)RenderQueue.Transparent;
+            if (m.HasProperty("_BaseMap")) m.SetTexture("_BaseMap", tex);
+            AssetDatabase.CreateAsset(m, path);
+            return m;
+        }
+
         // ------------------------------------------------------------------ wiring
+
+        private static StatusSO Find(string assetName)
+            => AssetDatabase.FindAssets(assetName)
+                .Select(g => AssetDatabase.LoadAssetAtPath<StatusSO>(AssetDatabase.GUIDToAssetPath(g)))
+                .FirstOrDefault(s => s != null && s.name == assetName);
 
         private static void Wire(string assetName, System.Action<StatusSO> setup)
         {
-            var status = AssetDatabase.FindAssets(assetName)
-                .Select(g => AssetDatabase.LoadAssetAtPath<StatusSO>(AssetDatabase.GUIDToAssetPath(g)))
-                .FirstOrDefault(s => s != null && s.name == assetName);
+            var status = Find(assetName);
             if (status == null) { Debug.LogWarning(Tag + "No status named " + assetName); return; }
             setup(status);
             EditorUtility.SetDirty(status);
