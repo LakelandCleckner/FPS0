@@ -26,6 +26,7 @@ namespace Combat.Enemies
         private EnemyLootDropper loot;
         private WeaponHitResolver resolver;
         private EnemyShield shield;
+        private ShieldVisual shieldVisual;
         private Renderer[] renderers;
         private MaterialPropertyBlock block;
         private Vector3 authoredScale;
@@ -342,6 +343,12 @@ namespace Combat.Enemies
 
             if (so != null && shield == null) shield = gameObject.AddComponent<EnemyShield>();
             if (shield != null) shield.Configure(so, health, stats, resolver);
+            if (shield != null)
+            {
+                if (shieldVisual == null) shieldVisual = GetComponent<ShieldVisual>();
+                if (shieldVisual == null) shieldVisual = gameObject.AddComponent<ShieldVisual>();
+                shieldVisual.Bind(shield, health);
+            }
             if (health != null) health.Absorber = so != null ? shield : null;
             Shield = so != null ? shield : null;
         }

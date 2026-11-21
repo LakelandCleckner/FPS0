@@ -23,6 +23,7 @@ public class EnemyEffectsGalleryWindow : EditorWindow
     private List<StatusSO> statuses = new List<StatusSO>();
     private List<WeaponSO> weapons = new List<WeaponSO>();
     private List<ExplosionOnKillSO> explosions = new List<ExplosionOnKillSO>();
+    private List<EnemyModifierSO> shieldLayers = new List<EnemyModifierSO>();
     private List<Body> bodies = new List<Body>();
     private WeaponStatKeys statKeys;
 
@@ -31,6 +32,7 @@ public class EnemyEffectsGalleryWindow : EditorWindow
     private int status;
     private int body;
     private int explosion;
+    private int shieldLayer;
     private Vector2 scroll;
 
     [MenuItem("FPS0/Enemies/Gallery Window", priority = 2)]
@@ -45,6 +47,7 @@ public class EnemyEffectsGalleryWindow : EditorWindow
         weapons = Find<WeaponSO>();
         explosions = Find<ExplosionOnKillSO>();
         statKeys = Find<WeaponStatKeys>().FirstOrDefault();
+        shieldLayers = Find<EnemyModifierSO>().Where(m => m.shield != null).ToList();
 
         // Abstract type: a typed search misses some statuses, so scan every ScriptableObject.
         statuses = new List<StatusSO>();
@@ -110,6 +113,7 @@ public class EnemyEffectsGalleryWindow : EditorWindow
 
         var ex = explosions.Where(x => x.damageType == Element).ToList();
         explosion = EditorGUILayout.Popup(new GUIContent("Kill Explosion", "On-kill explosion added to Kill."), Mathf.Min(explosion, ex.Count), new[] { "None" }.Concat(ex.Select(x => x.name)).ToArray());
+        shieldLayer = EditorGUILayout.Popup(new GUIContent("Shield", "Shield layer added to every enemy in the lineup."), Mathf.Min(shieldLayer, shieldLayers.Count), new[] { "None" }.Concat(shieldLayers.Select(m => m.name)).ToArray());
     }
 
     private void Build(ref EnemyEffectsGallery g)
@@ -136,6 +140,8 @@ public class EnemyEffectsGalleryWindow : EditorWindow
 
         var ex = explosions.Where(x => x.damageType == Element).ToList();
         g.KillExplosion = explosion > 0 && explosion <= ex.Count ? ex[explosion - 1] : null;
+        g.ExtraLayers.Clear();
+        if (shieldLayer > 0 && shieldLayer <= shieldLayers.Count) g.ExtraLayers.Add(shieldLayers[shieldLayer - 1]);
         g.Build(ws[Mathf.Min(weapon, ws.Count - 1)], statKeys, rows);
         if (g.Rows.Count > 0) g.Frame(g.Rows[0]);
     }
@@ -151,6 +157,11 @@ public class EnemyEffectsGalleryWindow : EditorWindow
             if (GUILayout.Button("Arc")) g.ArcAll();
             if (GUILayout.Button("Convert")) g.ConvertAll();
             if (GUILayout.Button("Kill")) g.KillAll();
+        }
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            if (GUILayout.Button("Break Shields")) g.BreakShields();
+            if (GUILayout.Button("Restore Shields")) g.RestoreShields();
         }
         using (new EditorGUILayout.HorizontalScope())
         {

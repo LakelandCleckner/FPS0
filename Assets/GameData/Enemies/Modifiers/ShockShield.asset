@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8799c60dfae24c4f8bf138ad70bae8ab, type: 3}
+  m_Name: ShockShield
+  m_EditorClassIdentifier: 
+  element: {fileID: 11400000, guid: 8337384683ac3314180ba08185f989f2, type: 2}
+  percentOfMaxHealth: 0.5
+  matchingMultiplier: 2
+  otherMultiplier: 1
+  rechargeDelay: 4
+  rechargeTime: 2
+  breakEffect: {fileID: 0}
+  breakEffectOnlyOnMatch: 1
+  fallbackColor: {r: 0.4, g: 0.8, b: 1, a: 1}
+  shellVfx: {fileID: 8838651023955842426, guid: 9df1846e5602ba745aa8ad5459f0b017, type: 3}
+  shellPadding: 0.25
+  hitVfx: {fileID: 5516909348777827945, guid: 74063644c9d7113489125ff248b3b45b, type: 3}
+  hitVfxLifetime: 1
+  hitVfxScale: 0.5
+  hitVfxInterval: 0.08
+  tintVfx: 1
+  colorizeVfx: 1
+  flickerBelow: 0.25

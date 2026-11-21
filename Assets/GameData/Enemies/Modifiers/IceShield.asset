@@ -21,3 +21,12 @@ MonoBehaviour:
   breakEffect: {fileID: 11400000, guid: bfd24fba14d842bbbf22a3ed600744a9, type: 2}
   breakEffectOnlyOnMatch: 1
   fallbackColor: {r: 0.4, g: 0.8, b: 1, a: 1}
+  shellVfx: {fileID: 81933613947909230, guid: 6b7dea97682a0964aa0623171f06d228, type: 3}
+  shellPadding: 0.25
+  hitVfx: {fileID: 222112914830861744, guid: 251762c738505364d8b334778aef2675, type: 3}
+  hitVfxLifetime: 1
+  hitVfxScale: 0.5
+  hitVfxInterval: 0.08
+  tintVfx: 1
+  colorizeVfx: 0
+  flickerBelow: 0.25

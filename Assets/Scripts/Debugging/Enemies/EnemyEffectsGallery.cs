@@ -49,6 +49,8 @@ public class EnemyEffectsGallery : MonoBehaviour
     public float BlastRadius = 3f;
     public float RespawnDelay = 3f;
     public ExplosionOnKillSO KillExplosion;
+    [Tooltip("Layers added to every enemy in the lineup, e.g. a shield.")]
+    public List<EnemyModifierSO> ExtraLayers = new List<EnemyModifierSO>();
 
     [Header("Loop")]
     public bool HoldStatuses = true;
@@ -162,10 +164,7 @@ public class EnemyEffectsGallery : MonoBehaviour
 
         var applier = go.GetComponent<EnemyDefinitionApplier>();
         if (applier != null)
-        {
-            if (row.Variant != null) applier.SetVariant(row.Variant);
-            else if (row.Archetype != null) applier.SetArchetype(row.Archetype);
-        }
+            applier.SetDefinition(new EnemySpawnDef(row.Variant, row.Variant == null ? row.Archetype : null, ExtraLayers));
         foreach (var b in go.GetComponentsInChildren<Behaviour>(true))
             if (Frozen.Contains(b.GetType().Name)) b.enabled = false;
 
@@ -295,6 +294,11 @@ public class EnemyEffectsGallery : MonoBehaviour
     public void BlastRow(Row r) { foreach (var s in r.Slots) Blast(s); }
     public void ConvertRow(Row r) { if (r.Slots.Count > 0) Convert(r.Slots[r.Slots.Count - 1]); }
     public void KillRow(Row r) { foreach (var s in r.Slots) Kill(s); }
+
+    public void BreakShields() => ForEach(s => { var sh = Shield(s); if (sh != null) sh.ForceBreak(); });
+    public void RestoreShields() => ForEach(s => { var sh = Shield(s); if (sh != null) sh.Restore(); });
+
+    private static EnemyShield Shield(Slot s) => Alive(s) ? s.Go.GetComponentInChildren<EnemyShield>() : null;
 
     public void ResetStatuses()
     {

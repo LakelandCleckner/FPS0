@@ -33,6 +33,24 @@ namespace Combat.Enemies
         [Tooltip("Used when there's no element.")]
         public Color fallbackColor = new Color(0.4f, 0.8f, 1f, 1f);
 
+        [Header("VFX")]
+        [Tooltip("Shell around the body (FPS0/Art/Build Shield VFX). Empty = no shell.")]
+        public GameObject shellVfx;
+        [Tooltip("Gap between the body and the shell (m).")]
+        [Min(0f)] public float shellPadding = 0.25f;
+        [Tooltip("Plays where a shot hits the shield.")]
+        public GameObject hitVfx;
+        [Min(0.05f)] public float hitVfxLifetime = 1f;
+        [Min(0.01f)] public float hitVfxScale = 0.5f;
+        [Tooltip("Fewest seconds between hit effects.")]
+        [Min(0f)] public float hitVfxInterval = 0.08f;
+        [Tooltip("Tint the shell, hits and pop to the shield colour.")]
+        public bool tintVfx = true;
+        [Tooltip("Also tint white and grey parts.")]
+        public bool colorizeVfx = false;
+        [Tooltip("Below this fill the shell flickers at random, more as it drops. 0 = never.")]
+        [Range(0f, 1f)] public float flickerBelow = 0.25f;
+
         public Color Color => element != null ? element.color : fallbackColor;
 
         public void Describe(Describer d)
