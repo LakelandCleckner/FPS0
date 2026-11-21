@@ -36,6 +36,7 @@ public class EnemyEffectsGallery : MonoBehaviour
         public StatusReceiver Receiver;
         public EnemyHitbox Torso;
         public bool Killing;
+        public bool Tough;
         public float RespawnAt;
         public string Label;
     }
@@ -80,6 +81,8 @@ public class EnemyEffectsGallery : MonoBehaviour
     private GUIStyle labelStyle;
     private GUIStyle rowStyle;
 
+    private static readonly FieldInfo MaxHealthField = typeof(CombatantHealth).GetField("maxHealthStat", BindingFlags.NonPublic | BindingFlags.Instance);
+
     public static string StatusName(StatusSO s)
     {
         if (s == null) return "None";
@@ -108,14 +111,16 @@ public class EnemyEffectsGallery : MonoBehaviour
             var row = rows[r];
             if (row.Status == null || row.Prefab == null) continue;
             int max = row.Status.AuraMaxStacks;
-            float x0 = -(max - 1) * Spacing * 0.5f;
-            for (int k = 1; k <= max; k++)
+            var levels = row.Status.PreviewLevels();
+            float x0 = -(levels.Count - 1) * Spacing * 0.5f;
+            for (int j = 0; j < levels.Count; j++)
             {
+                int k = levels[j];
                 var slot = new Slot
                 {
                     Row = row,
                     Stacks = k,
-                    Local = new Vector3(x0 + (k - 1) * Spacing, 0f, Rows.Count * RowSpacing),
+                    Local = new Vector3(x0 + j * Spacing, 0f, Rows.Count * RowSpacing),
                     Label = StatusName(row.Status) + " " + k + "/" + max
                 };
                 row.Slots.Add(slot);
@@ -175,6 +180,18 @@ public class EnemyEffectsGallery : MonoBehaviour
         foreach (var hb in go.GetComponentsInChildren<EnemyHitbox>())
             if (slot.Torso == null || hb.bodyPart == BodyPart.Torso) { slot.Torso = hb; if (hb.bodyPart == BodyPart.Torso) break; }
         slot.Killing = false;
+        slot.Tough = false;
+    }
+
+    // x1000 max health so even max-stack ticks can't kill between top-ups. Kill still works.
+    private void MakeTough(Slot s)
+    {
+        var stats = s.Go.GetComponentInChildren<Combat.Stats.CombatantStats>();
+        var stat = s.Health != null ? MaxHealthField?.GetValue(s.Health) as Combat.Stats.StatDefinitionSO : null;
+        if (stats == null || stats.Container == null || stat == null) return;
+        stats.Container.AddModifier(new Combat.Stats.StatModifier(stat, Combat.Stats.StatResolver.MULTIPLICATIVE, 999f), this);
+        s.Health.Heal(s.Health.MaxHealth);
+        s.Tough = true;
     }
 
     private void Respawn(Slot slot)
@@ -208,6 +225,7 @@ public class EnemyEffectsGallery : MonoBehaviour
                     s.RespawnAt = now + RespawnDelay;
                     continue;
                 }
+                if (!s.Tough) MakeTough(s);
                 if (s.Health != null && !s.Health.IsDying && s.Health.CurrentHealth < s.Health.MaxHealth * 0.5f)
                     s.Health.Heal(s.Health.MaxHealth);
                 if (!HoldStatuses || s.Receiver == null) continue;

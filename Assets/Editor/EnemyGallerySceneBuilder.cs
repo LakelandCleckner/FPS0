@@ -14,7 +14,7 @@ public static class EnemyGallerySceneBuilder
     private const string ScenePath = "Assets/Scenes/EnemyGallery.unity";
     private const string FloorPath = "Assets/Scenes/EnemyGallery_Floor.mat";
     private const string ManagerScenePath = "Assets/Scenes/EncounterTest.unity";
-    private static readonly string[] Managers = { "StatsManager", "StatusManager", "DamageNumberPool", "DamageAccumulatorRegistry" };
+    private static readonly string[] Managers = { "StatsManager", "StatusManager", "DamageNumberPool", "DamageAccumulatorRegistry", "GOAPManager" };
 
     [MenuItem("FPS0/Enemies/Gallery Scene", priority = 1)]
     private static void Open()

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Combat.Core;
 using Combat.Stats;
@@ -37,6 +38,8 @@ namespace Combat.Status
         [Min(1)] public int auraFullAtStacks = 10;
         [Tooltip("Prefab: the aura's own shape. Hulls: points on the hit hulls. Skin: baked skin points (falls back to Hulls).")]
         public AuraEmitFrom auraEmitFrom = AuraEmitFrom.Prefab;
+        [Tooltip("Stack counts the enemy gallery shows for this status. Empty = up to 6 levels spread from 1 to the most it can show.")]
+        public int[] previewStacks = new int[0];
 
         [Header("Conversion")]
         [Tooltip("At this many stacks the status clears and applies Converts To instead (Chill into Freeze). 0 = never.")]
@@ -138,6 +141,31 @@ namespace Combat.Status
                 if (convertsTo != null && convertAtStacks > 0) m = Mathf.Min(m, convertAtStacks - 1);
                 return Mathf.Max(1, m);
             }
+        }
+
+        // Stack levels for previews: the custom list, else every level up to 6, else 6 spread evenly.
+        public List<int> PreviewLevels()
+        {
+            int max = AuraMaxStacks;
+            var levels = new List<int>();
+            if (previewStacks != null && previewStacks.Length > 0)
+            {
+                foreach (int n in previewStacks)
+                {
+                    int c = Mathf.Clamp(n, 1, max);
+                    if (!levels.Contains(c)) levels.Add(c);
+                }
+                levels.Sort();
+                return levels;
+            }
+            const int Most = 6;
+            if (max <= Most) { for (int i = 1; i <= max; i++) levels.Add(i); return levels; }
+            for (int i = 0; i < Most; i++)
+            {
+                int c = Mathf.Max(1, Mathf.RoundToInt(Mathf.Lerp(1f, max, i / (float)(Most - 1))));
+                if (!levels.Contains(c)) levels.Add(c);
+            }
+            return levels;
         }
 
         // Numbers for this status: damage per tick and in total, stat change, duration and stacking.
