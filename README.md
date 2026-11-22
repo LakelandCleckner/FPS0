@@ -2,7 +2,7 @@
 
 A first-person shooter built solo in Unity, focused on data-driven combat systems: a stat and modifier engine, a single damage pipeline, status effects, rolled loot with perks, and GOAP enemy AI.
 
-Internal development builds only; nothing has been released. Current version: **0.0.11** (see [CHANGELOG.md](CHANGELOG.md)).
+Internal development builds only; nothing has been released. Current version: **0.0.17** (see [CHANGELOG.md](CHANGELOG.md)).
 
 ## Highlights
 
@@ -16,11 +16,15 @@ Internal development builds only; nothing has been released. Current version: **
 
 **Per-owner event bus.** Hit, kill, ammo, reload and swap events per combatant, filtered by hit source so DOT ticks don't trigger on-hit perks by accident. Nothing polls.
 
-**Weapons.** Type, archetype and weapon layers; fire behaviour (auto, semi, burst) and delivery (hitscan, projectile, pellets) as independent axes. Range falloff, bullet magnetism and precision are per-archetype bands driven by stats.
+**Weapons.** Type, archetype and weapon layers; fire behaviour (auto, semi, burst) and delivery (hitscan, projectile, pellets) as independent axes. Range falloff, bullet magnetism, precision and recoil are per-archetype bands driven by stats. 22 archetypes and 110 named weapons, each archetype in all five elements with its own signature intrinsics.
+
+**Elements.** Five damage types with their own identities and statuses: Ballistic Fracture into Break, Fire Burn, Frost Chill into Freeze, Shock Conductive arcs, Toxic Poison. Every status has custom body overlays and auras that scale with stacks, and shots carry element tracers and trails.
 
 **Loot.** Owned weapons and armor are instances with rolled perks. Five rarity tiers decide how many trait columns roll and at which tier; enemies drop rolled items, and overflow goes to a vault.
 
-**Enemy AI.** CrashKonijn GOAP over NavMesh, with brain-owned perception (sight cone, sense radius, damage and gunfire reactions), a direct rush with flanking, lunging melee attacks, pooling with a full reset contract, and ragdoll deaths with persistent corpses.
+**Enemies.** An enemy is an archetype plus rank, element and trait layers composed at spawn, so any body can take any element, shield or death effect. Ranks scale stats and tactics and show on overhead health bars; shields absorb, overflow and break with element blasts.
+
+**Enemy AI.** CrashKonijn GOAP over NavMesh with planner-chosen goals and code-built capabilities from behaviour profiles: melee hordes with attack tokens, kamikazes, ranged shooters that use automatic cover, peek, strafe, suppress and dodge, and squads with leader, flanker and suppressor roles. Encounter rooms spawn squads through doors in budgeted waves, and can be generated procedurally. Hit reactions, staggers, pooling with a full reset contract and ragdoll deaths with persistent corpses.
 
 ## Systems
 
@@ -28,28 +32,33 @@ Internal development builds only; nothing has been released. Current version: **
 | --- | --- |
 | Stats | Stat definitions and registry, bucketed resolution, derived modifiers, per-stat clamps, stat breakdowns |
 | Combat | Resolver chokepoint, keyed damage derivations, crit, per-type resistance and vulnerability, damage types as assets, chain and AoE primitives, on-kill explosions |
-| Status | Central ticker, stack pools, stat-modifier statuses, on-kill status transfer, multi-source kill credit |
-| Weapons | 12 archetypes across sidearm, rifle, SMG and shotgun; burst, pellets, per-shell reload, range falloff, aim assist, precision |
+| Status | Central ticker, stack pools, stat-modifier statuses, conversion at a stack count, stun, stagger and knockback, on-kill status transfer, multi-source kill credit, stack-scaled overlays and auras |
+| Weapons | 22 archetypes and 110 named weapons across sidearm, rifle, SMG and shotgun; burst, pellets, per-shell reload, range falloff, aim assist, precision, recoil patterns; rounds, element tracers and trails |
 | Player | Stat-driven movement, ADS with FOV-matched sensitivity, crouch, shared first-person arms rig, third-person body with procedural weapon handling, mesh-fit hitboxes |
 | Loadout | Three weapon slots and five armor slots, carried inventory, vault, slot rules, loadout locks |
-| Perks | Recipe and runtime split, listen scopes, timed buffs, stat, effect and triggered perk types, rolled columns by rarity |
+| Perks | Recipe and runtime split, listen scopes, timed buffs, 14 perk types including hit conditions, mag refills, armed buffs and status triggers; archetype and weapon intrinsics; rolled columns by rarity and element |
 | Loot | Loot tables, rarity weights, world drops, pickup toasts |
-| AI | GOAP goals, actions and sensors, perception, rush and flank movement, melee with lunges, ragdolls, pooled spawning |
-| UI | Inventory screen with loadout, character and vault tabs, stat tooltips, filters and search; health bar, perk tracker, damage indicator; floating damage numbers |
+| Enemies | Archetypes with rank, element and trait layers, zone recolour, overhead health bars, shields, death blasts and hazard pools, hit reactions and staggers, ragdolls, pooled spawning |
+| AI | GOAP with behaviour profiles, attack tokens, melee, kamikaze, ranged combat with cover, strafing, suppression and dodges, rank tactics, squads |
+| Encounters | Encounter rooms, waves, spawn doors, procedural room generator |
+| UI | Loot-card inventory screen with loadout, character and vault tabs, drag and drop, generated descriptions with keyword popups, stat tooltips, filters and search, gamepad navigation; health bar, perk tracker, damage indicator; floating damage numbers |
 | Input | One input router for gameplay, menus, UI and debug actions, with saved binding overrides |
-| Tools | Pellet pattern editor, falloff test lane, weapon zone editor, item, perk and pool batch editors, GOAP capability builder, hitbox and third-person setup tools |
+| Tools | FPS0 menu: pellet pattern and recoil pattern editors, falloff test lane, zone editor, item, perk and pool batch editors, Perk Audit and Perk Lab, Enemy Workshop and gallery, Enemy Squads and Encounter Rooms windows, status and shield VFX builders, hitbox and third-person setup tools |
 
 ## Project layout
 
 ```
 Assets/Scripts/Combat     stats, resolver, effects, status, weapons, perks, loadout, loot, spawning
-Assets/Scripts/AI         GOAP goals, actions, sensors and behaviours
-Assets/Scripts/Enemies    melee, ragdoll, crowding, loot dropping
+Assets/Scripts/AI         perception, mover, brain, cover, squads, GOAP planning
+Assets/Scripts/Enemies    definitions, melee and ranged attacks, shields, death effects, ragdoll
+Assets/Scripts/Encounters encounter rooms, waves, spawn doors, room generator
+Assets/Scripts/Zones      zone sets and look presets shared by guns and enemies
 Assets/Scripts/PlayerScripts  movement, aim, crouch, input, third-person body
 Assets/Scripts/UI         inventory screen, HUD, UI kit
 Assets/Scripts/Weapons    viewmodel rig and gun models
 Assets/Editor             authoring and setup tools
-Assets/GameData           stat, weapon, armor, perk and loot assets
+Assets/GameData           stat, weapon, armor, perk, enemy and loot assets
+Assets/Shaders            zone, enemy, status overlay and shield shaders
 ```
 
 ## Tech
@@ -61,7 +70,7 @@ Assets/GameData           stat, weapon, armor, perk and loot assets
 
 ## Roadmap
 
-Enemy variants (elite, miniboss, elemental) and squads, a debug panel, reflex sights and recoil, an item icon generator, a third-person camera with melee weapons, factions, and save data.
+Elemental enemy attacks, player-side status visuals, a debug panel, reflex sights, an item icon generator, a third-person camera with melee weapons, factions, and save data.
 
 ## Third-party assets
 
@@ -72,7 +81,10 @@ Enemy variants (elite, miniboss, elemental) and squads, a debug panel, reflex si
 | Massive Crosshair Bundle | OccaSoftware | Unity Asset Store EULA |
 | Starter Assets | Unity Technologies | Unity Companion License |
 | Characters and animations (Ch15, Ch44 and animation packs) | [Mixamo](https://www.mixamo.com) (Adobe) | Mixamo terms |
-| Nunito, Space Mono, Yatra One | Google Fonts | SIL Open Font License 1.1 |
+| Nunito, Space Mono, Yatra One, Zeyada, Cinzel | Google Fonts | SIL Open Font License 1.1 |
+| Redaction | Forest Young and Jeremy Mickel | SIL Open Font License 1.1 |
+| Human Animations | Kevin Iglesias | Unity Asset Store EULA |
+| Elemental VFX and shields (bases for the element, status and shield effects) | PixPlays | Unity Asset Store EULA |
 | CrashKonijn GOAP | [crashkonijn](https://github.com/crashkonijn/GOAP) | Apache License 2.0 |
 | Scene Ref Attribute | [KyleBanks](https://github.com/KyleBanks/scene-ref-attribute) | See package |
 | Sizzle cymbal (poison hitmarker) | [pjcohen](https://freesound.org/s/147039/) on Freesound | Freesound license (see link) |
