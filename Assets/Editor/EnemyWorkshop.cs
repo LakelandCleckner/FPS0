@@ -1,19 +1,16 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
 using Combat.Enemies;
 
-// One window for enemy definitions: browse every archetype, modifier and variant, generate
-// tier x type variant matrices, and find broken or duplicate definitions.
+// One window for enemy definitions: browse every archetype, modifier and hand-made variant, and find broken or duplicate definitions.
 public class EnemyWorkshop : EditorWindow
 {
-    private enum Tab { Browse, Matrix, Cleanup }
+    private enum Tab { Browse, Cleanup }
     private enum Filter { All, Archetypes, TierModifiers, ElementModifiers, OtherModifiers, Variants }
 
-    private static readonly string[] TabNames = { "Browse", "Variant Matrix", "Cleanup" };
+    private static readonly string[] TabNames = { "Browse", "Cleanup" };
 
     private Tab tab;
     private readonly List<EnemyArchetypeSO> archetypes = new List<EnemyArchetypeSO>();
@@ -27,14 +24,6 @@ public class EnemyWorkshop : EditorWindow
     private Object selected;
     private Editor selectedEditor;
     private Vector2 listScroll, inspectorScroll;
-
-    // Matrix
-    private EnemyArchetypeSO matrixArch;
-    private bool includeMinor = true;
-    private bool includeBase = true;
-    private readonly HashSet<EnemyModifierSO> tierPicks = new HashSet<EnemyModifierSO>();
-    private readonly HashSet<EnemyModifierSO> typePicks = new HashSet<EnemyModifierSO>();
-    private Vector2 matrixScroll;
 
     // Cleanup
     private Vector2 cleanupScroll;
@@ -68,7 +57,6 @@ public class EnemyWorkshop : EditorWindow
         Load(archetypes);
         Load(modifiers);
         Load(variants);
-        if (matrixArch == null && archetypes.Count > 0) matrixArch = archetypes[0];
         if (selected == null && selectedEditor != null) { DestroyImmediate(selectedEditor); selectedEditor = null; }
     }
 
@@ -87,7 +75,7 @@ public class EnemyWorkshop : EditorWindow
     {
         using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
         {
-            tab = (Tab)GUILayout.Toolbar((int)tab, TabNames, EditorStyles.toolbarButton, GUILayout.Width(330f));
+            tab = (Tab)GUILayout.Toolbar((int)tab, TabNames, EditorStyles.toolbarButton, GUILayout.Width(220f));
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Refresh", EditorStyles.toolbarButton, GUILayout.Width(60f))) Refresh();
         }
@@ -95,7 +83,6 @@ public class EnemyWorkshop : EditorWindow
         switch (tab)
         {
             case Tab.Browse: DrawBrowse(); break;
-            case Tab.Matrix: DrawMatrix(); break;
             case Tab.Cleanup: DrawCleanup(); break;
         }
     }
@@ -187,176 +174,6 @@ public class EnemyWorkshop : EditorWindow
         Repaint();
     }
 
-    // ------------------------------------------------------------------ matrix
-
-    private void DrawMatrix()
-    {
-        matrixScroll = EditorGUILayout.BeginScrollView(matrixScroll);
-
-        matrixArch = (EnemyArchetypeSO)EditorGUILayout.ObjectField("Archetype", matrixArch, typeof(EnemyArchetypeSO), false);
-        if (matrixArch == null)
-        {
-            EditorGUILayout.HelpBox("Pick an archetype.", MessageType.Info);
-            EditorGUILayout.EndScrollView();
-            return;
-        }
-
-        var tiers = modifiers.Where(m => m.kind == EnemyModifierKind.Tier).OrderBy(m => (int)m.raiseRankTo).ToList();
-        var types = modifiers.Where(m => m.kind != EnemyModifierKind.Tier).ToList();
-
-        EditorGUILayout.Space(4f);
-        EditorGUILayout.LabelField("Tiers", EditorStyles.boldLabel);
-        using (new EditorGUILayout.HorizontalScope())
-        {
-            includeMinor = GUILayout.Toggle(includeMinor, "Minor (none)", GUILayout.Width(110f));
-            foreach (var t in tiers) Pick(tierPicks, t, t.name);
-            GUILayout.FlexibleSpace();
-        }
-
-        EditorGUILayout.Space(4f);
-        EditorGUILayout.LabelField("Types", EditorStyles.boldLabel);
-        includeBase = GUILayout.Toggle(includeBase, "Base (none)");
-        int perRow = Mathf.Max(1, (int)((position.width - 20f) / 170f));
-        for (int i = 0; i < types.Count; i += perRow)
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                for (int j = i; j < Mathf.Min(i + perRow, types.Count); j++) Pick(typePicks, types[j], types[j].name);
-                GUILayout.FlexibleSpace();
-            }
-
-        // Grid: rows = types, columns = tiers.
-        var cols = new List<EnemyModifierSO>();
-        if (includeMinor) cols.Add(null);
-        cols.AddRange(tiers.Where(tierPicks.Contains));
-        var rows = new List<EnemyModifierSO>();
-        if (includeBase) rows.Add(null);
-        rows.AddRange(types.Where(typePicks.Contains));
-
-        EditorGUILayout.Space(8f);
-        EditorGUILayout.LabelField("Result", EditorStyles.boldLabel);
-        if (cols.Count == 0 || rows.Count == 0)
-        {
-            EditorGUILayout.HelpBox("Tick at least one tier and one type.", MessageType.Info);
-            EditorGUILayout.EndScrollView();
-            return;
-        }
-
-        int create = 0;
-        using (new EditorGUILayout.HorizontalScope())
-        {
-            GUILayout.Label("", GUILayout.Width(150f));
-            foreach (var c in cols) GUILayout.Label(c != null ? c.name : "Minor", EditorStyles.miniBoldLabel, GUILayout.Width(90f));
-        }
-        foreach (var r in rows)
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.Label(r != null ? r.name : "Base", GUILayout.Width(150f));
-                foreach (var c in cols)
-                {
-                    var existing = Find(matrixArch, c, r);
-                    var prev = GUI.color;
-                    GUI.color = existing != null ? new Color(0.6f, 1f, 0.6f) : new Color(1f, 0.9f, 0.5f);
-                    if (GUILayout.Button(existing != null ? "exists" : "new", EditorStyles.miniButton, GUILayout.Width(90f)) && existing != null)
-                    {
-                        tab = Tab.Browse;
-                        Select(existing);
-                    }
-                    GUI.color = prev;
-                    if (existing == null) create++;
-                }
-            }
-
-        EditorGUILayout.Space(6f);
-        EditorGUILayout.LabelField("Saved to: " + Folder(matrixArch), EditorStyles.miniLabel);
-        using (new EditorGUI.DisabledScope(create == 0))
-            if (GUILayout.Button(create > 0 ? $"Generate {create} variant{(create == 1 ? "" : "s")}" : "Nothing to generate", GUILayout.Height(26f)))
-                Generate(matrixArch, cols, rows);
-
-        EditorGUILayout.EndScrollView();
-    }
-
-    private static void Pick(HashSet<EnemyModifierSO> set, EnemyModifierSO m, string label)
-    {
-        bool on = set.Contains(m);
-        bool now = GUILayout.Toggle(on, label, GUILayout.Width(165f));
-        if (now && !on) set.Add(m);
-        if (!now && on) set.Remove(m);
-    }
-
-    // A variant matches when it has the same archetype and exactly the same modifiers, in any order.
-    private EnemyVariantSO Find(EnemyArchetypeSO arch, EnemyModifierSO tier, EnemyModifierSO type)
-    {
-        var want = new HashSet<EnemyModifierSO>();
-        if (tier != null) want.Add(tier);
-        if (type != null) want.Add(type);
-        foreach (var v in variants)
-        {
-            if (v.archetype != arch) continue;
-            var have = new HashSet<EnemyModifierSO>(v.modifiers.Where(m => m != null));
-            if (have.SetEquals(want) && have.Count == v.modifiers.Count) return v;
-        }
-        return null;
-    }
-
-    private void Generate(EnemyArchetypeSO arch, List<EnemyModifierSO> cols, List<EnemyModifierSO> rows)
-    {
-        string folder = Folder(arch);
-        string prefix = Prefix(arch);
-        var made = new List<Object>();
-
-        AssetDatabase.StartAssetEditing();
-        try
-        {
-            foreach (var r in rows)
-                foreach (var c in cols)
-                {
-                    if (Find(arch, c, r) != null) continue;
-
-                    string name = prefix + (r != null ? "_" + r.name : "") + "_" + (c != null ? c.name : "Minor");
-                    string path = AssetDatabase.GenerateUniqueAssetPath($"{folder}/{name}.asset");
-
-                    var v = CreateInstance<EnemyVariantSO>();
-                    v.archetype = arch;
-                    if (c != null) v.modifiers.Add(c);
-                    if (r != null) v.modifiers.Add(r);
-                    v.id = Snake(prefix) + (r != null ? "_" + Snake(r.name) : "") + "_" + (c != null ? Snake(c.name) : "minor");
-                    AssetDatabase.CreateAsset(v, path);
-                    made.Add(v);
-                }
-        }
-        finally
-        {
-            AssetDatabase.StopAssetEditing();
-        }
-
-        AssetDatabase.SaveAssets();
-        Refresh();
-        Debug.Log($"[EnemyWorkshop] Generated {made.Count} variant(s) in {folder}.");
-    }
-
-    private static string Folder(EnemyArchetypeSO arch) => Path.GetDirectoryName(AssetDatabase.GetAssetPath(arch)).Replace('\\', '/');
-
-    // "AlienZombie_Archetype" -> "AlienZombie".
-    private static string Prefix(EnemyArchetypeSO arch)
-    {
-        string n = arch.name;
-        return n.EndsWith("_Archetype") ? n.Substring(0, n.Length - "_Archetype".Length) : n;
-    }
-
-    // "FireVolatile" -> "fire_volatile", "AlienZombie" -> "alien_zombie".
-    private static string Snake(string s)
-    {
-        var sb = new StringBuilder();
-        for (int i = 0; i < s.Length; i++)
-        {
-            char ch = s[i];
-            if (ch == ' ' || ch == '-' || ch == '_') { if (sb.Length > 0 && sb[sb.Length - 1] != '_') sb.Append('_'); continue; }
-            if (char.IsUpper(ch) && i > 0 && sb.Length > 0 && sb[sb.Length - 1] != '_' && !char.IsUpper(s[i - 1])) sb.Append('_');
-            sb.Append(char.ToLowerInvariant(ch));
-        }
-        return sb.ToString();
-    }
-
     // ------------------------------------------------------------------ cleanup
 
     private class Problem
@@ -384,19 +201,6 @@ public class EnemyWorkshop : EditorWindow
                     EditorApplication.delayCall += () => { fix(); Refresh(); Repaint(); };
                 }
             }
-
-        var unused = modifiers.Where(m => !variants.Any(v => v.modifiers.Contains(m))).ToList();
-        if (unused.Count > 0)
-        {
-            EditorGUILayout.Space(8f);
-            EditorGUILayout.LabelField("Modifiers no variant uses (info)", EditorStyles.boldLabel);
-            foreach (var m in unused)
-                using (new EditorGUILayout.HorizontalScope())
-                {
-                    EditorGUILayout.LabelField(m.name);
-                    if (GUILayout.Button("Ping", GUILayout.Width(50f))) EditorGUIUtility.PingObject(m);
-                }
-        }
         EditorGUILayout.EndScrollView();
     }
 

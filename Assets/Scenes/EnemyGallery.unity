@@ -1063,6 +1063,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f9e62731c2f724419c0efadaa067215, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  archetype: {fileID: 0}
+  rank: 0
+  layers: []
+  rowPerLayer: 1
+  handMade: 1
   spacing: 2.5
   rowSpacing: 5
   showLabels: 1

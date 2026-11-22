@@ -53,7 +53,7 @@ namespace Combat.Enemies
             float t = blast.fuse > 0f ? Mathf.Clamp01(time / blast.fuse) : 1f;
             float flash = 0.5f + 0.5f * Mathf.Sin(time * Mathf.Lerp(10f, 40f, t));
             shape.transform.localScale = Vector3.one * (blast.radius * 2f * Mathf.Lerp(0.2f, 0.5f, t));
-            var c = blast.Color;
+            var c = blast.ColorFor(damage.Type);
             c.a = Mathf.Lerp(0.2f, 0.8f, flash);
             HazardTargets.Tint(shape, block, c);
         }

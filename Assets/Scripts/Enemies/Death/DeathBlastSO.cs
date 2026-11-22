@@ -58,8 +58,9 @@ namespace Combat.Enemies
             d.Add(lead);
             if (fuse > 0f) d.Add("after ").Seconds(fuse, "fuse").Add(", ");
             d.Keyword("explode", "explodes").Add(" in a ").Meters(radius, "radius").Add(" radius");
-            if (damage.Any) { d.Add(" for "); damage.Describe(d); if (edgeDamage < 1f) d.Add(" (").Percent(edgeDamage, "edge").Add(" at the edge)"); }
+            if (damage.Any) { d.Add(" for "); damage.Describe(d, "damage", useEnemyElement); if (edgeDamage < 1f) d.Add(" (").Percent(edgeDamage, "edge").Add(" at the edge)"); }
             if (applyStatus != null) d.Add(", applying ").StatusLink(applyStatus);
+            else if (useEnemyElement) d.Add(", applying its element's status");
             if (slow > 0f) d.Add(", ").Keyword("slow", "slowing").Add(" by ").Percent(slow, "slow").Add(" for ").Seconds(slowDuration, "slowTime");
             d.Add(".");
             DescribeTargets(d);
@@ -67,7 +68,7 @@ namespace Combat.Enemies
 
         public override void Trigger(in DeathEffectContext ctx)
         {
-            var dmg = damage.Resolve(ctx);
+            var dmg = damage.Resolve(ctx, ElementFor(ctx, damage.type));
             var at = new DeathEffectContext(ctx.Position + Vector3.up * heightOffset, ctx.Owner, ctx.Resolver);
             if (fuse > 0f) DeathBlastFuse.Begin(this, at, dmg);
             else Detonate(at, dmg);
@@ -76,7 +77,7 @@ namespace Combat.Enemies
         public void Detonate(in DeathEffectContext ctx, DeathDamage.Resolved dmg)
         {
             Vector3 c = ctx.Position;
-            SpawnVfx(c);
+            SpawnVfx(c, dmg.Type);
             EnemyRagdoll.Blast(c, radius);
 
             // Local list: a kill here can set off another death effect mid-loop.
@@ -84,7 +85,8 @@ namespace Combat.Enemies
             DeathEffectTargets.Find(c, radius, this, ctx.Owner, found);
             if (found.Count == 0) return;
 
-            if (applyStatus != statusFor) { statusFor = applyStatus; statusEffect = applyStatus != null ? new ApplyStatusHitEffect(applyStatus) : null; }
+            var status = StatusFor(dmg.Type, applyStatus);
+            if (status != statusFor) { statusFor = status; statusEffect = status != null ? new ApplyStatusHitEffect(status) : null; }
 
             for (int i = 0; i < found.Count; i++)
             {
@@ -92,28 +94,27 @@ namespace Combat.Enemies
                 float k = Mathf.Clamp01(Vector3.Distance(c, t.Point) / Mathf.Max(0.01f, radius));
                 var effects = new List<IHitEffect>(2) { new DamageHitEffect(dmg.Spec(Mathf.Lerp(1f, edgeDamage, k))) };
                 if (statusEffect != null) effects.Add(statusEffect);
-                DeathEffectTargets.Hit(ctx, this, t, effects, damage.type);
+                DeathEffectTargets.Hit(ctx, this, t, effects, dmg.Type);
                 if (slow > 0f && !t.Combatant.IsDying) TimedSlow.Apply(t.Combatant.Stats, slowStat, slow, slowDuration, this);
             }
         }
 
         // Damage type colour at this asset's opacity.
-        public Color Color
+        public Color Color => ColorFor(damage.type);
+
+        public Color ColorFor(DamageTypeSO type)
         {
-            get
-            {
-                var c = !overrideColor && damage.type != null ? damage.type.color : color;
-                c.a = color.a;
-                return c;
-            }
+            var c = !overrideColor && type != null ? type.color : color;
+            c.a = color.a;
+            return c;
         }
 
-        private void SpawnVfx(Vector3 c)
+        private void SpawnVfx(Vector3 c, DamageTypeSO type)
         {
-            if (blastVfx == null) { BlastPlaceholderVfx.Spawn(c, radius, vfxLifetime, Color); return; }
+            if (blastVfx == null) { BlastPlaceholderVfx.Spawn(c, radius, vfxLifetime, ColorFor(type)); return; }
             var fx = Instantiate(blastVfx, c, Quaternion.identity);
             if (tintVfx && overrideColor) VfxTint.Apply(fx, new Color(color.r, color.g, color.b, 1f));
-            else if (tintVfx && damage.type != null) VfxTint.Apply(fx, damage.type.color);
+            else if (tintVfx && type != null) VfxTint.Apply(fx, type.color);
             if (vfxReferenceRadius > 0f) fx.transform.localScale = blastVfx.transform.localScale * (radius / vfxReferenceRadius);
             if (vfxLifetime > 0f) Destroy(fx, Mathf.Max(vfxLifetime, 2f));
         }

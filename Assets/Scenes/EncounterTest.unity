@@ -1568,20 +1568,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb00f20c17dcce845aac1053266e423b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  types: []
   variants:
-  - variant: {fileID: 11400000, guid: 91705cf51fcbdef4e87c7170e5668658, type: 2}
-    archetype: {fileID: 0}
-    prewarm: 3
-  - variant: {fileID: 11400000, guid: 037306af97b64250a63803ae193af914, type: 2}
-    archetype: {fileID: 0}
-    prewarm: 3
-  - variant: {fileID: 11400000, guid: 6688678af3124c61b94de741acb31c1c, type: 2}
-    archetype: {fileID: 0}
-    prewarm: 3
-  - variant: {fileID: 11400000, guid: 746be6500dde4f0c8029628aa601b975, type: 2}
-    archetype: {fileID: 0}
-    prewarm: 3
+  - variant: {fileID: 0}
+    archetype: {fileID: 11400000, guid: 8fa0625f1cf517c419a1a444cfe9843d, type: 2}
+    prewarm: 12
   poolParent: {fileID: 0}
 --- !u!4 &427031536
 Transform:

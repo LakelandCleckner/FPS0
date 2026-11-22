@@ -4,39 +4,25 @@ using Combat.Enemies;
 
 namespace Combat.Spawning
 {
-    // Owns a pool per enemy type and exposes spawning. Two layers:
-    //   Spawn      — the PRIMITIVE: one enemy of a type at an exact position. Every
-    //                other spawn form is built on this.
-    //   SpawnGroup — X of one type scattered around a point, the form you'll usually
-    //                call. Loops the primitive with a placement offset so they don't
-    //                stack.
-    // A future squad layer loops SpawnGroup/Spawn per member; because Spawn returns the
-    // instance, a squad can track membership.
+    // Owns one pool per body prefab and spawns enemy definitions (archetype plus layers) from them.
+    //   Spawn      - one enemy at an exact position; every other form is built on it.
+    //   SpawnGroup - several of one definition scattered around a point, fighting as a squad.
+    //   SpawnSquad - a mixed squad asset.
     public class EnemySpawner : MonoBehaviour
     {
-        [System.Serializable]
-        public struct EnemyType
-        {
-            [Tooltip("Identifier used to spawn this type (e.g. \"Grunt\").")]
-            public string id;
-            public GameObject prefab;
-        }
-
-        // One enemy definition: a variant, or a plain archetype when no variant is set.
+        // A body to pool ahead of time: an archetype, or a hand-made variant.
         [System.Serializable]
         public struct VariantEntry
         {
+            [Tooltip("Hand-made enemy. Takes priority over Archetype.")]
             public EnemyVariantSO variant;
-            [Tooltip("Used when Variant is empty: the archetype with no modifier layers.")]
+            [Tooltip("Used when Variant is empty.")]
             public EnemyArchetypeSO archetype;
             [Tooltip("Instances created at scene start so first spawns don't hitch.")]
             [Min(0)] public int prewarm;
         }
 
-        [Header("Registered enemy types")]
-        [SerializeField] private EnemyType[] types;
-
-        [Header("Registered variants (one pool per body)")]
+        [Header("Bodies to prewarm (one pool per body)")]
         [Tooltip("Spawning anything unlisted still works; its body's pool is created on first use. Prewarm adds to the body's pool.")]
         [SerializeField] private VariantEntry[] variants;
 
@@ -52,21 +38,6 @@ namespace Combat.Spawning
 
         private void Awake()
         {
-            var parent = poolParent != null ? poolParent : transform;
-            if (types != null)
-            {
-                foreach (var t in types)
-                {
-                    if (t.prefab == null || string.IsNullOrEmpty(t.id)) continue;
-                    if (poolsById.ContainsKey(t.id))
-                    {
-                        Debug.LogWarning($"[EnemySpawner] Duplicate type id '{t.id}', ignoring.");
-                        continue;
-                    }
-                    poolsById[t.id] = new EnemyPool(t.prefab, parent);
-                }
-            }
-
             if (variants != null)
                 foreach (var v in variants)
                     RegisterBody(new EnemySpawnDef(v.variant, v.archetype));
@@ -152,7 +123,7 @@ namespace Combat.Spawning
             return id;
         }
 
-        // THE PRIMITIVE — one enemy of a type at a position. Returns the handle so a
+        // THE PRIMITIVE - one enemy of a type at a position. Returns the handle so a
         // caller (a squad, an encounter) can track what it spawned. Null if the type
         // id isn't registered.
         public EnemyPoolHandle Spawn(string typeId, Vector3 position, Quaternion rotation, System.Action<GameObject> prepare = null)
@@ -180,7 +151,7 @@ namespace Combat.Spawning
             => Spawn(typeId, position, Quaternion.identity);
 
         // X of ONE type scattered in a radius around a center, so they don't spawn
-        // inside each other. Random-within-radius placement — the simplest strategy;
+        // inside each other. Random-within-radius placement - the simplest strategy;
         // authored spawn points or formations can layer on later without changing the
         // primitive. Returns the spawned handles for tracking.
         public List<EnemyPoolHandle> SpawnGroup(
@@ -225,7 +196,7 @@ namespace Combat.Spawning
         }
 
         // Return a spawned enemy to its pool. The caller (or the enemy's own death
-        // handler) invokes this AFTER any on-death reactions have run — the pool's
+        // handler) invokes this AFTER any on-death reactions have run - the pool's
         // Return then resets and deactivates, in that order.
         public void Despawn(string typeId, EnemyPoolHandle handle)
         {
@@ -233,12 +204,12 @@ namespace Combat.Spawning
             if (poolsById.TryGetValue(typeId, out var pool))
                 pool.Return(handle);
             else
-                Debug.LogError($"[EnemySpawner] Can't despawn — no pool for id '{typeId}'.");
+                Debug.LogError($"[EnemySpawner] Can't despawn - no pool for id '{typeId}'.");
         }
 
         // Random horizontal offset within the radius, on the same Y as the center so
         // enemies don't spawn in the air or in the floor. NavMesh sampling would make
-        // this robust on uneven ground — a later refinement.
+        // this robust on uneven ground - a later refinement.
         private static Vector3 ScatterOffset(float radius)
         {
             if (radius <= 0f) return Vector3.zero;

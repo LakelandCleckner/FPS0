@@ -15,22 +15,30 @@ MonoBehaviour:
   id: 
   displayName: 
   members:
-  - variant: {fileID: 11400000, guid: 2637c1cf973f4f4681cfc254ccae9a9d, type: 2}
+  - variant: {fileID: 0}
+    archetype: {fileID: 11400000, guid: f150ad1e4b4544ca86c39732f5aa8fc4, type: 2}
     extraModifiers:
-    - {fileID: 11400000, guid: 3c51cf66a63b40f9b42af1151a5268d6, type: 2}
+    - {fileID: 11400000, guid: 94ee5400543c4ce09bb00e418f77698e, type: 2}
+    - {fileID: 11400000, guid: 60f7113de6432724c8f42d477b5b38a3, type: 2}
     count: 4
     leader: 0
-  - variant: {fileID: 11400000, guid: 2acc34cf77db46898b4339769e55fee8, type: 2}
-    extraModifiers: []
+  - variant: {fileID: 0}
+    archetype: {fileID: 11400000, guid: 3027274360ff4b568578412019dacbe0, type: 2}
+    extraModifiers:
+    - {fileID: 11400000, guid: 042c8777afbb4081976e85611a672c48, type: 2}
     count: 1
     leader: 1
-  - variant: {fileID: 11400000, guid: 6fb86ec905774aef8a9d1c42f11c0636, type: 2}
+  - variant: {fileID: 0}
+    archetype: {fileID: 11400000, guid: 3027274360ff4b568578412019dacbe0, type: 2}
     extraModifiers:
+    - {fileID: 11400000, guid: f74683459f84ba346b133a6c66549780, type: 2}
     - {fileID: 11400000, guid: 58ec003c204f62646a7fa3dfa451cd59, type: 2}
     count: 3
     leader: 0
-  - variant: {fileID: 11400000, guid: 2f8a073ed33a4b1ead1deb4425818512, type: 2}
-    extraModifiers: []
+  - variant: {fileID: 0}
+    archetype: {fileID: 11400000, guid: f150ad1e4b4544ca86c39732f5aa8fc4, type: 2}
+    extraModifiers:
+    - {fileID: 11400000, guid: f7c6e0a8416d4a0f9f0f54d0ac6a460b, type: 2}
     count: 2
     leader: 0
   spread: 3

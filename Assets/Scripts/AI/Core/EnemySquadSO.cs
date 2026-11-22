@@ -4,22 +4,25 @@ using Combat.Enemies;
 
 namespace Combat.AI
 {
-    // A squad to spawn: which enemies (variant plus extra layers), how many of each, who leads.
+    // A squad to spawn: which enemies (archetype plus layers, or a hand-made variant), how many of each, who leads.
     [CreateAssetMenu(fileName = "Squad", menuName = "Combat/Enemies/Enemy Squad")]
     public class EnemySquadSO : ScriptableObject
     {
         [System.Serializable]
         public struct Member
         {
+            [Tooltip("Hand-made enemy. Takes priority over Archetype.")]
             public EnemyVariantSO variant;
-            [Tooltip("Layers added on top of the variant, e.g. a shield.")]
+            [Tooltip("Used when Variant is empty.")]
+            public EnemyArchetypeSO archetype;
+            [Tooltip("Layers on top: rank tier, element, shield.")]
             public List<EnemyModifierSO> extraModifiers;
             [Min(1)] public int count;
             [Tooltip("The first of these leads. With no leader ticked, the highest rank leads.")]
             public bool leader;
 
-            public bool IsSet => variant != null && variant.archetype != null;
-            public EnemySpawnDef Def => new EnemySpawnDef(variant, null, extraModifiers);
+            public EnemySpawnDef Def => new EnemySpawnDef(variant, archetype, extraModifiers);
+            public bool IsSet => Def.IsSet;
         }
 
         [Tooltip("Stable id. Don't change once spawners reference it.")]

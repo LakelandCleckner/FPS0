@@ -5,22 +5,88 @@ using Combat.Enemies;
 using UnityEditor;
 #endif
 
-// Edit-mode lineup of every enemy archetype and its variants, with each look applied live.
+// Enemy lineup picks (archetype, rank, layers) shared by the edit-mode look lineup here and the Play-mode effects lineup.
 [ExecuteAlways]
 public class EnemyGallery : MonoBehaviour
 {
+    public enum RankPick { All, Minor, Major, Elite, Miniboss }
+
+    // One enemy to show: an archetype plus layers, or a hand-made variant.
+    public struct Body
+    {
+        public EnemySpawnDef Def;
+        public string Label;
+        public GameObject Prefab => Def.Prefab;
+    }
+
+    [Header("Picks")]
+    [Tooltip("Empty = every archetype.")]
+    public EnemyArchetypeSO archetype;
+    public RankPick rank = RankPick.All;
+    [Tooltip("Element, shield or other layers.")]
+    public List<EnemyModifierSO> layers = new List<EnemyModifierSO>();
+    [Tooltip("On: one row per layer, to compare. Off: every layer on every enemy.")]
+    public bool rowPerLayer = true;
+    [Tooltip("Also a row with no layers when layers are picked.")]
+    public bool plainRow = false;
+    [Tooltip("Also show hand-made variants of the picked archetypes.")]
+    public bool handMade = true;
+
+    [Header("Layout")]
     [Tooltip("Gap between enemies in a row (m).")]
     [SerializeField] private float spacing = 2.5f;
-    [Tooltip("Gap between archetype rows (m).")]
+    [Tooltip("Gap between rows (m).")]
     [SerializeField] private float rowSpacing = 5f;
     [SerializeField] private bool showLabels = true;
 
 #if UNITY_EDITOR
+    // Picked enemies as rows: per archetype, one row per layer set, one enemy per rank.
+    public List<List<Body>> Rows()
+    {
+        var rows = new List<List<Body>>();
+        var ranks = new List<EnemyRank>();
+        for (int r = 0; r < EnemyTierLayers.RankNames.Length; r++)
+            if (rank == RankPick.All || (int)rank == r + 1) ranks.Add((EnemyRank)r);
+
+        var sets = new List<List<EnemyModifierSO>>();
+        var picked = layers.FindAll(m => m != null && m.kind != EnemyModifierKind.Tier);
+        if (picked.Count == 0 || plainRow) sets.Add(new List<EnemyModifierSO>());
+        if (rowPerLayer) foreach (var m in picked) sets.Add(new List<EnemyModifierSO> { m });
+        else if (picked.Count > 0) sets.Add(picked);
+
+        var variants = handMade ? FindAll<EnemyVariantSO>() : new List<EnemyVariantSO>();
+        foreach (var arch in FindAll<EnemyArchetypeSO>())
+        {
+            if (archetype != null && arch != archetype) continue;
+            foreach (var set in sets)
+            {
+                var row = new List<Body>();
+                foreach (var r in ranks)
+                {
+                    var tier = EnemyTierLayers.For(r);
+                    if (r != EnemyRank.Minor && tier == null) continue;
+                    var def = new EnemySpawnDef(null, arch, EnemyTierLayers.Compose(tier, set));
+                    row.Add(new Body { Def = def, Label = def.DisplayName });
+                }
+                if (row.Count > 0) rows.Add(row);
+            }
+            var mine = variants.FindAll(v => v.archetype == arch);
+            if (mine.Count == 0) continue;
+            var hand = new List<Body>();
+            foreach (var v in mine)
+            {
+                var def = new EnemySpawnDef(v, null, rowPerLayer ? null : picked);
+                hand.Add(new Body { Def = def, Label = def.DisplayName });
+            }
+            rows.Add(hand);
+        }
+        return rows;
+    }
+
     private class Entry
     {
         public GameObject Go;
-        public GameObject Source;
-        public EnemyVariantSO Variant;
+        public List<EnemyModifierSO> Layers;
         public Renderer[] Renderers;
         public Vector3 BaseScale;
         public float Height;
@@ -62,7 +128,7 @@ public class EnemyGallery : MonoBehaviour
     }
 
     [ContextMenu("Rebuild")]
-    private void RebuildNow() => dirty = true;
+    public void RebuildNow() => dirty = true;
 
     private void Tick()
     {
@@ -71,17 +137,14 @@ public class EnemyGallery : MonoBehaviour
         nextTick = EditorApplication.timeSinceStartup + 0.2;
 
         for (int i = 0; i < entries.Count && !dirty; i++)
-        {
-            var e = entries[i];
-            if (e.Go == null || (e.Variant != null && e.Variant.Prefab != e.Source)) dirty = true;
-        }
+            if (entries[i].Go == null) dirty = true;
         if (dirty) { dirty = false; Rebuild(); }
 
         // Look changes from inspector edits show without a rebuild.
         bool changed = false;
         foreach (var e in entries)
         {
-            var look = e.Variant != null ? EnemyLook.Resolve(e.Variant.modifiers) : EnemyLook.Plain;
+            var look = EnemyLook.Resolve(e.Layers);
             int sig = look.Signature();
             if (e.Applied && sig == e.Signature) continue;
             e.Applied = true;
@@ -99,37 +162,33 @@ public class EnemyGallery : MonoBehaviour
         Clear();
         if (block == null) block = new MaterialPropertyBlock();
 
-        var archetypes = FindAll<EnemyArchetypeSO>();
-        var variants = FindAll<EnemyVariantSO>();
-        int row = 0;
-        foreach (var arch in archetypes)
+        var rows = Rows();
+        for (int r = 0; r < rows.Count; r++)
         {
-            var mine = variants.FindAll(v => v.archetype == arch);
-            int count = mine.Count + 1;
-            float x0 = -(count - 1) * spacing * 0.5f;
-
-            Spawn(arch.bodyPrefab, null, arch.StatSourceLabel, new Vector3(x0, 0f, row * rowSpacing));
-            for (int i = 0; i < mine.Count; i++)
-                Spawn(mine[i].Prefab, mine[i], mine[i].DisplayName, new Vector3(x0 + (i + 1) * spacing, 0f, row * rowSpacing));
-            row++;
+            var row = rows[r];
+            float x0 = -(row.Count - 1) * spacing * 0.5f;
+            for (int i = 0; i < row.Count; i++)
+                Spawn(row[i], new Vector3(x0 + i * spacing, 0f, r * rowSpacing));
         }
         SceneView.RepaintAll();
     }
 
-    private void Spawn(GameObject prefab, EnemyVariantSO variant, string label, Vector3 local)
+    private void Spawn(Body body, Vector3 local)
     {
+        var prefab = body.Prefab;
         if (prefab == null) return;
         var rot = transform.rotation * Quaternion.Euler(0f, 180f, 0f);
         var go = Instantiate(prefab, transform.TransformPoint(local), rot, transform);
-        go.name = label;
+        go.name = body.Label;
         foreach (var t in go.GetComponentsInChildren<Transform>(true))
             t.gameObject.hideFlags = HideFlags.DontSave | HideFlags.NotEditable;
 
+        var layerList = new List<EnemyModifierSO>();
+        body.Def.CollectLayers(layerList);
         var e = new Entry
         {
             Go = go,
-            Source = prefab,
-            Variant = variant,
+            Layers = layerList,
             Renderers = EnemyLook.FindRenderers(go),
             BaseScale = go.transform.localScale,
             Height = 2f

@@ -1,6 +1,7 @@
 using UnityEngine;
 using Combat.Core;
 using Combat.Stats;
+using Combat.Status;
 using Combat.Info;
 
 namespace Combat.Enemies
@@ -62,22 +63,23 @@ namespace Combat.Enemies
         public bool Any => coefficient > 0f;
 
         // "15% of the target's max health as Fire, higher on stronger ranks".
-        public void Describe(Describer d, string token = "damage")
+        public void Describe(Describer d, string token = "damage", bool enemyElement = false)
         {
             if (stat == null) d.Num(Describer.Trim(coefficient), token).Add(" damage");
             else d.Percent(coefficient, token).Add(basis == DeathDamageBasis.TargetStat ? " of the target's " : " of its own ")
                   .Add(Describer.StatName(stat).ToLowerInvariant());
-            if (type != null) d.Add(" as ").Element(type);
+            if (enemyElement) d.Add(" of its element");
+            else if (type != null) d.Add(" as ").Element(type);
             if (tierScaleStat != null) d.Add(", higher on stronger ranks");
         }
 
-        // Everything read off the dead enemy, taken at the moment of death.
-        public Resolved Resolve(in DeathEffectContext ctx)
+        // Everything read off the dead enemy, taken at the moment of death. Element replaces the authored type.
+        public Resolved Resolve(in DeathEffectContext ctx, DamageTypeSO element = null)
         {
             float k = coefficient * ctx.TierScale(tierScaleStat);
             bool onTarget = stat != null && basis == DeathDamageBasis.TargetStat;
             if (!onTarget && stat != null) k = ctx.Scaled(stat, k);
-            return new Resolved(onTarget ? stat : null, k, type);
+            return new Resolved(onTarget ? stat : null, k, element != null ? element : type);
         }
 
         public readonly struct Resolved
@@ -85,6 +87,8 @@ namespace Combat.Enemies
             private readonly StatDefinitionSO targetStat;
             private readonly float amount;
             private readonly DamageTypeSO type;
+
+            public DamageTypeSO Type => type;
 
             public Resolved(StatDefinitionSO targetStat, float amount, DamageTypeSO type)
             {
@@ -118,10 +122,27 @@ namespace Combat.Enemies
         [Tooltip("Floating damage numbers on enemies this hurts.")]
         public bool showDamageNumbers = true;
 
+        [Header("Element")]
+        [Tooltip("Damage type, colour and status from the dying enemy's Element layer. Falls back to this effect's own type.")]
+        public bool useEnemyElement = false;
+
         public int PlayerMask => hitsPlayer ? playerLayers.value : 0;
         public int EnemyMask => hitsEnemies ? enemyLayers.value : 0;
 
         public abstract void Trigger(in DeathEffectContext ctx);
+
+        // The enemy's element when Use Enemy Element is on and it has one, else the authored type.
+        protected DamageTypeSO ElementFor(in DeathEffectContext ctx, DamageTypeSO own)
+        {
+            if (!useEnemyElement || ctx.Owner == null) return own;
+            var applier = ctx.Owner.GetComponentInParent<EnemyDefinitionApplier>();
+            var e = applier != null ? applier.Element : null;
+            return e != null ? e : own;
+        }
+
+        // The authored status, else the element's own status when Use Enemy Element is on.
+        protected StatusSO StatusFor(DamageTypeSO element, StatusSO own)
+            => own != null ? own : useEnemyElement && element != null ? element.status : null;
 
         public void Describe(Describer d) => DescribeAs(d, "On death: ");
 

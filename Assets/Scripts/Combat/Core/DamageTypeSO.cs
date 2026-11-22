@@ -80,6 +80,10 @@ namespace Combat.Core
         [Tooltip("Keyword this element shows as in descriptions. Empty = plain name.")]
         public Combat.Info.KeywordSO keyword;
 
+        [Header("Status")]
+        [Tooltip("Status this element applies by default, e.g. from enemy blasts and pools that take the enemy's element.")]
+        public Combat.Status.StatusSO status;
+
         [Header("Direct Hits")]
         [Tooltip("Multiplies direct-hit damage from weapons of this type. Ballistic's edge over elements.")]
         public float directDamageMultiplier = 1f;

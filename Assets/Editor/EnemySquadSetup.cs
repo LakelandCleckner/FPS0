@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
@@ -8,22 +7,15 @@ using Combat.AI;
 using Combat.Enemies;
 using Combat.Spawning;
 
-// Build squad makeups (enemy type, rank, count, leader), spawn them in Play, group scene enemies, and watch live squads.
+// Build squad makeups (enemy, rank, layers, count, leader), spawn them in Play, group scene enemies, and watch live squads.
 public class EnemySquadSetup : EditorWindow
 {
     private const string SquadFolder = "Assets/GameData/Enemies/Squads";
-    private static readonly string[] RankNames = { "Minor", "Major", "Elite", "Miniboss" };
     private const float PlayerSpawnDistance = 8f;
 
-    // Variants grouped by enemy type, one slot per rank
-    private class EnemyType
-    {
-        public string Label;
-        public readonly EnemyVariantSO[] ByRank = new EnemyVariantSO[4];
-    }
-
-    private readonly List<EnemyType> types = new List<EnemyType>();
-    private string[] typeLabels = new string[0];
+    // Archetypes first, then hand-made variants
+    private readonly List<Object> enemies = new List<Object>();
+    private string[] enemyLabels = new string[0];
     private List<EnemySquadSO> squads = new List<EnemySquadSO>();
     private EnemySquadSO current;
     private Vector2 listScroll, editScroll;
@@ -43,7 +35,8 @@ public class EnemySquadSetup : EditorWindow
 
     private void Refresh()
     {
-        BuildTypes();
+        BuildEnemies();
+        EnemyTierLayers.Invalidate();
         squads = AssetDatabase.FindAssets("t:EnemySquadSO")
             .Select(g => AssetDatabase.LoadAssetAtPath<EnemySquadSO>(AssetDatabase.GUIDToAssetPath(g)))
             .Where(s => s != null).OrderBy(s => s.name).ToList();
@@ -133,7 +126,7 @@ public class EnemySquadSetup : EditorWindow
     {
         EditorGUILayout.LabelField("Makeup", EditorStyles.boldLabel);
         if (current == null) { EditorGUILayout.HelpBox("No squad selected. Press New.", MessageType.None); return; }
-        if (types.Count == 0) { EditorGUILayout.HelpBox("No enemy variants found in the project.", MessageType.Warning); return; }
+        if (enemies.Count == 0) { EditorGUILayout.HelpBox("No enemy archetypes found in the project.", MessageType.Warning); return; }
 
         string newName = EditorGUILayout.DelayedTextField("Name", current.name);
         if (newName != current.name && !string.IsNullOrWhiteSpace(newName))
@@ -158,15 +151,34 @@ public class EnemySquadSetup : EditorWindow
         {
             var m = members.GetArrayElementAtIndex(i);
             var variantProp = m.FindPropertyRelative("variant");
+            var archProp = m.FindPropertyRelative("archetype");
+            var layersProp = m.FindPropertyRelative("extraModifiers");
             var countProp = m.FindPropertyRelative("count");
             var leaderProp = m.FindPropertyRelative("leader");
 
-            Locate(variantProp.objectReferenceValue as EnemyVariantSO, out int type, out int rank);
+            Object who = variantProp.objectReferenceValue != null ? variantProp.objectReferenceValue : archProp.objectReferenceValue;
+            int pick = enemies.IndexOf(who);
+            var layers = Layers(layersProp);
+            int rank = (int)EnemyTierLayers.RankIn(layers);
 
             EditorGUILayout.BeginHorizontal();
-            int newType = EditorGUILayout.Popup(Mathf.Max(0, type), typeLabels, GUILayout.MinWidth(120));
-            int newRank = EditorGUILayout.Popup(Mathf.Max(0, rank), RankLabels(types[newType]), GUILayout.Width(80));
-            if (newType != type || newRank != rank) variantProp.objectReferenceValue = Pick(types[newType], newRank);
+            int newPick = EditorGUILayout.Popup(Mathf.Max(0, pick), enemyLabels, GUILayout.MinWidth(120));
+            if (newPick != pick)
+            {
+                var chosen = enemies[newPick];
+                variantProp.objectReferenceValue = chosen as EnemyVariantSO;
+                archProp.objectReferenceValue = chosen as EnemyArchetypeSO;
+            }
+            using (new EditorGUI.DisabledScope(variantProp.objectReferenceValue != null))
+            {
+                int newRank = EditorGUILayout.Popup(Mathf.Min(rank, 3), EnemyTierLayers.RankNames, GUILayout.Width(80));
+                if (newRank != rank)
+                {
+                    var tier = EnemyTierLayers.For((EnemyRank)newRank);
+                    if (newRank > 0 && tier == null) Debug.LogWarning($"[EnemySquadSetup] No tier modifier raises to {EnemyTierLayers.RankNames[newRank]}.");
+                    else { EnemyTierLayers.SetTier(layers, tier); SetLayers(layersProp, layers); }
+                }
+            }
 
             countProp.intValue = Mathf.Max(1, EditorGUILayout.IntField(Mathf.Max(1, countProp.intValue), GUILayout.Width(45)));
             bool lead = EditorGUILayout.Toggle(leaderProp.boolValue, GUILayout.Width(34));
@@ -175,7 +187,7 @@ public class EnemySquadSetup : EditorWindow
             if (GUILayout.Button("X", GUILayout.Width(22))) remove = i;
             EditorGUILayout.EndHorizontal();
             EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(m.FindPropertyRelative("extraModifiers"), new GUIContent("Extra Layers", "Added on top of the variant, e.g. a shield."), true);
+            EditorGUILayout.PropertyField(layersProp, new GUIContent("Layers", "Rank tier, element, shield. The rank picker swaps the tier layer."), true);
             EditorGUI.indentLevel--;
         }
         if (remove >= 0) members.DeleteArrayElementAtIndex(remove);
@@ -184,7 +196,9 @@ public class EnemySquadSetup : EditorWindow
         {
             members.InsertArrayElementAtIndex(members.arraySize);
             var m = members.GetArrayElementAtIndex(members.arraySize - 1);
-            m.FindPropertyRelative("variant").objectReferenceValue = Pick(types[0], 0);
+            m.FindPropertyRelative("variant").objectReferenceValue = enemies[0] as EnemyVariantSO;
+            m.FindPropertyRelative("archetype").objectReferenceValue = enemies[0] as EnemyArchetypeSO;
+            m.FindPropertyRelative("extraModifiers").ClearArray();
             m.FindPropertyRelative("count").intValue = 1;
             m.FindPropertyRelative("leader").boolValue = false;
         }
@@ -208,68 +222,39 @@ public class EnemySquadSetup : EditorWindow
         return "highest rank";
     }
 
-    // ---- enemy types ----
+    // ---- enemies ----
 
-    private void BuildTypes()
+    private void BuildEnemies()
     {
-        types.Clear();
-        var byKey = new Dictionary<string, EnemyType>();
-        var all = AssetDatabase.FindAssets("t:EnemyVariantSO")
+        enemies.Clear();
+        var archs = AssetDatabase.FindAssets("t:EnemyArchetypeSO")
+            .Select(g => AssetDatabase.LoadAssetAtPath<EnemyArchetypeSO>(AssetDatabase.GUIDToAssetPath(g)))
+            .Where(a => a != null).OrderBy(a => a.name).ToList();
+        var hand = AssetDatabase.FindAssets("t:EnemyVariantSO")
             .Select(g => AssetDatabase.LoadAssetAtPath<EnemyVariantSO>(AssetDatabase.GUIDToAssetPath(g)))
-            .Where(v => v != null && v.archetype != null).OrderBy(v => v.name);
-        foreach (var v in all)
+            .Where(v => v != null && v.archetype != null).OrderBy(v => v.name).ToList();
+        enemies.AddRange(archs);
+        enemies.AddRange(hand);
+        enemyLabels = archs.Select(a => a.StatSourceLabel)
+            .Concat(hand.Select(v => "Hand-made/" + v.DisplayName)).ToArray();
+    }
+
+    private static List<EnemyModifierSO> Layers(SerializedProperty list)
+    {
+        var layers = new List<EnemyModifierSO>();
+        for (int i = 0; i < list.arraySize; i++)
+            layers.Add(list.GetArrayElementAtIndex(i).objectReferenceValue as EnemyModifierSO);
+        return layers;
+    }
+
+    private static void SetLayers(SerializedProperty list, List<EnemyModifierSO> layers)
+    {
+        list.ClearArray();
+        for (int i = 0; i < layers.Count; i++)
         {
-            int rank = RankOf(v);
-            if (rank < 0 || rank > 3) continue;
-            string key = TypeLabel(v);
-            if (!byKey.TryGetValue(key, out var t)) { t = new EnemyType { Label = key }; byKey[key] = t; types.Add(t); }
-            if (t.ByRank[rank] == null) t.ByRank[rank] = v;
+            list.InsertArrayElementAtIndex(i);
+            list.GetArrayElementAtIndex(i).objectReferenceValue = layers[i];
         }
-        types.Sort((a, b) => string.CompareOrdinal(a.Label, b.Label));
-        typeLabels = types.Select(t => t.Label).ToArray();
-    }
-
-    private void Locate(EnemyVariantSO v, out int type, out int rank)
-    {
-        type = rank = -1;
-        if (v == null) return;
-        for (int t = 0; t < types.Count; t++)
-            for (int r = 0; r < 4; r++)
-                if (types[t].ByRank[r] == v) { type = t; rank = r; return; }
-    }
-
-    // The variant at this rank, or the nearest rank the type has
-    private static EnemyVariantSO Pick(EnemyType t, int rank)
-    {
-        if (t.ByRank[rank] != null) return t.ByRank[rank];
-        for (int d = 1; d < 4; d++)
-        {
-            if (rank - d >= 0 && t.ByRank[rank - d] != null) return t.ByRank[rank - d];
-            if (rank + d < 4 && t.ByRank[rank + d] != null) return t.ByRank[rank + d];
-        }
-        return null;
-    }
-
-    private static string[] RankLabels(EnemyType t)
-        => Enumerable.Range(0, 4).Select(r => t.ByRank[r] != null ? RankNames[r] : RankNames[r] + " (none)").ToArray();
-
-    private static int RankOf(EnemyVariantSO v)
-    {
-        int rank = (int)v.archetype.rank;
-        foreach (var m in v.modifiers)
-            if (m != null && (int)m.raiseRankTo > rank) rank = (int)m.raiseRankTo;
-        return rank;
-    }
-
-    // Archetype name with every non-tier prefix, e.g. "Volatile Alien Zombie"
-    private static string TypeLabel(EnemyVariantSO v)
-    {
-        var sb = new StringBuilder();
-        foreach (var m in v.modifiers)
-            if (m != null && m.kind != EnemyModifierKind.Tier && !string.IsNullOrEmpty(m.namePrefix))
-                sb.Append(m.namePrefix).Append(' ');
-        sb.Append(v.archetype.StatSourceLabel);
-        return sb.ToString();
     }
 
     // ---- spawn ----

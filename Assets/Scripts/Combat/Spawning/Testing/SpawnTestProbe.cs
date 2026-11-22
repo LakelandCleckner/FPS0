@@ -8,22 +8,21 @@ using Combat.Spawning;
 
 namespace Combat.Testing
 {
-    // THROWAWAY spawn tester. Comma spawns one, period spawns a group of the id or variant below.
-    // H/J/K/L spawn the current type as Minor/Major/Elite/Miniboss (Shift = group), G/Shift+G cycle the type.
+    // THROWAWAY spawn tester. G/Shift+G cycle the archetype, N/Shift+N cycle a layer (element, shield).
+    // H/J/K/L spawn it as Minor/Major/Elite/Miniboss (Shift = group); comma and period repeat the last rank.
     // B spawns the current squad asset, Shift+B cycles squads.
     // Spawns in front of this object (or the camera) so they land in view.
     public class SpawnTestProbe : MonoBehaviour
     {
         [SerializeField] private EnemySpawner spawner;
 
-        [Tooltip("Type id to spawn. Matches the id registered on the EnemySpawner.")]
-        [SerializeField] private string enemyId = "basic";
-        [Tooltip("When set, spawns this variant instead of the type id.")]
-        [SerializeField] private EnemyVariantSO variant;
-
-        [Header("Rank Keys")]
-        [Tooltip("Variants for the rank keys. In the editor every variant in the project is used instead.")]
-        [SerializeField] private List<EnemyVariantSO> variants = new List<EnemyVariantSO>();
+        [Header("Enemies")]
+        [Tooltip("Archetypes to cycle. In the editor every archetype in the project is used instead.")]
+        [SerializeField] private List<EnemyArchetypeSO> archetypes = new List<EnemyArchetypeSO>();
+        [Tooltip("Layers to cycle (element, shield). In the editor every non-tier modifier is used instead.")]
+        [SerializeField] private List<EnemyModifierSO> layers = new List<EnemyModifierSO>();
+        [Tooltip("Tier layers for Major, Elite and Miniboss. In the editor they come from the project.")]
+        [SerializeField] private EnemyModifierSO[] tiers = new EnemyModifierSO[3];
         [SerializeField] private bool showOverlay = true;
 
         [Header("Squad Key")]
@@ -37,24 +36,17 @@ namespace Combat.Testing
         [SerializeField] private float groupRadius = 3f;
         [SerializeField] private int groupCount = 3;
 
-        // Variants sharing an archetype and non-tier modifiers, one slot per rank.
-        private class SpawnType
-        {
-            public string Label;
-            public readonly EnemyVariantSO[] ByRank = new EnemyVariantSO[4];
-        }
-
         private static readonly Key[] RankKeys = { Key.H, Key.J, Key.K, Key.L };
-        private static readonly string[] RankNames = { "Minor", "Major", "Elite", "Miniboss" };
 
-        private readonly List<SpawnType> types = new List<SpawnType>();
-        private int typeIndex;
+        private int archIndex;
+        private int layerIndex;   // 0 = no layer
+        private int lastRank;
         private int squadIndex;
         private string lastMessage = "";
         private PlayerInputRouter input;
         private GUIStyle style;
 
-        private void Start() => BuildTypes();
+        private void Start() => Load();
 
         private void Update()
         {
@@ -62,17 +54,8 @@ namespace Combat.Testing
             if (input != null)
             {
                 if (input.Debug.ToggleSpawnOverlay.WasPressedThisFrame()) showOverlay = !showOverlay;
-
-                if (input.Debug.SpawnOne.WasPressedThisFrame())
-                    Report(variant != null ? spawner.Spawn(variant, SpawnPoint()) != null : spawner.Spawn(enemyId, SpawnPoint()) != null, Label, 1);
-
-                if (input.Debug.SpawnGroup.WasPressedThisFrame())
-                {
-                    var list = variant != null
-                        ? spawner.SpawnGroup(variant, groupCount, SpawnPoint(), groupRadius)
-                        : spawner.SpawnGroup(enemyId, groupCount, SpawnPoint(), groupRadius);
-                    Report(list.Count > 0, Label, list.Count);
-                }
+                if (input.Debug.SpawnOne.WasPressedThisFrame()) SpawnRank(lastRank, false);
+                if (input.Debug.SpawnGroup.WasPressedThisFrame()) SpawnRank(lastRank, true);
             }
 
             var kb = Keyboard.current;
@@ -90,30 +73,36 @@ namespace Combat.Testing
                 }
             }
 
-            if (types.Count == 0) return;
+            if (archetypes.Count == 0) return;
 
-            if (kb[Key.G].wasPressedThisFrame)
-            {
-                typeIndex = (typeIndex + (shift ? types.Count - 1 : 1)) % types.Count;
-                lastMessage = "";
-            }
+            if (kb[Key.G].wasPressedThisFrame) { archIndex = Step(archIndex, archetypes.Count, shift); lastMessage = ""; }
+            if (kb[Key.N].wasPressedThisFrame) { layerIndex = Step(layerIndex, layers.Count + 1, shift); lastMessage = ""; }
 
             for (int r = 0; r < RankKeys.Length; r++)
                 if (kb[RankKeys[r]].wasPressedThisFrame) SpawnRank(r, shift);
         }
 
+        private static int Step(int i, int count, bool back) => count == 0 ? 0 : (i + (back ? count - 1 : 1)) % count;
+
+        private EnemySpawnDef Def(int rank)
+        {
+            var tier = rank > 0 ? tiers[rank - 1] : null;
+            var layer = layerIndex > 0 ? layers[layerIndex - 1] : null;
+            return new EnemySpawnDef(null, archetypes[archIndex], EnemyTierLayers.Compose(tier, layer != null ? new[] { layer } : null));
+        }
+
         private void SpawnRank(int rank, bool group)
         {
-            var t = types[typeIndex];
-            var v = t.ByRank[rank];
-            if (v == null) { lastMessage = $"No {RankNames[rank]} {t.Label}"; return; }
-
+            if (archetypes.Count == 0) return;
+            if (rank > 0 && tiers[rank - 1] == null) { lastMessage = $"No {EnemyTierLayers.RankNames[rank]} tier layer"; return; }
+            lastRank = rank;
+            var def = Def(rank);
             if (group)
             {
-                var list = spawner.SpawnGroup(v, groupCount, SpawnPoint(), groupRadius);
-                Report(list.Count > 0, v.DisplayName, list.Count);
+                var list = spawner.SpawnGroup(def, groupCount, SpawnPoint(), groupRadius);
+                Report(list.Count > 0, def.DisplayName, list.Count);
             }
-            else Report(spawner.Spawn(v, SpawnPoint()) != null, v.DisplayName, 1);
+            else Report(spawner.Spawn(def, SpawnPoint()) != null, def.DisplayName, 1);
         }
 
         private void Report(bool ok, string what, int count)
@@ -122,74 +111,37 @@ namespace Combat.Testing
             if (!ok) Debug.Log("[SpawnTest] " + lastMessage);
         }
 
-        private string Label => variant != null ? variant.DisplayName : enemyId;
+        // ---- lists ----
 
-        // ---- types ----
-
-        private void BuildTypes()
+        private void Load()
         {
-            var all = new List<EnemyVariantSO>(variants);
 #if UNITY_EDITOR
-            all.Clear();
-            foreach (var guid in UnityEditor.AssetDatabase.FindAssets("t:EnemyVariantSO"))
-            {
-                var v = UnityEditor.AssetDatabase.LoadAssetAtPath<EnemyVariantSO>(UnityEditor.AssetDatabase.GUIDToAssetPath(guid));
-                if (v != null) all.Add(v);
-            }
+            archetypes = FindAll<EnemyArchetypeSO>();
+            layers = FindAll<EnemyModifierSO>().FindAll(m => m.kind != EnemyModifierKind.Tier);
+            for (int r = 0; r < tiers.Length; r++) tiers[r] = EnemyTierLayers.For((EnemyRank)(r + 1));
+            squads = FindAll<Combat.AI.EnemySquadSO>();
 #endif
-#if UNITY_EDITOR
-            squads.Clear();
-            foreach (var guid in UnityEditor.AssetDatabase.FindAssets("t:EnemySquadSO"))
-            {
-                var s = UnityEditor.AssetDatabase.LoadAssetAtPath<Combat.AI.EnemySquadSO>(UnityEditor.AssetDatabase.GUIDToAssetPath(guid));
-                if (s != null) squads.Add(s);
-            }
-#endif
+            archetypes.RemoveAll(a => a == null);
+            layers.RemoveAll(m => m == null);
             squads.RemoveAll(s => s == null);
-            squads.Sort((a, b) => string.CompareOrdinal(a.name, b.name));
+            archIndex = Mathf.Clamp(archIndex, 0, Mathf.Max(0, archetypes.Count - 1));
+            layerIndex = Mathf.Clamp(layerIndex, 0, layers.Count);
             squadIndex = Mathf.Clamp(squadIndex, 0, Mathf.Max(0, squads.Count - 1));
+        }
 
-            all.RemoveAll(v => v == null || v.archetype == null);
-            all.Sort((a, b) => string.CompareOrdinal(a.name, b.name));
-
-            types.Clear();
-            var byKey = new Dictionary<string, SpawnType>();
-            foreach (var v in all)
+#if UNITY_EDITOR
+        private static List<T> FindAll<T>() where T : Object
+        {
+            var list = new List<T>();
+            foreach (var guid in UnityEditor.AssetDatabase.FindAssets("t:" + typeof(T).Name))
             {
-                int rank = RankOf(v);
-                if (rank < 0 || rank > 3) continue;
-
-                string key = TypeLabel(v);
-                if (!byKey.TryGetValue(key, out var t))
-                {
-                    t = new SpawnType { Label = key };
-                    byKey[key] = t;
-                    types.Add(t);
-                }
-                if (t.ByRank[rank] == null) t.ByRank[rank] = v;
+                var a = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(UnityEditor.AssetDatabase.GUIDToAssetPath(guid));
+                if (a != null) list.Add(a);
             }
-            types.Sort((a, b) => string.CompareOrdinal(a.Label, b.Label));
-            typeIndex = Mathf.Clamp(typeIndex, 0, Mathf.Max(0, types.Count - 1));
+            list.Sort((x, y) => string.CompareOrdinal(x.name, y.name));
+            return list;
         }
-
-        private static int RankOf(EnemyVariantSO v)
-        {
-            int rank = (int)v.archetype.rank;
-            foreach (var m in v.modifiers)
-                if (m != null && (int)m.raiseRankTo > rank) rank = (int)m.raiseRankTo;
-            return rank;
-        }
-
-        // Archetype name with every non-tier prefix, e.g. "Volatile Alien Zombie".
-        private static string TypeLabel(EnemyVariantSO v)
-        {
-            var sb = new StringBuilder();
-            foreach (var m in v.modifiers)
-                if (m != null && m.kind != EnemyModifierKind.Tier && !string.IsNullOrEmpty(m.namePrefix))
-                    sb.Append(m.namePrefix).Append(' ');
-            sb.Append(v.archetype.StatSourceLabel);
-            return sb.ToString();
-        }
+#endif
 
         // ---- placement ----
 
@@ -204,23 +156,23 @@ namespace Combat.Testing
 
         private void OnGUI()
         {
-            if (!showOverlay || types.Count == 0) return;
+            if (!showOverlay || archetypes.Count == 0) return;
             style ??= new GUIStyle(GUI.skin.box) { alignment = TextAnchor.UpperLeft, fontSize = 13, richText = true };
 
-            var t = types[typeIndex];
             var sb = new StringBuilder();
-            sb.Append("<b>[G] ").Append(t.Label).Append("</b>  (").Append(typeIndex + 1).Append('/').Append(types.Count).Append(")\n");
+            sb.Append("<b>[G] ").Append(archetypes[archIndex].StatSourceLabel).Append("</b>  (").Append(archIndex + 1).Append('/').Append(archetypes.Count).Append(")\n");
+            sb.Append("[N] ").Append(layerIndex > 0 ? layers[layerIndex - 1].name : "No layer").Append('\n');
             for (int r = 0; r < 4; r++)
             {
-                sb.Append('[').Append(RankKeys[r]).Append("] ").Append(RankNames[r]);
-                if (t.ByRank[r] == null) sb.Append(" -");
+                sb.Append('[').Append(RankKeys[r]).Append("] ").Append(EnemyTierLayers.RankNames[r]);
+                if (r > 0 && tiers[r - 1] == null) sb.Append(" -");
                 sb.Append(r < 3 ? "   " : "\n");
             }
             sb.Append("Shift = x").Append(groupCount);
             if (squads.Count > 0) sb.Append("\n[B] ").Append(squads[squadIndex].Label).Append("  (Shift+B next)");
             if (lastMessage.Length > 0) sb.Append("\n").Append(lastMessage);
 
-            float h = 60f + (squads.Count > 0 ? 18f : 0f) + (lastMessage.Length > 0 ? 18f : 0f);
+            float h = 78f + (squads.Count > 0 ? 18f : 0f) + (lastMessage.Length > 0 ? 18f : 0f);
             GUI.Box(new Rect(10, 10, 360, h), sb.ToString(), style);
         }
 

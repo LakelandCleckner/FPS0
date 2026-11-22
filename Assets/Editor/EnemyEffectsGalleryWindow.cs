@@ -8,37 +8,29 @@ using Combat.Enemies;
 using Combat.Status;
 using Combat.Weapons;
 
-// Picks the element, weapon, statuses and bodies for the gallery's effects lineup and fires its triggers.
+// Picks the enemies (archetype, rank, layers) for both gallery lineups, and the element, weapon and statuses for the effects lineup; fires its triggers.
 public class EnemyEffectsGalleryWindow : EditorWindow
 {
-    private class Body
-    {
-        public string Label;
-        public GameObject Prefab;
-        public EnemyVariantSO Variant;
-        public EnemyArchetypeSO Archetype;
-    }
-
     private List<DamageTypeSO> elements = new List<DamageTypeSO>();
     private List<StatusSO> statuses = new List<StatusSO>();
     private List<WeaponSO> weapons = new List<WeaponSO>();
     private List<ExplosionOnKillSO> explosions = new List<ExplosionOnKillSO>();
-    private List<EnemyModifierSO> shieldLayers = new List<EnemyModifierSO>();
-    private List<Body> bodies = new List<Body>();
+    private List<EnemyArchetypeSO> archetypes = new List<EnemyArchetypeSO>();
+    private List<EnemyModifierSO> layerOptions = new List<EnemyModifierSO>();
     private WeaponStatKeys statKeys;
 
     private int element;
     private int weapon;
     private int status;
-    private int body;
     private int explosion;
-    private int shieldLayer;
+    private string summary;
     private Vector2 scroll;
 
     [MenuItem("FPS0/Enemies/Gallery Window", priority = 2)]
     private static void Open() => GetWindow<EnemyEffectsGalleryWindow>("Enemy Gallery");
 
     private void OnEnable() => Refresh();
+    private void OnProjectChange() { Refresh(); Repaint(); }
     private void OnInspectorUpdate() { if (Application.isPlaying) Repaint(); }
 
     private void Refresh()
@@ -47,7 +39,10 @@ public class EnemyEffectsGalleryWindow : EditorWindow
         weapons = Find<WeaponSO>();
         explosions = Find<ExplosionOnKillSO>();
         statKeys = Find<WeaponStatKeys>().FirstOrDefault();
-        shieldLayers = Find<EnemyModifierSO>().Where(m => m.shield != null).ToList();
+        archetypes = Find<EnemyArchetypeSO>();
+        layerOptions = Find<EnemyModifierSO>().Where(m => m.kind != EnemyModifierKind.Tier).ToList();
+        EnemyTierLayers.Invalidate();
+        summary = null;
 
         // Abstract type: a typed search misses some statuses, so scan every ScriptableObject.
         statuses = new List<StatusSO>();
@@ -59,15 +54,6 @@ public class EnemyEffectsGalleryWindow : EditorWindow
                 statuses.Add(AssetDatabase.LoadAssetAtPath<StatusSO>(path));
         }
         statuses.Sort((a, b) => string.CompareOrdinal(a.name, b.name));
-
-        bodies = new List<Body>();
-        var variants = Find<EnemyVariantSO>();
-        foreach (var arch in Find<EnemyArchetypeSO>())
-        {
-            bodies.Add(new Body { Label = arch.StatSourceLabel, Prefab = arch.bodyPrefab, Archetype = arch });
-            foreach (var v in variants.Where(v => v.archetype == arch))
-                bodies.Add(new Body { Label = arch.StatSourceLabel + "/" + v.DisplayName, Prefab = v.Prefab, Variant = v, Archetype = arch });
-        }
     }
 
     // The entry after the last element is General: statuses with no element, shown with any weapon.
@@ -88,20 +74,78 @@ public class EnemyEffectsGalleryWindow : EditorWindow
             EditorGUILayout.Space();
         }
 
+        var gallery = FindFirstObjectByType<EnemyGallery>();
+        Enemies(gallery);
         Picks();
         var g = Application.isPlaying ? FindFirstObjectByType<EnemyEffectsGallery>() : null;
         if (Application.isPlaying)
         {
-            if (GUILayout.Button("Build Lineup", GUILayout.Height(26))) Build(ref g);
+            if (GUILayout.Button("Build Lineup", GUILayout.Height(26))) Build(ref g, gallery);
             if (g != null) Controls(g);
         }
 
         EditorGUILayout.EndScrollView();
     }
 
+    // Archetype, rank and layers on the scene's gallery; the edit-mode lineup follows them live.
+    private void Enemies(EnemyGallery gallery)
+    {
+        EditorGUILayout.LabelField("Enemies", EditorStyles.boldLabel);
+        if (gallery == null) { EditorGUILayout.HelpBox("No EnemyGallery in the scene (FPS0/Enemies/Gallery Scene).", MessageType.Warning); return; }
+        // Assets deleted since the last refresh.
+        if (archetypes.RemoveAll(x => x == null) + layerOptions.RemoveAll(x => x == null) > 0) summary = null;
+
+        var so = new SerializedObject(gallery);
+        var arch = so.FindProperty("archetype");
+        int a = Mathf.Max(0, archetypes.IndexOf(arch.objectReferenceValue as EnemyArchetypeSO) + 1);
+        int na = EditorGUILayout.Popup("Archetype", a, new[] { "All" }.Concat(archetypes.Select(x => x.StatSourceLabel)).ToArray());
+        if (na != a) arch.objectReferenceValue = na == 0 ? null : archetypes[na - 1];
+        EditorGUILayout.PropertyField(so.FindProperty("rank"));
+
+        var picked = so.FindProperty("layers");
+        var current = new List<EnemyModifierSO>();
+        for (int i = 0; i < picked.arraySize; i++)
+            if (picked.GetArrayElementAtIndex(i).objectReferenceValue is EnemyModifierSO m) current.Add(m);
+        EditorGUILayout.LabelField("Layers", EditorStyles.miniBoldLabel);
+        int perRow = Mathf.Max(1, (int)((position.width - 20f) / 150f));
+        bool changed = false;
+        for (int i = 0; i < layerOptions.Count; i += perRow)
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                for (int j = i; j < Mathf.Min(i + perRow, layerOptions.Count); j++)
+                {
+                    var m = layerOptions[j];
+                    bool on = current.Contains(m);
+                    if (GUILayout.Toggle(on, m.name, GUILayout.Width(145f)) == on) continue;
+                    if (on) current.Remove(m); else current.Add(m);
+                    changed = true;
+                }
+                GUILayout.FlexibleSpace();
+            }
+        if (changed)
+        {
+            picked.ClearArray();
+            for (int i = 0; i < current.Count; i++)
+            {
+                picked.InsertArrayElementAtIndex(i);
+                picked.GetArrayElementAtIndex(i).objectReferenceValue = current[i];
+            }
+        }
+        EditorGUILayout.PropertyField(so.FindProperty("rowPerLayer"), new GUIContent("Row Per Layer", "On: one row per layer, to compare. Off: every layer on every enemy."));
+        EditorGUILayout.PropertyField(so.FindProperty("plainRow"), new GUIContent("Plain Row", "Also a row with no layers when layers are picked."));
+        EditorGUILayout.PropertyField(so.FindProperty("handMade"), new GUIContent("Hand-made Variants"));
+        if (so.ApplyModifiedProperties() || summary == null)
+        {
+            var rows = gallery.Rows();
+            summary = rows.Sum(r => r.Count) + " enemies in " + rows.Count + " rows";
+        }
+        EditorGUILayout.LabelField(summary, EditorStyles.miniLabel);
+        EditorGUILayout.Space();
+    }
+
     private void Picks()
     {
-        EditorGUILayout.LabelField("Lineup", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Effects", EditorStyles.boldLabel);
         int e = EditorGUILayout.Popup("Element", element, elements.Select(x => x.displayName).Append("General").ToArray());
         if (e != element) { element = e; weapon = 0; status = 0; explosion = 0; }
 
@@ -111,39 +155,48 @@ public class EnemyEffectsGalleryWindow : EditorWindow
         var ss = ElementStatuses;
         status = EditorGUILayout.Popup("Status", status, new[] { "All (" + ss.Count + ")" }.Concat(ss.Select(EnemyEffectsGallery.StatusName)).ToArray());
 
-        body = EditorGUILayout.Popup("Body", body, new[] { "One of each archetype" }.Concat(bodies.Select(b => b.Label)).ToArray());
-
         var ex = explosions.Where(x => x.damageType == Element).ToList();
         explosion = EditorGUILayout.Popup(new GUIContent("Kill Explosion", "On-kill explosion added to Kill."), Mathf.Min(explosion, ex.Count), new[] { "None" }.Concat(ex.Select(x => x.name)).ToArray());
-        shieldLayer = EditorGUILayout.Popup(new GUIContent("Shield", "Shield layer added to every enemy in the lineup."), Mathf.Min(shieldLayer, shieldLayers.Count), new[] { "None" }.Concat(shieldLayers.Select(m => m.name)).ToArray());
     }
 
-    private void Build(ref EnemyEffectsGallery g)
+    private void Build(ref EnemyEffectsGallery g, EnemyGallery gallery)
     {
+        if (gallery == null) { Debug.LogWarning("[Gallery] No EnemyGallery in the scene."); return; }
         var ws = ElementWeapons;
         if (ws.Count == 0) { Debug.LogWarning("[Gallery] No weapon of this element."); return; }
         if (statKeys == null) { Debug.LogWarning("[Gallery] No WeaponStatKeys asset."); return; }
 
-        if (g == null)
-        {
-            var host = FindFirstObjectByType<EnemyGallery>();
-            var go = host != null ? host.gameObject : new GameObject("Effects Gallery");
-            g = go.AddComponent<EnemyEffectsGallery>();
-        }
+        if (g == null) g = gallery.gameObject.AddComponent<EnemyEffectsGallery>();
 
         var ss = ElementStatuses;
         var pickStatuses = status == 0 ? ss : new List<StatusSO> { ss[status - 1] };
-        var pickBodies = body == 0 ? bodies.Where(b => b.Variant == null).ToList() : new List<Body> { bodies[body - 1] };
+        var galleryRows = gallery.Rows();
 
         var rows = new List<EnemyEffectsGallery.Row>();
+        // Statuses with stack levels get a row per enemy; single-level ones keep a gallery row side by side.
         foreach (var st in pickStatuses)
-            foreach (var b in pickBodies)
-                rows.Add(new EnemyEffectsGallery.Row { Status = st, Prefab = b.Prefab, Variant = b.Variant, Archetype = b.Archetype, Body = b.Label });
+        {
+            bool levels = st.PreviewLevels().Count > 1;
+            foreach (var gr in galleryRows)
+            {
+                if (levels)
+                    foreach (var body in gr)
+                    {
+                        var one = new EnemyEffectsGallery.Row { Status = st, Body = body.Label };
+                        one.Bodies.Add(body);
+                        rows.Add(one);
+                    }
+                else
+                {
+                    var row = new EnemyEffectsGallery.Row { Status = st, Body = gr[0].Label };
+                    row.Bodies.AddRange(gr);
+                    rows.Add(row);
+                }
+            }
+        }
 
         var ex = explosions.Where(x => x.damageType == Element).ToList();
         g.KillExplosion = explosion > 0 && explosion <= ex.Count ? ex[explosion - 1] : null;
-        g.ExtraLayers.Clear();
-        if (shieldLayer > 0 && shieldLayer <= shieldLayers.Count) g.ExtraLayers.Add(shieldLayers[shieldLayer - 1]);
         g.Build(ws[Mathf.Min(weapon, ws.Count - 1)], statKeys, rows);
         if (g.Rows.Count > 0) g.Frame(g.Rows[0]);
     }

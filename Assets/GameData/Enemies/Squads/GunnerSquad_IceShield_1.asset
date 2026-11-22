@@ -15,13 +15,27 @@ MonoBehaviour:
   id: 
   displayName: 
   members:
-  - variant: {fileID: 11400000, guid: e0473a9aa3c95cf4495b39c8a8943480, type: 2}
+  - variant: {fileID: 0}
+    archetype: {fileID: 11400000, guid: f150ad1e4b4544ca86c39732f5aa8fc4, type: 2}
+    extraModifiers:
+    - {fileID: 11400000, guid: 4e0824eaf8044b9283f995bdc77a888c, type: 2}
+    - {fileID: 11400000, guid: 7de44570bd949224f92221a4831f22e7, type: 2}
     count: 3
     leader: 0
-  - variant: {fileID: 11400000, guid: c7b9dd9b45c2ed14c885474eb78712f5, type: 2}
+  - variant: {fileID: 0}
+    archetype: {fileID: 11400000, guid: 3027274360ff4b568578412019dacbe0, type: 2}
+    extraModifiers:
+    - {fileID: 11400000, guid: f7c6e0a8416d4a0f9f0f54d0ac6a460b, type: 2}
+    - {fileID: 11400000, guid: 4e0824eaf8044b9283f995bdc77a888c, type: 2}
+    - {fileID: 11400000, guid: 7de44570bd949224f92221a4831f22e7, type: 2}
     count: 2
     leader: 0
-  - variant: {fileID: 11400000, guid: fbf1558d60b890947bc047a1d2a9a802, type: 2}
+  - variant: {fileID: 0}
+    archetype: {fileID: 11400000, guid: 3027274360ff4b568578412019dacbe0, type: 2}
+    extraModifiers:
+    - {fileID: 11400000, guid: 042c8777afbb4081976e85611a672c48, type: 2}
+    - {fileID: 11400000, guid: 4e0824eaf8044b9283f995bdc77a888c, type: 2}
+    - {fileID: 11400000, guid: 7de44570bd949224f92221a4831f22e7, type: 2}
     count: 1
     leader: 1
   spread: 3

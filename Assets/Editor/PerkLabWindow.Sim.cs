@@ -8,7 +8,7 @@ using Combat.Stats;
 using Combat.Status;
 using Object = UnityEngine.Object;
 
-// Simulated targets: two hidden copies of a real enemy variant, parked below the map with only combat parts left.
+// Simulated targets: two hidden copies of a real enemy (archetype at a rank), parked below the map with only combat parts left.
 public partial class PerkLabWindow
 {
     private static readonly HashSet<string> SimKeep = new HashSet<string>
@@ -20,8 +20,9 @@ public partial class PerkLabWindow
     private static readonly Vector3 SimOrigin = new Vector3(0f, -2000f, 0f);
     private const float SimSpacing = 1.5f;
 
-    [SerializeField] private EnemyVariantSO simVariant;
-    private List<EnemyVariantSO> variants;
+    [SerializeField] private EnemyArchetypeSO simArchetype;
+    [SerializeField] private EnemyRank simRank;
+    private List<EnemyArchetypeSO> archetypes;
     private GameObject simRoot;
     private CombatantStats simA, simB;
     private int simSettleFrames;
@@ -30,24 +31,26 @@ public partial class PerkLabWindow
 
     private void DrawSimPicker()
     {
-        if (variants == null) variants = Load<EnemyVariantSO>().OrderBy(v => v.name).ToList();
-        if (simVariant == null && variants.Count > 0) simVariant = variants[0];
-        var names = variants.Select(v => v.name).ToArray();
-        int cur = Mathf.Max(0, variants.IndexOf(simVariant));
+        if (archetypes == null) archetypes = Load<EnemyArchetypeSO>().OrderBy(a => a.name).ToList();
+        if (simArchetype == null && archetypes.Count > 0) simArchetype = archetypes[0];
+        var names = archetypes.Select(a => a.StatSourceLabel).ToArray();
+        int cur = Mathf.Max(0, archetypes.IndexOf(simArchetype));
         using (new EditorGUILayout.HorizontalScope())
         {
             int next = EditorGUILayout.Popup("Simulated enemy", cur, names);
-            if (variants.Count > 0 && next != cur) { simVariant = variants[next]; DestroySim(); }
+            if (archetypes.Count > 0 && next != cur) { simArchetype = archetypes[next]; DestroySim(); }
+            int rank = EditorGUILayout.Popup(Mathf.Min((int)simRank, 3), EnemyTierLayers.RankNames, GUILayout.Width(80));
+            if (rank != (int)simRank) { simRank = (EnemyRank)rank; DestroySim(); }
             if (GUILayout.Button("Rebuild", GUILayout.Width(70))) DestroySim();
         }
-        if (EditorApplication.isPlaying && simA == null && simVariant != null) BuildSim();
+        if (EditorApplication.isPlaying && simA == null && simArchetype != null) BuildSim();
         if (simA != null && simSettleFrames > 0) EditorGUILayout.LabelField("  building...", EditorStyles.miniLabel);
     }
 
     private void BuildSim()
     {
-        var prefab = simVariant != null ? simVariant.Prefab : null;
-        if (prefab == null) { Log("sim: variant has no prefab"); return; }
+        var prefab = simArchetype != null ? simArchetype.bodyPrefab : null;
+        if (prefab == null) { Log("sim: archetype has no body prefab"); return; }
 
         simRoot = new GameObject("PerkLab Sim Targets");
         simRoot.SetActive(false);
@@ -67,7 +70,7 @@ public partial class PerkLabWindow
         go.transform.localRotation = Quaternion.identity;
 
         var applier = go.GetComponent<EnemyDefinitionApplier>();
-        if (applier != null) applier.SetVariant(simVariant);
+        if (applier != null) applier.SetDefinition(new EnemySpawnDef(null, simArchetype, EnemyTierLayers.Compose(EnemyTierLayers.For(simRank), null)));
 
         // Dependents go first: a component is skipped while another on its object still requires it
         for (bool removed = true; removed;)

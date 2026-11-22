@@ -11,15 +11,13 @@ using Combat.Sources;
 using Combat.Status;
 using Combat.Weapons;
 
-// Play-mode effects lineup for the enemy gallery: one row per status and body, one enemy per stack level. Driven by the Gallery window.
+// Play-mode effects lineup for the enemy gallery: one row per status and gallery row, its enemies side by side, each at every stack level. Driven by the Gallery window.
 public class EnemyEffectsGallery : MonoBehaviour
 {
     public class Row
     {
         public StatusSO Status;
-        public GameObject Prefab;
-        public EnemyVariantSO Variant;
-        public EnemyArchetypeSO Archetype;
+        public readonly List<EnemyGallery.Body> Bodies = new List<EnemyGallery.Body>();
         public string Body;
         public readonly List<Slot> Slots = new List<Slot>();
 
@@ -29,7 +27,9 @@ public class EnemyEffectsGallery : MonoBehaviour
     public class Slot
     {
         public Row Row;
+        public EnemySpawnDef Def;
         public int Stacks;
+        public bool Top;
         public Vector3 Local;
         public GameObject Go;
         public CombatantHealth Health;
@@ -39,6 +39,7 @@ public class EnemyEffectsGallery : MonoBehaviour
         public bool Tough;
         public float RespawnAt;
         public string Label;
+        public string Name;
     }
 
     [Header("Layout")]
@@ -50,8 +51,6 @@ public class EnemyEffectsGallery : MonoBehaviour
     public float BlastRadius = 3f;
     public float RespawnDelay = 3f;
     public ExplosionOnKillSO KillExplosion;
-    [Tooltip("Layers added to every enemy in the lineup, e.g. a shield.")]
-    public List<EnemyModifierSO> ExtraLayers = new List<EnemyModifierSO>();
 
     [Header("Loop")]
     public bool HoldStatuses = true;
@@ -109,26 +108,46 @@ public class EnemyEffectsGallery : MonoBehaviour
         for (int r = 0; r < rows.Count; r++)
         {
             var row = rows[r];
-            if (row.Status == null || row.Prefab == null) continue;
+            if (row.Status == null) continue;
+            row.Bodies.RemoveAll(x => x.Prefab == null);
+            if (row.Bodies.Count == 0) continue;
             int max = row.Status.AuraMaxStacks;
             var levels = row.Status.PreviewLevels();
-            float x0 = -(levels.Count - 1) * Spacing * 0.5f;
-            for (int j = 0; j < levels.Count; j++)
+            // Each enemy's stack levels together, a spacing's gap between enemies.
+            float width = (row.Bodies.Count * levels.Count - 1 + (row.Bodies.Count - 1)) * Spacing;
+            float x = -width * 0.5f;
+            foreach (var body in row.Bodies)
             {
-                int k = levels[j];
-                var slot = new Slot
+                for (int j = 0; j < levels.Count; j++)
                 {
-                    Row = row,
-                    Stacks = k,
-                    Local = new Vector3(x0 + j * Spacing, 0f, Rows.Count * RowSpacing),
-                    Label = StatusName(row.Status) + " " + k + "/" + max
-                };
-                row.Slots.Add(slot);
-                Spawn(slot);
+                    int k = levels[j];
+                    var slot = new Slot
+                    {
+                        Row = row,
+                        Def = body.Def,
+                        Stacks = k,
+                        Top = j == levels.Count - 1,
+                        Local = new Vector3(x, 0f, Rows.Count * RowSpacing),
+                        Label = (row.Bodies.Count > 1 ? ShortName(body) : StatusName(row.Status)) + " " + k + "/" + max,
+                        Name = body.Label + "\n" + StatusName(row.Status) + " " + k + "/" + max
+                    };
+                    row.Slots.Add(slot);
+                    Spawn(slot);
+                    x += Spacing;
+                }
+                x += Spacing;
             }
             Rows.Add(row);
         }
         nextLoop = Time.time + LoopInterval;
+    }
+
+    // Rank name for composed enemies, the full name for hand-made ones.
+    private static string ShortName(EnemyGallery.Body body)
+    {
+        if (body.Def.preset != null) return body.Label;
+        int r = Mathf.Clamp((int)body.Def.Rank, 0, EnemyTierLayers.RankNames.Length - 1);
+        return EnemyTierLayers.RankNames[r];
     }
 
     public void Clear()
@@ -164,12 +183,11 @@ public class EnemyEffectsGallery : MonoBehaviour
     {
         var row = slot.Row;
         var rot = transform.rotation * Quaternion.Euler(0f, 180f, 0f);
-        var go = Instantiate(row.Prefab, transform.TransformPoint(slot.Local), rot, transform);
+        var go = Instantiate(slot.Def.Prefab, transform.TransformPoint(slot.Local), rot, transform);
         go.name = slot.Label;
 
         var applier = go.GetComponent<EnemyDefinitionApplier>();
-        if (applier != null)
-            applier.SetDefinition(new EnemySpawnDef(row.Variant, row.Variant == null ? row.Archetype : null, ExtraLayers));
+        if (applier != null) applier.SetDefinition(slot.Def);
         foreach (var b in go.GetComponentsInChildren<Behaviour>(true))
             if (Frozen.Contains(b.GetType().Name)) b.enabled = false;
 
@@ -310,7 +328,7 @@ public class EnemyEffectsGallery : MonoBehaviour
 
     public void FireRow(Row r) { foreach (var s in r.Slots) Fire(s); }
     public void BlastRow(Row r) { foreach (var s in r.Slots) Blast(s); }
-    public void ConvertRow(Row r) { if (r.Slots.Count > 0) Convert(r.Slots[r.Slots.Count - 1]); }
+    public void ConvertRow(Row r) { foreach (var s in r.Slots) if (s.Top) Convert(s); }
     public void KillRow(Row r) { foreach (var s in r.Slots) Kill(s); }
 
     public void BreakShields() => ForEach(s => { var sh = Shield(s); if (sh != null) sh.ForceBreak(); });
@@ -404,6 +422,24 @@ public class EnemyEffectsGallery : MonoBehaviour
         if (Weapon != null)
             GUI.Label(new Rect(10f, 10f, 400f, 22f), Weapon.name + (Element != null ? " (" + Element.displayName + ")" : ""), rowStyle);
     }
+
+#if UNITY_EDITOR
+    private GUIStyle sceneStyle;
+
+    // Full enemy names over each enemy and row names in the Scene view.
+    private void OnDrawGizmos()
+    {
+        if (!ShowLabels || Rows.Count == 0) return;
+        sceneStyle ??= new GUIStyle(UnityEditor.EditorStyles.boldLabel) { alignment = TextAnchor.MiddleCenter, normal = { textColor = Color.white } };
+        foreach (var r in Rows)
+        {
+            if (r.Slots.Count == 0) continue;
+            UnityEditor.Handles.Label(transform.TransformPoint(r.Slots[0].Local) + transform.rotation * Vector3.left * Spacing + Vector3.up, r.Label, sceneStyle);
+            foreach (var s in r.Slots)
+                if (s.Go != null) UnityEditor.Handles.Label(s.Go.transform.position + Vector3.up * 2.4f, s.Name, sceneStyle);
+        }
+    }
+#endif
 
     private static void Label(Camera cam, Vector3 world, string text, GUIStyle style, float width)
     {

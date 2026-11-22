@@ -92,6 +92,17 @@ namespace Combat.Enemies
         }
         public IReadOnlyList<EnemyModifierSO> Layers => layers;
 
+        // Element from the last Element layer; null when none.
+        public DamageTypeSO Element
+        {
+            get
+            {
+                for (int i = layers.Count - 1; i >= 0; i--)
+                    if (layers[i] != null && layers[i].kind == EnemyModifierKind.Element && layers[i].element != null) return layers[i].element;
+                return null;
+            }
+        }
+
         private static Combat.AI.EnemyBehaviourProfileSO Profile(Combat.AI.EnemyBehaviourProfileSO p, List<EnemyModifierSO> mods)
         {
             foreach (var m in mods)
