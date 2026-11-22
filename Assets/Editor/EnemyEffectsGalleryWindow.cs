@@ -131,7 +131,7 @@ public class EnemyEffectsGalleryWindow : EditorWindow
                 picked.GetArrayElementAtIndex(i).objectReferenceValue = current[i];
             }
         }
-        EditorGUILayout.PropertyField(so.FindProperty("rowPerLayer"), new GUIContent("Row Per Layer", "On: one row per layer, to compare. Off: every layer on every enemy."));
+        EditorGUILayout.PropertyField(so.FindProperty("layerMode"), new GUIContent("Layer Mode", "Combine: a row per mix of one element and one shield, other traits stacked. Separate: a row per layer. All Together: every layer on every enemy."));
         EditorGUILayout.PropertyField(so.FindProperty("plainRow"), new GUIContent("Plain Row", "Also a row with no layers when layers are picked."));
         EditorGUILayout.PropertyField(so.FindProperty("handMade"), new GUIContent("Hand-made Variants"));
         if (so.ApplyModifiedProperties() || summary == null)

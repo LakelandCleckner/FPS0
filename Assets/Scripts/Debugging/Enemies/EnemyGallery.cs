@@ -10,6 +10,7 @@ using UnityEditor;
 public class EnemyGallery : MonoBehaviour
 {
     public enum RankPick { All, Minor, Major, Elite, Miniboss }
+    public enum LayerMode { Combine, Separate, AllTogether }
 
     // One enemy to show: an archetype plus layers, or a hand-made variant.
     public struct Body
@@ -25,8 +26,8 @@ public class EnemyGallery : MonoBehaviour
     public RankPick rank = RankPick.All;
     [Tooltip("Element, shield or other layers.")]
     public List<EnemyModifierSO> layers = new List<EnemyModifierSO>();
-    [Tooltip("On: one row per layer, to compare. Off: every layer on every enemy.")]
-    public bool rowPerLayer = true;
+    [Tooltip("Combine: a row per mix of one element and one shield, other traits stacked. Separate: a row per layer. All Together: every layer on every enemy.")]
+    public LayerMode layerMode = LayerMode.Combine;
     [Tooltip("Also a row with no layers when layers are picked.")]
     public bool plainRow = false;
     [Tooltip("Also show hand-made variants of the picked archetypes.")]
@@ -51,8 +52,12 @@ public class EnemyGallery : MonoBehaviour
         var sets = new List<List<EnemyModifierSO>>();
         var picked = layers.FindAll(m => m != null && m.kind != EnemyModifierKind.Tier);
         if (picked.Count == 0 || plainRow) sets.Add(new List<EnemyModifierSO>());
-        if (rowPerLayer) foreach (var m in picked) sets.Add(new List<EnemyModifierSO> { m });
-        else if (picked.Count > 0) sets.Add(picked);
+        if (picked.Count > 0)
+        {
+            if (layerMode == LayerMode.Separate) foreach (var m in picked) sets.Add(new List<EnemyModifierSO> { m });
+            else if (layerMode == LayerMode.AllTogether) sets.Add(picked);
+            else sets.AddRange(Combine(picked));
+        }
 
         var variants = handMade ? FindAll<EnemyVariantSO>() : new List<EnemyVariantSO>();
         foreach (var arch in FindAll<EnemyArchetypeSO>())
@@ -75,12 +80,33 @@ public class EnemyGallery : MonoBehaviour
             var hand = new List<Body>();
             foreach (var v in mine)
             {
-                var def = new EnemySpawnDef(v, null, rowPerLayer ? null : picked);
+                var def = new EnemySpawnDef(v, null, layerMode == LayerMode.Separate ? null : picked);
                 hand.Add(new Body { Def = def, Label = def.DisplayName });
             }
             rows.Add(hand);
         }
         return rows;
+    }
+
+    // One element and one shield per set (none when none are picked), every other trait on all of them.
+    private static List<List<EnemyModifierSO>> Combine(List<EnemyModifierSO> picked)
+    {
+        var elements = picked.FindAll(m => m.kind == EnemyModifierKind.Element);
+        var shields = picked.FindAll(m => m.kind != EnemyModifierKind.Element && m.shield != null);
+        var traits = picked.FindAll(m => m.kind != EnemyModifierKind.Element && m.shield == null);
+        if (elements.Count == 0) elements.Add(null);
+        if (shields.Count == 0) shields.Add(null);
+        var sets = new List<List<EnemyModifierSO>>();
+        foreach (var e in elements)
+            foreach (var s in shields)
+            {
+                var set = new List<EnemyModifierSO>();
+                if (e != null) set.Add(e);
+                if (s != null) set.Add(s);
+                set.AddRange(traits);
+                sets.Add(set);
+            }
+        return sets;
     }
 
     private class Entry
