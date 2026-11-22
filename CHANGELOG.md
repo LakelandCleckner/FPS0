@@ -8,6 +8,192 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Housekeeping c
 
 ---
 
+## [0.0.17] - 2026-11-20 to 2026-11-22
+
+Status and shield VFX for every element, enemies composed from archetype plus layers, and the effects gallery.
+
+### Added
+- Status auras that scale with stacks (`auraScalesWithStacks`, `auraFullAtStacks`) and emit from baked skin points, hull points or the prefab shape (`auraEmitFrom`); `BodySurfacePoints` and Bake Body Surface Points (128 two-bone skin points per enemy and player body).
+- `AuraShareCurve` per aura particle system: start share, power, floor and own-shape emission.
+- `StatusOverlay` shader (Rim, Creep, Crack, Arc, Burn, Toxic and Drag modes) and component: up to 3 layered body overlays per enemy, strongest first, easing to the stack share over 0.2 s.
+- `StatusSO` overlay material and stack scaling, `fadeOutTime` (visuals stutter out over the final seconds), `stackCurve` for high-cap statuses, `endVfxOnConvertOnly`, `previewStacks`.
+- Frost: frost creep and ChillMist for Chill; ice coat and FreezeShatter for Freeze.
+- Shock: electric veins, `SkinArcs` with spark streaks, ConductiveSparks and ConductiveDischarge for Conductive.
+- Fire: heat tongues, scorch and embers overlay; BurnFlames and BurnOut for Burn.
+- Toxic: filling veins, travelling pulse and wet blotches; PoisonOoze and PoisonGasPuff for Poison.
+- Ballistic: dusty cracks and FractureGrit for Fracture; BreakRockBurst on conversion; glowing crack network, BreakCrumble and BreakDustPuff for Break.
+- Slow: Drag overlay and SlowDrag (sinking motes, pulsing ground ring).
+- Build Status VFX tool: overlay materials, generated textures (FlameLick, Bubble, Ring), prefabs and wiring for every status.
+- Enemy shield VFX: `ShieldVisual` (ellipsoid fit, stutter-in rise, hit pulse and surface hit, random low-shield drop-outs, swell-and-shatter break), `ShieldShell`, `ShieldRim` shader; Build Shield VFX tool; Ballistic, Ice and Shock shields; `EnemyShield` Raised and Broken events.
+- Ballistic and Shock shield break blasts; `DeathBlastSO.overrideColor` (Ballistic break in the shield rim amber).
+- `EnemySpawnDef`: a preset variant or an archetype plus extra modifier layers, composed at spawn.
+- Per-rank names on archetypes (Major, Elite, Miniboss; Miniboss also covers Boss).
+- Element layers (Fire, Frost, Toxic, Shock, Ballistic) carrying element, glow look, own resist and elemental melee; one Volatile and one Pool trait layer.
+- Death effects can take the enemy's element (type, colour and status); `DamageTypeSO.status` names each element's default status.
+- Enemy effects gallery (Play mode): one row per status and body, one enemy per sampled stack level; triggers for fire, blast, arc, convert and kill; Gallery Window with element, weapon, status, body, kill explosion, archetype, rank and layer picks, loop, time scale and pause.
+- Gallery layer modes: Combine (one element and one shield per row), Separate, All Together; Plain Row toggle.
+- Freeze UI Fonts tool: static TextMeshPro atlases for the UI and damage number fonts.
+
+### Changed
+- Enemies are archetype plus rank, element and trait layers everywhere: squads, scene spawners, the Enemy Squads window, SpawnTestProbe and the Perk Lab simulation. Rank is a tier layer (`EnemyTierLayers`).
+- `EnemySpawner` keeps one pool per body prefab and sets the definition before the instance comes alive; the old variant and archetype spawn calls wrap `EnemySpawnDef`.
+- Shield layers carry a shield only, no behaviour.
+- Chill, Freeze, Conductive, Burn and Poison use the custom VFX in place of the borrowed wind and water auras.
+- Gallery enemies have x1000 max health so max-stack ticks cannot kill them; the gallery scene has a NavMesh and the GOAP manager.
+
+### Fixed
+- Ice shield hit duplicated the Earth hit; it now has its own ice shard hit.
+
+### Removed
+- 57 baked per-combo variant assets and the Enemy Workshop variant matrix (hand-made variants remain for unique enemies).
+- Combined layers Shielded, Volatile, Frigid and Hazardous, and the per-element blasts and pools they used.
+
+## [0.0.16] - 2026-11-19 to 2026-11-20
+
+Perk tools, and the perk bugs they found.
+
+### Added
+- Perk Audit window: read-only scan of every perk, pool, weapon and armor piece for bad data, triggers that cannot fire, buffs that never end, wrong stat targets, failing descriptions, unrollable perks, duplicate ids and same-name families; errors on any intrinsic identical to another perk.
+- Perk Lab window. Forge: build a weapon or armor piece with a chosen rarity and perk per column, randomize, give to carried or vault. Bench: fire real hits, kills, precision, chain, shots and damage taken through the held weapon's resolver, with a live readout.
+- Perk Lab simulated enemy: two hidden stripped copies of a chosen enemy, revived after kills.
+- Perk Lab Sweep: mounts each weapon and armor perk alone, runs a scenario from its own settings and reports PASS, FAIL or SKIP, with simulated swaps, saved verdicts, filters and per-row reruns.
+- Backlash (Shotgun Traits): taking damage raises damage by 20% for 3 s.
+
+### Changed
+- Every intrinsic is unique: Heavy sidearm and Pump shotgun intrinsics also hit enemies within 3 m and 2 m; Single Slug needs 2 precision hits in 2 s; Lever triggers every second landed shot; Auto shotgun on 4 landed shots within 1 s; Spraying SMG spreads within 3 m with an extra stack; Rapid Auto Rifle bonus raised to +25%; Hum every 12 hits, Drift every 5, Feedback on chain kills for 2 rounds, Bulldoze +0.75 stagger stacking twice for 3 s.
+- Armor perks Fast Hands renamed Quickhand and Fleet renamed Fleetfoot (ids unchanged).
+- `StatusReceiver` lifts each pool's stat change when clearing on spawn and disable.
+- Pool stats with their own minimum clamp to it; Damage Taken minimum is -0.9.
+- Shotguns Pumper90 and Slugger120 renamed Pumper and Slugger.
+
+### Fixed
+- DamageTaken never reached weapon perks; `PerkRuntime.Listen` no longer filters it by weapon, and `PlayerHurtbox` finds the bus in its parents.
+- ShotFired and DryFire were never published, so shot-counting perks (Spin Up, Settle In, Drumroll, Run Hot, Bracing) never counted and next-shot charges were never spent.
+- Armor damage reductions (Tough, Iron Skin, Last Stand) did nothing because Damage Taken floored at 0.
+- Plague Burst explosion dealt Fire damage, so it never rolled on Toxic weapons.
+
+## [0.0.15] - 2026-11-17 to 2026-11-18
+
+Weapon family passes, damage type identities and elemental weapons.
+
+### Added
+- Perk types: Hit Condition (bonus damage within or beyond a distance, by target health, vs debuffed targets, on precision hits or vs specific statuses), Mag Refill, Armed Buff, Status On Trigger; Triggered Buff charges.
+- `HitContext.ConditionMultiplier`, applied after crit and reset with crit at the top of every resolution.
+- Damage type identities: Ballistic direct hits +10% damage and +0.1 precision multiplier; Frost Chill converting to Freeze (root 1.5 s) at 5 stacks; Shock Conductive (30% of each direct hit arcs to the 2 nearest enemies); Toxic Poison lowering Toxic resist per stack.
+- Ballistic Fracture (+3% damage taken per stack, 5 max) converting to Break (stagger, knockback, +25% damage taken).
+- `StatusSO` looping aura, end effect, conversion at a stack count, and control fields (stun, stagger, heavy stagger, knockback) applied through `IStatusControl`; `EnemyMover.Push`.
+- `ElementStatusSO` and `ConductiveStatusSO`; `VfxPool`, `VfxTint`, `ArcVfx` chain arcs; hit, blast and arc VFX slots on `DamageTypeSO`.
+- `RoundSO` (mesh, tint, scale, element glow shell, streak, muzzle clearance) on archetypes with a weapon override; rounds 9mm, 5.56mm, slug and pellet; `IRoundSource` for player and enemy guns.
+- Element tracers for hitscan and projectiles, `ElementTrail` particle trails (Embers, Mist, Sparks, Drips), impacts facing the surface.
+- Damage type icons across the UI and in inline text; nested keyword popups.
+- Archetype intrinsic perks (`WeaponArchetypeSO.intrinsicPerks`), resolved before the weapon's own.
+- Element column (Uncommon and up) choosing its pool by the weapon's damage type (`PerkColumn.byElement`); Fire, Frost, Shock, Toxic and Ballistic Traits pools. Weapons now have nine columns and roll 2 / 4 / 5 / 6 / 7 traits from Common to Mythic.
+- SMG pass: Rapid, Spraying and Tactical identities, intrinsics Spin Up, Settle In and Clean Cut, SMG barrels and traits.
+- Rifle pass: Rapid Auto, Dueling Burst and Precision Semi identities, intrinsics Drumroll, Full Burst and Longshot, rifle barrels and traits.
+- Sidearm pass: 8 archetypes (Heavy, Light, Bursting, Double-Tap, Machine Pistol, Revolver, Precision, Scatter), a 2-round 300 RPM burst, Sidearm Traits and Sidearm All Traits.
+- Shotgun pass: 8 archetypes (Aggressive Pump, Rapid Semi, Single Slug, Double Barrel, Auto, Lever Action, Burst, Heavy Slug), Tight Choke and Long Choke, Pellet_Tight delivery, Shotgun Traits and Shotgun All Traits.
+- Fire, Frost, Shock and Toxic named weapons for every archetype (88 elemental weapons, 110 named weapons in all), each with its own elemental intrinsic; Ballistic weapons get Fracture intrinsics.
+
+### Changed
+- Damage types renamed for display: Ballistic, Fire, Frost, Shock, Toxic (asset names and ids unchanged).
+- Perk rolls skip perks whose element does not match the weapon's damage type.
+- Old Elemental pool removed from the trait pools; Volatile renamed Flashover, Toxic renamed Tainted Rounds.
+- Shared perk retunes toward looter-strong values (Range, Quick Reload, Light Frame, Kill Ramp, Full Charge, Kill Mobility).
+- Plinking Sidearm renamed Light Sidearm and made semi-automatic.
+- Enemy ranged attacks take their round, and their element unless overridden, from the held gun.
+- Loadout cards show intrinsics as the first chip; chips cap at two rows.
+
+### Fixed
+- Ballistic rock hit materials rendered magenta (converted to URP Lit).
+
+## [0.0.14] - 2026-11-16
+
+Inventory UI overhaul, generated descriptions and weapon recoil.
+
+### Added
+- Cut-corner loot-card style: rarity wash and top band, solid Mythic border, `UIGradient`; title and number font slots; Cinzel and Redaction fonts.
+- Generated descriptions for every perk type, status, hit effect and enemy modifier, variant, shield, death effect and affix (`Describer`, `IDescribable`), with a custom template option.
+- `KeywordSO` and `KeywordLibrarySO`: keyword links in text with hover popups and click-to-pin.
+- Compare toggle (off by default) for weapons and armor in the detail panel; live weapon damage beside percent values.
+- `SlideLayout`: tiles slide to new positions and fade in and out; sticky detail panel; carried items in per-slot sections.
+- Tab keys (Q/E, LB/RB), Compare key, keyboard and gamepad focus navigation, perk chip tooltips, compact filter bar.
+- Drag and drop between carried, vault and slot cards; Character tab build summary (elements, keywords, perks grouped by trigger).
+- Collapsible carried sections with pins; Inventory Layout window; tintable rank icons.
+- Weapon recoil: per-shot look kick following an authored or seeded archetype pattern, pull-down compensation, recentring, Stability and Recoil Direction stats, viewmodel spring kick, recoil pattern editor with a spray preview.
+
+### Changed
+- Panels refresh in place in Play mode; clicking a carried item equips it into the selected, carried or first allowed slot.
+- Vault click selects; double-click or Store moves.
+- Carried cap per slot raised from 9 to 10.
+- Arms and gun fire clips are per-viewmodel toggles; the arms fire clip is off by default.
+
+### Fixed
+- Carried and vault grids stacking into one column.
+
+## [0.0.13] - 2026-11-10 to 2026-11-16
+
+Enemy AI rebuild, ranged enemies, squads and encounter rooms.
+
+### Added
+- GOAP rebuild: `EnemyPerception`, `EnemyMover` (sole NavMeshAgent owner), `EnemyBrain` requesting kill, search and idle goals together so the planner chooses; code-built capabilities and agent types (`EnemyAgentTypes`); `AITargets` in place of tag lookups.
+- `EnemyBehaviourProfileSO`: capabilities and tuning per archetype, overridable by modifiers.
+- Attack tokens: 5 melee per target with waiting enemies circling at hold distance; a separate, unlimited ranged pool.
+- Kamikaze capability; shield cover capability with an automatic cover finder and reservations.
+- Ranged enemies: `EnemyRangedAttack` (projectile or hitscan bursts with aim settle, leading, tracking, scatter, reload), `PositionScorer` firing points, `EnemyWeaponModel` holding a gun by its grip, ranged stats, Rifleman and Pistoler.
+- Combat cover with half and full cover, peeking, reloading behind cover; strafing and suppressing fire; dodges on hit or danger.
+- Per-rank tactics on behaviour profiles; Minor, Major, Elite, Miniboss and shielded variants of the ranged enemies.
+- `EnemySquad` and `EnemySquadSO`: shared contact, leader, flanker and suppressor roles, leader-loss morale, leash to the squad anchor; Enemy Squads window (`EnemySquadSetup`).
+- Encounters: `Encounter`, `EncounterWave`, `SpawnDoor`, `EncounterRoomSettingsSO`, procedural `EncounterRoomGenerator`, runtime NavMesh rebuild, Encounter Rooms window.
+- Enemy hit reactions: procedural kick, stagger meter with light and heavy staggers, hit clips by stance, `HitReactionProfileSO`, `stagger_power` weapon stat, `HitReport` and `CombatantHealth.Damaged`.
+- `EnemyAIDebugOverlay` (Alt + =).
+- Rifleman on the third-person body rig; shared third-person grip, aim and IK code for the player and enemies; `EnemyShooterAnimator` for strafe blends, crouch and aim.
+- `GunModel` TP Hold mode (Auto, TwoHand, OneHand) and TP Left Hand IK toggle; grip tool (`GunGripTool`, Gun Grip Points window) palm preview, Flip Palm and Snap To Clip Hand.
+
+### Changed
+- Editor tools moved from Tools/ to a top-level FPS0 menu with grouped submenus, tool classes renamed (EnemyShooterSetup to RangedEnemySetup, EnemyAttackAnimatorSetup to MeleeAttackAnimatorSetup, EncounterSetup to EncounterRoomSetup, TPGripTool to GunGripTool, TPBodySetup to TPBodyAnimatorSetup, EnemyHitboxMeshFit to EnemyHitboxSetup).
+- Closed spawn doors carve the NavMesh; enemies stay inside the encounter zone; squad leash off inside encounters.
+- Only the enemy under the crosshair gains aimed-at defensiveness; cover and eye heights scale with enemy size.
+- Rifle locomotion and pistol clip avatars rebuilt from the Ch15 T-pose; grip points refitted.
+
+### Fixed
+- Enemy shots stopped on the player's CharacterController instead of reaching its hitboxes.
+- Enemies froze mid-move when the destination was dropped or the magazine ran dry.
+- A behaviour profile from a shield or volatile modifier turned ranged enemies melee.
+
+### Removed
+- `AgentBrain`, the old mover, `EnemyMemory`, `GoapRuntimeInit`, the capability generator and the GOAP Capability Builder (replaced by code-built capabilities).
+- The aimed-at dodge.
+
+## [0.0.12] - 2026-11-07 to 2026-11-10
+
+Enemy definitions, zones, ranks, health bars, death effects and shields.
+
+### Added
+- README; GOAP 3.1.1 installed from GitHub through the package manifest.
+- Enemy data model: `EnemyArchetypeSO`, `EnemyModifierSO`, `EnemyVariantSO`, `EnemyAffixSO`, `EnemyDefinitionApplier` applying stats, melee, loot, look and affixes each spawn.
+- `FPS0/EnemyLit` shader (URP Lit copy) with zone mask recolour and emission; `EnemyLook`; enemy masks per model.
+- Variant, modifier and archetype inspectors with a 3D preview, final stats and setup warnings; Enemy Gallery scene.
+- Per-variant spawner pools with prewarm counts.
+- Enemy ranks (Minor, Major, Elite, Miniboss, Boss) and Major and Miniboss tier modifiers.
+- `EnemyHealthBars`: pooled overhead bars with rank icon, name, scaling ticks, damage and heal chips and a shield layer; Add Enemy Health Bars tool.
+- Death effects: `DeathBlastSO` and `DeathHazardSO`; shared hazard pools; `PoolPerkSO`; Fire, Toxic and Frost Pool perks.
+- `DamageTypeSO` colour; `VfxTint`.
+- Element modifiers with affinities, elemental melee and looks; `TimedSlow`.
+- `EnemyShieldSO` and `EnemyShield`: absorbs before health, overflows on break, recharges after a pause, break blast on a matching element; `IDamageAbsorber`.
+- Enemy Workshop window: browse, generate missing variants, clean up.
+- SpawnTestProbe rank keys and on-screen overlay.
+
+### Changed
+- `WeaponZoneSetSO` and `WeaponShaderSO` renamed `ZoneSetSO` and `ZoneShaderSO` and moved to Combat.Zones; Weapon Zone Editor renamed Zone Editor and works on any model, every material's mask at once.
+- Burn and poison statuses no longer explode on kill by default.
+- .gitignore rewritten; generated project files untracked.
+
+### Fixed
+- Area targeting missed enemies (each hitbox now checked against the area).
+
+### Removed
+- Unused packages (collab-proxy, visualscripting, ide.rider, package-validation-suite, test-framework.performance, multiplayer.center); a committed zip and Retired Scripts.
+
 ## [0.0.11] - 2026-11-02 to 2026-11-07
 
 Third-person body, player hitboxes, enemy rework and ragdolls, unified input, inventory screen, rarity, loot and vault.
