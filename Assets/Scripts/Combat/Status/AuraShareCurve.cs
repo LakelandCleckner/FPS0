@@ -9,6 +9,8 @@ namespace Combat.Status
         [Range(0f, 0.95f)] public float startAt = 0f;
         [Tooltip("Above 1 keeps low shares sparse and ramps up near full.")]
         [Min(0.1f)] public float power = 1f;
+        [Tooltip("Least share while any stacks are on, so the first stack reads.")]
+        [Range(0f, 1f)] public float floor = 0f;
         [Tooltip("Emit from this system's own shape and position, not from body points (ground rings).")]
         public bool ownShape = false;
 
@@ -17,7 +19,8 @@ namespace Combat.Status
         public float Evaluate(float share)
         {
             float k = Mathf.Clamp01((share - startAt) / (1f - startAt));
-            return Mathf.Pow(k, power);
+            float v = Mathf.Pow(k, power);
+            return share > 0f ? Mathf.Max(floor, v) : 0f;
         }
     }
 }

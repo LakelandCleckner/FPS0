@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4375711609206524120}
   - component: {fileID: 5385242766597677450}
   - component: {fileID: 7293553291884225637}
+  - component: {fileID: 5731966651066657568}
   m_Layer: 0
   m_Name: Dust
   m_TagString: Untagged
@@ -4833,6 +4834,22 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &5731966651066657568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 731077358897518710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84d5baf55f5458b439eb7e323f923180, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startAt: 0
+  power: 1
+  floor: 0.3
+  ownShape: 0
 --- !u!1 &6615306477621524926
 GameObject:
   m_ObjectHideFlags: 0
@@ -4844,6 +4861,7 @@ GameObject:
   - component: {fileID: 6489782327629663926}
   - component: {fileID: 3048659021630892676}
   - component: {fileID: 1253320545641021441}
+  - component: {fileID: 7157976028232085253}
   m_Layer: 0
   m_Name: FractureGrit
   m_TagString: Untagged
@@ -9667,3 +9685,19 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &7157976028232085253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6615306477621524926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84d5baf55f5458b439eb7e323f923180, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startAt: 0
+  power: 1
+  floor: 0.3
+  ownShape: 0

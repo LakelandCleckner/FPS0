@@ -40,6 +40,8 @@ namespace Combat.Enemies
         [Header("Look")]
         [Tooltip("Colour comes from the damage type; this is the fallback, and its alpha sets opacity.")]
         public Color color = new Color(1f, 0.4f, 0.1f, 0.35f);
+        [Tooltip("Use the colour above instead of the damage type's, for the VFX too.")]
+        public bool overrideColor = false;
         public float vfxLifetime = 0.4f;
         [Tooltip("Spawned at the blast. Empty = placeholder sphere.")]
         public GameObject blastVfx;
@@ -100,7 +102,7 @@ namespace Combat.Enemies
         {
             get
             {
-                var c = damage.type != null ? damage.type.color : color;
+                var c = !overrideColor && damage.type != null ? damage.type.color : color;
                 c.a = color.a;
                 return c;
             }
@@ -110,7 +112,8 @@ namespace Combat.Enemies
         {
             if (blastVfx == null) { BlastPlaceholderVfx.Spawn(c, radius, vfxLifetime, Color); return; }
             var fx = Instantiate(blastVfx, c, Quaternion.identity);
-            if (tintVfx && damage.type != null) VfxTint.Apply(fx, damage.type.color);
+            if (tintVfx && overrideColor) VfxTint.Apply(fx, new Color(color.r, color.g, color.b, 1f));
+            else if (tintVfx && damage.type != null) VfxTint.Apply(fx, damage.type.color);
             if (vfxReferenceRadius > 0f) fx.transform.localScale = blastVfx.transform.localScale * (radius / vfxReferenceRadius);
             if (vfxLifetime > 0f) Destroy(fx, Mathf.Max(vfxLifetime, 2f));
         }

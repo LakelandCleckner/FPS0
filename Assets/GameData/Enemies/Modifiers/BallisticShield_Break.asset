@@ -37,7 +37,8 @@ MonoBehaviour:
   slow: 0
   slowDuration: 2
   slowStat: {fileID: 0}
-  color: {r: 1, g: 0.4, b: 0.1, a: 0.35}
+  color: {r: 1, g: 0.6, b: 0.25, a: 0.35}
+  overrideColor: 1
   vfxLifetime: 2
   blastVfx: {fileID: 2852749916858317326, guid: 7808f6b25f91dae4f9fe9444281616f3, type: 3}
   vfxReferenceRadius: 0

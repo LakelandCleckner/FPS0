@@ -14,6 +14,8 @@ namespace Combat.Status.EditorTools
         private const string OverlayShader = "FPS0/StatusOverlay";
         private const string SpikePath = "Assets/PixPlays/Components/Meshes/Objects/spike_mesh.prefab";
         private const string IceMatPath = "Assets/Art/VFX/Shields/IceCrystal.mat";
+        private const string GritPath = "Assets/Prefabs/VFX/FractureGrit.prefab";
+        private const float GritFloor = 0.3f;
         private const string RockPath = "Assets/PixPlays/Components/Meshes/Objects/rock.prefab";
         private const string RockTexPath = "Assets/PixPlays/Components/Textures/RockTextures/Rock_Diffuse.png";
         private static readonly Color Amber = new Color(1.4f, 0.85f, 0.35f, 1f);
@@ -175,6 +177,7 @@ namespace Combat.Status.EditorTools
             // ---- Ballistic ----
             var fractureMat = Overlay("Fracture", 2, m => CrackLook(m, false));
             var breakMat = Overlay("Break", 2, m => CrackLook(m, true));
+            GritFloorSetup();
             var rockBurst = RockBurst(dot);
             var crumble = BreakCrumble(dot);
             var dustPuff = DustPuff(dot);
@@ -443,6 +446,22 @@ namespace Combat.Status.EditorTools
             var c = go.AddComponent<AuraShareCurve>();
             c.startAt = startAt;
             c.power = power;
+        }
+
+        // FractureGrit systems get a share curve with a floor so one stack reads; existing curves are kept.
+        private static void GritFloorSetup()
+        {
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(GritPath) == null) { Debug.LogWarning(Tag + "No FractureGrit at " + GritPath); return; }
+            var root = PrefabUtility.LoadPrefabContents(GritPath);
+            bool changed = false;
+            foreach (var ps in root.GetComponentsInChildren<ParticleSystem>(true))
+            {
+                if (ps.GetComponent<AuraShareCurve>() != null) continue;
+                ps.gameObject.AddComponent<AuraShareCurve>().floor = GritFloor;
+                changed = true;
+            }
+            if (changed) PrefabUtility.SaveAsPrefabAsset(root, GritPath);
+            PrefabUtility.UnloadPrefabContents(root);
         }
 
         // Shared crack network; Break adds the amber shield-rim glow pulsing inside.

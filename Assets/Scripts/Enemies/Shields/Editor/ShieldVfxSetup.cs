@@ -21,7 +21,7 @@ namespace Combat.Enemies.EditorTools
         private class Base
         {
             public string Name, Shell, Hit;
-            public bool Uniform, Crystal, Rim;
+            public bool Uniform, Crystal, Rim, IceHit;
             public float PartSize = 1f;
             public Color RimColor;
         }
@@ -30,7 +30,7 @@ namespace Combat.Enemies.EditorTools
         private const string EarthHit = "EarthShield/Version_BuiltIn/EarthShieldHit.prefab";
 
         private static readonly Base Earth = new Base { Name = "Earth", Shell = EarthShell, Hit = EarthHit, Uniform = true, PartSize = 0.5f, Rim = true, RimColor = new Color(1.4f, 0.85f, 0.35f, 1f) };
-        private static readonly Base Ice = new Base { Name = "Ice", Shell = EarthShell, Hit = EarthHit, Uniform = true, Crystal = true, PartSize = 0.1f, Rim = true, RimColor = new Color(0.75f, 1.2f, 1.5f, 1f) };
+        private static readonly Base Ice = new Base { Name = "Ice", Shell = EarthShell, Hit = EarthHit, Uniform = true, Crystal = true, IceHit = true, PartSize = 0.1f, Rim = true, RimColor = new Color(0.75f, 1.2f, 1.5f, 1f) };
         private static readonly Base Fire = new Base { Name = "Fire", Shell = "FireShield/Version_BuiltIn/FireShield.prefab", Hit = "FireShield/Version_BuiltIn/FireShieldHit.prefab" };
         private static readonly Base Water = new Base { Name = "Water", Shell = "WaterShield/Version_BuiltIn/WaterShield.prefab", Hit = "WaterShield/Version_BuiltIn/WaterShieldlHit.prefab" };
         private static readonly Base Wind = new Base { Name = "Wind", Shell = "WindShield/Version_BuiltIn/WindShield.prefab", Hit = "WindShield/Version_BuiltIn/WindShieldHit.prefab" };
@@ -86,6 +86,7 @@ namespace Combat.Enemies.EditorTools
         // New copy of a PixPlays prefab, or an upgrade of one built earlier.
         private static GameObject Build(Base b, bool shell)
         {
+            if (!shell && b.IceHit) return IceHit(OutPath(b, false));
             string outPath = OutPath(b, shell);
             var existing = AssetDatabase.LoadAssetAtPath<GameObject>(outPath);
             if (existing != null)
@@ -259,6 +260,86 @@ namespace Combat.Enemies.EditorTools
             foreach (var t in root.GetComponentsInChildren<Transform>(true))
                 if (t.name == name) return t;
             return null;
+        }
+
+        // Ice hit of our own: spike shards and a frosty puff. Rebuilds an old rock copy in place, keeping its GUID and references.
+        private static GameObject IceHit(string path)
+        {
+            var existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (existing != null && Find(existing.transform, "IceShards") != null) return existing;
+
+            var root = new GameObject(System.IO.Path.GetFileNameWithoutExtension(path));
+            var shardsGo = new GameObject("IceShards");
+            shardsGo.transform.SetParent(root.transform, false);
+            var shards = HitBurst(shardsGo, IceMaterial(), 8);
+            var main = shards.main;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(0.4f, 0.6f);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(1.5f, 3f);
+            main.startSize = new ParticleSystem.MinMaxCurve(0.08f, 0.16f);
+            main.gravityModifier = 1f;
+            main.startRotation3D = true;
+            main.startRotationX = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+            main.startRotationY = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+            main.startRotationZ = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
+            var sol = shards.sizeOverLifetime;
+            sol.enabled = true;
+            sol.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 1f), new Keyframe(0.7f, 1f), new Keyframe(1f, 0f)));
+            var spikeGo = AssetDatabase.LoadAssetAtPath<GameObject>(SpikePath);
+            var spike = spikeGo != null ? spikeGo.GetComponentInChildren<MeshFilter>()?.sharedMesh : null;
+            if (spike != null)
+            {
+                var r = shards.GetComponent<ParticleSystemRenderer>();
+                r.renderMode = ParticleSystemRenderMode.Mesh;
+                r.mesh = spike;
+            }
+
+            var frostGo = new GameObject("Frost");
+            frostGo.transform.SetParent(root.transform, false);
+            var mist = AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/VFX/Status/Particle_Mist.mat");
+            var frost = HitBurst(frostGo, mist, 6);
+            main = frost.main;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(0.4f, 0.6f);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(0.3f, 0.8f);
+            main.startSize = new ParticleSystem.MinMaxCurve(0.3f, 0.6f);
+            main.startColor = new Color(0.8f, 0.95f, 1f, 0.5f);
+            var col = frost.colorOverLifetime;
+            col.enabled = true;
+            var g = new Gradient();
+            g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                      new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0f, 1f) });
+            col.color = new ParticleSystem.MinMaxGradient(g);
+            sol = frost.sizeOverLifetime;
+            sol.enabled = true;
+            sol.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0f, 1f, 1f, 1.8f));
+
+            var saved = PrefabUtility.SaveAsPrefabAsset(root, path);
+            Object.DestroyImmediate(root);
+            Debug.Log(Tag + (existing != null ? "Rebuilt " : "Created ") + path);
+            return saved;
+        }
+
+        // One-shot burst in a cone off the surface; sizes are authored for the default 0.5 hit scale.
+        private static ParticleSystem HitBurst(GameObject go, Material mat, int count)
+        {
+            var ps = go.AddComponent<ParticleSystem>();
+            ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            var main = ps.main;
+            main.loop = false;
+            main.duration = 0.5f;
+            main.playOnAwake = true;
+            main.scalingMode = ParticleSystemScalingMode.Hierarchy;
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+            var em = ps.emission;
+            em.rateOverTime = 0f;
+            em.SetBursts(new[] { new ParticleSystem.Burst(0f, (short)count) });
+            var shape = ps.shape;
+            shape.shapeType = ParticleSystemShapeType.Cone;
+            shape.angle = 35f;
+            shape.radius = 0.05f;
+            var r = go.GetComponent<ParticleSystemRenderer>();
+            if (mat != null) r.sharedMaterial = mat;
+            r.shadowCastingMode = ShadowCastingMode.Off;
+            return ps;
         }
 
         // Rocks become ice spikes pointing out from the centre.
