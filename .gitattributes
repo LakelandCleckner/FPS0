@@ -1,1 +1,11 @@
 Assets/Animations/Player/ThirdPerson[[:space:]]Weapon[[:space:]]Packs/**/Ch15_nonPBR.fbx filter=lfs diff=lfs merge=lfs -text
+
+# Unity YAML merge
+*.unity merge=unityyamlmerge
+*.prefab merge=unityyamlmerge
+*.asset merge=unityyamlmerge
+*.mat merge=unityyamlmerge
+*.anim merge=unityyamlmerge
+*.controller merge=unityyamlmerge
+*.overrideController merge=unityyamlmerge
+*.mask merge=unityyamlmerge
