@@ -96,4 +96,4 @@ Third-party assets remain the property of their authors and are included only as
 
 ## Author
 
-JustChoochit
+LakelandCleckner
