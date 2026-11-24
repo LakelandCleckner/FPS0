@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad48f58e1f0a04044adbbfbebfa36265, type: 3}
+  m_Name: Might
+  m_EditorClassIdentifier: 
+  stat: {fileID: 11400000, guid: d71daf12daaf49b489a61c2261befa24, type: 2}
+  theme: Heavy hits
+  element: {fileID: 11400000, guid: bb5cd7710169fec488edfdb57f9d8ade, type: 2}
+  archetypes:
+  - {fileID: 11400000, guid: 8ce3432d495d400798fb0dba3b6c9ed4, type: 2}
+  - {fileID: 11400000, guid: c959ca4e6a5e1ea44981dd5b4772da86, type: 2}
+  - {fileID: 11400000, guid: 4a818674324b4b02a93874adcd482203, type: 2}
+  - {fileID: 11400000, guid: fd5f734c3f37453da641c308bd1ee158, type: 2}
+  - {fileID: 11400000, guid: 16e811a3da04dad4bbf1a9a4b7eaf50e, type: 2}
+  feeds:
+  - stat: {fileID: 11400000, guid: 143b12865efe3284c8474b70084cde31, type: 2}
+    bucket: 1
+    perPoint: 0.005
+    target: 1
+  - stat: {fileID: 11400000, guid: cd293aa7bcdb499a9c8134c2be854f37, type: 2}
+    bucket: 0
+    perPoint: 0.1
+    target: 1
+  - stat: {fileID: 11400000, guid: cffe40ffbb34436792f1ee3b2d41d4e7, type: 2}
+    bucket: 0
+    perPoint: 0.1
+    target: 1

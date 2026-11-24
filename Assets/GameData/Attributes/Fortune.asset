@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad48f58e1f0a04044adbbfbebfa36265, type: 3}
+  m_Name: Fortune
+  m_EditorClassIdentifier: 
+  stat: {fileID: 11400000, guid: f15e949833ffc614c8c03fa6e0b75060, type: 2}
+  theme: Loot
+  element: {fileID: 0}
+  archetypes: []
+  feeds: []

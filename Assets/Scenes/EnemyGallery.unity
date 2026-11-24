@@ -579,6 +579,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3615beef671e01545ab53b8b1b07a018, type: 2}
   - {fileID: 11400000, guid: f24a21174f9ae8446801310751e38813, type: 2}
   - {fileID: 11400000, guid: 143b12865efe3284c8474b70084cde31, type: 2}
+  - {fileID: 11400000, guid: d71daf12daaf49b489a61c2261befa24, type: 2}
+  - {fileID: 11400000, guid: 70b822ad974406c4598c02ace53c8c24, type: 2}
+  - {fileID: 11400000, guid: 7082d7a41ffb12c469c4717a63391ee7, type: 2}
+  - {fileID: 11400000, guid: 0588a332f4b7cc54a8908d54c178bb3d, type: 2}
+  - {fileID: 11400000, guid: 599f163b62104ae4f817135885c68c42, type: 2}
+  - {fileID: 11400000, guid: f15e949833ffc614c8c03fa6e0b75060, type: 2}
 --- !u!4 &798870445
 Transform:
   m_ObjectHideFlags: 0
@@ -1066,7 +1072,8 @@ MonoBehaviour:
   archetype: {fileID: 0}
   rank: 0
   layers: []
-  rowPerLayer: 1
+  layerMode: 0
+  plainRow: 0
   handMade: 1
   spacing: 2.5
   rowSpacing: 5

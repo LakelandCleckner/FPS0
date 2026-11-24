@@ -1281,6 +1281,56 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""AttributeNext"",
+                    ""type"": ""Button"",
+                    ""id"": ""a0091536-fee0-4c7a-aa9d-0477b1aae120"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""AttributeAdd"",
+                    ""type"": ""Button"",
+                    ""id"": ""9678719f-0714-4989-ab73-be3650078f6a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""AttributeRemove"",
+                    ""type"": ""Button"",
+                    ""id"": ""3a06629d-3e3c-4a04-949f-ccbe8ed3594a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""AttributeReset"",
+                    ""type"": ""Button"",
+                    ""id"": ""e50ebd09-a252-488d-94b2-365d0511cd8a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""AttributeDump"",
+                    ""type"": ""Button"",
+                    ""id"": ""adeb93e3-d9c2-4585-9803-735990ae0597"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -2317,6 +2367,226 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""action"": ""ToggleSpawnOverlay"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Ctrl"",
+                    ""id"": ""1ff03526-398b-482f-ba3a-580d9de3986f"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AttributeNext"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""906e54bf-c09e-43e8-b996-f45a82400d75"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""AttributeNext"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""e702aa34-b748-41c9-b807-acfea15a3618"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""AttributeNext"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""2ecf16e7-4d04-4a4c-98dc-d32e9550e53a"",
+                    ""path"": ""<Keyboard>/6"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""AttributeNext"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Ctrl"",
+                    ""id"": ""0a7cd019-65e1-4667-87cc-c997519c69a6"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AttributeAdd"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""45804aa9-e6e4-47a2-9ba1-af545380026f"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""AttributeAdd"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""8593c10c-656a-4d7d-a279-1983be8b97f2"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""AttributeAdd"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""afb1260f-fd1d-4396-920e-5145a6d8fcf3"",
+                    ""path"": ""<Keyboard>/7"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""AttributeAdd"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Ctrl"",
+                    ""id"": ""5ab7519d-b8c2-475a-a8c3-a2cedcd9e257"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AttributeRemove"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""017337d0-0ac6-4672-a0b5-a27411ac05ef"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""AttributeRemove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""cf6cd4a8-a2a3-45c8-a623-3e62b9443f2e"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""AttributeRemove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""22fb00b7-d552-4c36-99e3-41ee328a8e0e"",
+                    ""path"": ""<Keyboard>/8"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""AttributeRemove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Ctrl"",
+                    ""id"": ""a00ed1d6-ae0a-4671-9261-c6af23f48e8f"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AttributeReset"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""13d4e2ad-29a6-4a62-aaf9-ac4334b2ceea"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""AttributeReset"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""dc375cd9-f677-4ac6-925e-0e3219e9b311"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""AttributeReset"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""aef9b6da-1c62-458c-89de-6e2b7ea045b5"",
+                    ""path"": ""<Keyboard>/9"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""AttributeReset"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Ctrl"",
+                    ""id"": ""927edfb8-11a3-4206-9c47-77d7c4a3d28b"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AttributeDump"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""b3c57235-e3ea-457b-8c63-69a8d20d868b"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""AttributeDump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""8f5792d5-1639-4982-bd1e-e573928abcdf"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""AttributeDump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""00380820-f921-473b-bf9f-adb1ffadd4c4"",
+                    ""path"": ""<Keyboard>/0"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""AttributeDump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -2392,6 +2662,11 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         m_Debug_SpawnDrop = m_Debug.FindAction("SpawnDrop", throwIfNotFound: true);
         m_Debug_ToggleAIDebug = m_Debug.FindAction("ToggleAIDebug", throwIfNotFound: true);
         m_Debug_ToggleSpawnOverlay = m_Debug.FindAction("ToggleSpawnOverlay", throwIfNotFound: true);
+        m_Debug_AttributeNext = m_Debug.FindAction("AttributeNext", throwIfNotFound: true);
+        m_Debug_AttributeAdd = m_Debug.FindAction("AttributeAdd", throwIfNotFound: true);
+        m_Debug_AttributeRemove = m_Debug.FindAction("AttributeRemove", throwIfNotFound: true);
+        m_Debug_AttributeReset = m_Debug.FindAction("AttributeReset", throwIfNotFound: true);
+        m_Debug_AttributeDump = m_Debug.FindAction("AttributeDump", throwIfNotFound: true);
     }
 
     ~@PlayerInputs()
@@ -3045,6 +3320,11 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_Debug_SpawnDrop;
     private readonly InputAction m_Debug_ToggleAIDebug;
     private readonly InputAction m_Debug_ToggleSpawnOverlay;
+    private readonly InputAction m_Debug_AttributeNext;
+    private readonly InputAction m_Debug_AttributeAdd;
+    private readonly InputAction m_Debug_AttributeRemove;
+    private readonly InputAction m_Debug_AttributeReset;
+    private readonly InputAction m_Debug_AttributeDump;
     /// <summary>
     /// Provides access to input actions defined in input action map "Debug".
     /// </summary>
@@ -3173,6 +3453,26 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @ToggleSpawnOverlay => m_Wrapper.m_Debug_ToggleSpawnOverlay;
         /// <summary>
+        /// Provides access to the underlying input action "Debug/AttributeNext".
+        /// </summary>
+        public InputAction @AttributeNext => m_Wrapper.m_Debug_AttributeNext;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/AttributeAdd".
+        /// </summary>
+        public InputAction @AttributeAdd => m_Wrapper.m_Debug_AttributeAdd;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/AttributeRemove".
+        /// </summary>
+        public InputAction @AttributeRemove => m_Wrapper.m_Debug_AttributeRemove;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/AttributeReset".
+        /// </summary>
+        public InputAction @AttributeReset => m_Wrapper.m_Debug_AttributeReset;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/AttributeDump".
+        /// </summary>
+        public InputAction @AttributeDump => m_Wrapper.m_Debug_AttributeDump;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Debug; }
@@ -3285,6 +3585,21 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @ToggleSpawnOverlay.started += instance.OnToggleSpawnOverlay;
             @ToggleSpawnOverlay.performed += instance.OnToggleSpawnOverlay;
             @ToggleSpawnOverlay.canceled += instance.OnToggleSpawnOverlay;
+            @AttributeNext.started += instance.OnAttributeNext;
+            @AttributeNext.performed += instance.OnAttributeNext;
+            @AttributeNext.canceled += instance.OnAttributeNext;
+            @AttributeAdd.started += instance.OnAttributeAdd;
+            @AttributeAdd.performed += instance.OnAttributeAdd;
+            @AttributeAdd.canceled += instance.OnAttributeAdd;
+            @AttributeRemove.started += instance.OnAttributeRemove;
+            @AttributeRemove.performed += instance.OnAttributeRemove;
+            @AttributeRemove.canceled += instance.OnAttributeRemove;
+            @AttributeReset.started += instance.OnAttributeReset;
+            @AttributeReset.performed += instance.OnAttributeReset;
+            @AttributeReset.canceled += instance.OnAttributeReset;
+            @AttributeDump.started += instance.OnAttributeDump;
+            @AttributeDump.performed += instance.OnAttributeDump;
+            @AttributeDump.canceled += instance.OnAttributeDump;
         }
 
         /// <summary>
@@ -3383,6 +3698,21 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @ToggleSpawnOverlay.started -= instance.OnToggleSpawnOverlay;
             @ToggleSpawnOverlay.performed -= instance.OnToggleSpawnOverlay;
             @ToggleSpawnOverlay.canceled -= instance.OnToggleSpawnOverlay;
+            @AttributeNext.started -= instance.OnAttributeNext;
+            @AttributeNext.performed -= instance.OnAttributeNext;
+            @AttributeNext.canceled -= instance.OnAttributeNext;
+            @AttributeAdd.started -= instance.OnAttributeAdd;
+            @AttributeAdd.performed -= instance.OnAttributeAdd;
+            @AttributeAdd.canceled -= instance.OnAttributeAdd;
+            @AttributeRemove.started -= instance.OnAttributeRemove;
+            @AttributeRemove.performed -= instance.OnAttributeRemove;
+            @AttributeRemove.canceled -= instance.OnAttributeRemove;
+            @AttributeReset.started -= instance.OnAttributeReset;
+            @AttributeReset.performed -= instance.OnAttributeReset;
+            @AttributeReset.canceled -= instance.OnAttributeReset;
+            @AttributeDump.started -= instance.OnAttributeDump;
+            @AttributeDump.performed -= instance.OnAttributeDump;
+            @AttributeDump.canceled -= instance.OnAttributeDump;
         }
 
         /// <summary>
@@ -3845,5 +4175,40 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnToggleSpawnOverlay(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "AttributeNext" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnAttributeNext(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "AttributeAdd" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnAttributeAdd(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "AttributeRemove" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnAttributeRemove(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "AttributeReset" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnAttributeReset(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "AttributeDump" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnAttributeDump(InputAction.CallbackContext context);
     }
 }
