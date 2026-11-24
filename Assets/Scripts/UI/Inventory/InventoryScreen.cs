@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Combat.Armor;
+using Combat.Attributes;
 using Combat.Info;
 using Combat.Loadout;
 using Combat.Perks;
@@ -87,6 +88,7 @@ namespace Combat.UI
         public StatSheetSO CharacterStatSheet => characterStatSheet;
         public StatTooltip Tooltip => tooltip;
         public CombatantStats PlayerStats { get; private set; }
+        public PlayerAttributes PlayerAttributes { get; private set; }
         public CombatantHealth PlayerHealth { get; private set; }
         public LoadoutView View => view;
         public InventoryTab Tab { get; private set; } = InventoryTab.Loadout;
@@ -140,6 +142,7 @@ namespace Combat.UI
             if (loadout == null) Debug.LogWarning("[Inventory] No PlayerLoadout found.");
             PlayerStats = loadout != null ? loadout.GetComponentInParent<CombatantStats>() : null;
             PlayerHealth = PlayerStats != null ? PlayerStats.GetComponent<CombatantHealth>() : null;
+            PlayerAttributes = PlayerStats != null ? PlayerStats.GetComponentInChildren<PlayerAttributes>(true) : null;
             Subscribe(true);
         }
 
@@ -647,7 +650,7 @@ namespace Combat.UI
         public WeaponStatPreview PreviewFor(WeaponInstance weapon)
         {
             if (!Application.isPlaying) StatBootstrap.EnsureRegistry();
-            statPreview.Build(weapon, view.EquippedArmor(), statKeys);
+            statPreview.Build(weapon, view.EquippedArmor(), statKeys, PlayerAttributes);
             return statPreview;
         }
 
@@ -655,7 +658,7 @@ namespace Combat.UI
         public WeaponStatPreview ComparePreviewFor(WeaponInstance weapon)
         {
             if (!Application.isPlaying) StatBootstrap.EnsureRegistry();
-            comparePreview.Build(weapon, view.EquippedArmor(), statKeys);
+            comparePreview.Build(weapon, view.EquippedArmor(), statKeys, PlayerAttributes);
             return comparePreview;
         }
 
@@ -701,7 +704,7 @@ namespace Combat.UI
                 if (p.IsBuilt)
                 {
                     ctx.DamageStat = statKeys.weaponDamage;
-                    ctx.DamageValue = p.Get(statKeys.weaponDamage).WithArmor;
+                    ctx.DamageValue = p.Get(statKeys.weaponDamage).Final;
                 }
             }
             return ctx;

@@ -169,6 +169,7 @@ namespace Combat.UI
             var head = Heading(body, s, "Stats");
             Legend(head, s, "Perks", s.barPerk);
             Legend(head, s, "Armor", s.barArmor);
+            Legend(head, s, "Attributes", s.barAttribute);
             CompareChip(screen)(head);
 
             WeaponStatPreview compare = null;
@@ -208,7 +209,7 @@ namespace Combat.UI
 
             UIKit.Size(UIKit.Text(row, "Label", s, e.Label, s.smallSize, s.textMuted), width: 150f);
 
-            float delta = v.WithArmor - v.Base;
+            float delta = v.Final - v.Base;
             bool better = delta > 0f != e.LowerIsBetter;
 
             if (e.display == StatDisplay.Bar)
@@ -219,7 +220,7 @@ namespace Combat.UI
             }
             else UIKit.Spacer(row);
 
-            var value = UIKit.Text(row, "Value", s, StatFormat.Value(e, v.WithArmor), s.bodySize - 1f, s.text, TextAlignmentOptions.MidlineRight,
+            var value = UIKit.Text(row, "Value", s, StatFormat.Value(e, v.Final), s.bodySize - 1f, s.text, TextAlignmentOptions.MidlineRight,
                                    role: TextRole.Number);
             UIKit.Size(value, width: 72f);
 
@@ -228,27 +229,37 @@ namespace Combat.UI
             UIKit.Size(d, width: 60f);
 
             if (!other.HasValue) return;
-            float vs = v.WithArmor - other.Value.WithArmor;
+            float vs = v.Final - other.Value.Final;
             bool wins = vs > 0f != e.LowerIsBetter;
             var c = UIKit.Text(row, "Compare", s, Mathf.Abs(vs) < 0.0005f ? "=" : StatFormat.Delta(e, vs), s.smallSize,
                                Mathf.Abs(vs) < 0.0005f ? s.textFaint : wins ? s.positive : s.negative, TextAlignmentOptions.MidlineRight, role: TextRole.Number);
             UIKit.Size(c, width: 70f);
         }
 
-        // Base fill, then perk and armor gains, then any loss carved back out.
+        // Base fill, then perk, armor and attribute gains, then any loss carved back out.
         private static void DrawBar(RectTransform bar, UIStyleSO s, StatLayers v, float max)
         {
             var track = UIKit.Box(bar, "Track", s, s.barTrack, small: true);
             UIKit.Stretch(track.rectTransform);
 
             float b = Mathf.Clamp01(v.Base / max);
-            float p = Mathf.Clamp01(v.WithPerks / max);
-            float f = Mathf.Clamp01(v.WithArmor / max);
+            float f = Mathf.Clamp01(v.Final / max);
+            float top = Mathf.Max(f, b);
 
             Segment(bar, "Base", s.barBase, 0f, Mathf.Min(b, f));
-            if (p > b) Segment(bar, "Perks", s.barPerk, b, Mathf.Min(p, Mathf.Max(f, b)));
-            if (f > Mathf.Max(p, b)) Segment(bar, "Armor", s.barArmor, Mathf.Max(p, b), f);
+            float reached = b;
+            reached = Gain(bar, "Perks", s.barPerk, reached, Mathf.Clamp01(v.WithPerks / max), top);
+            reached = Gain(bar, "Armor", s.barArmor, reached, Mathf.Clamp01(v.WithArmor / max), top);
+            Gain(bar, "Attributes", s.barAttribute, reached, f, top);
             if (f < b) Segment(bar, "Loss", s.barLoss, f, b);
+        }
+
+        // A layer's gain past what the earlier layers reached, kept under the final fill.
+        private static float Gain(RectTransform bar, string name, Color color, float reached, float value, float top)
+        {
+            if (value <= reached) return reached;
+            Segment(bar, name, color, reached, Mathf.Min(value, top));
+            return value;
         }
 
         private static void Segment(RectTransform bar, string name, Color color, float from, float to)
