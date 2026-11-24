@@ -30,6 +30,7 @@ namespace Combat.Stats
         // derivation (optional)
         public readonly bool IsDerived;
         public readonly StatDefinitionSO SourceStat;   // stat whose resolved value feeds this
+        public readonly StatContainer SourceContainer; // where SourceStat is read; null = the owning container
         public readonly float Coefficient;             // contribution = coeff × resolved(source)
         public readonly bool UseCap;
         public readonly float Cap;                     // optional max on the contribution
@@ -49,13 +50,15 @@ namespace Combat.Stats
         public StatModifier(StatDefinitionSO targetStat, string bucketId,
                             StatDefinitionSO sourceStat, float coefficient,
                             bool useCap = false, float cap = 0f,
-                            ActivityScope scope = ActivityScope.InHands)
+                            ActivityScope scope = ActivityScope.InHands,
+                            StatContainer sourceContainer = null)
         {
             TargetStat = targetStat;
             BucketId = bucketId;
             Scope = scope;
             IsDerived = true;
             SourceStat = sourceStat;
+            SourceContainer = sourceContainer;
             Coefficient = coefficient;
             UseCap = useCap;
             Cap = cap;

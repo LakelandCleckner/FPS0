@@ -10,9 +10,11 @@ namespace Combat.Stats
     //     versions of the source stats it depended on and invalidates if any moved
     //     (local + lazy; no reverse-dependency graph)
     //
-    // Derived modifiers may read stats in THIS container. (Cross-CONTAINER derivation
-    // -- e.g. a stack reading its source's stats -- is handled at the tick/consumer
-    // level in later phases; the container-local case is the engine core.)
+    // Derived modifiers read stats in THIS container, or in another container when the
+    // modifier names a SourceContainer (player attributes feeding weapon stats).
+    // Dependencies are tracked by EFFECTIVE version: a stat's own version plus the
+    // effective versions of everything its derived modifiers read, so changes reach
+    // through chains and across containers.
     public class StatContainer
     {
         private readonly float[] bases;
@@ -27,11 +29,12 @@ namespace Combat.Stats
         private readonly bool[] hasCache;
 
         // cross-stat dependency tracking: for a cached stat, which source stats it
-        // read and their versions at cache time. If any moved, the cache is stale.
-        private readonly List<(int sourceIndex, int sourceVersion)>[] cacheDeps;
+        // read (and in which container) and their effective versions at cache time.
+        private readonly List<(StatContainer container, int sourceIndex, int sourceVersion)>[] cacheDeps;
 
-        // cycle guard: stats currently mid-resolution
+        // cycle guards: stats currently mid-resolution / mid-version walk
         private readonly bool[] resolving;
+        private readonly bool[] versioning;
 
         // One scratch list per nesting level: resolving a derived modifier resolves its source stat
         // mid-loop, and a shared list let the source's modifiers leak into this stat's buckets.
@@ -53,8 +56,9 @@ namespace Combat.Stats
             version = new int[n];
             cachedVersion = new int[n];
             hasCache = new bool[n];
-            cacheDeps = new List<(int, int)>[n];
+            cacheDeps = new List<(StatContainer, int, int)>[n];
             resolving = new bool[n];
+            versioning = new bool[n];
         }
 
         // ---- base ----
@@ -181,7 +185,7 @@ namespace Combat.Stats
             try
             {
                 var deps = cacheDeps[i];
-                if (deps == null) { deps = new List<(int, int)>(); cacheDeps[i] = deps; }
+                if (deps == null) { deps = new List<(StatContainer, int, int)>(); cacheDeps[i] = deps; }
                 deps.Clear();
 
                 var list = modifiers[i];
@@ -198,18 +202,19 @@ namespace Combat.Stats
                         else
                         {
                             // derived: coeff x resolved(sourceStat), optionally capped.
+                            var src = m.SourceContainer ?? this;
                             int si = StatRegistry.IndexOf(m.SourceStat);
-                            if (si < 0)
+                            if (si < 0 || si >= src.version.Length)
                             {
                                 val = 0f;
                             }
                             else
                             {
-                                float sourceVal = ResolveIndex(si, m.SourceStat);
+                                float sourceVal = src == this ? ResolveIndex(si, m.SourceStat) : src.Resolve(m.SourceStat);
                                 val = m.Coefficient * sourceVal;
                                 if (m.UseCap && val > m.Cap) val = m.Cap;
-                                // record the dependency (source index + its version at read)
-                                deps.Add((si, version[si]));
+                                // record the dependency (container, index, effective version at read)
+                                deps.Add((src, si, src.EffectiveVersion(si)));
                             }
                         }
                         scratch.Add(new StatModifierValue(m.BucketId, val));
@@ -238,9 +243,37 @@ namespace Combat.Stats
             var deps = cacheDeps[i];
             if (deps == null || deps.Count == 0) return true;
             for (int k = 0; k < deps.Count; k++)
-                if (version[deps[k].sourceIndex] != deps[k].sourceVersion)
+                if (deps[k].container.EffectiveVersion(deps[k].sourceIndex) != deps[k].sourceVersion)
                     return false;
             return true;
+        }
+
+        // Own version plus the effective versions of every stat its derived modifiers read.
+        // Only ever grows, so any change anywhere in the chain changes the sum.
+        private int EffectiveVersion(int i)
+        {
+            if (versioning[i]) return version[i];
+            versioning[i] = true;
+            try
+            {
+                int v = version[i];
+                var list = modifiers[i];
+                if (list == null) return v;
+                for (int j = 0; j < list.Count; j++)
+                {
+                    var m = list[j];
+                    if (!m.IsDerived) continue;
+                    var src = m.SourceContainer ?? this;
+                    int si = StatRegistry.IndexOf(m.SourceStat);
+                    if (si < 0 || si >= src.version.Length) continue;
+                    unchecked { v += src.EffectiveVersion(si); }
+                }
+                return v;
+            }
+            finally
+            {
+                versioning[i] = false;
+            }
         }
 
         // ---- internals ----
@@ -250,14 +283,14 @@ namespace Combat.Stats
             hasCache[i] = false;
         }
 
-        // The current version of a stat (bumps on any base/modifier/tree change to it).
-        // Consumers cache a resolved value alongside the version it was built at, and
-        // recompute when the version moves. -1 if the stat isn't registered.
+        // The stat's effective version: moves on any change to it or to anything its derived
+        // modifiers read, here or in another container. Consumers cache a resolved value
+        // alongside it and recompute when it moves. -1 if the stat isn't registered.
         public int GetVersion(StatDefinitionSO stat)
         {
             int i = StatRegistry.IndexOf(stat);
             if (i < 0 || i >= version.Length) return -1;
-            return version[i];
+            return EffectiveVersion(i);
         }
 
         // Force a re-resolve of a stat after a modifier's value was mutated in place.
@@ -291,7 +324,7 @@ namespace Combat.Stats
                 sb.Append("    ").Append(m.BucketId).Append(' ');
                 if (m.IsDerived)
                 {
-                    float src = m.SourceStat != null ? Resolve(m.SourceStat) : 0f;
+                    float src = m.SourceStat != null ? (m.SourceContainer ?? this).Resolve(m.SourceStat) : 0f;
                     sb.Append(m.Coefficient.ToString("0.####")).Append(" x ")
                       .Append(m.SourceStat != null ? m.SourceStat.id : "?").Append('(').Append(src.ToString("0.###"))
                       .Append(") = ").Append((m.Coefficient * src).ToString("0.###"));
@@ -320,7 +353,7 @@ namespace Combat.Stats
                     float val = m.Value;
                     if (m.IsDerived)
                     {
-                        val = m.SourceStat != null ? m.Coefficient * Resolve(m.SourceStat) : 0f;
+                        val = m.SourceStat != null ? m.Coefficient * (m.SourceContainer ?? this).Resolve(m.SourceStat) : 0f;
                         if (m.UseCap && val > m.Cap) val = m.Cap;
                     }
                     lines.Add(new StatBreakdownLine
