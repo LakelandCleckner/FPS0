@@ -1,30 +1,36 @@
 using System.Collections.Generic;
 using Combat.Armor;
+using Combat.Attributes;
 using Combat.Loadout;
 using Combat.Stats;
 
 namespace Combat.Weapons
 {
-    // One stat seen three ways: the weapon alone, plus its own perks, plus equipped armor.
+    // One stat seen four ways: the weapon alone, plus its own perks, plus equipped armor, plus attributes.
     public struct StatLayers
     {
         public float Base;
         public float WithPerks;
         public float WithArmor;
+        public float WithAttributes;
 
+        public float Final => WithAttributes;
         public float PerkDelta => WithPerks - Base;
         public float ArmorDelta => WithArmor - WithPerks;
+        public float AttributeDelta => WithAttributes - WithArmor;
     }
 
     // Stat preview for any owned weapon, equipped or not. Only unconditional perk modifiers count.
     public sealed class WeaponStatPreview
     {
-        private StatContainer baseStats, perkStats, fullStats;
+        private StatContainer baseStats, perkStats, armorStats, fullStats;
         private readonly List<ModifierEntry> scratch = new List<ModifierEntry>();
 
         public bool IsBuilt { get; private set; }
 
-        public bool Build(WeaponInstance weapon, IEnumerable<ArmorInstance> armor, WeaponStatKeys keys)
+        // Attributes are read live from the player, as they would apply once this weapon is in the loadout.
+        public bool Build(WeaponInstance weapon, IEnumerable<ArmorInstance> armor, WeaponStatKeys keys,
+                          PlayerAttributes attributes = null)
         {
             IsBuilt = false;
             if (weapon == null || weapon.Definition == null || keys == null || StatRegistry.Count <= 0) return false;
@@ -32,9 +38,11 @@ namespace Combat.Weapons
             var def = weapon.Definition;
             baseStats = new StatContainer();
             perkStats = new StatContainer();
+            armorStats = new StatContainer();
             fullStats = new StatContainer();
             WeaponStatBuilder.PopulateBases(baseStats, def, keys);
             WeaponStatBuilder.PopulateBases(perkStats, def, keys);
+            WeaponStatBuilder.PopulateBases(armorStats, def, keys);
             WeaponStatBuilder.PopulateBases(fullStats, def, keys);
 
             scratch.Clear();
@@ -43,6 +51,7 @@ namespace Combat.Weapons
             {
                 if (e.target != ModifierTarget.Weapons) continue;
                 Add(perkStats, e);
+                Add(armorStats, e);
                 Add(fullStats, e);
             }
 
@@ -55,9 +64,15 @@ namespace Combat.Weapons
                     scratch.Clear();
                     foreach (var perk in piece.AllPerks()) perk.CollectStaticModifiers(scratch);
                     foreach (var e in scratch)
-                        if (e.target == ModifierTarget.Weapons && TypeMatches(e, type)) Add(fullStats, e);
+                        if (e.target == ModifierTarget.Weapons && TypeMatches(e, type))
+                        {
+                            Add(armorStats, e);
+                            Add(fullStats, e);
+                        }
                 }
             }
+
+            AddAttributes(fullStats, attributes);
 
             IsBuilt = true;
             return true;
@@ -70,8 +85,25 @@ namespace Combat.Weapons
             {
                 Base = baseStats.Resolve(stat),
                 WithPerks = perkStats.Resolve(stat),
-                WithArmor = fullStats.Resolve(stat)
+                WithArmor = armorStats.Resolve(stat),
+                WithAttributes = fullStats.Resolve(stat)
             };
+        }
+
+        private static void AddAttributes(StatContainer c, PlayerAttributes attributes)
+        {
+            var lib = attributes != null ? attributes.Library : null;
+            var ps = attributes != null && attributes.Player != null ? attributes.Player.Container : null;
+            if (lib == null || ps == null) return;
+
+            foreach (var attr in lib.attributes)
+            {
+                if (attr == null || attr.stat == null || StatRegistry.IndexOf(attr.stat) < 0) continue;
+                foreach (var f in attr.feeds)
+                    if (f != null && f.stat != null && f.target == ModifierTarget.Weapons)
+                        c.AddModifier(new StatModifier(f.stat, ModifierGrant.IdOf(f.bucket), attr.stat, f.perPoint,
+                                                       scope: ActivityScope.InLoadout, sourceContainer: ps), attr);
+            }
         }
 
         private static void Add(StatContainer c, ModifierEntry e)

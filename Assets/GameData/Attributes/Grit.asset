@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad48f58e1f0a04044adbbfbebfa36265, type: 3}
+  m_Name: Grit
+  m_EditorClassIdentifier: 
+  stat: {fileID: 11400000, guid: 599f163b62104ae4f817135885c68c42, type: 2}
+  theme: Brawling and survival
+  element: {fileID: 11400000, guid: 912d69ba80026994590b8d44ba22f61c, type: 2}
+  archetypes:
+  - {fileID: 11400000, guid: 7a6e8cfbd59840a0909fb6459e3c43d5, type: 2}
+  - {fileID: 11400000, guid: 0093d4af134940fda74326181e3d7208, type: 2}
+  - {fileID: 11400000, guid: 82c7e85c98344ad88e252f84265e8ed4, type: 2}
+  - {fileID: 11400000, guid: 1e9295f091620e74bbcba7d7fbd88893, type: 2}
+  feeds:
+  - stat: {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}
+    bucket: 1
+    perPoint: 0.005
+    target: 0
+  - stat: {fileID: 11400000, guid: 42789f1ceb8ea56419424ce5f8ff04d8, type: 2}
+    bucket: 1
+    perPoint: -0.001
+    target: 0
+  - stat: {fileID: 11400000, guid: 3a5aadef136191c46a35a5ecdf04e1ac, type: 2}
+    bucket: 1
+    perPoint: 0.001
+    target: 0
+  - stat: {fileID: 11400000, guid: f5a8c623ad3a88c48bda3be493dbf950, type: 2}
+    bucket: 1
+    perPoint: 0.001
+    target: 0
+  - stat: {fileID: 11400000, guid: a89e67f16ea52304c9df256c094efcd4, type: 2}
+    bucket: 1
+    perPoint: 0.001
+    target: 0
+  - stat: {fileID: 11400000, guid: 87d6c1c70154b0348b8856aeee374a6c, type: 2}
+    bucket: 1
+    perPoint: 0.001
+    target: 0
+  - stat: {fileID: 11400000, guid: dc920a34e05adb64c958ff021c4eb339, type: 2}
+    bucket: 1
+    perPoint: 0.001
+    target: 0
+  - stat: {fileID: 11400000, guid: 3c80678360177584ba55d0a5e246744b, type: 2}
+    bucket: 1
+    perPoint: -0.002
+    target: 1

@@ -92,6 +92,7 @@ namespace Combat.UI
         public Color barBase = new Color(0.86f, 0.89f, 0.91f, 1f);
         public Color barPerk = new Color(0.47f, 0.76f, 1f, 1f);
         public Color barArmor = new Color(0.6f, 0.88f, 0.62f, 1f);
+        public Color barAttribute = new Color(0.98f, 0.74f, 0.36f, 1f);
         public Color barLoss = new Color(0.96f, 0.44f, 0.4f, 0.75f);
         public float barHeight = 8f;
 
