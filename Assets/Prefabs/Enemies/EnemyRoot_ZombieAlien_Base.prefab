@@ -1062,6 +1062,7 @@ MonoBehaviour:
   hitmarkerClip: {fileID: 0}
   killClip: {fileID: 0}
   statKeys: {fileID: 11400000, guid: d08ea03d7f569de4ea98d55cfd34a719, type: 2}
+  formula: {fileID: 11400000, guid: 429ffb90752271f489ba048da8c7216a, type: 2}
   showTickHitmarkers: 0
   playTickAudio: 0
   playFeedback: 0

@@ -76,6 +76,10 @@ namespace Combat.Core
          "negative (from a debuff) = takes more. Leave null for no type resistance.")]
         public Combat.Stats.StatDefinitionSO resistanceStat;
 
+        [Tooltip("The attacker's damage stat for this element (base 1). Multiplies every hit of this type " +
+                 "through the damage formula's Element Damage layer. Leave null for no bonus.")]
+        public Combat.Stats.StatDefinitionSO damageStat;
+
         [Header("Info")]
         [Tooltip("Keyword this element shows as in descriptions. Empty = plain name.")]
         public Combat.Info.KeywordSO keyword;

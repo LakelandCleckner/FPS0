@@ -63,6 +63,48 @@ MonoBehaviour:
       unit: 
       decimals: 0
       format: 0
+  - label: Element Damage
+    entries:
+    - stat: {fileID: 11400000, guid: af846e6a13aafe8498ff52354e8ef54d, type: 2}
+      label: 
+      display: 1
+      barMax: 100
+      lowerIsBetter: 0
+      unit: x
+      decimals: 2
+      format: 0
+    - stat: {fileID: 11400000, guid: 840f4e708218a634bbf4d8bf40df2a82, type: 2}
+      label: 
+      display: 1
+      barMax: 100
+      lowerIsBetter: 0
+      unit: x
+      decimals: 2
+      format: 0
+    - stat: {fileID: 11400000, guid: 2a73275bed28f69469387b48baeaf236, type: 2}
+      label: 
+      display: 1
+      barMax: 100
+      lowerIsBetter: 0
+      unit: x
+      decimals: 2
+      format: 0
+    - stat: {fileID: 11400000, guid: 17d050ab9ec50c04d9305a3311d205c1, type: 2}
+      label: 
+      display: 1
+      barMax: 100
+      lowerIsBetter: 0
+      unit: x
+      decimals: 2
+      format: 0
+    - stat: {fileID: 11400000, guid: 65ebec69e6048fe4ca98ff463b4e558f, type: 2}
+      label: 
+      display: 1
+      barMax: 100
+      lowerIsBetter: 0
+      unit: x
+      decimals: 2
+      format: 0
   - label: Survivability
     entries:
     - stat: {fileID: 11400000, guid: 567ae5b1446e15f4fa964763da816586, type: 2}

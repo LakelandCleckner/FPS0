@@ -83,8 +83,10 @@ namespace Combat.Core
         // Crit multiplier for this hit, rolled ONCE at the resolver. 1 = no crit; on a
         // crit it's (1 + resolved crit_damage). Damage effects multiply by it.
         public float CritMultiplier = 1f;
-        // Conditional damage from perks (contributed Modifier-phase effects multiply it). Damage effects multiply by it.
-        public float ConditionMultiplier = 1f;
+        // Hit-condition perk bucket: bonuses sum, multiplicative ones compound. Reset at the top of every resolution.
+        public float ConditionBonus = 0f;
+        public float ConditionFactor = 1f;
+        public float ConditionMultiplier => (1f + ConditionBonus) * ConditionFactor;
         // The source that produced this hit (weapon/grenade/hazard). Nullable.
         // Carried so a status application can live-link its entries to the source and
         // read its CURRENT cached stats per tick (GetStats() is version-invalidated).

@@ -16,6 +16,8 @@ namespace Combat.Core
         [Header("Stats")]
         [Tooltip("crit_chance / crit_damage stat definitions (CombatStatKeys asset).")]
         [SerializeField] private CombatStatKeys statKeys;
+        [Tooltip("Damage formula for hits this resolver handles. Empty = the default formula.")]
+        [SerializeField] private DamageFormulaSO formula;
 
         [Header("Feedback Toggles")]
         [Tooltip("Show crosshair hitmarkers for passive status ticks (burns, etc).")]
@@ -166,6 +168,8 @@ namespace Combat.Core
         // Lets the inspector toggle mute/unmute live in play mode.
         private void OnValidate() => HitLog.Enabled = logHits;
 
+        public DamageFormulaSO Formula => formula;
+
         public void ResolveHit(HitContext ctx)
         {
             if (ctx.Target == null) { LogSkipped(ctx, "no target"); return; }
@@ -186,8 +190,9 @@ namespace Combat.Core
             // Because this precedes the effect loop, a perk-contributed effect can
             // never influence crit for the hit it joins. See IHitEffectContributor.
             RollCrit(ctx);
-            // Conditional perk damage starts clean every resolution; contributed effects multiply it.
-            ctx.ConditionMultiplier = 1f;
+            // Conditional perk damage starts clean every resolution; contributed effects fill the bucket.
+            ctx.ConditionBonus = 0f;
+            ctx.ConditionFactor = 1f;
 
             var effects = RentBuffer();
             try

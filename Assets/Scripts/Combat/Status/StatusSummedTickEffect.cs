@@ -30,11 +30,8 @@ namespace Combat.Status
 
         public void Apply(HitContext ctx, IHitResolver resolver)
         {
-            // CRIT — this tick's own roll (1f if it didn't crit)
-            float final = summedWeight * ctx.CritMultiplier;
-
-            // DEFENSE: composed multiplier (type + body-part + future layers)
-            final *= ctx.Target.GetDamageMultiplier(type, ctx.BodyPartHit);
+            // Crit (this tick's own roll), defense and the rest come from the resolver's damage formula
+            float final = DamageFormulaSO.Apply(resolver != null ? resolver.Formula : null, summedWeight, ctx, type, false);
 
             applyDamage?.Invoke(final);
 

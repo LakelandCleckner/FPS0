@@ -4,10 +4,9 @@ using Combat.Stats;
 
 namespace Combat.Effects
 {
-    // Damage that respects precision (hitbox), CRIT, chain scaling, and the target's
-    // composed defense. Phase 2i-b: derivation resolves through a DerivationContext
-    // (attacker/source/target), so a spec can scale off any participant's stats or
-    // health quantities.
+    // Damage from a DamageSpec, multiplied through the resolver's damage formula.
+    // Derivation resolves through a DerivationContext (attacker/source/target), so a
+    // spec can scale off any participant's stats or health quantities.
     public class DamageHitEffect : IHitEffect
     {
         public EffectPhase Phase => EffectPhase.Application;
@@ -25,31 +24,9 @@ namespace Combat.Effects
             var dctx = new DerivationContext(ctx.Attacker, ctx.DamageSource, ctx.Target);
             float raw = spec.Resolve(in dctx);
 
-            float final = raw * ctx.HitboxMultiplier;   // precision
-            final *= ctx.CritMultiplier;                 // crit (rolled at resolver)
-            final *= ctx.ConditionMultiplier;            // conditional perk damage
-
-            // Pellet split, weapon precision and range falloff: direct hits only
-            if (ctx.Source == HitSource.Direct)
-            {
-                final *= ctx.Shot.DamageScale;
-
-                // Element identity: Ballistic hits harder and crits harder than elements
-                var element = ctx.DamageType;
-                if (element != null) final *= element.directDamageMultiplier;
-
-                if (ctx.BodyPartHit == BodyPart.Head && ctx.DamageSource is IPrecisionSource precise)
-                    final *= precise.PrecisionMultiplier + (element != null ? element.precisionBonus : 0f);
-
-                if (ctx.Shot.HasOrigin && ctx.DamageSource is IRangeFalloffSource falloff)
-                    final *= falloff.FalloffMultiplier(
-                        Vector3.Distance(ctx.HitPoint, ctx.Shot.Origin), ctx.Shot.AimBlend);
-            }
-
-            if (spec.AffectedByChainFalloff)
-                final *= ctx.ChainMultiplier;
-
-            final *= ctx.Target.GetDamageMultiplier(spec.Type, ctx.BodyPartHit);  // defense
+            // Every multiplier comes from the resolver's damage formula.
+            float final = DamageFormulaSO.Apply(resolver != null ? resolver.Formula : null, raw, ctx,
+                                                spec.Type, spec.AffectedByChainFalloff);
 
             if (ctx.ApplyStatusTickDamage != null)
             {

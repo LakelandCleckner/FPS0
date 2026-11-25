@@ -40,10 +40,12 @@ MonoBehaviour:
     bottomLeft: {r: 0.94716984, g: 0.7450985, b: 0, a: 1}
     bottomRight: {r: 0.94716984, g: 0.7450985, b: 0, a: 1}
   resistanceStat: {fileID: 11400000, guid: 3a5aadef136191c46a35a5ecdf04e1ac, type: 2}
+  damageStat: {fileID: 11400000, guid: 65ebec69e6048fe4ca98ff463b4e558f, type: 2}
   keyword: {fileID: 11400000, guid: b495e4f2f96a25340a175c5a85352eab, type: 2}
   status: {fileID: 11400000, guid: c7540b71143b4cb8a524dc4bbd10cb16, type: 2}
   directDamageMultiplier: 1.1
   precisionBonus: 0.1
+  colorizeVfx: 0
   hitVfx: {fileID: 4330111335796242336, guid: 826ae61451417b94897e4b852dec721d, type: 3}
   hitVfxInterval: 0.08
   hitVfxLifetime: 1
