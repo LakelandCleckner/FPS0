@@ -15,21 +15,71 @@ MonoBehaviour:
   layers:
   - layer: 0
     appliesTo: 7
+    label: 
+    stat: {fileID: 0}
+    owner: 0
+    mode: 0
+    onlyType: {fileID: 0}
   - layer: 1
     appliesTo: 7
+    label: 
+    stat: {fileID: 0}
+    owner: 0
+    mode: 0
+    onlyType: {fileID: 0}
   - layer: 2
     appliesTo: 7
+    label: 
+    stat: {fileID: 0}
+    owner: 0
+    mode: 0
+    onlyType: {fileID: 0}
   - layer: 3
     appliesTo: 1
+    label: 
+    stat: {fileID: 0}
+    owner: 0
+    mode: 0
+    onlyType: {fileID: 0}
   - layer: 4
     appliesTo: 1
+    label: 
+    stat: {fileID: 0}
+    owner: 0
+    mode: 0
+    onlyType: {fileID: 0}
   - layer: 5
     appliesTo: 1
+    label: 
+    stat: {fileID: 0}
+    owner: 0
+    mode: 0
+    onlyType: {fileID: 0}
   - layer: 6
     appliesTo: 1
+    label: 
+    stat: {fileID: 0}
+    owner: 0
+    mode: 0
+    onlyType: {fileID: 0}
   - layer: 7
     appliesTo: 7
+    label: 
+    stat: {fileID: 0}
+    owner: 0
+    mode: 0
+    onlyType: {fileID: 0}
   - layer: 8
     appliesTo: 7
+    label: 
+    stat: {fileID: 0}
+    owner: 0
+    mode: 0
+    onlyType: {fileID: 0}
   - layer: 9
     appliesTo: 7
+    label: 
+    stat: {fileID: 0}
+    owner: 0
+    mode: 0
+    onlyType: {fileID: 0}

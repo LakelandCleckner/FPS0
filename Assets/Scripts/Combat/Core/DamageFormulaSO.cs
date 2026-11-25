@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Combat.Events;
+using Combat.Stats;
 
 namespace Combat.Core
 {
@@ -17,7 +18,15 @@ namespace Combat.Core
         RangeFalloff,    // weapon range falloff
         ChainFalloff,    // chain link falloff, when the damage uses it
         ElementDamage,   // the attacker's damage stat for the damage's element
-        Defense          // the target's resistances, body part and damage taken
+        Defense,         // the target's resistances, body part and damage taken
+        Stat             // any stat, read from the attacker, source or target
+    }
+
+    // How a Stat layer turns its stat into a multiplier.
+    public enum StatLayerMode
+    {
+        Value,  // the stat is the multiplier (base 1)
+        OnePlus // 1 + the stat (base 0)
     }
 
     [Serializable]
@@ -26,6 +35,30 @@ namespace Combat.Core
         public DamageLayer layer;
         [Tooltip("Which hits this layer applies to.")]
         public HitSourceMask appliesTo = HitSourceMask.All;
+
+        [Header("Stat layer")]
+        [Tooltip("Name shown in tools. Empty = the stat's name.")]
+        public string label = "";
+        public StatDefinitionSO stat;
+        [Tooltip("Whose stats the value is read from.")]
+        public StatScope owner = StatScope.Attacker;
+        public StatLayerMode mode = StatLayerMode.Value;
+        [Tooltip("Only hits of this damage type. Empty = every type.")]
+        public DamageTypeSO onlyType;
+
+        public string Name
+        {
+            get
+            {
+                if (layer != DamageLayer.Stat) return layer.ToString();
+                if (!string.IsNullOrWhiteSpace(label)) return label;
+                if (stat == null) return "Stat (none)";
+                return string.IsNullOrWhiteSpace(stat.displayName) ? stat.name : stat.displayName;
+            }
+        }
+
+        // Layers that can sit in a formula more than once (each Stat layer is its own member).
+        public bool Repeatable => layer == DamageLayer.Stat;
     }
 
     // The ordered multipliers applied to raw damage. Player and enemy resolvers each point at one.
@@ -65,7 +98,7 @@ namespace Combat.Core
             {
                 var l = list[i];
                 if (l == null || (l.appliesTo & source) == 0) continue;
-                value *= Factor(l.layer, ctx, type, chainFalloff);
+                value *= l.layer == DamageLayer.Stat ? StatFactor(l, ctx, type) : Factor(l.layer, ctx, type, chainFalloff);
             }
             return value;
         }
@@ -94,6 +127,26 @@ namespace Combat.Core
             }
         }
 
+        // A Stat layer's multiplier for this hit; 1 when it doesn't apply or can't be read.
+        public static float StatFactor(DamageFormulaLayer l, HitContext ctx, DamageTypeSO type)
+        {
+            if (l.stat == null) return 1f;
+            if (l.onlyType != null && l.onlyType != (type != null ? type : ctx.DamageType)) return 1f;
+
+            StatContainer c = null;
+            switch (l.owner)
+            {
+                case StatScope.Attacker: c = ctx.Attacker != null ? ctx.Attacker.Stats : null; break;
+                case StatScope.Source: c = ctx.DamageSource != null ? ctx.DamageSource.SourceStats : null; break;
+                case StatScope.Target: c = ctx.Target != null ? ctx.Target.Stats : null; break;
+            }
+            if (c == null) return 1f;
+            return Mult(l.mode, c.Resolve(l.stat));
+        }
+
+        public static float Mult(StatLayerMode mode, float value)
+            => Mathf.Max(0f, mode == StatLayerMode.OnePlus ? 1f + value : value);
+
         // The attacker's damage stat for this element (base 1). 1 when there is no stat or no attacker.
         private static float ElementDamage(HitContext ctx, DamageTypeSO type)
         {
@@ -108,14 +161,21 @@ namespace Combat.Core
         {
             var problems = new List<string>();
             var seen = new HashSet<DamageLayer>();
+            var stats = new HashSet<(StatDefinitionSO, StatScope)>();
             foreach (var l in layers)
             {
                 if (l == null) { problems.Add("Empty layer slot."); continue; }
+                if (l.appliesTo == HitSourceMask.None) problems.Add($"{l.Name} applies to no hits.");
+                if (l.Repeatable)
+                {
+                    if (l.stat == null) problems.Add("A Stat layer has no stat, so it does nothing.");
+                    else if (!stats.Add((l.stat, l.owner))) problems.Add($"{l.Name} ({l.owner}) is listed more than once, so it applies twice.");
+                    continue;
+                }
                 if (!seen.Add(l.layer)) problems.Add($"{l.layer} is listed more than once, so it applies twice.");
-                if (l.appliesTo == HitSourceMask.None) problems.Add($"{l.layer} applies to no hits.");
             }
             foreach (DamageLayer d in Enum.GetValues(typeof(DamageLayer)))
-                if (!seen.Contains(d)) problems.Add($"{d} is missing, so it never applies.");
+                if (d != DamageLayer.Stat && !seen.Contains(d)) problems.Add($"{d} is missing, so it never applies.");
             return problems;
         }
     }
