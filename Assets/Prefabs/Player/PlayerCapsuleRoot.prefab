@@ -474,6 +474,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerBody: {fileID: 3353619507588852826}
   playerCamera: {fileID: 6539351932102364891}
+  settings: {fileID: 0}
   hipSensitivity: 0.1
   upDownRange: 85
 --- !u!114 &5668753119110060874
@@ -576,17 +577,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 191d41ccd1d98e848aa0bea0a862c7fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slots:
-  - controller: {fileID: 812466885183284375}
-    modelRoot: {fileID: 3210834218394652632}
-  - controller: {fileID: 8938823938460349687}
-    modelRoot: {fileID: 4104998171856081038}
+  model: {fileID: 0}
+  runtimePrefab: {fileID: 0}
+  runtimeParent: {fileID: 0}
+  rig: {fileID: 0}
   statKeys: {fileID: 0}
   fallbackEquipTime: 0.5
   fallbackStowTime: 0.4
-  swapKey: 31
   enableDigitSelect: 1
-  reloadKeyForSprintCancel: 32
   playerMovement: {fileID: 2501316767126194405}
   sprintExitFraction: 0.5
   actionsCancelSprint: 1
@@ -604,12 +602,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawner: {fileID: 0}
-  enemyId: basic
+  archetypes: []
+  layers: []
+  tiers:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  showOverlay: 1
+  squads: []
   spawnDistance: 6
   groupRadius: 3
   groupCount: 3
-  spawnOneKey: 7
-  spawnGroupKey: 8
 --- !u!1 &6377282824227111301
 GameObject:
   m_ObjectHideFlags: 0
@@ -1091,10 +1094,13 @@ MonoBehaviour:
   hitmarkerClip: {fileID: 8300000, guid: 7d6f9e6454d5e774f8f596acb90c6d1e, type: 3}
   killClip: {fileID: 8300000, guid: 4107abbdf23642e418bf3611e95c789b, type: 3}
   statKeys: {fileID: 11400000, guid: d08ea03d7f569de4ea98d55cfd34a719, type: 2}
+  formula: {fileID: 11400000, guid: bd75262ad0b1e8b4c9cd0fa7a6dbfefe, type: 2}
   showTickHitmarkers: 1
   playTickAudio: 1
+  playFeedback: 1
   fireHitEventsOnZeroDamage: 1
   logHits: 1
+  pelletMergeWindow: 0.1
 --- !u!114 &2176066724308284047
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1126,7 +1132,12 @@ MonoBehaviour:
   ammo: {fileID: 6497626008849436845}
   resolver: {fileID: 5668810610464258445}
   muzzle: {fileID: 4396387542550143682}
-  reloadKey: 32
+  magnetismMask:
+    serializedVersion: 2
+    m_Bits: 0
+  lineOfSightMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &6497626008849436845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1155,15 +1166,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 812466885183284375}
-  animator: {fileID: 4146006712052589651}
-  damageSource: {fileID: 2176066724308284047}
+  ammo: {fileID: 0}
   loadout: {fileID: 3516509819376779916}
   playerMovement: {fileID: 2501316767126194405}
-  fireClipName: HandgunFire
-  reloadClipName: HandgunReload
-  equipClipName: Equip
-  stowClipName: Stow
-  sprintExitClipName: SprintExit
+  playerAim: {fileID: 0}
+  playerCrouch: {fileID: 0}
   scaleFireToRPM: 1
   scaleReloadToTime: 1
   scaleTransitions: 1
@@ -1371,10 +1378,13 @@ MonoBehaviour:
   hitmarkerClip: {fileID: 8300000, guid: 7d6f9e6454d5e774f8f596acb90c6d1e, type: 3}
   killClip: {fileID: 8300000, guid: 4107abbdf23642e418bf3611e95c789b, type: 3}
   statKeys: {fileID: 11400000, guid: d08ea03d7f569de4ea98d55cfd34a719, type: 2}
+  formula: {fileID: 11400000, guid: bd75262ad0b1e8b4c9cd0fa7a6dbfefe, type: 2}
   showTickHitmarkers: 1
   playTickAudio: 1
+  playFeedback: 1
   fireHitEventsOnZeroDamage: 1
   logHits: 1
+  pelletMergeWindow: 0.1
 --- !u!114 &8937816791161908305
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1406,7 +1416,12 @@ MonoBehaviour:
   ammo: {fileID: 2998930504466509473}
   resolver: {fileID: 4655738931240618332}
   muzzle: {fileID: 4139837428090127604}
-  reloadKey: 32
+  magnetismMask:
+    serializedVersion: 2
+    m_Bits: 0
+  lineOfSightMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &2998930504466509473
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1435,15 +1450,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 8938823938460349687}
-  animator: {fileID: 5685551073183940065}
-  damageSource: {fileID: 8937816791161908305}
+  ammo: {fileID: 0}
   loadout: {fileID: 3516509819376779916}
   playerMovement: {fileID: 2501316767126194405}
-  fireClipName: HandgunFire
-  reloadClipName: HandgunReload
-  equipClipName: Equip
-  stowClipName: Stow
-  sprintExitClipName: SprintExit
+  playerAim: {fileID: 0}
+  playerCrouch: {fileID: 0}
   scaleFireToRPM: 1
   scaleReloadToTime: 1
   scaleTransitions: 1

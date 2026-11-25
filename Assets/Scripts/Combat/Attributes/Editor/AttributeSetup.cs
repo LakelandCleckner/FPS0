@@ -1,12 +1,11 @@
 using System.Collections.Generic;
-using System.IO;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Combat.Core;
 using Combat.Loadout;
 using Combat.Stats;
+using Combat.Stats.EditorTools;
 using Combat.UI;
 using Combat.Weapons;
 
@@ -69,8 +68,8 @@ namespace Combat.Attributes.EditorTools
         [MenuItem("FPS0/Stats/Setup Attributes", priority = 650)]
         private static void Run()
         {
-            EnsureFolder(StatFolder);
-            EnsureFolder(AttributeFolder);
+            BootstrapScenes.EnsureFolder(StatFolder);
+            BootstrapScenes.EnsureFolder(AttributeFolder);
 
             var stats = ById(AttributeValidation.LoadAll<StatDefinitionSO>(), s => s.id);
             var types = ById(AttributeValidation.LoadAll<DamageTypeSO>(), t => t.id);
@@ -95,7 +94,12 @@ namespace Combat.Attributes.EditorTools
             }
             EditorUtility.SetDirty(library);
 
-            UpdateScenes(library, created, log);
+            BootstrapScenes.ForEach(scene =>
+            {
+                bool changed = BootstrapScenes.Register(scene, created, log);
+                changed |= AddPlayerComponents(scene, library, log);
+                return changed;
+            }, log);
             AddSheetGroup(created, log);
             AssetDatabase.SaveAssets();
 
@@ -159,70 +163,10 @@ namespace Combat.Attributes.EditorTools
             return attr;
         }
 
-        // Opens every scene with a StatBootstrap, updates it, saves it, and closes the ones it opened.
-        private static void UpdateScenes(AttributeLibrarySO library, List<StatDefinitionSO> defs, List<string> log)
-        {
-            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) { log.Add("Scene update cancelled."); return; }
-
-            string guid = ScriptGuid(typeof(StatBootstrap));
-            if (string.IsNullOrEmpty(guid)) { log.Add("StatBootstrap script not found: scenes not updated."); return; }
-
-            var loaded = new Dictionary<string, Scene>();
-            for (int i = 0; i < SceneManager.sceneCount; i++)
-            {
-                var sc = SceneManager.GetSceneAt(i);
-                if (sc.isLoaded && !string.IsNullOrEmpty(sc.path)) loaded[sc.path] = sc;
-            }
-
-            int found = 0;
-            foreach (var sceneGuid in AssetDatabase.FindAssets("t:Scene", new[] { "Assets" }))
-            {
-                string path = AssetDatabase.GUIDToAssetPath(sceneGuid);
-                if (!File.ReadAllText(path).Contains(guid)) continue;
-                found++;
-
-                bool opened = !loaded.TryGetValue(path, out var scene);
-                if (opened) scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Additive);
-
-                bool changed = Register(scene, defs, log);
-                changed |= AddPlayerComponents(scene, library, log);
-                if (changed) EditorSceneManager.SaveScene(scene);
-                if (opened) EditorSceneManager.CloseScene(scene, true);
-            }
-            if (found == 0) log.Add("No scene has a StatBootstrap: stats not registered.");
-        }
-
-        // Adds the attribute stats to every StatBootstrap in the scene.
-        private static bool Register(Scene scene, List<StatDefinitionSO> defs, List<string> log)
-        {
-            bool changed = false;
-            foreach (var boot in InScene<StatBootstrap>(scene))
-            {
-                var so = new SerializedObject(boot);
-                var list = so.FindProperty("statDefinitions");
-                var have = new HashSet<Object>();
-                for (int i = 0; i < list.arraySize; i++) have.Add(list.GetArrayElementAtIndex(i).objectReferenceValue);
-
-                int added = 0;
-                foreach (var d in defs)
-                {
-                    if (d == null || have.Contains(d)) continue;
-                    list.arraySize++;
-                    list.GetArrayElementAtIndex(list.arraySize - 1).objectReferenceValue = d;
-                    added++;
-                }
-                if (added == 0) continue;
-                so.ApplyModifiedProperties();
-                changed = true;
-                log.Add($"Registered {added} stats on {boot.name} ({scene.name}).");
-            }
-            return changed;
-        }
-
         // PlayerAttributes next to the loadout modifier applier, debug keys next to the loadout debug keys.
         private static bool AddPlayerComponents(Scene scene, AttributeLibrarySO library, List<string> log)
         {
-            var appliers = InScene<LoadoutModifierApplier>(scene);
+            var appliers = BootstrapScenes.InScene<LoadoutModifierApplier>(scene);
             if (appliers.Count == 0) return false;
 
             bool changed = false;
@@ -243,7 +187,7 @@ namespace Combat.Attributes.EditorTools
                 changed = true;
             }
 
-            var debugHosts = InScene<LoadoutDebugKeys>(scene);
+            var debugHosts = BootstrapScenes.InScene<LoadoutDebugKeys>(scene);
             var keysHost = debugHosts.Count > 0 ? debugHosts[0].gameObject : host;
             if (keysHost.GetComponent<AttributeDebugKeys>() == null)
             {
@@ -252,23 +196,6 @@ namespace Combat.Attributes.EditorTools
                 log.Add($"Added AttributeDebugKeys to {keysHost.name} ({scene.name}).");
             }
             return changed;
-        }
-
-        private static List<T> InScene<T>(Scene scene) where T : Component
-        {
-            var list = new List<T>();
-            foreach (var root in scene.GetRootGameObjects()) list.AddRange(root.GetComponentsInChildren<T>(true));
-            return list;
-        }
-
-        private static string ScriptGuid(System.Type type)
-        {
-            foreach (var g in AssetDatabase.FindAssets("t:MonoScript " + type.Name))
-            {
-                var script = AssetDatabase.LoadAssetAtPath<MonoScript>(AssetDatabase.GUIDToAssetPath(g));
-                if (script != null && script.GetClass() == type) return g;
-            }
-            return null;
         }
 
         // An Attributes group at the top of the character stat sheet.
@@ -301,15 +228,6 @@ namespace Combat.Attributes.EditorTools
                 if (!string.IsNullOrEmpty(key) && !map.ContainsKey(key)) map[key] = a;
             }
             return map;
-        }
-
-        private static void EnsureFolder(string path)
-        {
-            if (AssetDatabase.IsValidFolder(path)) return;
-            int slash = path.LastIndexOf('/');
-            string parent = path.Substring(0, slash);
-            EnsureFolder(parent);
-            AssetDatabase.CreateFolder(parent, path.Substring(slash + 1));
         }
     }
 }

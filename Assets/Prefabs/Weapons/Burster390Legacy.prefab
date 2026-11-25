@@ -45,7 +45,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100002, guid: 6f8ee9e57f0ae87429c40e77c8b75822, type: 3}
       propertyPath: m_Name
-      value: M9 (1)
+      value: Burster390Legacy
       objectReference: {fileID: 0}
     - target: {fileID: 100002, guid: 6f8ee9e57f0ae87429c40e77c8b75822, type: 3}
       propertyPath: m_Layer
@@ -221,10 +221,13 @@ MonoBehaviour:
   hitmarkerClip: {fileID: 8300000, guid: 7d6f9e6454d5e774f8f596acb90c6d1e, type: 3}
   killClip: {fileID: 8300000, guid: 4107abbdf23642e418bf3611e95c789b, type: 3}
   statKeys: {fileID: 11400000, guid: d08ea03d7f569de4ea98d55cfd34a719, type: 2}
+  formula: {fileID: 11400000, guid: bd75262ad0b1e8b4c9cd0fa7a6dbfefe, type: 2}
   showTickHitmarkers: 1
   playTickAudio: 1
+  playFeedback: 1
   fireHitEventsOnZeroDamage: 1
   logHits: 1
+  pelletMergeWindow: 0.1
 --- !u!114 &6822418356207320001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -256,7 +259,12 @@ MonoBehaviour:
   ammo: {fileID: 808905459839957297}
   resolver: {fileID: 7078279523680165580}
   muzzle: {fileID: 2005280959456383844}
-  reloadKey: 32
+  magnetismMask:
+    serializedVersion: 2
+    m_Bits: 0
+  lineOfSightMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &808905459839957297
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -288,6 +296,8 @@ MonoBehaviour:
   ammo: {fileID: 0}
   loadout: {fileID: 0}
   playerMovement: {fileID: 0}
+  playerAim: {fileID: 0}
+  playerCrouch: {fileID: 0}
   scaleFireToRPM: 1
   scaleReloadToTime: 1
   scaleTransitions: 1

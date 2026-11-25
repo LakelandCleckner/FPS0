@@ -24,5 +24,8 @@ namespace Combat.Core
     public interface IHitResolver
     {
         void ResolveHit(HitContext context);
+
+        // The damage formula for hits this resolver handles; null = the default formula.
+        DamageFormulaSO Formula => null;
     }
 }

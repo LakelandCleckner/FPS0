@@ -37,6 +37,8 @@ namespace Combat.Perks
         [Header("Bonus")]
         [Tooltip("Extra damage as a fraction (0.25 = 25% more).")]
         public float bonus = 0.25f;
+        [Tooltip("Off: sums with other condition bonuses. On: multiplies the whole condition bucket.")]
+        public bool multiplicative = false;
 
         public override string TriggerGroup => "On hit";
 
@@ -62,6 +64,7 @@ namespace Combat.Perks
             }
             d.Add(".");
             if ((sources & HitSourceMask.StatusTick) != 0) d.Next().Add("Status ticks count.");
+            if (multiplicative) d.Next().Add("Multiplies with other conditional bonuses.");
         }
 
         public override PerkRuntime CreateRuntime() => new Runtime();
@@ -118,14 +121,20 @@ namespace Combat.Perks
                 }
             }
 
-            // Multiplies the hit's condition multiplier; runs before damage is applied.
+            // Adds to the hit's condition bucket, or multiplies it; runs before damage is applied.
             private sealed class Bonus : IHitEffect
             {
                 private readonly Runtime owner;
                 public Bonus(Runtime owner) => this.owner = owner;
                 public EffectPhase Phase => EffectPhase.Modifier;
                 public bool PropagatesOnChain => false;
-                public void Apply(HitContext ctx, IHitResolver resolver) => ctx.ConditionMultiplier *= 1f + owner.Def.bonus;
+
+                public void Apply(HitContext ctx, IHitResolver resolver)
+                {
+                    var d = owner.Def;
+                    if (d.multiplicative) ctx.ConditionFactor *= 1f + d.bonus;
+                    else ctx.ConditionBonus += d.bonus;
+                }
             }
         }
     }
