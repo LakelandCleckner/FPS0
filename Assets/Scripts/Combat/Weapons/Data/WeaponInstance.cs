@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Combat.Perks;
+using Combat.Progression;
 
 namespace Combat.Weapons
 {
@@ -13,6 +14,8 @@ namespace Combat.Weapons
         [SerializeField] private WeaponSO definition;
         [SerializeField] private List<PerkSO> perks = new List<PerkSO>();
         [SerializeField] private Rarity rarity;
+        [SerializeField] private int itemLevel = 1;
+        [SerializeField] private float itemXp = 0f;
 
         [Tooltip("Rounds in the magazine. -1 = full on first spawn.")]
         public int magazine = -1;
@@ -26,12 +29,17 @@ namespace Combat.Weapons
         // Rolled picks, one per column (null where a column had nothing to roll).
         public IReadOnlyList<PerkSO> Perks => perks;
         public Rarity Rarity => rarity;
+        public int ItemLevel => Mathf.Max(1, itemLevel);
+        public float ItemXp => itemXp;
+
+        public void SetItemLevel(int level) => itemLevel = ItemScaling.Clamp(level);
 
         // Mythic definitions are always Mythic.
-        public WeaponInstance(WeaponSO definition, RollMode mode = RollMode.Random, Rarity rarity = Rarity.Common)
+        public WeaponInstance(WeaponSO definition, RollMode mode = RollMode.Random, Rarity rarity = Rarity.Common, int itemLevel = 1)
         {
             this.definition = definition;
             this.rarity = definition != null && definition.mythic ? Rarity.Mythic : rarity;
+            this.itemLevel = ItemScaling.Clamp(itemLevel);
             uid = Guid.NewGuid().ToString("N");
             Reroll(mode);
         }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Combat.Perks;
+using Combat.Progression;
 
 namespace Combat.Armor
 {
@@ -13,6 +14,8 @@ namespace Combat.Armor
         [SerializeField] private ArmorSO definition;
         [SerializeField] private List<PerkSO> perks = new List<PerkSO>();
         [SerializeField] private Rarity rarity;
+        [SerializeField] private int itemLevel = 1;
+        [SerializeField] private float itemXp = 0f;
 
         public string Uid => uid;
         public ArmorSO Definition => definition;
@@ -21,12 +24,17 @@ namespace Combat.Armor
         // Rolled picks, one per column (null where a column had nothing to roll).
         public IReadOnlyList<PerkSO> Perks => perks;
         public Rarity Rarity => rarity;
+        public int ItemLevel => Mathf.Max(1, itemLevel);
+        public float ItemXp => itemXp;
+
+        public void SetItemLevel(int level) => itemLevel = ItemScaling.Clamp(level);
 
         // Mythic definitions are always Mythic.
-        public ArmorInstance(ArmorSO definition, RollMode mode = RollMode.Random, Rarity rarity = Rarity.Common)
+        public ArmorInstance(ArmorSO definition, RollMode mode = RollMode.Random, Rarity rarity = Rarity.Common, int itemLevel = 1)
         {
             this.definition = definition;
             this.rarity = definition != null && definition.mythic ? Rarity.Mythic : rarity;
+            this.itemLevel = ItemScaling.Clamp(itemLevel);
             uid = Guid.NewGuid().ToString("N");
             Reroll(mode);
         }

@@ -40,10 +40,11 @@ namespace Combat.Weapons
             perkStats = new StatContainer();
             armorStats = new StatContainer();
             fullStats = new StatContainer();
-            WeaponStatBuilder.PopulateBases(baseStats, def, keys);
-            WeaponStatBuilder.PopulateBases(perkStats, def, keys);
-            WeaponStatBuilder.PopulateBases(armorStats, def, keys);
-            WeaponStatBuilder.PopulateBases(fullStats, def, keys);
+            int level = weapon.ItemLevel;
+            WeaponStatBuilder.PopulateBases(baseStats, def, keys, level);
+            WeaponStatBuilder.PopulateBases(perkStats, def, keys, level);
+            WeaponStatBuilder.PopulateBases(armorStats, def, keys, level);
+            WeaponStatBuilder.PopulateBases(fullStats, def, keys, level);
 
             scratch.Clear();
             foreach (var perk in weapon.AllPerks()) perk.CollectStaticModifiers(scratch);

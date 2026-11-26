@@ -1331,6 +1331,26 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""ItemLevelUp"",
+                    ""type"": ""Button"",
+                    ""id"": ""b9492ece-6427-4e00-b839-69ebbb730be1"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""ItemLevelDown"",
+                    ""type"": ""Button"",
+                    ""id"": ""f27a1cc0-c7b9-4265-9f17-fe306a7c0028"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -2587,6 +2607,94 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                     ""action"": ""AttributeDump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Ctrl"",
+                    ""id"": ""2e55e583-273e-4f1a-b676-80e4115f6d54"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ItemLevelUp"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""da82540e-53f3-4057-81ec-32c28bf6d495"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ItemLevelUp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""2068f0e5-90b8-4bdc-b45c-eee6ad729259"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ItemLevelUp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""d2fd235c-6544-4402-9bf0-473aaf024a3b"",
+                    ""path"": ""<Keyboard>/rightBracket"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ItemLevelUp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Alt+Ctrl"",
+                    ""id"": ""da2fe233-4859-47b8-8f65-60e63b818100"",
+                    ""path"": ""TwoModifiers"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ItemLevelDown"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""99e7c7c7-5e10-447c-85c8-df357c8b8737"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ItemLevelDown"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""a09b324f-a806-4217-9e21-64dce9ae72d4"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ItemLevelDown"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""4515a4cf-6dc8-4369-bb39-c5de203e3962"",
+                    ""path"": ""<Keyboard>/leftBracket"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Default"",
+                    ""action"": ""ItemLevelDown"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -2667,6 +2775,8 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         m_Debug_AttributeRemove = m_Debug.FindAction("AttributeRemove", throwIfNotFound: true);
         m_Debug_AttributeReset = m_Debug.FindAction("AttributeReset", throwIfNotFound: true);
         m_Debug_AttributeDump = m_Debug.FindAction("AttributeDump", throwIfNotFound: true);
+        m_Debug_ItemLevelUp = m_Debug.FindAction("ItemLevelUp", throwIfNotFound: true);
+        m_Debug_ItemLevelDown = m_Debug.FindAction("ItemLevelDown", throwIfNotFound: true);
     }
 
     ~@PlayerInputs()
@@ -3325,6 +3435,8 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_Debug_AttributeRemove;
     private readonly InputAction m_Debug_AttributeReset;
     private readonly InputAction m_Debug_AttributeDump;
+    private readonly InputAction m_Debug_ItemLevelUp;
+    private readonly InputAction m_Debug_ItemLevelDown;
     /// <summary>
     /// Provides access to input actions defined in input action map "Debug".
     /// </summary>
@@ -3473,6 +3585,14 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @AttributeDump => m_Wrapper.m_Debug_AttributeDump;
         /// <summary>
+        /// Provides access to the underlying input action "Debug/ItemLevelUp".
+        /// </summary>
+        public InputAction @ItemLevelUp => m_Wrapper.m_Debug_ItemLevelUp;
+        /// <summary>
+        /// Provides access to the underlying input action "Debug/ItemLevelDown".
+        /// </summary>
+        public InputAction @ItemLevelDown => m_Wrapper.m_Debug_ItemLevelDown;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Debug; }
@@ -3600,6 +3720,12 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @AttributeDump.started += instance.OnAttributeDump;
             @AttributeDump.performed += instance.OnAttributeDump;
             @AttributeDump.canceled += instance.OnAttributeDump;
+            @ItemLevelUp.started += instance.OnItemLevelUp;
+            @ItemLevelUp.performed += instance.OnItemLevelUp;
+            @ItemLevelUp.canceled += instance.OnItemLevelUp;
+            @ItemLevelDown.started += instance.OnItemLevelDown;
+            @ItemLevelDown.performed += instance.OnItemLevelDown;
+            @ItemLevelDown.canceled += instance.OnItemLevelDown;
         }
 
         /// <summary>
@@ -3713,6 +3839,12 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             @AttributeDump.started -= instance.OnAttributeDump;
             @AttributeDump.performed -= instance.OnAttributeDump;
             @AttributeDump.canceled -= instance.OnAttributeDump;
+            @ItemLevelUp.started -= instance.OnItemLevelUp;
+            @ItemLevelUp.performed -= instance.OnItemLevelUp;
+            @ItemLevelUp.canceled -= instance.OnItemLevelUp;
+            @ItemLevelDown.started -= instance.OnItemLevelDown;
+            @ItemLevelDown.performed -= instance.OnItemLevelDown;
+            @ItemLevelDown.canceled -= instance.OnItemLevelDown;
         }
 
         /// <summary>
@@ -4210,5 +4342,19 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnAttributeDump(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ItemLevelUp" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnItemLevelUp(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ItemLevelDown" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnItemLevelDown(InputAction.CallbackContext context);
     }
 }

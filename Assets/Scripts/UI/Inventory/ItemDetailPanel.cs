@@ -304,6 +304,9 @@ namespace Combat.UI
                 UIKit.Icon(pill.transform, "Icon", elementIcon, c, s.labelSize + 6f);
                 UIKit.Text(pill.transform, "Text", s, element, s.labelSize, c, TextAlignmentOptions.Center, heading: true);
             }
+
+            var level = ItemText.LevelOf(item);
+            if (level.HasValue) UIKit.Text(block, "Level", s, "Item Level " + level.Value, s.smallSize + 1f, s.text);
         }
 
         private static void SlotChip(Transform parent, UIStyleSO s, string label, bool on)

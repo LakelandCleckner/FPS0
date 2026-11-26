@@ -40,6 +40,14 @@ namespace Combat.UI
             return null;
         }
 
+        // Item level of an owned item, null for anything else.
+        public static int? LevelOf(object item)
+        {
+            if (item is WeaponInstance w) return w.ItemLevel;
+            if (item is ArmorInstance a) return a.ItemLevel;
+            return null;
+        }
+
         // Item names take their rarity colour; Common keeps the given colour.
         public static UnityEngine.Color NameColor(UIStyleSO s, object item, UnityEngine.Color normal)
         {

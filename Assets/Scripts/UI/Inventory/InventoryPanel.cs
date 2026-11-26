@@ -118,21 +118,40 @@ namespace Combat.UI
                                      rarity.Value == Rarity.Common ? s.textFaint : s.RarityColor(rarity.Value), TMPro.TextAlignmentOptions.TopLeft, heading: true);
                 tag.characterSpacing = 1f;
                 float inset = small ? 6f : 10f;
-                UIKit.Anchor(tag.rectTransform, new Vector2(0f, 1f), new Vector2(0.85f, 1f), new Vector2(inset, -inset - 16f), new Vector2(0f, -inset));
+                // Stops short of the element badge so the tag shrinks instead of running under it.
+                float badgeRoom = (small ? 16f : 22f) + (small ? 5f : 8f) + 4f;
+                UIKit.Anchor(tag.rectTransform, new Vector2(0f, 1f), Vector2.one, new Vector2(inset, -inset - 16f), new Vector2(-badgeRoom, -inset));
             }
-
-            var mono = UIKit.Text(tile.transform, "Monogram", s, ItemText.Monogram(item), size * 0.28f, s.text,
-                                  TMPro.TextAlignmentOptions.Center, role: TextRole.Title);
-            UIKit.Anchor(mono.rectTransform, new Vector2(0f, 0.34f), new Vector2(1f, 0.86f), Vector2.zero, Vector2.zero);
 
             // Element badge, top right
             var type = item is Combat.Weapons.WeaponInstance w ? ItemText.ElementType(w) : null;
             if (type != null) UIKit.Badge((RectTransform)tile.transform, "Element", type.icon, type.color, small ? 16f : 22f, Vector2.one, small ? 5f : 8f);
 
-            var name = UIKit.Text(tile.transform, "Name", s, ItemText.Name(item), small ? s.labelSize + 1f : s.labelSize + 2f, ItemText.NameColor(s, item, s.textMuted),
-                                  TMPro.TextAlignmentOptions.Center, lines: 2, role: TextRole.Title);
+            // Name and level stack at the bottom; the monogram is centred in the space between the rarity tag and the name.
+            float edge = small ? 6f : 10f;
             float pad = small ? 4f : 8f;
-            UIKit.Anchor(name.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.34f), new Vector2(pad, pad * 0.75f), new Vector2(-pad, 0f));
+            var body = UIKit.Node(tile.transform, "Body");
+            UIKit.Anchor(body, Vector2.zero, Vector2.one, new Vector2(pad, edge), new Vector2(-pad, -(edge + 16f)));
+            var stack = body.gameObject.AddComponent<UnityEngine.UI.VerticalLayoutGroup>();
+            stack.childAlignment = TextAnchor.LowerCenter;
+            stack.childControlWidth = true;
+            stack.childControlHeight = true;
+            stack.childForceExpandWidth = true;
+            stack.childForceExpandHeight = false;
+            stack.spacing = small ? 1f : 2f;
+
+            var name = UIKit.Text(body, "Name", s, ItemText.Name(item), small ? s.labelSize + 1f : s.labelSize + 2f, ItemText.NameColor(s, item, s.textMuted),
+                                  TMPro.TextAlignmentOptions.Center, wrap: !small, role: TextRole.Title);
+
+            var level = ItemText.LevelOf(item);
+            if (level.HasValue)
+                UIKit.Text(body, "Level", s, "Lv " + level.Value, s.labelSize - 2f, s.textMuted, TMPro.TextAlignmentOptions.Center, heading: true);
+
+            float nameH = name.GetPreferredValues(name.text, size - 2f * pad, 0f).y;
+            float levelH = level.HasValue ? UIKit.LineHeight(s.labelSize - 2f) + stack.spacing : 0f;
+            var mono = UIKit.Text(tile.transform, "Monogram", s, ItemText.Monogram(item), size * 0.28f, s.text,
+                                  TMPro.TextAlignmentOptions.Center, role: TextRole.Title);
+            UIKit.Anchor(mono.rectTransform, Vector2.zero, Vector2.one, new Vector2(0f, edge + nameH + levelH), new Vector2(0f, -(edge + 16f)));
 
             var fill = UIKit.Box(tile.transform, "DeleteFill", s, new Color(s.negative.r, s.negative.g, s.negative.b, 0.35f));
             fill.gameObject.AddComponent<UnityEngine.UI.LayoutElement>().ignoreLayout = true;
