@@ -47,6 +47,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a2cff53219f7d754ca7b2fbec205a39b, type: 2}
   - {fileID: 11400000, guid: f1cbdbba5f9adc64bbf892b2ffffe793, type: 2}
   - {fileID: 11400000, guid: bffad967343affd4e9c81b62103c25e4, type: 2}
+  - {fileID: 11400000, guid: 616c1e6f8242f2d4b8a2568ecaee6067, type: 2}
+  - {fileID: 11400000, guid: 98944bf93cd41b940ae2e02319e67798, type: 2}
+  - {fileID: 11400000, guid: eeef47a527fab91418135f011a4eb7ff, type: 2}
+  - {fileID: 11400000, guid: 3ba7f211869c29743852497d0b8714bb, type: 2}
+  - {fileID: 11400000, guid: 51bef849a0797f74ea5bcd6df6bc9a92, type: 2}
   countByRarity: 0200000002000000030000000400000005000000
   damageCountByRarity: 0200000003000000040000000500000006000000
   elementCountByRarity: 0000000000000000000000000100000001000000

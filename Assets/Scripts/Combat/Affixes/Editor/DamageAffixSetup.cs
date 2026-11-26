@@ -27,6 +27,31 @@ namespace Combat.Affixes.EditorTools
             "Toxic Damage | toxic_damage pct lvl 0.08 | armor group=element player element=poison\n" +
             "Ballistic Damage | ballistic_damage pct lvl 0.08 | armor group=element player element=physical";
 
+        // Arms and trinket roll the full pool; head, chest and legs roll per weapon type damage and Crit Damage.
+        private const string ArmorAffixes =
+            "Weapon Damage | weapon_damage pct lvl 0.08 | weapons armor damage slots=trinket,arms\n" +
+            "Rifle Damage | weapon_damage pct lvl 0.12 | armor damage boosts=assault_rifle\n" +
+            "SMG Damage | weapon_damage pct lvl 0.12 | armor damage boosts=submachine_gun\n" +
+            "Shotgun Damage | weapon_damage pct lvl 0.12 | armor damage boosts=shotgun\n" +
+            "Sidearm Damage | weapon_damage pct lvl 0.12 | armor damage boosts=sidearm\n" +
+            "Global Damage | global_damage pct lvl 0.05 | armor damage player slots=trinket,arms\n" +
+            "Precision Damage | precision_damage pct lvl 0.06 | weapons armor damage slots=trinket,arms\n" +
+            "Crit Chance | crit_chance flat lvl 0.01 | weapons armor damage player held slots=trinket,arms\n" +
+            "Crit Damage | crit_damage flat lvl 0.06 | weapons armor damage player held";
+
+        [MenuItem("FPS0/Items & Perks/Setup Armor Damage Affixes", priority = 534)]
+        private static void RunArmor()
+        {
+            var library = AssetDatabase.LoadAssetAtPath<AffixLibrarySO>(LibraryPath);
+            if (library == null) { Debug.LogError("[DamageAffixSetup] No affix library. Run Setup Affixes first."); return; }
+            var errors = new List<string>();
+            var parsed = AffixText.Parse(ArmorAffixes, errors);
+            if (errors.Count > 0) { Debug.LogError("[DamageAffixSetup] " + string.Join("\n", errors)); return; }
+            var log = new List<string>();
+            AffixText.Apply(parsed, library, log);
+            Debug.Log("[DamageAffixSetup] Armor damage affixes done.\n" + string.Join("\n", log));
+        }
+
         [MenuItem("FPS0/Items & Perks/Setup Damage Affixes", priority = 532)]
         private static void Run()
         {
