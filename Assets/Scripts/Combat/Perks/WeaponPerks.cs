@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Combat.Affixes;
 using Combat.Events;
 using Combat.Loadout;
 using Combat.Sources;
@@ -8,7 +9,7 @@ using Combat.Weapons;
 
 namespace Combat.Perks
 {
-    // Runs a weapon's perks. Lives on the weapon runtime prefab: enabled while the weapon is in the
+    // Runs a weapon's perks and registers its affixes. Lives on the weapon runtime prefab: enabled while the weapon is in the
     // loadout, so perk state resets when it leaves the loadout, not when it's stowed.
     public class WeaponPerks : MonoBehaviour
     {
@@ -18,6 +19,8 @@ namespace Combat.Perks
         private WeaponFireController controller;
         private WeaponLoadout loadout;
         private readonly List<PerkRuntime> runtimes = new List<PerkRuntime>();
+        private readonly List<object> affixOwners = new List<object>();
+        private LoadoutModifierApplier affixApplier;
         private PerkContext ctx;
         private bool started;
 
@@ -43,7 +46,7 @@ namespace Combat.Perks
 
         private void OnDisable() => Detach();
 
-        // Rebuilds every perk, e.g. after a reroll.
+        // Rebuilds every perk and affix, e.g. after a reroll.
         public void Reattach()
         {
             Detach();
@@ -52,7 +55,7 @@ namespace Combat.Perks
 
         private void Attach()
         {
-            if (runtimes.Count > 0 || source == null) return;
+            if (runtimes.Count > 0 || affixOwners.Count > 0 || source == null) return;
 
             var instance = source.Instance;
             if (instance == null) return;
@@ -88,6 +91,10 @@ namespace Combat.Perks
                 if (debugLog) Debug.Log($"[WeaponPerks] {name} + {perk.name}");
             }
 
+            affixApplier = ctx.Applier;
+            AffixGrants.Register(affixApplier, instance.Affixes, instance.Rarity, instance.ItemLevel,
+                                 instance.Definition != null ? instance.Definition.name : null, source, affixOwners);
+
             if (loadout != null)
             {
                 loadout.OnWeaponEquipped += HandleEquipped;
@@ -105,6 +112,7 @@ namespace Combat.Perks
 
             for (int i = runtimes.Count - 1; i >= 0; i--) runtimes[i].Detach();
             runtimes.Clear();
+            AffixGrants.Unregister(affixApplier, affixOwners);
         }
 
         // Held = equip finished until stow starts, the same window as InHands modifiers.

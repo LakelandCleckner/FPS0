@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0eee4afaf4603ae4a9a79112c937dc5b, type: 3}
+  m_Name: AffixLibrary
+  m_EditorClassIdentifier: 
+  affixes:
+  - {fileID: 11400000, guid: 25af0641a47f3ae43aff7c9b39b3f454, type: 2}
+  - {fileID: 11400000, guid: 84b18ef29e79b99489b32f485f5e7f11, type: 2}
+  - {fileID: 11400000, guid: c649e8268ac849942b06ec953acd8c3f, type: 2}
+  countByRarity: 0200000002000000020000000200000002000000
+  greaterChance: 0.05
+  greaterMultiplier: 1.5

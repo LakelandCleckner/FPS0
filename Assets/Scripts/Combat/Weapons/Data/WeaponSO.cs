@@ -111,6 +111,10 @@ namespace Combat.Weapons
         [Tooltip("Fixed pick per column for curated rolls. Empty entry = random for that column.")]
         public List<PerkSO> curatedRoll = new List<PerkSO>();
 
+        [Header("Affixes")]
+        [Tooltip("Mythic only: these affixes instead of rolled ones.")]
+        public List<Combat.Affixes.AffixRoll> fixedAffixes = new List<Combat.Affixes.AffixRoll>();
+
         [Header("Identity / Chain")]
         public int faction = 0;
         public int maxChainDepth = 0;

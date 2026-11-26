@@ -24,6 +24,10 @@ namespace Combat.Armor
         [Tooltip("Fixed pick per column for curated rolls. Empty entry = random for that column.")]
         public List<PerkSO> curatedRoll = new List<PerkSO>();
 
+        [Header("Affixes")]
+        [Tooltip("Mythic only: these affixes instead of rolled ones.")]
+        public List<Combat.Affixes.AffixRoll> fixedAffixes = new List<Combat.Affixes.AffixRoll>();
+
         // Own columns, else the slot's.
         public List<PerkColumn> ResolvedPerkColumns
             => perkColumns != null && perkColumns.Count > 0 ? perkColumns

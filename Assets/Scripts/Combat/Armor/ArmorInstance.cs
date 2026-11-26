@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Combat.Affixes;
 using Combat.Perks;
 using Combat.Progression;
 
@@ -13,6 +14,7 @@ namespace Combat.Armor
         [SerializeField] private string uid;
         [SerializeField] private ArmorSO definition;
         [SerializeField] private List<PerkSO> perks = new List<PerkSO>();
+        [SerializeField] private List<AffixRoll> affixes = new List<AffixRoll>();
         [SerializeField] private Rarity rarity;
         [SerializeField] private int itemLevel = 1;
         [SerializeField] private float itemXp = 0f;
@@ -23,6 +25,7 @@ namespace Combat.Armor
 
         // Rolled picks, one per column (null where a column had nothing to roll).
         public IReadOnlyList<PerkSO> Perks => perks;
+        public IReadOnlyList<AffixRoll> Affixes => affixes;
         public Rarity Rarity => rarity;
         public int ItemLevel => Mathf.Max(1, itemLevel);
         public float ItemXp => itemXp;
@@ -41,9 +44,10 @@ namespace Combat.Armor
 
         public override string ToString() => definition != null ? "armor " + definition.name : "armor";
 
-        // New perks at the same rarity. Mythic items always use their curated picks.
+        // New perks and affixes at the same rarity. Mythic items always use their curated picks.
         public void Reroll(RollMode mode = RollMode.Random)
         {
+            AffixLibrary.RollFor(definition, rarity, affixes);
             if (definition == null) { perks.Clear(); return; }
             if (definition.mythic) mode = RollMode.Curated;
             PerkRoll.Roll(definition.ResolvedPerkColumns, definition.curatedRoll, mode, perks, definition.intrinsicPerks, definition.name, rarity);

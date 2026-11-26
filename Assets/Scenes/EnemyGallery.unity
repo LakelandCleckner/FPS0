@@ -593,6 +593,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5c935b4f6c007884690e7330160eb98e, type: 2}
   itemScaling: {fileID: 11400000, guid: 76c7230f3f5d7a542af2ed5c50e01f85, type: 2}
   tierScaling: {fileID: 11400000, guid: 40e60f8eabfc5094dab1b9f9131becde, type: 2}
+  affixLibrary: {fileID: 11400000, guid: 9c4f2640cd748634fb0ca14650b0c182, type: 2}
 --- !u!4 &798870445
 Transform:
   m_ObjectHideFlags: 0

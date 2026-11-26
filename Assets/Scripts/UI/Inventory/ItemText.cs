@@ -123,7 +123,10 @@ namespace Combat.UI
         public static string PerkName(PerkSO p) => p != null ? Pick(p.displayName, p.name) : "";
 
         // "+10% Move Speed", "+5 Handling", "x1.2 Reload Time".
-        public static string Effect(ModifierEntry e)
+        public static string Effect(ModifierEntry e) => Effect(e, true);
+
+        // scoped = false leaves out the "(weapons)" / "while held" suffix, for lines already on a weapon.
+        public static string Effect(ModifierEntry e, bool scoped)
         {
             if (e == null || e.stat == null) return "";
             string stat = Pick(e.stat.displayName, e.stat.name);
@@ -144,6 +147,7 @@ namespace Combat.UI
             }
 
             string scope = "";
+            if (!scoped) return amount + " " + stat;
             if (e.target == ModifierTarget.Weapons)
             {
                 if (e.weaponTypes != null && e.weaponTypes.Count > 0)
