@@ -21,11 +21,11 @@ MonoBehaviour:
   targetWeaponTypes: []
   valueSource: 0
   rarityValues:
-  - 4
-  - 6
-  - 8
-  - 10
-  - 12
+  - 5
+  - 9
+  - 13
+  - 18
+  - 24
   baseValue: 0
   onWeapons: 1
   weaponTypeFilter: []

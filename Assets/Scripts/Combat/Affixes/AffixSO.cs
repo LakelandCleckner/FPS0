@@ -43,9 +43,9 @@ namespace Combat.Affixes
 
         [Header("Rolls on")]
         public bool onWeapons = true;
-        [Tooltip("Empty = every weapon type.")]
+        [Tooltip("Rolls on weapons of these types or the archetypes below. Both empty = every weapon.")]
         public List<WeaponTypeSO> weaponTypeFilter = new List<WeaponTypeSO>();
-        [Tooltip("Empty = every archetype.")]
+        [Tooltip("Rolls on these archetypes or the types above. Both empty = every weapon.")]
         public List<WeaponArchetypeSO> archetypeFilter = new List<WeaponArchetypeSO>();
         public bool onArmor = false;
         [Tooltip("Empty = every armor slot.")]
@@ -63,14 +63,14 @@ namespace Combat.Affixes
             return rarityValues[Mathf.Clamp((int)rarity, 0, rarityValues.Length - 1)];
         }
 
-        public bool CanRollOn(WeaponSO weapon)
+        public bool CanRollOn(WeaponSO weapon) => weapon != null && CanRollOn(weapon.archetype);
+
+        public bool CanRollOn(WeaponArchetypeSO arch)
         {
-            if (!onWeapons || weapon == null || stat == null) return false;
-            var arch = weapon.archetype;
+            if (!onWeapons || stat == null) return false;
+            if (weaponTypeFilter.Count == 0 && archetypeFilter.Count == 0) return true;
             var type = arch != null ? arch.weaponType : null;
-            if (weaponTypeFilter.Count > 0 && (type == null || !weaponTypeFilter.Contains(type))) return false;
-            if (archetypeFilter.Count > 0 && (arch == null || !archetypeFilter.Contains(arch))) return false;
-            return true;
+            return (type != null && weaponTypeFilter.Contains(type)) || (arch != null && archetypeFilter.Contains(arch));
         }
 
         public bool CanRollOn(ArmorSO armor)

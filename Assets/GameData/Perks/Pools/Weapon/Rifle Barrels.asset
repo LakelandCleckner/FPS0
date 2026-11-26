@@ -12,15 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4d1da4720f2c694786e3c4a0bbe5be0, type: 3}
   m_Name: Rifle Barrels
   m_EditorClassIdentifier: 
-  perks:
-  - {fileID: 11400000, guid: 5c996d369ded2164aa888042f67987ed, type: 2}
-  - {fileID: 11400000, guid: 58be8b59e9bc77944bd57d3d6b4524e6, type: 2}
-  - {fileID: 11400000, guid: 6ad24ce3e36ef6746a71049309d5eea9, type: 2}
-  - {fileID: 11400000, guid: cb78c5f880ca4a579bc1ee8270c6a6d6, type: 2}
-  - {fileID: 11400000, guid: 07f859f433ea42d0bffadd1c851b1e23, type: 2}
-  - {fileID: 11400000, guid: ae43cdb6eeef4aa38af4ebff287f4972, type: 2}
-  - {fileID: 11400000, guid: f2291b578221424aa9821d47fc8f1fe1, type: 2}
-  - {fileID: 11400000, guid: d5e6bfa906e5451d915cddb6ad313dc8, type: 2}
-  includes:
-  - {fileID: 11400000, guid: 8e2c8e9d10a125342a4e56d7d1be135f, type: 2}
-  authoredAs: '@Generic Barrels, Long Barrel, Steady Assist *, Compensator *, Ported Barrel, Bull Barrel, Light Brake'
+  perks: []
+  includes: []
+  authoredAs: '@Generic Barrels, Long Barrel, Steady Assist *, Compensator *, Ported
+    Barrel, Bull Barrel, Light Brake'

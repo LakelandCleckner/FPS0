@@ -19,38 +19,36 @@ MonoBehaviour:
   defaultViewmodel: {fileID: 11400000, guid: d4f46df13b99803418d5c2dac5d10c04, type: 2}
   defaultShader: {fileID: 0}
   perkColumns:
-  - label: Barrel
-    minRarity: 0
-    source: {fileID: 11400000, guid: 50372d5fa2c8b4a46bc859fb62a988e0, type: 2}
-    extraPerks: []
-  - label: Magazine
-    minRarity: 0
-    source: {fileID: 11400000, guid: 268034a300785e04daddcbd879b3fd1a, type: 2}
-    extraPerks: []
   - label: Trait
     minRarity: 0
     source: {fileID: 11400000, guid: f6ca8791d3915d440b637ddf629daddc, type: 2}
     extraPerks: []
+    byElement: []
   - label: Trait
     minRarity: 0
     source: {fileID: 11400000, guid: 3e8abe918ce442989d256f84dae54e99, type: 2}
     extraPerks: []
+    byElement: []
   - label: Trait
     minRarity: 1
     source: {fileID: 11400000, guid: bae76d937fc6aab459e354ed6991f942, type: 2}
     extraPerks: []
+    byElement: []
   - label: Trait
     minRarity: 2
     source: {fileID: 11400000, guid: d65a92d715394f51ae40395cdbdbbbe3, type: 2}
     extraPerks: []
+    byElement: []
   - label: Trait
     minRarity: 3
     source: {fileID: 11400000, guid: d65a92d715394f51ae40395cdbdbbbe3, type: 2}
     extraPerks: []
+    byElement: []
   - label: Trait
     minRarity: 4
     source: {fileID: 11400000, guid: d65a92d715394f51ae40395cdbdbbbe3, type: 2}
     extraPerks: []
+    byElement: []
   - label: Element
     minRarity: 1
     source: {fileID: 11400000, guid: 493ae8f02fc8405bb35cda236702a836, type: 2}

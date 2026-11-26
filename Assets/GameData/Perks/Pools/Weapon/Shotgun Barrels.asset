@@ -12,11 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4d1da4720f2c694786e3c4a0bbe5be0, type: 3}
   m_Name: Shotgun Barrels
   m_EditorClassIdentifier: 
-  perks:
-  - {fileID: 11400000, guid: e8f0b691b2aa59047abc09839406ee7a, type: 2}
-  - {fileID: 11400000, guid: 9038596e80798e7408476a3c7c19bc66, type: 2}
-  - {fileID: 11400000, guid: 734675aeb89e40b2b4dc318572bb1c6c, type: 2}
-  - {fileID: 11400000, guid: ff6ea77c76764c6b8403265e1b4cd4d5, type: 2}
-  includes:
-  - {fileID: 11400000, guid: 8e2c8e9d10a125342a4e56d7d1be135f, type: 2}
+  perks: []
+  includes: []
   authoredAs: '@Generic Barrels, Light Frame *, Tight Choke, Long Choke'

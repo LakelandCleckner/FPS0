@@ -16,6 +16,14 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 25af0641a47f3ae43aff7c9b39b3f454, type: 2}
   - {fileID: 11400000, guid: 84b18ef29e79b99489b32f485f5e7f11, type: 2}
   - {fileID: 11400000, guid: c649e8268ac849942b06ec953acd8c3f, type: 2}
+  - {fileID: 11400000, guid: 3fd2f5eba6d91fc4e933e9457ae77ef1, type: 2}
+  - {fileID: 11400000, guid: d5d54ea0a41c137469fa3b31391b35a8, type: 2}
+  - {fileID: 11400000, guid: fc58a1bafff1b9f45a10acffb247ccba, type: 2}
+  - {fileID: 11400000, guid: a6752232ec204cb49a340eb46d2ba603, type: 2}
+  - {fileID: 11400000, guid: d46ef5d3d6e246643a0511a0bf413960, type: 2}
+  - {fileID: 11400000, guid: e97563df7abd67a46bd68588d4028b21, type: 2}
+  - {fileID: 11400000, guid: d3a685c0ee28a2942a1beb9dd02b4c4f, type: 2}
+  - {fileID: 11400000, guid: 1be821110a9f04341ab4042b3454c386, type: 2}
   countByRarity: 0200000002000000020000000200000002000000
   greaterChance: 0.05
   greaterMultiplier: 1.5
