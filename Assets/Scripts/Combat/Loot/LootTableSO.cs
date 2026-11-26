@@ -90,12 +90,15 @@ namespace Combat.Loot
         }
 
         // Levels below the tier: Common and Uncommon roll evenly, Rare takes the better of two, Legendary and up are at the tier.
-        public int RollLevel(Rarity r)
+        public int RollLevel(Rarity r) => RollLevel(r, tier > 0 ? tier : Tier.Current);
+
+        // Same roll at a given tier, for tools that simulate drops.
+        public int RollLevel(Rarity r, int atTier)
         {
             int below = Random.Range(0, LevelBand + 1);
             if (r == Rarity.Rare) below = Mathf.Min(below, Random.Range(0, LevelBand + 1));
             else if (r > Rarity.Rare) below = 0;
-            return ItemScaling.Clamp((tier > 0 ? tier : Tier.Current) - below);
+            return ItemScaling.Clamp(atTier - below);
         }
 
         private const int LevelBand = 2;
