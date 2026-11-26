@@ -30,8 +30,8 @@ namespace Combat.Loot
         public RollMode rollMode = RollMode.Random;
         [Tooltip("Mythic drops a hand-made Mythic from the pools; other rarities never pick one.")]
         public RarityWeights rarity = RarityWeights.Default;
-        [Tooltip("Dungeon tier. Drops roll item level from tier - 2 to tier; rarer drops roll toward the top.")]
-        [Min(1)] public int tier = 1;
+        [Tooltip("Tier drops roll for: item level from tier - 2 to tier, rarer drops toward the top. 0 = the current tier.")]
+        [Min(0)] public int tier = 0;
 
         [Header("Pools")]
         [Tooltip("Empty in the editor = every weapon in the project.")]
@@ -90,12 +90,15 @@ namespace Combat.Loot
         }
 
         // Levels below the tier: Common and Uncommon roll evenly, Rare takes the better of two, Legendary and up are at the tier.
-        public int RollLevel(Rarity r)
+        public int RollLevel(Rarity r) => RollLevel(r, tier > 0 ? tier : Tier.Current);
+
+        // Same roll at a given tier, for tools that simulate drops.
+        public int RollLevel(Rarity r, int atTier)
         {
             int below = Random.Range(0, LevelBand + 1);
             if (r == Rarity.Rare) below = Mathf.Min(below, Random.Range(0, LevelBand + 1));
             else if (r > Rarity.Rare) below = 0;
-            return ItemScaling.Clamp(tier - below);
+            return ItemScaling.Clamp(atTier - below);
         }
 
         private const int LevelBand = 2;

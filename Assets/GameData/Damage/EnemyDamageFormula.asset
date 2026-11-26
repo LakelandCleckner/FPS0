@@ -83,3 +83,10 @@ MonoBehaviour:
     owner: 0
     mode: 0
     onlyType: {fileID: 0}
+  - layer: 10
+    appliesTo: 7
+    label: Tier
+    stat: {fileID: 11400000, guid: 5c935b4f6c007884690e7330160eb98e, type: 2}
+    owner: 0
+    mode: 0
+    onlyType: {fileID: 0}

@@ -3,6 +3,7 @@ using UnityEngine;
 using Combat.Core;
 using Combat.Effects;
 using Combat.Loot;
+using Combat.Progression;
 using Combat.Stats;
 using Combat.Spawning;
 
@@ -37,6 +38,7 @@ namespace Combat.Enemies
         private readonly List<EnemyModifierSO> extra = new List<EnemyModifierSO>();
         private readonly List<EnemyModifierSO> affixExtra = new List<EnemyModifierSO>();
         private readonly List<object> modifierOwners = new List<object>();
+        private readonly object tierOwner = new object();
         private readonly Dictionary<StatDefinitionSO, float> authoredBases = new Dictionary<StatDefinitionSO, float>();
         private readonly List<IHitEffect> meleeEffects = new List<IHitEffect>();
         private readonly List<EnemyDeathEffectSO> deathEffects = new List<EnemyDeathEffectSO>();
@@ -132,6 +134,7 @@ namespace Combat.Enemies
             Active.Add(this);
             if (stats != null) stats.ModifiersCleared += Apply;
             if (health != null) { health.HealthChanged += HandleHealthChanged; health.OnDeath += HandleDeath; }
+            Tier.Changed += HandleTierChanged;
         }
 
         private void OnDisable()
@@ -140,6 +143,12 @@ namespace Combat.Enemies
             if (i >= 0) { Active[i] = Active[Active.Count - 1]; Active.RemoveAt(Active.Count - 1); }
             if (stats != null) stats.ModifiersCleared -= Apply;
             if (health != null) { health.HealthChanged -= HandleHealthChanged; health.OnDeath -= HandleDeath; }
+            Tier.Changed -= HandleTierChanged;
+        }
+
+        private void HandleTierChanged(int tier)
+        {
+            if (started) Apply();
         }
 
         private void Start()
@@ -221,6 +230,7 @@ namespace Combat.Enemies
 
             RemoveModifiers(c);
             RestoreBases(c);
+            ApplyTier(c);
 
             layers.Clear();
             var arch = Archetype;
@@ -282,6 +292,20 @@ namespace Combat.Enemies
         {
             for (int i = 0; i < modifierOwners.Count; i++) c.RemoveAllFromOwner(modifierOwners[i]);
             modifierOwners.Clear();
+        }
+
+        // Current tier: max health multiplied, tier damage set for the enemy damage formula to read.
+        private void ApplyTier(StatContainer c)
+        {
+            var t = Tier.Scaling;
+            if (t == null) return;
+            int tier = Tier.Current;
+            if (t.healthStat != null && tier > 1)
+            {
+                c.AddModifier(new StatModifier(t.healthStat, StatResolver.MULTIPLICATIVE, t.HealthFactor(tier) - 1f), tierOwner);
+                modifierOwners.Add(tierOwner);
+            }
+            if (t.damageStat != null) WriteBase(c, t.damageStat, t.DamageFactor(tier));
         }
 
         // Puts back bases a previous definition overwrote, so a variant swap leaves no residue.

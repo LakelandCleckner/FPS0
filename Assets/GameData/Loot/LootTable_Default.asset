@@ -26,5 +26,6 @@ MonoBehaviour:
     rare: 14
     legendary: 5
     mythic: 1
+  tier: 0
   weapons: []
   armor: []

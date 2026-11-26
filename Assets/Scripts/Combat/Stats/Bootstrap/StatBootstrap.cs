@@ -16,12 +16,17 @@ namespace Combat.Stats
         [Tooltip("Item level growth curve.")]
         [SerializeField] private Combat.Progression.ItemScalingSO itemScaling;
 
+        [Tooltip("Enemy growth per dungeon tier.")]
+        [SerializeField] private Combat.Progression.TierScalingSO tierScaling;
+
         public Combat.Progression.ItemScalingSO Scaling => itemScaling;
+        public Combat.Progression.TierScalingSO TierScaling => tierScaling;
 
         private void Awake()
         {
             StatRegistry.Initialize(statDefinitions);
             if (itemScaling != null) Combat.Progression.ItemScaling.Active = itemScaling;
+            if (tierScaling != null) Combat.Progression.Tier.Scaling = tierScaling;
         }
 
         // For edit-mode tools: initializes the registry from the scene's bootstrap if nothing has yet.
