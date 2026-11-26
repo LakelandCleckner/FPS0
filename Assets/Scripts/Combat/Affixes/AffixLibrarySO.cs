@@ -20,6 +20,8 @@ namespace Combat.Affixes
         public int[] damageCountByRarity = { 2, 3, 4, 5, 6 };
         [Tooltip("Element affixes per item at Common, Uncommon, Rare, Legendary, Mythic. Only elemental armor can roll them.")]
         public int[] elementCountByRarity = { 0, 0, 0, 1, 1 };
+        [Tooltip("Defense affixes per item at Common, Uncommon, Rare, Legendary, Mythic. Only armor rolls them.")]
+        public int[] defenseCountByRarity = { 1, 1, 2, 2, 3 };
         [Tooltip("Item level affixes at max item level are this many times their level 1 value, rising evenly.")]
         [Min(1f)] public float levelRampAtMax = 10f;
         [Tooltip("Chance each rolled affix is greater.")]
@@ -30,7 +32,10 @@ namespace Combat.Affixes
 
         public int CountFor(AffixGroup group, Rarity rarity)
         {
-            var counts = group == AffixGroup.Damage ? damageCountByRarity : group == AffixGroup.Element ? elementCountByRarity : countByRarity;
+            var counts = group == AffixGroup.Damage ? damageCountByRarity
+                       : group == AffixGroup.Element ? elementCountByRarity
+                       : group == AffixGroup.Defense ? defenseCountByRarity
+                       : countByRarity;
             if (counts == null || counts.Length == 0) return 0;
             return Mathf.Max(0, counts[Mathf.Clamp((int)rarity, 0, counts.Length - 1)]);
         }
@@ -38,11 +43,12 @@ namespace Combat.Affixes
         public void Roll(WeaponSO weapon, Rarity rarity, List<AffixRoll> into) => Roll(a => a.CanRollOn(weapon), rarity, into);
         public void Roll(ArmorSO armor, Rarity rarity, List<AffixRoll> into) => Roll(a => a.CanRollOn(armor), rarity, into);
 
-        // Stat, damage, then element affixes, each group filling its own slots.
+        // Stat, defense, damage, then element affixes, each group filling its own slots.
         private void Roll(Predicate<AffixSO> eligible, Rarity rarity, List<AffixRoll> into)
         {
             into.Clear();
             RollGroup(AffixGroup.Stat, eligible, rarity, into);
+            RollGroup(AffixGroup.Defense, eligible, rarity, into);
             RollGroup(AffixGroup.Damage, eligible, rarity, into);
             RollGroup(AffixGroup.Element, eligible, rarity, into);
         }

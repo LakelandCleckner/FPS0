@@ -40,6 +40,7 @@ namespace Combat.Affixes.EditorTools
         // Best roll
         private bool bestGreater = true;
         private bool onlyCapped;
+        private bool bestArmor;
         private readonly List<BestRow> best = new List<BestRow>();
 
         private struct BestRow
@@ -87,6 +88,7 @@ namespace Combat.Affixes.EditorTools
             librarySo.Update();
             EditorGUILayout.PropertyField(librarySo.FindProperty("countByRarity"), new GUIContent("Stat affixes per rarity"), true);
             EditorGUILayout.PropertyField(librarySo.FindProperty("damageCountByRarity"), new GUIContent("Damage affixes per rarity"), true);
+            EditorGUILayout.PropertyField(librarySo.FindProperty("defenseCountByRarity"), new GUIContent("Defense affixes per rarity"), true);
             EditorGUILayout.PropertyField(librarySo.FindProperty("elementCountByRarity"), new GUIContent("Element affixes per rarity"), true);
             EditorGUILayout.PropertyField(librarySo.FindProperty("levelRampAtMax"), new GUIContent("Level ramp at max level"));
             EditorGUILayout.PropertyField(librarySo.FindProperty("greaterChance"));
@@ -102,7 +104,7 @@ namespace Combat.Affixes.EditorTools
                     {
                         if (a == null) continue;
                         var style = a == selected ? EditorStyles.boldLabel : EditorStyles.label;
-                        string where = (a.group == AffixGroup.Damage ? "Dmg " : a.group == AffixGroup.Element ? "Elem " : "Stat ") + (a.onWeapons ? "W" : "") + (a.onArmor ? "A" : "");
+                        string where = GroupTag(a.group) + " " + (a.onWeapons ? "W" : "") + (a.onArmor ? "A" : "");
                         if (GUILayout.Button($"{a.DisplayName}   [{where}]", style)) Select(a);
                     }
                     EditorGUILayout.EndScrollView();
@@ -137,6 +139,9 @@ namespace Combat.Affixes.EditorTools
                 }
             }
         }
+
+        private static string GroupTag(AffixGroup g) =>
+            g == AffixGroup.Damage ? "Dmg" : g == AffixGroup.Element ? "Elem" : g == AffixGroup.Defense ? "Def" : "Stat";
 
         private void Select(AffixSO a)
         {
@@ -226,8 +231,8 @@ namespace Combat.Affixes.EditorTools
 
             if (rolledItems == 0) return;
             scroll = EditorGUILayout.BeginScrollView(scroll);
-            EditorGUILayout.LabelField($"{rolledItems} items, {library.CountFor(AffixGroup.Stat, rollRarity)} stat and " +
-                                       $"{library.CountFor(AffixGroup.Damage, rollRarity)} damage slots, {library.CountFor(AffixGroup.Element, rollRarity)} element slots", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"{rolledItems} items. Slots: stat {library.CountFor(AffixGroup.Stat, rollRarity)}, defense {library.CountFor(AffixGroup.Defense, rollRarity)}, " +
+                                       $"damage {library.CountFor(AffixGroup.Damage, rollRarity)}, element {library.CountFor(AffixGroup.Element, rollRarity)}", EditorStyles.boldLabel);
             int most = Mathf.Max(1, rolled.Values.DefaultIfEmpty(1).Max());
             AffixGroup? shown = null;
             foreach (var kv in rolled.OrderBy(k => k.Key.group).ThenByDescending(k => k.Value))
@@ -271,15 +276,16 @@ namespace Combat.Affixes.EditorTools
                                     "(up to its group's Mythic slots), at max item level on its first weapon. Red = the stat hits its cap.", MessageType.None);
             using (new EditorGUILayout.HorizontalScope())
             {
+                bestArmor = GUILayout.Toolbar(bestArmor ? 1 : 0, new[] { "Weapons", "Armor" }, GUILayout.Width(160)) == 1;
                 bestGreater = EditorGUILayout.ToggleLeft("All greater", bestGreater, GUILayout.Width(100));
                 onlyCapped = EditorGUILayout.ToggleLeft("Only capped", onlyCapped, GUILayout.Width(100));
-                if (GUILayout.Button("Check")) CheckBest();
+                if (GUILayout.Button("Check")) { if (bestArmor) CheckBestArmor(); else CheckBest(); }
             }
 
             scroll = EditorGUILayout.BeginScrollView(scroll);
             using (new EditorGUILayout.HorizontalScope())
             {
-                GUILayout.Label("Archetype", EditorStyles.miniBoldLabel, GUILayout.Width(170));
+                GUILayout.Label(bestArmor ? "Slot" : "Archetype", EditorStyles.miniBoldLabel, GUILayout.Width(170));
                 GUILayout.Label("Stat", EditorStyles.miniBoldLabel, GUILayout.Width(130));
                 GUILayout.Label("Base", EditorStyles.miniBoldLabel, GUILayout.Width(60));
                 GUILayout.Label("Best", EditorStyles.miniBoldLabel, GUILayout.Width(60));
@@ -347,6 +353,42 @@ namespace Combat.Affixes.EditorTools
                         Archetype = string.IsNullOrEmpty(arch.displayName) ? arch.name : arch.displayName,
                         Stat = string.IsNullOrEmpty(stat.displayName) ? stat.id : stat.displayName,
                         Base = baseV, Best = v, Cap = cap, Capped = capped,
+                        Affixes = string.Join(", ", ranked.Select(a => a.DisplayName))
+                    });
+                }
+            }
+        }
+
+        // Per armor slot: each stat and kind's best total from that slot's strongest affixes, against the stat's cap. Base is 0.
+        private void CheckBestArmor()
+        {
+            best.Clear();
+            int level = Combat.Progression.ItemScaling.MaxLevel;
+            float mult = bestGreater ? library.greaterMultiplier : 1f;
+            foreach (var slot in AffixText.All<ArmorSlotSO>().OrderBy(s => s.name))
+            {
+                var piece = AffixText.All<ArmorSO>().FirstOrDefault(p => p.slot == slot);
+                if (piece == null) continue;
+                var eligible = library.affixes.Where(a => a != null && a.CanRollOn(piece)).ToList();
+                foreach (var key in eligible.Select(a => (a.stat, a.bucket)).Distinct())
+                {
+                    var stat = key.stat;
+                    var onStat = eligible.Where(a => a.stat == stat && a.bucket == key.bucket).ToList();
+                    int slots = onStat.Max(a => library.CountFor(a.group, Rarity.Mythic));
+                    var ranked = onStat.OrderByDescending(a => Mathf.Abs(a.Value(Rarity.Mythic, level))).Take(slots).ToList();
+                    float total = ranked.Sum(a => a.Value(Rarity.Mythic, level) * mult);
+
+                    bool flat = key.bucket == Combat.Loadout.ModifierBucket.Flat;
+                    float cap = float.NaN;
+                    bool capped = false;
+                    if (flat && stat.useMax) { cap = stat.maxValue; capped = total >= cap; }
+                    else if (flat && stat.useMin) { cap = stat.minValue; capped = total <= cap; }
+
+                    best.Add(new BestRow
+                    {
+                        Archetype = string.IsNullOrEmpty(slot.displayName) ? slot.name : slot.displayName,
+                        Stat = (string.IsNullOrEmpty(stat.displayName) ? stat.id : stat.displayName) + (flat ? "" : " %"),
+                        Base = 0f, Best = total, Cap = cap, Capped = capped,
                         Affixes = string.Join(", ", ranked.Select(a => a.DisplayName))
                     });
                 }

@@ -20,7 +20,8 @@ namespace Combat.Affixes
     {
         Stat,    // feel stats, value by rarity
         Damage,  // damage scaling, value ramps with item level
-        Element  // element affixes on elemental armor (Legendary and up)
+        Element, // element affixes on elemental armor (Legendary and up)
+        Defense  // survival on armor: health, damage reduction, resistances
     }
 
     // One stat line rolled on gear. Its value comes from the item's rarity or item level; a greater roll multiplies it.

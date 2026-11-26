@@ -140,7 +140,8 @@ namespace Combat.UI
                 {
                     group = roll.affix.group;
                     UIKit.Label(body, "Group", s, group == Combat.Affixes.AffixGroup.Damage ? "Damage"
-                                : group == Combat.Affixes.AffixGroup.Element ? "Element" : "Stats", s.textFaint);
+                                : group == Combat.Affixes.AffixGroup.Element ? "Element"
+                                : group == Combat.Affixes.AffixGroup.Defense ? "Defense" : "Stats", s.textFaint);
                 }
                 var e = roll.affix.Entry(roll.Value(rarity, level));
                 var row = UIKit.Node(body, "Affix");

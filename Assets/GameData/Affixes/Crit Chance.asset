@@ -31,8 +31,10 @@ MonoBehaviour:
   onWeapons: 1
   weaponTypeFilter: []
   archetypeFilter: []
-  onArmor: 0
-  slotFilter: []
+  onArmor: 1
+  slotFilter:
+  - {fileID: 11400000, guid: cfe06c603d75ffd498447bacd900f441, type: 2}
+  - {fileID: 11400000, guid: 14f7571ee2d33b0458da741d0eeef45d, type: 2}
   armorFilter: []
   element: {fileID: 0}
   weight: 1

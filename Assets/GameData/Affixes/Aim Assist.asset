@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: aim_assist
   displayName: Aim Assist
+  group: 0
   stat: {fileID: 11400000, guid: c7a4bb871b6f29f4bbf9c509365f5b26, type: 2}
   bucket: 0
   target: 1
@@ -30,6 +31,9 @@ MonoBehaviour:
   onWeapons: 1
   weaponTypeFilter: []
   archetypeFilter: []
-  onArmor: 0
-  slotFilter: []
+  onArmor: 1
+  slotFilter:
+  - {fileID: 11400000, guid: 14f7571ee2d33b0458da741d0eeef45d, type: 2}
+  armorFilter: []
+  element: {fileID: 0}
   weight: 1
