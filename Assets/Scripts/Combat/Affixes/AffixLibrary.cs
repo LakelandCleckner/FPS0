@@ -28,6 +28,16 @@ namespace Combat.Affixes
 
         public static float GreaterMultiplier => Active != null ? Active.greaterMultiplier : 1.5f;
 
+        // x1 at item level 1, rising evenly to the library's ramp at max item level.
+        public static float LevelRamp(int itemLevel)
+        {
+            float ramp = Active != null ? Active.levelRampAtMax : 10f;
+            int max = Combat.Progression.ItemScaling.MaxLevel;
+            if (max <= 1) return ramp;
+            float t = (Combat.Progression.ItemScaling.Clamp(itemLevel) - 1) / (float)(max - 1);
+            return 1f + (ramp - 1f) * t;
+        }
+
         // Rolled affixes, or a Mythic's fixed ones.
         public static void RollFor(WeaponSO weapon, Rarity rarity, List<AffixRoll> into)
         {

@@ -32,6 +32,7 @@ namespace Combat.Progression.EditorTools
         private int tierFrom = 1, tierTo = 50, tierStep = 5;
         private int levelFrom = 1, levelTo = 50, levelStep = 5;
         private bool showDamage;
+        private bool withAffixes;
 
         // Enemies
         private EnemyVariantSO variant;
@@ -105,6 +106,8 @@ namespace Combat.Progression.EditorTools
             Range("Tiers", ref tierFrom, ref tierTo, ref tierStep);
             Range("Item levels", ref levelFrom, ref levelTo, ref levelStep);
             showDamage = GUILayout.Toolbar(showDamage ? 1 : 0, new[] { "Time to kill", "Damage taken" }) == 1;
+            if (!showDamage)
+                withAffixes = EditorGUILayout.ToggleLeft("With the best Weapon Damage affix (Mythic, greater; crit and precision left out)", withAffixes);
 
             if (showDamage)
                 EditorGUILayout.HelpBox("Enemy hit damage relative to tier 1. Player health doesn't scale yet, so this is the raw factor.", MessageType.None);
@@ -171,7 +174,7 @@ namespace Combat.Progression.EditorTools
                     }
                     for (int l = levelFrom; l <= levelTo; l += levelStep)
                     {
-                        float ttk = tierCurve.HealthFactor(t) / item.Factor(l);
+                        float ttk = tierCurve.HealthFactor(t) / (item.Factor(l) * (withAffixes ? AffixFactor(l) : 1f));
                         var r = GUILayoutUtility.GetRect(w, 18, GUILayout.Width(w));
                         var c = ttk < 1.25f ? Good : ttk <= 2f ? Warn : Bad;
                         EditorGUI.DrawRect(new Rect(r.x + 1, r.y + 1, r.width - 2, r.height - 2), new Color(c.r, c.g, c.b, 0.35f));
@@ -179,6 +182,18 @@ namespace Combat.Progression.EditorTools
                     }
                 }
             }
+        }
+
+        // Best Weapon Damage affix at an item level, greater.
+        private static float AffixFactor(int level)
+        {
+            var lib = Combat.Affixes.AffixLibrary.Active;
+            if (lib == null) return 1f;
+            float weapon = 0f;
+            foreach (var a in lib.affixes)
+                if (a != null && a.stat != null && a.group == Combat.Affixes.AffixGroup.Damage && a.onWeapons && a.stat.id == "weapon_damage")
+                    weapon = Mathf.Max(weapon, a.Value(Rarity.Mythic, level) * lib.greaterMultiplier);
+            return 1f + weapon;
         }
 
         private static string Short(float v)

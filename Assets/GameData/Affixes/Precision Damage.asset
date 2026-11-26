@@ -14,22 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: precision_damage
   displayName: Precision Damage
+  group: 1
   stat: {fileID: 11400000, guid: c340ae8b125643f49800c334f9ab5dcb, type: 2}
   bucket: 1
   target: 1
   scope: 1
   targetWeaponTypes: []
-  valueSource: 0
+  valueSource: 1
   rarityValues:
-  - 0.04
-  - 0.06
-  - 0.08
-  - 0.1
-  - 0.12
-  baseValue: 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  baseValue: 0.06
   onWeapons: 1
   weaponTypeFilter: []
   archetypeFilter: []
   onArmor: 0
   slotFilter: []
+  armorFilter: []
+  element: {fileID: 0}
   weight: 1

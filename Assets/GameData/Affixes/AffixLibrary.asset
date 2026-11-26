@@ -24,6 +24,16 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e97563df7abd67a46bd68588d4028b21, type: 2}
   - {fileID: 11400000, guid: d3a685c0ee28a2942a1beb9dd02b4c4f, type: 2}
   - {fileID: 11400000, guid: 1be821110a9f04341ab4042b3454c386, type: 2}
-  countByRarity: 0200000002000000020000000200000002000000
+  - {fileID: 11400000, guid: e04d293ca3881064fa1079dd5b44376b, type: 2}
+  - {fileID: 11400000, guid: 80abeadb4e699fa40a0c0c73ab118563, type: 2}
+  - {fileID: 11400000, guid: 87b777a9e023508419f2c9edf6413448, type: 2}
+  - {fileID: 11400000, guid: 26392a85bb5a61c439050ca7ad9732dd, type: 2}
+  - {fileID: 11400000, guid: fd05f6985852fc74ea525d13f49956bf, type: 2}
+  - {fileID: 11400000, guid: 2e1a0542e1f81b74598ef8f8cd590367, type: 2}
+  - {fileID: 11400000, guid: 351a3e739a88b3749beb712f58645b68, type: 2}
+  - {fileID: 11400000, guid: fad8eea689ba92e45a72e395303c1c11, type: 2}
+  countByRarity: 0200000002000000030000000400000005000000
+  damageCountByRarity: 0200000003000000040000000500000006000000
+  levelRampAtMax: 10
   greaterChance: 0.05
   greaterMultiplier: 1.5

@@ -12,7 +12,15 @@ namespace Combat.Affixes
     public enum AffixValueSource
     {
         Rarity,     // one value per rarity
-        ItemLevel   // base value grown by the item scaling curve
+        ItemLevel   // level 1 value, ramped up to the library's multiplier at max item level
+    }
+
+    // Each group rolls into its own slots, so affixes only compete within their group.
+    public enum AffixGroup
+    {
+        Stat,    // feel stats, value by rarity
+        Damage,  // damage scaling, value ramps with item level
+        Element  // element affixes on elemental armor (Legendary and up)
     }
 
     // One stat line rolled on gear. Its value comes from the item's rarity or item level; a greater roll multiplies it.
@@ -22,6 +30,7 @@ namespace Combat.Affixes
         [Tooltip("Stable id for lookups/saves. Set once, don't rename.")]
         public string id = "";
         public string displayName = "";
+        public AffixGroup group = AffixGroup.Stat;
 
         [Header("Stat")]
         public StatDefinitionSO stat;
@@ -38,7 +47,7 @@ namespace Combat.Affixes
         public AffixValueSource valueSource = AffixValueSource.Rarity;
         [Tooltip("Rarity source: value at Common, Uncommon, Rare, Legendary, Mythic.")]
         public float[] rarityValues = { 0f, 0f, 0f, 0f, 0f };
-        [Tooltip("Item level source: value at item level 1, grown by the item scaling curve.")]
+        [Tooltip("Item level source: value at item level 1, ramped by the library up to max item level.")]
         public float baseValue;
 
         [Header("Rolls on")]
@@ -48,8 +57,12 @@ namespace Combat.Affixes
         [Tooltip("Rolls on these archetypes or the types above. Both empty = every weapon.")]
         public List<WeaponArchetypeSO> archetypeFilter = new List<WeaponArchetypeSO>();
         public bool onArmor = false;
-        [Tooltip("Empty = every armor slot.")]
+        [Tooltip("Rolls on armor in these slots or the pieces below. Both empty = every armor piece.")]
         public List<ArmorSlotSO> slotFilter = new List<ArmorSlotSO>();
+        [Tooltip("Rolls on these armor pieces or the slots above. Both empty = every armor piece.")]
+        public List<ArmorSO> armorFilter = new List<ArmorSO>();
+        [Tooltip("Only rolls on items of this element. Empty = any.")]
+        public Combat.Core.DamageTypeSO element;
         [Tooltip("Relative odds among the affixes an item can roll.")]
         [Min(0f)] public float weight = 1f;
 
@@ -58,12 +71,13 @@ namespace Combat.Affixes
         // Value on an item of this rarity and level, before any greater multiplier.
         public float Value(Rarity rarity, int itemLevel)
         {
-            if (valueSource == AffixValueSource.ItemLevel) return baseValue * ItemScaling.Factor(itemLevel);
+            if (valueSource == AffixValueSource.ItemLevel) return baseValue * AffixLibrary.LevelRamp(itemLevel);
             if (rarityValues == null || rarityValues.Length == 0) return 0f;
             return rarityValues[Mathf.Clamp((int)rarity, 0, rarityValues.Length - 1)];
         }
 
-        public bool CanRollOn(WeaponSO weapon) => weapon != null && CanRollOn(weapon.archetype);
+        public bool CanRollOn(WeaponSO weapon)
+            => weapon != null && (element == null || element == weapon.baseDamageType) && CanRollOn(weapon.archetype);
 
         public bool CanRollOn(WeaponArchetypeSO arch)
         {
@@ -75,8 +89,10 @@ namespace Combat.Affixes
 
         public bool CanRollOn(ArmorSO armor)
         {
-            if (!onArmor || armor == null || stat == null) return false;
-            return slotFilter.Count == 0 || (armor.slot != null && slotFilter.Contains(armor.slot));
+            // Armor has no element yet, so element affixes stay off armor.
+            if (!onArmor || armor == null || stat == null || element != null) return false;
+            if (slotFilter.Count == 0 && armorFilter.Count == 0) return true;
+            return (armor.slot != null && slotFilter.Contains(armor.slot)) || armorFilter.Contains(armor);
         }
 
         // The modifier this affix grants at a value, for previews and text.

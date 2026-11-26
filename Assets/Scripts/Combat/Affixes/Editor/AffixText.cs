@@ -13,7 +13,7 @@ namespace Combat.Affixes.EditorTools
     // One line per affix, for batch import and the migration:
     //   Name | stat kind values | rolls on and options
     //   kind: flat, pct, mult.  values: c,u,r,l,m by rarity, or "lvl 12" for an item level base.
-    //   options: weapons, armor, types=A,B, archetypes=a,b, slots=a,b, weight=1, player, held, boosts=A,B
+    //   options: weapons, armor, damage, group=stat|damage|element, types=A,B, archetypes=a,b, slots=a,b, pieces=a,b, element=fire, weight=1, player, held, boosts=A,B
     public static class AffixText
     {
         public const string Folder = "Assets/GameData/Affixes";
@@ -27,6 +27,9 @@ namespace Combat.Affixes.EditorTools
             public float[] Values = new float[5];
             public float Base;
             public bool OnWeapons, OnArmor, Player, Held;
+            public AffixGroup Group = AffixGroup.Stat;
+            public Combat.Core.DamageTypeSO Element;
+            public List<ArmorSO> Pieces = new List<ArmorSO>();
             public float Weight = 1f;
             public List<WeaponTypeSO> Types = new List<WeaponTypeSO>();
             public List<WeaponArchetypeSO> Archetypes = new List<WeaponArchetypeSO>();
@@ -38,6 +41,8 @@ namespace Combat.Affixes.EditorTools
         private static Dictionary<string, WeaponTypeSO> types;
         private static Dictionary<string, WeaponArchetypeSO> archetypes;
         private static Dictionary<string, ArmorSlotSO> slots;
+        private static Dictionary<string, ArmorSO> pieces;
+        private static Dictionary<string, Combat.Core.DamageTypeSO> elements;
 
         public static List<Parsed> Parse(string text, List<string> errors)
         {
@@ -97,6 +102,16 @@ namespace Combat.Affixes.EditorTools
                 else if (t == "armor") p.OnArmor = true;
                 else if (t == "player") p.Player = true;
                 else if (t == "held") p.Held = true;
+                else if (t == "damage") p.Group = AffixGroup.Damage;
+                else if (t.StartsWith("group="))
+                {
+                    if (!System.Enum.TryParse(t.Substring(6), true, out p.Group)) { errors.Add($"Line {n}: group must be stat, damage or element."); return null; }
+                }
+                else if (t.StartsWith("element="))
+                {
+                    if (!elements.TryGetValue(t.Substring(8), out p.Element)) { errors.Add($"Line {n}: unknown element '{t.Substring(8)}'."); return null; }
+                }
+                else if (t.StartsWith("pieces=")) { if (!Fill(t.Substring(7), pieces, p.Pieces, "armor piece", n, errors)) return null; }
                 else if (t.StartsWith("weight=")) { if (!TryFloat(t.Substring(7), out p.Weight)) errors.Add($"Line {n}: bad weight."); }
                 else if (t.StartsWith("types=")) { if (!Fill(t.Substring(6), types, p.Types, "type", n, errors)) return null; }
                 else if (t.StartsWith("boosts=")) { if (!Fill(t.Substring(7), types, p.Boosts, "type", n, errors)) return null; }
@@ -136,6 +151,9 @@ namespace Combat.Affixes.EditorTools
 
                 if (created || string.IsNullOrEmpty(a.id)) a.id = Id(p.Name);
                 a.displayName = p.Name;
+                a.group = p.Group;
+                a.element = p.Element;
+                a.armorFilter = new List<ArmorSO>(p.Pieces);
                 a.stat = p.Stat;
                 a.bucket = p.Bucket;
                 a.target = p.Player ? ModifierTarget.Player : ModifierTarget.Weapons;
@@ -181,6 +199,10 @@ namespace Combat.Affixes.EditorTools
                 var opts = new List<string>();
                 if (a.onWeapons) opts.Add("weapons");
                 if (a.onArmor) opts.Add("armor");
+                if (a.group == AffixGroup.Damage) opts.Add("damage");
+                else if (a.group == AffixGroup.Element) opts.Add("group=element");
+                if (a.element != null) opts.Add("element=" + a.element.id);
+                if (a.armorFilter.Count > 0) opts.Add("pieces=" + Ids(a.armorFilter.Select(t => t != null ? t.id : null)));
                 if (a.weaponTypeFilter.Count > 0) opts.Add("types=" + Ids(a.weaponTypeFilter.Select(t => t != null ? t.id : null)));
                 if (a.archetypeFilter.Count > 0) opts.Add("archetypes=" + Ids(a.archetypeFilter.Select(t => t != null ? t.id : null)));
                 if (a.slotFilter.Count > 0) opts.Add("slots=" + Ids(a.slotFilter.Select(t => t != null ? t.id : null)));
@@ -207,6 +229,10 @@ namespace Combat.Affixes.EditorTools
             foreach (var a in All<WeaponArchetypeSO>()) Key(archetypes, a, a.id, a.displayName);
             slots = new Dictionary<string, ArmorSlotSO>();
             foreach (var s in All<ArmorSlotSO>()) Key(slots, s, s.id, s.displayName);
+            pieces = new Dictionary<string, ArmorSO>();
+            foreach (var a in All<ArmorSO>()) Key(pieces, a, a.id, a.displayName);
+            elements = new Dictionary<string, Combat.Core.DamageTypeSO>();
+            foreach (var d in All<Combat.Core.DamageTypeSO>()) Key(elements, d, d.id, d.displayName);
         }
 
         private static void Key<T>(Dictionary<string, T> map, T v, string id, string display) where T : Object

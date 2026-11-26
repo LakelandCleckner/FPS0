@@ -85,7 +85,10 @@ namespace Combat.Affixes.EditorTools
         private void LibraryTab()
         {
             librarySo.Update();
-            EditorGUILayout.PropertyField(librarySo.FindProperty("countByRarity"), new GUIContent("Affixes per rarity"), true);
+            EditorGUILayout.PropertyField(librarySo.FindProperty("countByRarity"), new GUIContent("Stat affixes per rarity"), true);
+            EditorGUILayout.PropertyField(librarySo.FindProperty("damageCountByRarity"), new GUIContent("Damage affixes per rarity"), true);
+            EditorGUILayout.PropertyField(librarySo.FindProperty("elementCountByRarity"), new GUIContent("Element affixes per rarity"), true);
+            EditorGUILayout.PropertyField(librarySo.FindProperty("levelRampAtMax"), new GUIContent("Level ramp at max level"));
             EditorGUILayout.PropertyField(librarySo.FindProperty("greaterChance"));
             EditorGUILayout.PropertyField(librarySo.FindProperty("greaterMultiplier"));
             librarySo.ApplyModifiedProperties();
@@ -99,7 +102,7 @@ namespace Combat.Affixes.EditorTools
                     {
                         if (a == null) continue;
                         var style = a == selected ? EditorStyles.boldLabel : EditorStyles.label;
-                        string where = (a.onWeapons ? "W" : "") + (a.onArmor ? "A" : "");
+                        string where = (a.group == AffixGroup.Damage ? "Dmg " : a.group == AffixGroup.Element ? "Elem " : "Stat ") + (a.onWeapons ? "W" : "") + (a.onArmor ? "A" : "");
                         if (GUILayout.Button($"{a.DisplayName}   [{where}]", style)) Select(a);
                     }
                     EditorGUILayout.EndScrollView();
@@ -123,8 +126,12 @@ namespace Combat.Affixes.EditorTools
                         selectedEditor.OnInspectorGUI();
                         EditorGUILayout.Space();
                         EditorGUILayout.LabelField("Values", EditorStyles.boldLabel);
-                        foreach (Rarity r in System.Enum.GetValues(typeof(Rarity)))
-                            EditorGUILayout.LabelField(r.ToString(), $"{selected.Value(r, 1):0.###}   greater {selected.Value(r, 1) * library.greaterMultiplier:0.###}");
+                        if (selected.valueSource == AffixValueSource.ItemLevel)
+                            foreach (int lv in new[] { 1, 25, 50, 75, Combat.Progression.ItemScaling.MaxLevel })
+                                EditorGUILayout.LabelField("Item level " + lv, $"{selected.Value(Rarity.Common, lv):0.###}   greater {selected.Value(Rarity.Common, lv) * library.greaterMultiplier:0.###}");
+                        else
+                            foreach (Rarity r in System.Enum.GetValues(typeof(Rarity)))
+                                EditorGUILayout.LabelField(r.ToString(), $"{selected.Value(r, 1):0.###}   greater {selected.Value(r, 1) * library.greaterMultiplier:0.###}");
                     }
                     EditorGUILayout.EndScrollView();
                 }
@@ -219,10 +226,13 @@ namespace Combat.Affixes.EditorTools
 
             if (rolledItems == 0) return;
             scroll = EditorGUILayout.BeginScrollView(scroll);
-            EditorGUILayout.LabelField($"{rolledItems} items, {library.CountFor(rollRarity)} affixes each", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"{rolledItems} items, {library.CountFor(AffixGroup.Stat, rollRarity)} stat and " +
+                                       $"{library.CountFor(AffixGroup.Damage, rollRarity)} damage slots, {library.CountFor(AffixGroup.Element, rollRarity)} element slots", EditorStyles.boldLabel);
             int most = Mathf.Max(1, rolled.Values.DefaultIfEmpty(1).Max());
-            foreach (var kv in rolled.OrderByDescending(k => k.Value))
+            AffixGroup? shown = null;
+            foreach (var kv in rolled.OrderBy(k => k.Key.group).ThenByDescending(k => k.Value))
             {
+                if (shown != kv.Key.group) { shown = kv.Key.group; EditorGUILayout.LabelField(shown.ToString(), EditorStyles.miniBoldLabel); }
                 rolledGreater.TryGetValue(kv.Key, out int g);
                 using (new EditorGUILayout.HorizontalScope())
                 {
@@ -258,7 +268,7 @@ namespace Combat.Affixes.EditorTools
         private void BestTab()
         {
             EditorGUILayout.HelpBox("Each archetype's base stats against its best possible Mythic affixes on that stat " +
-                                    $"(up to {library.CountFor(Rarity.Mythic)}), as rolled on its first weapon. Red = the stat hits its cap.", MessageType.None);
+                                    "(up to its group's Mythic slots), at max item level on its first weapon. Red = the stat hits its cap.", MessageType.None);
             using (new EditorGUILayout.HorizontalScope())
             {
                 bestGreater = EditorGUILayout.ToggleLeft("All greater", bestGreater, GUILayout.Width(100));
@@ -299,7 +309,7 @@ namespace Combat.Affixes.EditorTools
             var keys = AffixText.All<WeaponStatKeys>().FirstOrDefault();
             if (keys == null) { Debug.LogWarning("[AffixLibrary] No WeaponStatKeys asset."); return; }
             var weapons = AffixText.All<WeaponSO>();
-            int slots = library.CountFor(Rarity.Mythic);
+            int level = Combat.Progression.ItemScaling.MaxLevel;
 
             foreach (var arch in AffixText.All<WeaponArchetypeSO>().OrderBy(a => a.name))
             {
@@ -310,16 +320,18 @@ namespace Combat.Affixes.EditorTools
                 foreach (var stat in eligible.Select(a => a.stat).Distinct())
                 {
                     var baseC = new StatContainer();
-                    WeaponStatBuilder.PopulateBases(baseC, weapon, keys);
+                    WeaponStatBuilder.PopulateBases(baseC, weapon, keys, level);
                     float baseV = baseC.Resolve(stat);
+                    var onStat = eligible.Where(a => a.stat == stat).ToList();
+                    int slots = onStat.Max(a => library.CountFor(a.group, Rarity.Mythic));
 
                     // Strongest affixes on this stat, by how far each moves it alone.
-                    var ranked = eligible.Where(a => a.stat == stat)
+                    var ranked = onStat
                         .Select(a => (a, gain: Mathf.Abs(Solo(weapon, keys, a, stat) - baseV)))
                         .OrderByDescending(x => x.gain).Take(slots).Select(x => x.a).ToList();
 
                     var c = new StatContainer();
-                    WeaponStatBuilder.PopulateBases(c, weapon, keys);
+                    WeaponStatBuilder.PopulateBases(c, weapon, keys, level);
                     foreach (var a in ranked) AddAffix(c, a);
                     float v = c.Resolve(stat);
 
@@ -344,7 +356,7 @@ namespace Combat.Affixes.EditorTools
         private float Solo(WeaponSO weapon, WeaponStatKeys keys, AffixSO a, StatDefinitionSO stat)
         {
             var c = new StatContainer();
-            WeaponStatBuilder.PopulateBases(c, weapon, keys);
+            WeaponStatBuilder.PopulateBases(c, weapon, keys, Combat.Progression.ItemScaling.MaxLevel);
             AddAffix(c, a);
             return c.Resolve(stat);
         }

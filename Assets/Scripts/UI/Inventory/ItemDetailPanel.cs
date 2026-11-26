@@ -132,9 +132,16 @@ namespace Combat.UI
             if (rolls == null || rolls.Count == 0) return;
             Divider(body, s);
             Heading(body, s, "Affixes");
+            Combat.Affixes.AffixGroup? group = null;
             foreach (var roll in rolls)
             {
                 if (roll == null || roll.affix == null) continue;
+                if (group != roll.affix.group)
+                {
+                    group = roll.affix.group;
+                    UIKit.Label(body, "Group", s, group == Combat.Affixes.AffixGroup.Damage ? "Damage"
+                                : group == Combat.Affixes.AffixGroup.Element ? "Element" : "Stats", s.textFaint);
+                }
                 var e = roll.affix.Entry(roll.Value(rarity, level));
                 var row = UIKit.Node(body, "Affix");
                 UIKit.HStack(row, 10f);
