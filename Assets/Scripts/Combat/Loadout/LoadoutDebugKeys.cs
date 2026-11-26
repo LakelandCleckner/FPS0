@@ -28,7 +28,7 @@ namespace Combat.Loadout
 
         private readonly object debugLock = new object();
         private PlayerInputRouter input;
-        private InputAction levelUp, levelDown;
+        private InputAction levelUp, levelDown, tierUp, tierDown;
         private bool levelLookedUp;
 
         private void Awake()
@@ -77,6 +77,8 @@ namespace Combat.Loadout
             int step = Keyboard.current != null && Keyboard.current.shiftKey.isPressed ? 10 : 1;
             if (levelUp != null && levelUp.WasPressedThisFrame()) ChangeHeldLevel(step);
             if (levelDown != null && levelDown.WasPressedThisFrame()) ChangeHeldLevel(-step);
+            if (tierUp != null && tierUp.WasPressedThisFrame()) ChangeTier(step);
+            if (tierDown != null && tierDown.WasPressedThisFrame()) ChangeTier(-step);
         }
 
         // Looked up by name so this compiles before the input wrapper regenerates.
@@ -86,7 +88,19 @@ namespace Combat.Loadout
             var asset = input.Inputs.asset;
             levelUp = asset.FindAction("Debug/ItemLevelUp");
             levelDown = asset.FindAction("Debug/ItemLevelDown");
-            if (levelUp == null || levelDown == null) Debug.LogWarning("[LoadoutDebug] Item level actions missing from the Debug input map.");
+            tierUp = asset.FindAction("Debug/TierUp");
+            tierDown = asset.FindAction("Debug/TierDown");
+            if (levelUp == null || levelDown == null || tierUp == null || tierDown == null)
+                Debug.LogWarning("[LoadoutDebug] Item level or tier actions missing from the Debug input map.");
+        }
+
+        // Changes the current dungeon tier; live enemies rescale.
+        public void ChangeTier(int delta)
+        {
+            Tier.Set(Tier.Current + delta);
+            var t = Tier.Scaling;
+            string factors = t != null ? $" (x{t.HealthFactor(Tier.Current):0.##} health, x{t.DamageFactor(Tier.Current):0.##} damage)" : " (no tier scaling asset)";
+            Debug.Log($"[LoadoutDebug] Tier {Tier.Current}{factors}");
         }
 
         // Raises or lowers the held weapon's item level and rebuilds its stats.
