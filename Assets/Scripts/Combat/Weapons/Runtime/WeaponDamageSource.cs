@@ -58,7 +58,7 @@ namespace Combat.Sources
             }
 
             container ??= new StatContainer();
-            WeaponStatBuilder.PopulateBases(container, weapon, statKeys);
+            WeaponStatBuilder.PopulateBases(container, weapon, statKeys, instance != null ? instance.ItemLevel : 1);
 
             cachedEffects = new List<IHitEffect>(weapon.riderEffects.Count + 1);
 

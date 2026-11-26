@@ -13,9 +13,15 @@ namespace Combat.Stats
                  "the registry sorts by id for deterministic indices.")]
         [SerializeField] private List<StatDefinitionSO> statDefinitions = new List<StatDefinitionSO>();
 
+        [Tooltip("Item level growth curve.")]
+        [SerializeField] private Combat.Progression.ItemScalingSO itemScaling;
+
+        public Combat.Progression.ItemScalingSO Scaling => itemScaling;
+
         private void Awake()
         {
             StatRegistry.Initialize(statDefinitions);
+            if (itemScaling != null) Combat.Progression.ItemScaling.Active = itemScaling;
         }
 
         // For edit-mode tools: initializes the registry from the scene's bootstrap if nothing has yet.

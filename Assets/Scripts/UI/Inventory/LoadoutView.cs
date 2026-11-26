@@ -73,22 +73,22 @@ namespace Combat.UI
             var mode = start.rollMode;
             if (start.equipped != null)
                 for (int i = 0; i < start.equipped.Length && i < Weapons.Length; i++)
-                    if (start.equipped[i] != null) Weapons[i] = new WeaponInstance(start.equipped[i], mode, start.RollRarity());
+                    if (start.equipped[i] != null) Weapons[i] = new WeaponInstance(start.equipped[i], mode, start.RollRarity(), start.itemLevel);
 
-            foreach (var w in start.carried) if (w != null) CarriedWeapons.Add(new WeaponInstance(w, mode, start.RollRarity()));
+            foreach (var w in start.carried) if (w != null) CarriedWeapons.Add(new WeaponInstance(w, mode, start.RollRarity(), start.itemLevel));
 
             foreach (var a in start.equippedArmor)
             {
                 if (a == null) continue;
                 int idx = ArmorSlots.IndexOf(a.slot);
-                if (idx >= 0 && Armor[idx] == null) Armor[idx] = new ArmorInstance(a, mode, start.RollRarity());
-                else CarriedArmor.Add(new ArmorInstance(a, mode, start.RollRarity()));
+                if (idx >= 0 && Armor[idx] == null) Armor[idx] = new ArmorInstance(a, mode, start.RollRarity(), start.itemLevel);
+                else CarriedArmor.Add(new ArmorInstance(a, mode, start.RollRarity(), start.itemLevel));
             }
-            foreach (var a in start.carriedArmor) if (a != null) CarriedArmor.Add(new ArmorInstance(a, mode, start.RollRarity()));
+            foreach (var a in start.carriedArmor) if (a != null) CarriedArmor.Add(new ArmorInstance(a, mode, start.RollRarity(), start.itemLevel));
 
             // Sample vault so the vault tab has something to lay out.
-            foreach (var w in start.carried) if (w != null) VaultWeapons.Add(new WeaponInstance(w, mode, start.RollRarity()));
-            foreach (var a in start.carriedArmor) if (a != null) VaultArmor.Add(new ArmorInstance(a, mode, start.RollRarity()));
+            foreach (var w in start.carried) if (w != null) VaultWeapons.Add(new WeaponInstance(w, mode, start.RollRarity(), start.itemLevel));
+            foreach (var a in start.carriedArmor) if (a != null) VaultArmor.Add(new ArmorInstance(a, mode, start.RollRarity(), start.itemLevel));
         }
 
         public void Clear()

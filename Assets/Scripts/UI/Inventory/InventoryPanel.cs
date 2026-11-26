@@ -121,6 +121,16 @@ namespace Combat.UI
                 UIKit.Anchor(tag.rectTransform, new Vector2(0f, 1f), new Vector2(0.85f, 1f), new Vector2(inset, -inset - 16f), new Vector2(0f, -inset));
             }
 
+            // Item level under the rarity tag
+            var level = ItemText.LevelOf(item);
+            if (level.HasValue)
+            {
+                var lv = UIKit.Text(tile.transform, "Level", s, "Lv " + level.Value, s.labelSize - 2f, s.textMuted,
+                                    TMPro.TextAlignmentOptions.TopLeft, heading: true);
+                float inset = small ? 6f : 10f;
+                UIKit.Anchor(lv.rectTransform, new Vector2(0f, 1f), new Vector2(0.85f, 1f), new Vector2(inset, -inset - 32f), new Vector2(0f, -inset - 16f));
+            }
+
             var mono = UIKit.Text(tile.transform, "Monogram", s, ItemText.Monogram(item), size * 0.28f, s.text,
                                   TMPro.TextAlignmentOptions.Center, role: TextRole.Title);
             UIKit.Anchor(mono.rectTransform, new Vector2(0f, 0.34f), new Vector2(1f, 0.86f), Vector2.zero, Vector2.zero);

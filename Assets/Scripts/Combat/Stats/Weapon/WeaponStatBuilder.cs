@@ -1,4 +1,5 @@
 using Combat.Stats;
+using Combat.Progression;
 
 namespace Combat.Weapons
 {
@@ -27,14 +28,15 @@ namespace Combat.Weapons
         // Populate `container` with a weapon's base stat values (archetype + deltas)
         // and register its derived modifiers. Sets each stat's BASE; modifiers
         // (perks/affixes) layer on top later.
-        public static void PopulateBases(StatContainer container, WeaponSO weapon, WeaponStatKeys keys)
+        // Item level scales weapon_damage only; feel stats stay as authored.
+        public static void PopulateBases(StatContainer container, WeaponSO weapon, WeaponStatKeys keys, int itemLevel = 1)
         {
             if (container == null || weapon == null || weapon.archetype == null || keys == null)
                 return;
 
             var a = weapon.archetype;
 
-            container.SetBase(keys.weaponDamage, a.weaponDamage + weapon.weaponDamageDelta);
+            container.SetBase(keys.weaponDamage, (a.weaponDamage + weapon.weaponDamageDelta) * ItemScaling.Factor(itemLevel));
             container.SetBase(keys.rpm, a.roundsPerMinute + weapon.roundsPerMinuteDelta);
             container.SetBase(keys.magazineSize, a.magazineSize + weapon.magazineSizeDelta);
             container.SetBase(keys.reloadTime, a.reloadTime + weapon.reloadTimeDelta);

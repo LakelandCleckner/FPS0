@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using System.Text;
 using Combat.Armor;
 using Combat.Loot;
 using Combat.Perks;
+using Combat.Progression;
 using Combat.Stats;
 using Combat.Weapons;
 
@@ -26,6 +28,8 @@ namespace Combat.Loadout
 
         private readonly object debugLock = new object();
         private PlayerInputRouter input;
+        private InputAction levelUp, levelDown;
+        private bool levelLookedUp;
 
         private void Awake()
         {
@@ -68,6 +72,34 @@ namespace Combat.Loadout
             if (d.DumpWeaponStats.WasPressedThisFrame()) DumpWeaponStats();
             if (d.DumpPlayerStats.WasPressedThisFrame()) DumpPlayerStats();
             if (d.SpawnDrop.WasPressedThisFrame()) SpawnDrop();
+
+            if (!levelLookedUp) FindLevelActions();
+            int step = Keyboard.current != null && Keyboard.current.shiftKey.isPressed ? 10 : 1;
+            if (levelUp != null && levelUp.WasPressedThisFrame()) ChangeHeldLevel(step);
+            if (levelDown != null && levelDown.WasPressedThisFrame()) ChangeHeldLevel(-step);
+        }
+
+        // Looked up by name so this compiles before the input wrapper regenerates.
+        private void FindLevelActions()
+        {
+            levelLookedUp = true;
+            var asset = input.Inputs.asset;
+            levelUp = asset.FindAction("Debug/ItemLevelUp");
+            levelDown = asset.FindAction("Debug/ItemLevelDown");
+            if (levelUp == null || levelDown == null) Debug.LogWarning("[LoadoutDebug] Item level actions missing from the Debug input map.");
+        }
+
+        // Raises or lowers the held weapon's item level and rebuilds its stats.
+        public void ChangeHeldLevel(int delta)
+        {
+            var held = weapons != null ? weapons.Active : null;
+            var source = held != null ? held.DamageSource : null;
+            var instance = source != null ? source.Instance : null;
+            if (instance == null) { Debug.Log("[LoadoutDebug] Nothing held to level."); return; }
+
+            instance.SetItemLevel(instance.ItemLevel + delta);
+            source.Rebuild();
+            Debug.Log($"[LoadoutDebug] {instance.Definition.name} item level {instance.ItemLevel} (x{ItemScaling.Factor(instance.ItemLevel):0.##} damage)");
         }
 
         // ------------------------------------------------------------------ weapons

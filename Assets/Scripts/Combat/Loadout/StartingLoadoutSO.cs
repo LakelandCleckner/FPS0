@@ -49,6 +49,10 @@ namespace Combat.Loadout
         [Min(0)] public int rareWeight = 30;
         [Min(0)] public int legendaryWeight = 10;
 
+        [Header("Item Level")]
+        [Tooltip("Item level of every item created from this loadout.")]
+        [Range(1, 100)] public int itemLevel = 1;
+
         public Rarity RollRarity() => RarityWeights.Roll(commonWeight, uncommonWeight, rareWeight, legendaryWeight);
 
         [Header("Random (testing)")]

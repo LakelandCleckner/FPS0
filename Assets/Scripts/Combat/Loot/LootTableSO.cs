@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Combat.Armor;
 using Combat.Perks;
+using Combat.Progression;
 using Combat.Weapons;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -29,6 +30,8 @@ namespace Combat.Loot
         public RollMode rollMode = RollMode.Random;
         [Tooltip("Mythic drops a hand-made Mythic from the pools; other rarities never pick one.")]
         public RarityWeights rarity = RarityWeights.Default;
+        [Tooltip("Dungeon tier. Drops roll item level from tier - 2 to tier; rarer drops roll toward the top.")]
+        [Min(1)] public int tier = 1;
 
         [Header("Pools")]
         [Tooltip("Empty in the editor = every weapon in the project.")]
@@ -80,11 +83,22 @@ namespace Combat.Loot
             if (ww + aw <= 0) return false;
 
             if (Random.Range(0, ww + aw) < ww)
-                weapon = new WeaponInstance(w[Random.Range(0, w.Count)], rollMode, r);
+                weapon = new WeaponInstance(w[Random.Range(0, w.Count)], rollMode, r, RollLevel(r));
             else
-                piece = new ArmorInstance(a[Random.Range(0, a.Count)], rollMode, r);
+                piece = new ArmorInstance(a[Random.Range(0, a.Count)], rollMode, r, RollLevel(r));
             return true;
         }
+
+        // Levels below the tier: Common and Uncommon roll evenly, Rare takes the better of two, Legendary and up are at the tier.
+        public int RollLevel(Rarity r)
+        {
+            int below = Random.Range(0, LevelBand + 1);
+            if (r == Rarity.Rare) below = Mathf.Min(below, Random.Range(0, LevelBand + 1));
+            else if (r > Rarity.Rare) below = 0;
+            return ItemScaling.Clamp(tier - below);
+        }
+
+        private const int LevelBand = 2;
 
         private Vector3 Ground(Vector3 p)
         {
