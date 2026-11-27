@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1470fa181d99132449aa4c0bd1c04f16, type: 3}
   m_Name: ItemScaling
   m_EditorClassIdentifier: 
-  growth: 0.08
+  growth: 0.06
   maxLevel: 100

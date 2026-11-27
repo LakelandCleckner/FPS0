@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef8abfac3fcdc8c4596b616e319536c8, type: 3}
+  m_Name: Reload Speed
+  m_EditorClassIdentifier: 
+  id: reload_pct
+  displayName: Reload Speed
+  group: 0
+  stat: {fileID: 11400000, guid: 7579532ea69da3744ab17777fafe21c6, type: 2}
+  bucket: 1
+  target: 1
+  scope: 1
+  targetWeaponTypes: []
+  valueSource: 0
+  rarityValues:
+  - -0.06
+  - -0.1
+  - -0.14
+  - -0.2
+  - -0.28
+  baseValue: 0
+  onWeapons: 1
+  weaponTypeFilter: []
+  archetypeFilter: []
+  onArmor: 1
+  slotFilter:
+  - {fileID: 11400000, guid: 14f7571ee2d33b0458da741d0eeef45d, type: 2}
+  armorFilter: []
+  element: {fileID: 0}
+  weight: 1

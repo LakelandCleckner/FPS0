@@ -74,6 +74,8 @@ namespace Combat.UI
             Divider(body, s);
             StatBlock(body, screen, w);
 
+            Affixes(body, s, w.Affixes, w.Rarity, w.ItemLevel);
+
             var ctx = screen.ContextFor(w);
             Divider(body, s);
             Heading(body, s, "Perks");
@@ -99,6 +101,7 @@ namespace Combat.UI
             var s = screen.Style;
             Title(body, s, a, ItemText.Kind(a), null);
 
+            Affixes(body, s, a.Affixes, a.Rarity, a.ItemLevel);
             Effects(body, s, a, "Effects", CompareChip(screen));
 
             if (screen.Compare)
@@ -120,6 +123,40 @@ namespace Combat.UI
                 string col = columns != null && i < columns.Count && !string.IsNullOrWhiteSpace(columns[i].label)
                     ? columns[i].label : "Column " + (i + 1);
                 PerkRow(body, screen, p, col, ctx);
+            }
+        }
+
+        // Rolled stat lines, styled apart from perks: a bar in the affix colour, the stat line, and a Greater tag.
+        private static void Affixes(RectTransform body, UIStyleSO s, IReadOnlyList<Combat.Affixes.AffixRoll> rolls, Rarity rarity, int level)
+        {
+            if (rolls == null || rolls.Count == 0) return;
+            Divider(body, s);
+            Heading(body, s, "Affixes");
+            Combat.Affixes.AffixGroup? group = null;
+            foreach (var roll in rolls)
+            {
+                if (roll == null || roll.affix == null) continue;
+                if (group != roll.affix.group)
+                {
+                    group = roll.affix.group;
+                    UIKit.Label(body, "Group", s, group == Combat.Affixes.AffixGroup.Damage ? "Damage"
+                                : group == Combat.Affixes.AffixGroup.Element ? "Element"
+                                : group == Combat.Affixes.AffixGroup.Defense ? "Defense" : "Stats", s.textFaint);
+                }
+                var e = roll.affix.Entry(roll.Value(rarity, level));
+                var row = UIKit.Node(body, "Affix");
+                UIKit.HStack(row, 10f);
+                UIKit.Size(row, height: s.bodySize + 6f);
+                var mark = UIKit.Solid(row, "Mark", s.barAffix);
+                UIKit.Size(mark, width: 3f, height: s.bodySize);
+                bool weaponLine = roll.affix.target == ModifierTarget.Weapons && roll.affix.targetWeaponTypes.Count == 0;
+                UIKit.Size(UIKit.Text(row, "Text", s, ItemText.Effect(e, !weaponLine), s.bodySize - 1f, ItemText.IsGood(e) ? s.text : s.negative),
+                           flexWidth: 1f);
+                if (roll.greater)
+                {
+                    var tag = UIKit.Text(row, "Greater", s, "Greater", s.labelSize, s.accent, TextAlignmentOptions.MidlineRight, heading: true);
+                    UIKit.Size(tag, width: 70f);
+                }
             }
         }
 
@@ -167,6 +204,7 @@ namespace Combat.UI
             var sheet = screen.WeaponStatSheet;
 
             var head = Heading(body, s, "Stats");
+            Legend(head, s, "Affixes", s.barAffix);
             Legend(head, s, "Perks", s.barPerk);
             Legend(head, s, "Armor", s.barArmor);
             Legend(head, s, "Attributes", s.barAttribute);
@@ -236,7 +274,7 @@ namespace Combat.UI
             UIKit.Size(c, width: 70f);
         }
 
-        // Base fill, then perk, armor and attribute gains, then any loss carved back out.
+        // Base fill, then affix, perk, armor and attribute gains, then any loss carved back out.
         private static void DrawBar(RectTransform bar, UIStyleSO s, StatLayers v, float max)
         {
             var track = UIKit.Box(bar, "Track", s, s.barTrack, small: true);
@@ -248,6 +286,7 @@ namespace Combat.UI
 
             Segment(bar, "Base", s.barBase, 0f, Mathf.Min(b, f));
             float reached = b;
+            reached = Gain(bar, "Affixes", s.barAffix, reached, Mathf.Clamp01(v.WithAffixes / max), top);
             reached = Gain(bar, "Perks", s.barPerk, reached, Mathf.Clamp01(v.WithPerks / max), top);
             reached = Gain(bar, "Armor", s.barArmor, reached, Mathf.Clamp01(v.WithArmor / max), top);
             Gain(bar, "Attributes", s.barAttribute, reached, f, top);

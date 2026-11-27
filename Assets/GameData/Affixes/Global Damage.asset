@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef8abfac3fcdc8c4596b616e319536c8, type: 3}
+  m_Name: Global Damage
+  m_EditorClassIdentifier: 
+  id: global_damage
+  displayName: Global Damage
+  group: 1
+  stat: {fileID: 11400000, guid: e5a738ee31f17c64682b1c822f19ced0, type: 2}
+  bucket: 1
+  target: 0
+  scope: 1
+  targetWeaponTypes: []
+  valueSource: 1
+  rarityValues:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  baseValue: 0.05
+  onWeapons: 0
+  weaponTypeFilter: []
+  archetypeFilter: []
+  onArmor: 1
+  slotFilter:
+  - {fileID: 11400000, guid: cfe06c603d75ffd498447bacd900f441, type: 2}
+  - {fileID: 11400000, guid: 14f7571ee2d33b0458da741d0eeef45d, type: 2}
+  armorFilter: []
+  element: {fileID: 0}
+  weight: 1

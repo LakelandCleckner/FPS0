@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Combat.Affixes;
 using Combat.Armor;
 using Combat.Attributes;
 using Combat.Loadout;
@@ -6,16 +7,18 @@ using Combat.Stats;
 
 namespace Combat.Weapons
 {
-    // One stat seen four ways: the weapon alone, plus its own perks, plus equipped armor, plus attributes.
+    // One stat seen five ways: the weapon alone, plus its affixes, plus its own perks, plus equipped armor, plus attributes.
     public struct StatLayers
     {
         public float Base;
+        public float WithAffixes;
         public float WithPerks;
         public float WithArmor;
         public float WithAttributes;
 
         public float Final => WithAttributes;
-        public float PerkDelta => WithPerks - Base;
+        public float AffixDelta => WithAffixes - Base;
+        public float PerkDelta => WithPerks - WithAffixes;
         public float ArmorDelta => WithArmor - WithPerks;
         public float AttributeDelta => WithAttributes - WithArmor;
     }
@@ -23,7 +26,7 @@ namespace Combat.Weapons
     // Stat preview for any owned weapon, equipped or not. Only unconditional perk modifiers count.
     public sealed class WeaponStatPreview
     {
-        private StatContainer baseStats, perkStats, armorStats, fullStats;
+        private StatContainer baseStats, affixStats, perkStats, armorStats, fullStats;
         private readonly List<ModifierEntry> scratch = new List<ModifierEntry>();
 
         public bool IsBuilt { get; private set; }
@@ -37,14 +40,26 @@ namespace Combat.Weapons
 
             var def = weapon.Definition;
             baseStats = new StatContainer();
+            affixStats = new StatContainer();
             perkStats = new StatContainer();
             armorStats = new StatContainer();
             fullStats = new StatContainer();
             int level = weapon.ItemLevel;
             WeaponStatBuilder.PopulateBases(baseStats, def, keys, level);
+            WeaponStatBuilder.PopulateBases(affixStats, def, keys, level);
             WeaponStatBuilder.PopulateBases(perkStats, def, keys, level);
             WeaponStatBuilder.PopulateBases(armorStats, def, keys, level);
             WeaponStatBuilder.PopulateBases(fullStats, def, keys, level);
+
+            foreach (var roll in weapon.Affixes)
+            {
+                if (roll == null || roll.affix == null || roll.affix.target != ModifierTarget.Weapons) continue;
+                var e = roll.affix.Entry(roll.Value(weapon.Rarity, level));
+                Add(affixStats, e);
+                Add(perkStats, e);
+                Add(armorStats, e);
+                Add(fullStats, e);
+            }
 
             scratch.Clear();
             foreach (var perk in weapon.AllPerks()) perk.CollectStaticModifiers(scratch);
@@ -64,6 +79,9 @@ namespace Combat.Weapons
                     if (piece == null) continue;
                     scratch.Clear();
                     foreach (var perk in piece.AllPerks()) perk.CollectStaticModifiers(scratch);
+                    foreach (var roll in piece.Affixes)
+                        if (roll != null && roll.affix != null)
+                            scratch.Add(roll.affix.Entry(roll.Value(piece.Rarity, piece.ItemLevel)));
                     foreach (var e in scratch)
                         if (e.target == ModifierTarget.Weapons && TypeMatches(e, type))
                         {
@@ -85,6 +103,7 @@ namespace Combat.Weapons
             return new StatLayers
             {
                 Base = baseStats.Resolve(stat),
+                WithAffixes = affixStats.Resolve(stat),
                 WithPerks = perkStats.Resolve(stat),
                 WithArmor = armorStats.Resolve(stat),
                 WithAttributes = fullStats.Resolve(stat)

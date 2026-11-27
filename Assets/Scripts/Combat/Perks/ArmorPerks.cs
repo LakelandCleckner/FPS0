@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Combat.Affixes;
 using Combat.Armor;
 using Combat.Events;
 using Combat.Loadout;
@@ -8,7 +9,7 @@ using Combat.Weapons;
 
 namespace Combat.Perks
 {
-    // Runs the perks of equipped armor. Sits on the player root beside PlayerLoadout.
+    // Runs the perks of equipped armor and registers its affixes. Sits on the player root beside PlayerLoadout.
     public class ArmorPerks : MonoBehaviour
     {
         [Tooltip("Found on this object or its parents if empty.")]
@@ -16,6 +17,8 @@ namespace Combat.Perks
         [SerializeField] private bool debugLog = false;
 
         private readonly Dictionary<ArmorInstance, List<PerkRuntime>> attached = new Dictionary<ArmorInstance, List<PerkRuntime>>();
+        private readonly Dictionary<ArmorInstance, List<object>> affixOwners = new Dictionary<ArmorInstance, List<object>>();
+        private LoadoutModifierApplier applier;
         private bool started;
 
         private void Awake()
@@ -42,7 +45,7 @@ namespace Combat.Perks
             AttachAll();
         }
 
-        // Rebuilds one piece's perks, e.g. after a reroll.
+        // Rebuilds one piece's perks and affixes, e.g. after a reroll.
         public void Reattach(ArmorInstance armor)
         {
             Detach(armor);
@@ -98,6 +101,11 @@ namespace Combat.Perks
                 if (debugLog) Debug.Log($"[ArmorPerks] {armor.Definition.name} + {perk.name}");
             }
             attached[armor] = list;
+
+            applier = ctx.Applier;
+            var owners = new List<object>();
+            AffixGrants.Register(applier, armor.Affixes, armor.Rarity, armor.ItemLevel, armor.Definition.name, null, owners);
+            affixOwners[armor] = owners;
         }
 
         private void Detach(ArmorInstance armor)
@@ -105,6 +113,8 @@ namespace Combat.Perks
             if (armor == null || !attached.TryGetValue(armor, out var list)) return;
             for (int i = list.Count - 1; i >= 0; i--) list[i].Detach();
             attached.Remove(armor);
+            if (affixOwners.TryGetValue(armor, out var owners)) AffixGrants.Unregister(applier, owners);
+            affixOwners.Remove(armor);
         }
     }
 }

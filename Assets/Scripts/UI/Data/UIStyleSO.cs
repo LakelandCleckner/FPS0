@@ -90,6 +90,7 @@ namespace Combat.UI
         [Header("Stat bars")]
         public Color barTrack = new Color(1f, 1f, 1f, 0.07f);
         public Color barBase = new Color(0.86f, 0.89f, 0.91f, 1f);
+        public Color barAffix = new Color(0.93f, 0.56f, 0.74f, 1f);
         public Color barPerk = new Color(0.47f, 0.76f, 1f, 1f);
         public Color barArmor = new Color(0.6f, 0.88f, 0.62f, 1f);
         public Color barAttribute = new Color(0.98f, 0.74f, 0.36f, 1f);

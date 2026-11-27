@@ -19,7 +19,11 @@ namespace Combat.Stats
         [Tooltip("Enemy growth per dungeon tier.")]
         [SerializeField] private Combat.Progression.TierScalingSO tierScaling;
 
+        [Tooltip("Every affix that can roll on gear.")]
+        [SerializeField] private Combat.Affixes.AffixLibrarySO affixLibrary;
+
         public Combat.Progression.ItemScalingSO Scaling => itemScaling;
+        public Combat.Affixes.AffixLibrarySO Affixes => affixLibrary;
         public Combat.Progression.TierScalingSO TierScaling => tierScaling;
 
         private void Awake()
@@ -27,6 +31,7 @@ namespace Combat.Stats
             StatRegistry.Initialize(statDefinitions);
             if (itemScaling != null) Combat.Progression.ItemScaling.Active = itemScaling;
             if (tierScaling != null) Combat.Progression.Tier.Scaling = tierScaling;
+            if (affixLibrary != null) Combat.Affixes.AffixLibrary.Active = affixLibrary;
         }
 
         // For edit-mode tools: initializes the registry from the scene's bootstrap if nothing has yet.

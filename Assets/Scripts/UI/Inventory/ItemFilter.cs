@@ -7,7 +7,7 @@ using Combat.Weapons;
 namespace Combat.UI
 {
     public enum ItemKindFilter { All, Weapons, Armor }
-    public enum ItemSort { Rarity, Name, Type, Newest, Perks }
+    public enum ItemSort { Rarity, Name, Type, Newest, Perks, ItemLevel }
 
     // Filters and sort for the vault tab grids. An empty set means that filter is off.
     public sealed class ItemFilter
@@ -103,13 +103,14 @@ namespace Combat.UI
                 case ItemSort.Type: return -TypeRank(x.item, slotOrder).CompareTo(TypeRank(y.item, slotOrder));
                 case ItemSort.Newest: return x.order.CompareTo(y.order);
                 case ItemSort.Perks: return PerkCount(x.item).CompareTo(PerkCount(y.item));
+                case ItemSort.ItemLevel: return (ItemText.LevelOf(x.item) ?? 0).CompareTo(ItemText.LevelOf(y.item) ?? 0);
                 default: return 0;
             }
         }
 
-        public static string SortLabel(ItemSort s) => s == ItemSort.Perks ? "Perk count" : s.ToString();
+        public static string SortLabel(ItemSort s) => s == ItemSort.Perks ? "Perk count" : s == ItemSort.ItemLevel ? "Item level" : s.ToString();
 
-        // Descending is each sort's natural order (high rarity, A-Z, slot 1 first, newest, most perks).
+        // Descending is each sort's natural order (high rarity, A-Z, slot 1 first, newest, most perks, highest level).
         public static string DirectionLabel(ItemSort s, bool descending)
         {
             switch (s)
@@ -118,6 +119,7 @@ namespace Combat.UI
                 case ItemSort.Name: return descending ? "A-Z" : "Z-A";
                 case ItemSort.Type: return descending ? "Weapons first" : "Armor first";
                 case ItemSort.Newest: return descending ? "Newest first" : "Oldest first";
+                case ItemSort.ItemLevel: return descending ? "Highest first" : "Lowest first";
                 default: return descending ? "Most first" : "Fewest first";
             }
         }
@@ -147,7 +149,7 @@ namespace Combat.UI
             return n;
         }
 
-        // Name, kind line, rarity or any perk name.
+        // Name, kind line, rarity, any perk name or any affix name.
         private static bool SearchHit(object item, string q)
         {
             if (Has(ItemText.Name(item), q) || Has(ItemText.Kind(item), q)) return true;
@@ -156,6 +158,9 @@ namespace Combat.UI
 
             IEnumerable<PerkSO> perks = item is WeaponInstance w ? w.AllPerks() : item is ArmorInstance a ? a.AllPerks() : null;
             if (perks != null) foreach (var p in perks) if (Has(ItemText.PerkName(p), q)) return true;
+
+            var affixes = item is WeaponInstance wi ? wi.Affixes : item is ArmorInstance ai ? ai.Affixes : null;
+            if (affixes != null) foreach (var roll in affixes) if (roll != null && roll.affix != null && Has(roll.affix.DisplayName, q)) return true;
             return false;
         }
 
