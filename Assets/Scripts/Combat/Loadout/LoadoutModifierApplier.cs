@@ -18,6 +18,7 @@ namespace Combat.Loadout
         private readonly List<ModifierGrant> grants = new List<ModifierGrant>();
         private readonly HashSet<WeaponDamageSource> bound = new HashSet<WeaponDamageSource>();
         private WeaponDamageSource held;
+        private readonly object globalDamageOwner = new object();
 
         private StatContainer PlayerStats => player != null ? player.Container : null;
 
@@ -108,8 +109,21 @@ namespace Combat.Loadout
             if (weapon == null) return;
 
             bound.Add(weapon);
+            LinkGlobalDamage(weapon);
             RefreshWeapon(weapon, false);
             RefreshPlayer(true);
+        }
+
+        // weapon_damage gains the player's global_damage in its additive pool, live.
+        private void LinkGlobalDamage(WeaponDamageSource weapon)
+        {
+            var keys = weapon.StatKeys;
+            var c = weapon.SourceStats;
+            var ps = PlayerStats;
+            if (keys == null || keys.globalDamage == null || keys.weaponDamage == null || c == null || ps == null) return;
+            c.RemoveAllFromOwner(globalDamageOwner);
+            c.AddModifier(new StatModifier(keys.weaponDamage, ModifierGrant.IdOf(ModifierBucket.Additive), keys.globalDamage, 1f,
+                                           scope: ActivityScope.InLoadout, sourceContainer: ps), globalDamageOwner);
         }
 
         private void HandleUnbound(int slot, WeaponDamageSource weapon)
@@ -118,6 +132,7 @@ namespace Combat.Loadout
 
             bound.Remove(weapon);
             if (held == weapon) held = null;
+            if (weapon.SourceStats != null) weapon.SourceStats.RemoveAllFromOwner(globalDamageOwner);
 
             // Not bound any more, so every grant comes off it.
             RefreshWeapon(weapon, false);

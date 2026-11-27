@@ -83,11 +83,20 @@ namespace Combat.Weapons
                         if (roll != null && roll.affix != null)
                             scratch.Add(roll.affix.Entry(roll.Value(piece.Rarity, piece.ItemLevel)));
                     foreach (var e in scratch)
+                    {
                         if (e.target == ModifierTarget.Weapons && TypeMatches(e, type))
                         {
                             Add(armorStats, e);
                             Add(fullStats, e);
                         }
+                        else if (e.target == ModifierTarget.Player && keys.globalDamage != null && e.stat == keys.globalDamage)
+                        {
+                            // Global damage reaches weapon_damage's additive pool.
+                            var d = new ModifierEntry { stat = keys.weaponDamage, bucket = ModifierBucket.Additive, value = e.value, target = ModifierTarget.Weapons };
+                            Add(armorStats, d);
+                            Add(fullStats, d);
+                        }
+                    }
                 }
             }
 

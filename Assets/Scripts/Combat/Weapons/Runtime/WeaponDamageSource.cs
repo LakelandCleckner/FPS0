@@ -96,6 +96,8 @@ namespace Combat.Sources
         public float ChainGrowth => weapon != null ? weapon.chainGrowth : 1f;
         public HitDedupMode DedupMode => weapon != null ? weapon.dedupMode : HitDedupMode.PerShot;
 
+        public WeaponStatKeys StatKeys => statKeys;
+
         public float ResolvedRPM => container != null && statKeys != null ? container.Resolve(statKeys.rpm) : 0f;
         public float ResolvedMagazineSize => container != null && statKeys != null ? container.Resolve(statKeys.magazineSize) : 0f;
         public float ResolvedReloadTime => container != null && statKeys != null ? container.Resolve(statKeys.reloadTime) : 0f;

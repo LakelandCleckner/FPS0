@@ -21,14 +21,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3464382caeef430299c108e9dee529ca, type: 2}
   - {fileID: 11400000, guid: 067c64655cf24084b8a68d146a287aad, type: 2}
   feeds:
-  - stat: {fileID: 11400000, guid: 1af39531c4c9d474f810115fd25ae295, type: 2}
-    bucket: 0
-    perPoint: 0.2
-    target: 1
-  - stat: {fileID: 11400000, guid: 8bfa09f2bfdd9604dbce2ec910ad6465, type: 2}
-    bucket: 1
-    perPoint: -0.002
-    target: 1
   - stat: {fileID: 11400000, guid: 0c762f8c95ba2d24fbf8fcaaa273c2c5, type: 2}
     bucket: 1
     perPoint: 0.001

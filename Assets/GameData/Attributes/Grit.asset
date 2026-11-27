@@ -49,7 +49,3 @@ MonoBehaviour:
     bucket: 1
     perPoint: 0.001
     target: 0
-  - stat: {fileID: 11400000, guid: 3c80678360177584ba55d0a5e246744b, type: 2}
-    bucket: 1
-    perPoint: -0.002
-    target: 1
