@@ -147,7 +147,7 @@ namespace Combat.UI
             return n;
         }
 
-        // Name, kind line, rarity or any perk name.
+        // Name, kind line, rarity, any perk name or any affix name.
         private static bool SearchHit(object item, string q)
         {
             if (Has(ItemText.Name(item), q) || Has(ItemText.Kind(item), q)) return true;
@@ -156,6 +156,9 @@ namespace Combat.UI
 
             IEnumerable<PerkSO> perks = item is WeaponInstance w ? w.AllPerks() : item is ArmorInstance a ? a.AllPerks() : null;
             if (perks != null) foreach (var p in perks) if (Has(ItemText.PerkName(p), q)) return true;
+
+            var affixes = item is WeaponInstance wi ? wi.Affixes : item is ArmorInstance ai ? ai.Affixes : null;
+            if (affixes != null) foreach (var roll in affixes) if (roll != null && roll.affix != null && Has(roll.affix.DisplayName, q)) return true;
             return false;
         }
 
