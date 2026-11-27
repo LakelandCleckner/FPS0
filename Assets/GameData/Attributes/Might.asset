@@ -26,11 +26,3 @@ MonoBehaviour:
     bucket: 1
     perPoint: 0.005
     target: 1
-  - stat: {fileID: 11400000, guid: cd293aa7bcdb499a9c8134c2be854f37, type: 2}
-    bucket: 0
-    perPoint: 0.1
-    target: 1
-  - stat: {fileID: 11400000, guid: cffe40ffbb34436792f1ee3b2d41d4e7, type: 2}
-    bucket: 0
-    perPoint: 0.1
-    target: 1
